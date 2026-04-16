@@ -26,14 +26,10 @@ import useLocationModal from '@/app/hooks/useLocationModal';
 import PageHeader from '@/components/PageHeader';
 
 interface DiscoverClientProps {
-  initialPosts: SafePost[];
+  initialPosts?: SafePost[];
   currentUser: SafeUser | null;
   categoryToUse?: string;
-  listings: SafeListing[];
-  // Superset of `listings` used purely for employee→listing lookups in the
-  // worker rails. Includes academy-owned listings (which are hidden from the
-  // bookable listings rail) so that student WorkerCards can resolve their
-  // true listing for routing/booking links.
+  listings?: SafeListing[];
   allListingsForLookup?: SafeListing[];
   employees?: SafeEmployee[];
   shops?: SafeShop[];
@@ -86,18 +82,46 @@ function shuffleArray<T>(array: T[], seed?: number): T[] {
 }
 
 const DiscoverClient: React.FC<DiscoverClientProps> = ({
-  initialPosts,
+  initialPosts: serverPosts,
   currentUser,
   categoryToUse,
-  listings,
-  allListingsForLookup,
-  employees = [],
-  shops = [],
+  listings: serverListings,
+  allListingsForLookup: serverAllListings,
+  employees: serverEmployees,
+  shops: serverShops,
 }) => {
-  // Used by the worker rails to resolve `employee.listingId → listing`.
-  // Falls back to `listings` if the lookup superset isn't provided so older
-  // callers keep working.
-  const listingsForLookup = allListingsForLookup ?? listings;
+  // Client-side data fetching when no server data provided
+  const [fetchedData, setFetchedData] = useState<{
+    posts: SafePost[];
+    listings: SafeListing[];
+    employees: SafeEmployee[];
+    shops: SafeShop[];
+  } | null>(
+    serverPosts ? { posts: serverPosts, listings: serverListings || [], employees: serverEmployees || [], shops: serverShops || [] } : null
+  );
+
+  useEffect(() => {
+    if (serverPosts) return;
+    Promise.all([
+      fetch('/api/post/list?filter=for-you').then(r => r.json()),
+      fetch('/api/listings?includeAcademy=true').then(r => r.json()),
+      fetch('/api/shops?limit=20').then(r => r.json()),
+    ])
+      .then(([posts, listingsRes, shops]) => {
+        const allListings: SafeListing[] = Array.isArray(listingsRes) ? listingsRes : (listingsRes?.listings || []);
+        const emps = allListings.flatMap((l: SafeListing) => l.employees || []);
+        setFetchedData({ posts, listings: allListings, employees: emps, shops });
+      })
+      .catch(() => setFetchedData({ posts: [], listings: [], employees: [], shops: [] }));
+  }, [serverPosts]);
+
+  const isLoadingData = fetchedData === null;
+  const initialPosts = fetchedData?.posts || [];
+  const listings = fetchedData?.listings.filter((l: SafeListing) => !l.academyId) || [];
+  const employees = fetchedData?.employees || [];
+  const shops = fetchedData?.shops || [];
+
+  const listingsForLookup = serverAllListings ?? fetchedData?.listings ?? listings;
 
   const { viewMode, setViewMode } = useViewMode();
   const isSidebarCollapsed = useSidebarState();
@@ -430,8 +454,152 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
         <Container>
           <PageHeader currentUser={currentUser} currentCategories={currentCategories} />
 
+          {/* Inline skeleton — renders in same Container as real content */}
+          {isLoadingData && (
+            <div>
+              {/* ── Banner skeleton (matches aspect-[4/1] rounded-2xl + 3 dots) ── */}
+              <div className="mt-8">
+                <div className="rounded-2xl animate-pulse bg-stone-200/60 dark:bg-stone-800/60 w-full aspect-[4/1]" />
+                <div className="flex gap-1.5 mt-3 justify-center items-center">
+                  <div className="h-1.5 w-4 rounded-full animate-pulse bg-stone-300/60 dark:bg-stone-700/60" />
+                  <div className="h-1.5 w-1.5 rounded-full animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                  <div className="h-1.5 w-1.5 rounded-full animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                </div>
+              </div>
+
+              {/* ── Shop By Category (matches SectionHeader mt-8 mb-6 + 9 circles gap-6) ── */}
+              <div className="mt-8 mb-6">
+                <div className="flex items-center justify-between">
+                  <div className="h-7 w-48 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                </div>
+              </div>
+              <div className="flex gap-6 overflow-x-hidden pb-2 pl-4 pr-4 -ml-4">
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <div key={i} className="flex flex-col items-center gap-2 shrink-0">
+                    <div className="w-[100px] h-[100px] rounded-full border-2 border-stone-200 dark:border-stone-700 animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                    <div className="h-3.5 w-14 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                  </div>
+                ))}
+              </div>
+
+              {/* ── Posts We Think You'll Love (SectionHeader + grid-cols-7 grid-rows-2 gap-0.5 rounded-xl) ── */}
+              <div className="mt-8 mb-6">
+                <div className="flex items-center justify-between">
+                  <div className="h-7 w-72 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                  <div className="flex items-center gap-1 ml-4">
+                    <div className="h-4 w-14 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-7 grid-rows-2 gap-0.5 rounded-xl overflow-hidden">
+                {Array.from({ length: 14 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-full overflow-hidden bg-stone-100 dark:bg-stone-800 animate-pulse"
+                    style={{ aspectRatio: '5 / 6', boxShadow: 'inset 0 0 30px rgba(0,0,0,0.08), inset 0 0 6px rgba(0,0,0,0.04)' }}
+                  />
+                ))}
+              </div>
+
+              {/* ── Local Businesses (SectionHeader + ListingCard horizontal grid) ── */}
+              <div className="mt-8 mb-6">
+                <div className="flex items-center justify-between">
+                  <div className="h-7 w-80 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                  <div className="flex items-center gap-1 ml-4">
+                    <div className="h-4 w-14 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-1">
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <div key={i} className="rounded-2xl p-3 -mx-3 flex flex-row gap-4">
+                    {/* 120x120 rounded-xl image */}
+                    <div className="relative overflow-hidden rounded-xl flex-shrink-0 w-[120px] h-[120px] animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                    {/* Text column matching ListingCard: category italic (11px) → title (15px 2 lines) → location (11px) → rating row (11px with star) */}
+                    <div className="flex flex-col justify-center min-w-0 flex-1">
+                      <div className="h-2.5 w-16 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '3px' }} />
+                      <div className="h-4 w-4/5 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '2px' }} />
+                      <div className="h-4 w-3/5 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '6px' }} />
+                      <div className="h-2.5 w-24 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '8px' }} />
+                      <div className="flex items-center gap-1">
+                        <div className="h-2.5 w-2.5 rounded-full animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                        <div className="h-2.5 w-8 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                        <div className="h-2.5 w-px bg-stone-200 dark:bg-stone-800 mx-1" />
+                        <div className="h-2.5 w-16 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* ── Trending Professionals (same grid, same ListingCard shape for WorkerCards) ── */}
+              <div className="mt-8 mb-6">
+                <div className="flex items-center justify-between">
+                  <div className="h-7 w-60 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                  <div className="flex items-center gap-1 ml-4">
+                    <div className="h-4 w-14 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-1">
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <div key={i} className="rounded-2xl p-3 -mx-3 flex flex-row gap-4">
+                    <div className="relative overflow-hidden rounded-xl flex-shrink-0 w-[120px] h-[120px] animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                    <div className="flex flex-col justify-center min-w-0 flex-1">
+                      <div className="h-2.5 w-16 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '3px' }} />
+                      <div className="h-4 w-4/5 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '2px' }} />
+                      <div className="h-4 w-3/5 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '6px' }} />
+                      <div className="h-2.5 w-24 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '8px' }} />
+                      <div className="flex items-center gap-1">
+                        <div className="h-2.5 w-2.5 rounded-full animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                        <div className="h-2.5 w-8 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* ── Recommended Shops (same grid, ShopCard shape: 120x120 img + text + 4 product thumbs) ── */}
+              <div className="mt-8 mb-6">
+                <div className="flex items-center justify-between">
+                  <div className="h-7 w-56 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                  <div className="flex items-center gap-1 ml-4">
+                    <div className="h-4 w-14 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-1 pb-8">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="group">
+                    {/* Top row: 120x120 image + info side by side (matches ShopCard) */}
+                    <div className="flex flex-row gap-3">
+                      <div className="relative overflow-hidden rounded-xl flex-shrink-0 w-[120px] h-[120px] animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                      <div className="flex flex-col justify-center min-w-0">
+                        {/* title text-[15px] font-semibold */}
+                        <div className="h-4 w-32 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '4px' }} />
+                        {/* location text-[11px] */}
+                        <div className="h-2.5 w-24 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '6px' }} />
+                        {/* rating row: star + number */}
+                        <div className="flex items-center gap-1">
+                          <div className="h-2.5 w-2.5 rounded-full animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                          <div className="h-2.5 w-8 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                        </div>
+                      </div>
+                    </div>
+                    {/* 4 product circles below — w-9 h-9 rounded-xl, gap-1.5, mt-2.5 */}
+                    <div className="flex items-center gap-1.5 mt-2.5">
+                      {Array.from({ length: 4 }).map((_, j) => (
+                        <div key={j} className="w-9 h-9 rounded-xl flex-shrink-0 animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Editorial Banner — fades out when filtered */}
-          <div
+          {!isLoadingData && <div
             id="wt-banner"
             style={{
               opacity: filterInfo.isFiltered ? 0 : 1,
@@ -490,8 +658,9 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                 />
               ))}
             </div>
-          </div>
+          </div>}
 
+          {!isLoadingData && <>
           {/* Shop By Category */}
           <div id="wt-categories">
             <SectionHeader
@@ -891,6 +1060,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
             )}
           </div>
         </div>
+        </>}
         </Container>
       </div>
 

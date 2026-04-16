@@ -1,38 +1,12 @@
-// ReservationsPage.tsx
-import ClientOnly from "@/components/ClientOnly";
+import getCurrentUser from "@/app/actions/getCurrentUser";
+import { redirect } from "next/navigation";
 import ReservationsClient from "./ReservationsClient";
 
+export const dynamic = 'force-dynamic';
 
-import getCurrentUser from "@/app/actions/getCurrentUser";
-import getReservations from "@/app/actions/getReservations";
-
-interface ReservationsPageProps {
-  searchParams: { page?: string }
-}
-
-const ReservationsPage = async ({ searchParams }: ReservationsPageProps) => {
+export default async function ReservationsPage() {
   const currentUser = await getCurrentUser();
+  if (!currentUser) redirect('/');
 
-  // Fetch both incoming (reservations on user's listings) and outgoing (reservations user made)
-  const [incomingReservations, outgoingReservations] = currentUser?.id
-    ? await Promise.all([
-        getReservations({ authorId: currentUser.id }),
-        getReservations({ userId: currentUser.id }),
-      ])
-    : [[], []];
-
-  return (
-    <ClientOnly>
-
-
-        <ReservationsClient
-          incomingReservations={incomingReservations || []}
-          outgoingReservations={outgoingReservations || []}
-          currentUser={currentUser}
-        />
-
-    </ClientOnly>
-  );
+  return <ReservationsClient currentUser={currentUser} />;
 }
- 
-export default ReservationsPage;

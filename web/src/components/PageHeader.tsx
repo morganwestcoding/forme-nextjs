@@ -46,8 +46,8 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
     { label: "Brands", href: "/shops", active: isNavActive("/shops") },
     ...(currentUser ? [
       { label: "Bookings", href: "/bookings/reservations", active: isNavActive("/bookings/reservations", ["/bookings"]) },
+      { label: "Settings", href: "/settings", active: isNavActive("/settings") },
     ] : []),
-    { label: "Settings", href: "/settings", active: isNavActive("/settings") },
   ];
 
   return (

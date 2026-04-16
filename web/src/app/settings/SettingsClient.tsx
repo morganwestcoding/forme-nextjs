@@ -16,13 +16,13 @@ import { useTheme } from "@/app/context/ThemeContext";
 import PageHeader from "@/components/PageHeader";
 import Container from "@/components/Container";
 import Button from "@/components/ui/Button";
+import Skeleton, { PageHeaderSkeleton, ContainerSkeleton } from "@/components/ui/Skeleton";
 import Card from "@/components/ui/Card";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
 interface SettingsClientProps {
   currentUser: SafeUser;
-  isEmployee: boolean;
 }
 
 type ConnectStatus = {
@@ -32,7 +32,7 @@ type ConnectStatus = {
   payoutsEnabled: boolean;
 };
 
-const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
+const SettingsClient = ({ currentUser }: SettingsClientProps) => {
   const router = useRouter();
   const { isDarkMode, setIsDarkMode, resetTheme } = useTheme();
 
@@ -40,6 +40,22 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  // Client-side fetch employee status
+  const [isEmployee, setIsEmployee] = useState(false);
+  const [settingsLoading, setSettingsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/settings/employee-status')
+      .then((r) => r.json())
+      .then((data) => {
+        setIsEmployee(data.isEmployee || false);
+        setSettingsLoading(false);
+      })
+      .catch(() => {
+        setSettingsLoading(false);
+      });
+  }, []);
 
   // Stripe Connect state
   const [connectStatus, setConnectStatus] = useState<ConnectStatus | null>(null);
@@ -52,12 +68,13 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
 
   // Fetch Stripe Connect status
   useEffect(() => {
+    if (settingsLoading) return;
     if (isEmployee) {
       fetchConnectStatus();
     } else {
       setConnectLoading(false);
     }
-  }, [isEmployee]);
+  }, [isEmployee, settingsLoading]);
 
   const fetchConnectStatus = async () => {
     try {
@@ -121,6 +138,58 @@ const SettingsClient = ({ currentUser, isEmployee }: SettingsClientProps) => {
   };
 
   const [activeTab, setActiveTab] = useState<'appearance' | 'payments' | 'legal'>('appearance');
+
+  if (settingsLoading) {
+    return (
+      <>
+        <PageHeaderSkeleton />
+        <ContainerSkeleton>
+          <div className="max-w-2xl mx-auto">
+            <div className="mt-8 mb-8">
+              <Skeleton className="h-8 w-32 mb-2" />
+              <Skeleton className="h-4 w-56" />
+            </div>
+            <div className="flex flex-col gap-4">
+              {/* Appearance card */}
+              <div className="p-5 rounded-2xl border border-stone-200/60 dark:border-stone-800">
+                <div className="flex items-center gap-3 mb-4">
+                  <Skeleton rounded="full" className="h-10 w-10" />
+                  <div>
+                    <Skeleton className="h-5 w-28 mb-1" />
+                    <Skeleton className="h-3 w-40" />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton rounded="full" className="h-6 w-11" />
+                </div>
+              </div>
+              {/* Payments card */}
+              <div className="p-5 rounded-2xl border border-stone-200/60 dark:border-stone-800">
+                <div className="flex items-center gap-3 mb-4">
+                  <Skeleton rounded="full" className="h-10 w-10" />
+                  <div>
+                    <Skeleton className="h-5 w-36 mb-1" />
+                    <Skeleton className="h-3 w-48" />
+                  </div>
+                </div>
+                <Skeleton rounded="full" className="h-11 w-40" />
+              </div>
+              {/* Account card */}
+              <div className="p-5 rounded-2xl border border-stone-200/60 dark:border-stone-800">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="flex items-center justify-between py-3 border-b last:border-0 border-stone-200/60 dark:border-stone-800/60">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton rounded="full" className="h-4 w-4" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </ContainerSkeleton>
+      </>
+    );
+  }
 
   const tabs = [
     { key: 'appearance' as const, label: 'Appearance' },

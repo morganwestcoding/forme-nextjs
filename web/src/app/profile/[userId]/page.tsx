@@ -1,14 +1,9 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import EmptyState from "@/components/EmptyState";
-import ProfileClient from "./ProfileClient";
 import getProfileById from '@/app/actions/getProfileById';
-import getListings from '@/app/actions/getListings';
-import getPosts from '@/app/actions/getPost';
-import getReviews from '@/app/actions/getReviews';
-import getServicesByUserId from '@/app/actions/getServicesByUserId';
-import ClientOnly from '@/components/ClientOnly';
 import getCurrentUser from '@/app/actions/getCurrentUser';
+import ClientOnly from '@/components/ClientOnly';
+import ProfileClient from './ProfileClient';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,44 +27,14 @@ export async function generateMetadata({ params }: { params: { userId: string } 
   };
 }
 
-const ProfilePage = async ({ params }: any) => {
-
+const ProfilePage = async ({ params }: { params: { userId: string } }) => {
   const currentUser = await getCurrentUser();
-  const user = await getProfileById(params);
-  // Include listings the user works at (as an active Employee) alongside
-  // the ones they own, so the Businesses section on their profile shows
-  // every place they're associated with.
-  const listings = await getListings({ ...params, includeEmployedBy: true });
-  const posts = await getPosts(params);
-  const services = user ? await getServicesByUserId(user.id) : [];
-
-  // Fetch reviews for this user profile
-  const reviewsData = user ? await getReviews({
-    targetType: 'user',
-    targetUserId: user.id,
-  }) : { reviews: [], totalCount: 0, averageRating: 0, ratingDistribution: [] };
-
-  if (!user) {
-    return (
-      <ClientOnly>
-        <EmptyState />
-      </ClientOnly>
-    );
-  }
 
   return (
     <ClientOnly>
       <ProfileClient
-        posts={posts}
-        listings={listings}
-        services={services}
+        userId={params.userId}
         currentUser={currentUser}
-        user={user as any} // no need to change SafeUser or types.ts
-        reviews={reviewsData.reviews}
-        reviewStats={{
-          totalCount: reviewsData.totalCount,
-          averageRating: reviewsData.averageRating,
-        }}
       />
     </ClientOnly>
   );

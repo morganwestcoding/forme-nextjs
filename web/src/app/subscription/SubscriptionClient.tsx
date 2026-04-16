@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Container from "@/components/Container";
 import PageHeader from "@/components/PageHeader";
+import Skeleton, { PageHeaderSkeleton, ContainerSkeleton } from "@/components/ui/Skeleton";
 import Button from "@/components/ui/Button";
 import Celebration from "@/components/Celebration";
 
@@ -73,6 +74,11 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
   const { update } = useSession();
   const [billing, setBilling] = useState("monthly" as "monthly" | "yearly");
   const [saving, setSaving] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [hasProcessedPayment, setHasProcessedPayment] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
@@ -223,6 +229,56 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
 
   if (showCelebration) {
     return <Celebration onComplete={handleCelebrationComplete} userName={currentUser?.name?.split(' ')[0]} />;
+  }
+
+  if (!mounted) {
+    return (
+      <ContainerSkeleton>
+        <PageHeaderSkeleton />
+        <div className="mt-8">
+          <div className="mb-8">
+            <Skeleton className="h-8 w-40 mb-2" />
+            <Skeleton className="h-3.5 w-56" />
+          </div>
+          <div className="flex items-center gap-2 mb-8">
+            <Skeleton rounded="full" className="h-9 w-24" />
+            <Skeleton rounded="full" className="h-9 w-20" />
+          </div>
+          <div className="grid md:grid-cols-3 gap-5 pb-12">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="relative rounded-2xl border border-stone-200/60 dark:border-stone-800 bg-white dark:bg-stone-900 p-6">
+                {i === 1 && (
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <Skeleton rounded="full" className="h-5 w-24" />
+                  </div>
+                )}
+                <div className="mb-6">
+                  <Skeleton className="h-3 w-20 mb-3" />
+                  <Skeleton className="h-10 w-24 mb-2" />
+                  <Skeleton className="h-3 w-44 mt-2" />
+                </div>
+                <div className="space-y-2.5 mb-6">
+                  {Array.from({ length: 6 }).map((_, j) => (
+                    <div key={j} className="flex items-start gap-2.5">
+                      <Skeleton rounded="full" className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                      <Skeleton className="h-3 flex-1" />
+                    </div>
+                  ))}
+                </div>
+                <Skeleton rounded="xl" className="h-12 w-full" />
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-center pb-6">
+            <Skeleton className="h-3 w-72" />
+          </div>
+          <div className="pt-8 border-t border-stone-100 dark:border-stone-800">
+            <Skeleton className="h-6 w-48 mb-6" />
+            <Skeleton rounded="2xl" className="h-80 w-full" />
+          </div>
+        </div>
+      </ContainerSkeleton>
+    );
   }
 
   const currentPlanData = plans.find((p) => p.id === currentPlan);

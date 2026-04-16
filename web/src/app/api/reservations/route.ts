@@ -22,45 +22,68 @@ export async function GET(request: Request) {
     });
     const userListingIds = userListings.map(l => l.id);
 
-    // Fetch both outgoing (as customer) and incoming (as business owner)
+    // Also find employee rows linked to this user (for incoming view)
+    const myEmployeeRows = await prisma.employee.findMany({
+      where: { userId: currentUser.id, isActive: true },
+      select: { id: true },
+    });
+    const myEmployeeIds = myEmployeeRows.map(e => e.id);
+
+    // Build OR clauses for outgoing + incoming (own listings + assigned employee)
+    const orClauses: any[] = [
+      { userId: currentUser.id },
+    ];
+    if (userListingIds.length > 0) {
+      orClauses.push({ listingId: { in: userListingIds } });
+    }
+    if (myEmployeeIds.length > 0) {
+      orClauses.push({ employeeId: { in: myEmployeeIds } });
+    }
+
+    // Fetch reservations with full listing data needed by the client
     const reservations = await prisma.reservation.findMany({
-      where: {
-        OR: [
-          { userId: currentUser.id },
-          { listingId: { in: userListingIds } },
-        ],
-      },
+      where: { OR: orClauses },
       include: {
         listing: {
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            imageSrc: true,
-            category: true,
-            location: true,
-            userId: true,
-          }
+          include: {
+            services: true,
+            employees: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    image: true,
+                    imageSrc: true,
+                  }
+                }
+              }
+            },
+            storeHours: true,
+          },
         },
-        employee: {
-          select: {
-            id: true,
-            fullName: true,
-            jobTitle: true,
-          }
-        },
-        user: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-          }
-        },
+        user: true,
       },
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json(reservations);
+    // Split into outgoing (user made) vs incoming (on user's listings or assigned to user's employee)
+    const incomingListingIds = new Set(userListingIds);
+    const incomingEmployeeIds = new Set(myEmployeeIds);
+
+    const outgoing: typeof reservations = [];
+    const incoming: typeof reservations = [];
+
+    for (const r of reservations) {
+      if (r.userId === currentUser.id) {
+        outgoing.push(r);
+      }
+      if (incomingListingIds.has(r.listingId) || (r.employeeId && incomingEmployeeIds.has(r.employeeId))) {
+        incoming.push(r);
+      }
+    }
+
+    return NextResponse.json({ outgoing, incoming });
   } catch (error) {
     return apiErrorCode('INTERNAL_ERROR');
   }

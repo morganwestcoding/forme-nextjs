@@ -30,7 +30,7 @@ import useNotificationsModal from '@/app/hooks/useNotificationsModal';
 import { clearEarlyAccess } from '@/app/utils/earlyAccess';
 
 interface NewsfeedClientProps {
-  posts: SafePost[];
+  posts?: SafePost[];
   currentUser: SafeUser | null;
   initialPostId?: string;
 }
@@ -45,7 +45,7 @@ const shuffle = <T,>(arr: T[]): T[] => {
 };
 
 const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
-  posts: initialPosts,
+  posts: serverPosts,
   currentUser,
   initialPostId,
 }) => {
@@ -54,6 +54,18 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
   const loginModal = useLoginModal();
   const inboxModal = useInboxModal();
   const notificationsModal = useNotificationsModal();
+
+  // Client-side fetch when no server posts provided
+  const [fetchedPosts, setFetchedPosts] = useState<SafePost[] | null>(serverPosts ?? null);
+  useEffect(() => {
+    if (serverPosts) return;
+    fetch('/api/post/list?filter=for-you')
+      .then((r) => r.json())
+      .then((data) => setFetchedPosts(data))
+      .catch(() => setFetchedPosts([]));
+  }, [serverPosts]);
+
+  const initialPosts = fetchedPosts ?? [];
 
   // === MORPH ANIMATION ===
   // Phase 0: PageHeader visible at top (identical to discover)
@@ -382,11 +394,12 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     finally { setIsSubmitting(false); }
   };
 
-  if (!currentPost) return null;
-
+  const SIDEBAR_W = 200;
+  const isLoadingPosts = fetchedPosts === null;
   const isMorphed = morphPhase >= 1;
   const isSettled = morphPhase >= 2;
-  const SIDEBAR_W = 200;
+
+  if (!isLoadingPosts && !currentPost) return null;
 
   const navItems = [
     { label: 'Home', href: '/', icon: 'Ho' },
@@ -528,22 +541,141 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
         <div
           ref={containerRef}
           className="absolute inset-0 overflow-hidden"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          onTouchStart={isLoadingPosts ? undefined : handleTouchStart}
+          onTouchMove={isLoadingPosts ? undefined : handleTouchMove}
+          onTouchEnd={isLoadingPosts ? undefined : handleTouchEnd}
           style={{
-            // Shift right as sidebar morphs in, shift back when leaving
             left: `${SIDEBAR_W}px`,
             top: 0,
             right: 0,
             bottom: 0,
-            opacity: (isSettled && !isLeaving) ? 1 : 0,
+            opacity: (isLoadingPosts || !isSettled) ? 1 : (isSettled && !isLeaving) ? 1 : 0,
             transition: 'opacity 0.4s ease-out',
             touchAction: 'none',
             overscrollBehavior: 'none',
           }}
         >
-          <div
+          {/* Inline skeleton — renders in the exact same container as real posts */}
+          {/* Data-driven skeleton: shows until morph settles, mirrors actual post shape */}
+          {!isSettled && (() => {
+            // Once data arrives, use real post to shape the skeleton
+            const skPost = currentPost || null;
+            const skCaption = skPost?.content || '';
+            // Estimate caption line count (~55 chars per line at text-[14px] in ~370px panel)
+            const captionLines = skCaption ? Math.min(Math.ceil(skCaption.length / 55), 6) : 0;
+            const commentCount = skPost?.comments?.length || 0;
+            const hasCaption = captionLines > 0;
+
+            return (
+              <div className="flex items-center h-full w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-16">
+                {/* Video frame */}
+                <div className="flex-1 h-full flex items-center justify-center">
+                  <div
+                    className="relative overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-900 animate-pulse"
+                    style={{ aspectRatio: '9 / 16', height: 'calc(100vh - 48px)', maxHeight: 'calc(100vh - 48px)', width: 'auto' }}
+                  />
+                </div>
+
+                {/* Right panel — appears same time as video, shaped by real data when available */}
+                <div className="hidden lg:flex w-[500px] shrink-0 flex-col px-14 max-h-[calc(100%-48px)]">
+                    {/* User card */}
+                    <div className="flex items-center gap-3.5 mb-5">
+                      <div
+                        className="w-12 h-12 rounded-full shrink-0 animate-pulse bg-stone-200/60 dark:bg-stone-800/60"
+                        style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)' }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="h-[15px] rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60 mb-1" style={{ width: `${Math.min(Math.max((skPost?.user?.name?.length || 8) * 9, 60), 200)}px` }} />
+                        <div className="h-3 w-28 mt-0.5 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                      </div>
+                      <div className="shrink-0 w-8 h-8 rounded-full animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                    </div>
+
+                    {/* Caption — lines based on real content length */}
+                    {hasCaption && (
+                      <div className="mb-5">
+                        {Array.from({ length: captionLines }).map((_, i) => (
+                          <div
+                            key={i}
+                            className="h-[14px] mb-[5px] rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60"
+                            style={{ width: i === captionLines - 1 ? `${30 + Math.random() * 50}%` : '100%' }}
+                          />
+                        ))}
+                        {skCaption.length > 200 && (
+                          <div className="h-3 w-10 mt-1.5 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                        )}
+                      </div>
+                    )}
+
+                    {/* Engagement — 3 buttons with real counts */}
+                    <div className="flex items-center gap-1 mb-5">
+                      {[
+                        skPost?.likes?.length || 0,
+                        skPost?.comments?.length || 0,
+                        skPost?.bookmarks?.length || 0,
+                      ].map((count, i) => (
+                        <div key={i} className="flex items-center gap-1.5 px-3 py-2 rounded-xl">
+                          <div className="w-5 h-5 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                          <div className="h-[13px] rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ width: `${String(count).length * 8 + 8}px` }} />
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Divider */}
+                    <div className="h-px bg-stone-100 dark:bg-stone-800/80 mb-5" />
+
+                    {/* Comments — real count */}
+                    <div className="flex-1 min-h-0">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="h-[13px] w-24 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                        {commentCount > 3 && (
+                          <div className="h-3 w-14 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                        )}
+                      </div>
+
+                      {commentCount === 0 ? (
+                        <div className="py-6 text-center">
+                          <div className="h-[13px] w-36 mx-auto rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                        </div>
+                      ) : (
+                        <div className="max-h-[180px] overflow-hidden space-y-4 pr-1">
+                          {Array.from({ length: Math.min(commentCount, 3) }).map((_, i) => {
+                            const comment = skPost?.comments?.[i];
+                            const commentLen = comment?.content?.length || 40;
+                            const commentLines = Math.min(Math.ceil(commentLen / 50), 3);
+                            return (
+                              <div key={i} className="flex gap-2.5">
+                                <div className="w-7 h-7 rounded-full shrink-0 ring-1 ring-stone-100 dark:ring-stone-800 animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-baseline gap-2">
+                                    <div className="h-[13px] rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ width: `${Math.min(Math.max((comment?.user?.name?.length || 6) * 8, 40), 120)}px` }} />
+                                    <div className="h-[11px] w-6 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                                  </div>
+                                  {Array.from({ length: commentLines }).map((_, j) => (
+                                    <div
+                                      key={j}
+                                      className="h-[13px] mt-1 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60"
+                                      style={{ width: j === commentLines - 1 ? `${30 + Math.random() * 50}%` : '100%' }}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Comment input */}
+                      <div className="mt-4 relative">
+                        <div className="w-full bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700 rounded-xl h-[42px]" />
+                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-xl animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            );
+          })()}
+          {!isLoadingPosts && isSettled && <div
             className="relative w-full"
             style={{
               height: `${posts.length * 100}%`,
@@ -589,7 +721,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                               ref={isCurrent ? setActiveVideo : null}
                               src={post.mediaUrl || post.imageSrc || ''}
                               className="absolute inset-0 w-full h-full object-cover cursor-pointer"
-                              autoPlay={isCurrent}
+                              autoPlay
                               muted
                               loop
                               playsInline
@@ -867,7 +999,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                 </div>
               );
             })}
-          </div>
+          </div>}
 
           {/* ===== NAV ARROWS — minimal, right edge ===== */}
           <div

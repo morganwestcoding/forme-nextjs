@@ -152,8 +152,19 @@ export default function MessagesClient({ currentUser }: Props) {
             {/* Conversation list */}
             <div className="flex-1 overflow-y-auto">
               {loading ? (
-                <div className="flex items-center justify-center py-12">
-                  <div className="w-5 h-5 border-2 border-stone-200 dark:border-stone-800 border-t-stone-500 rounded-full animate-spin" />
+                <div>
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-3 p-4">
+                      <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-full h-11 w-11 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-4 w-28" />
+                          <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-3 w-8 shrink-0" />
+                        </div>
+                        <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-3 w-40" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : filteredConversations.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center px-6">

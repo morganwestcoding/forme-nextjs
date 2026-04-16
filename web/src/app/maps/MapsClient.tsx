@@ -8,11 +8,11 @@ import Logo from '@/components/ui/Logo';
 
 import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser } from '@/app/types';
+import Skeleton from '@/components/ui/Skeleton';
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || '';
 
 interface MapsClientProps {
-  listings: SafeListing[];
   currentUser?: SafeUser | null;
 }
 
@@ -39,11 +39,28 @@ function haversine(lat1: number, lng1: number, lat2: number, lng2: number): numb
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
+const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const router = useRouter();
+
+  // Client-side fetch listings
+  const [listings, setListings] = useState<SafeListing[]>([]);
+  const [listingsLoaded, setListingsLoaded] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/listings?limit=200')
+      .then((r) => r.json())
+      .then((data) => {
+        setListings(data.listings || []);
+        setListingsLoaded(true);
+      })
+      .catch(() => {
+        setListings([]);
+        setListingsLoaded(true);
+      });
+  }, []);
 
   const [items, setItems] = useState<GeocodedItem[]>([]);
   const [selected, setSelected] = useState<GeocodedItem | null>(null);
@@ -342,6 +359,51 @@ const MapsClient: React.FC<MapsClientProps> = ({ listings, currentUser }) => {
     setShowUI(false);
   }, [mapReady]);
   const ready = showUI;
+
+  if (!listingsLoaded) {
+    return (
+      <div className="fixed inset-0 bg-stone-950">
+        {/* Sidebar skeleton */}
+        <div className="absolute top-4 left-8 bottom-4 w-[370px] flex flex-col bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 rounded-2xl z-10 shadow-2xl shadow-black/10 overflow-hidden px-8 pb-5 pt-7 gap-4">
+          {/* Back + Logo row */}
+          <div className="flex items-center justify-between">
+            <Skeleton rounded="full" className="h-8 w-8" />
+            <Skeleton rounded="full" className="h-8 w-8" />
+          </div>
+          {/* Search input */}
+          <Skeleton rounded="xl" className="h-10 w-full" />
+          {/* Filters row */}
+          <div className="grid grid-cols-3 gap-2">
+            <Skeleton rounded="xl" className="h-9 w-full" />
+            <Skeleton rounded="xl" className="h-9 w-full" />
+            <Skeleton rounded="xl" className="h-9 w-full" />
+          </div>
+          {/* Divider */}
+          <div className="h-px bg-stone-200 dark:bg-stone-800" />
+          {/* Results list */}
+          <div className="flex-1 overflow-hidden -mx-8 px-8 space-y-0.5">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="w-full flex items-center gap-3 py-3">
+                <Skeleton rounded="full" className="h-11 w-11 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <Skeleton className="h-3.5 w-32 mb-1.5" />
+                  <Skeleton className="h-3 w-20 mb-1" />
+                  <Skeleton className="h-3 w-28" />
+                </div>
+                <Skeleton className="h-3 w-8 shrink-0" />
+              </div>
+            ))}
+          </div>
+          {/* Footer count */}
+          <div className="px-4 py-3 border-t border-stone-200 dark:border-stone-800">
+            <Skeleton className="h-3 w-16" />
+          </div>
+        </div>
+        {/* Map placeholder */}
+        <div className="absolute inset-0 bg-stone-800 dark:bg-stone-900 animate-pulse" />
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-stone-950" style={{ opacity: exiting ? 0 : (ready ? 1 : 0), transition: 'opacity 0.4s ease-out' }}>

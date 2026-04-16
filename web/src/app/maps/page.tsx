@@ -1,5 +1,4 @@
 import MapsClient from './MapsClient';
-import getListings from '@/app/actions/getListings';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import BetaGate from '@/components/BetaGate';
 
@@ -11,14 +10,11 @@ export const metadata = {
 export const dynamic = 'force-dynamic';
 
 async function MapsPage() {
-  const [listings, currentUser] = await Promise.all([
-    getListings({}),
-    getCurrentUser(),
-  ]);
+  const currentUser = await getCurrentUser();
 
   return (
     <BetaGate>
-      <MapsClient listings={listings} currentUser={currentUser} />
+      <MapsClient currentUser={currentUser} />
     </BetaGate>
   );
 }

@@ -32,6 +32,19 @@ async function getOrCreateDefaultCategory(categoryName: string) {
   }
 }
 
+export async function GET(request: Request) {
+  const { default: getProducts } = await import('@/app/actions/getProducts');
+  const { searchParams } = new URL(request.url);
+  const params: Record<string, string> = {};
+  for (const [key, value] of searchParams.entries()) params[key] = value;
+  const products = await getProducts({
+    ...params,
+    limit: params.limit ? Number(params.limit) : 8,
+    featured: params.featured === 'true' ? true : undefined,
+  } as any);
+  return NextResponse.json(products);
+}
+
 export async function POST(request: Request) {
   const ip = getIP(request);
   const rl = productLimiter(ip);

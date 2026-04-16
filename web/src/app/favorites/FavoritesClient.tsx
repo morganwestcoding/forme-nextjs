@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Container from '@/components/Container';
 import ListingCard from '@/components/listings/ListingCard';
 import WorkerCard from '@/components/listings/WorkerCard';
@@ -14,27 +14,45 @@ import { useSidebarState } from '@/app/hooks/useSidebarState';
 type FavoriteTab = 'all' | 'businesses' | 'professionals' | 'shops' | 'posts';
 
 interface FavoritesClientProps {
-  listings: SafeListing[];
-  workers: SafeEmployee[];
-  shops: SafeShop[];
-  posts: SafePost[];
   currentUser?: SafeUser | null;
 }
 
+const sk = 'animate-pulse bg-stone-200/60 dark:bg-stone-800/60';
+
 const FavoritesClient: React.FC<FavoritesClientProps> = ({
-  listings,
-  workers,
-  shops,
-  posts,
   currentUser,
 }) => {
   const [activeTab, setActiveTab] = useState<FavoriteTab>('all');
   const isSidebarCollapsed = useSidebarState();
 
-  const safeListings = listings || [];
-  const safeWorkers = workers || [];
-  const safeShops = shops || [];
-  const safePosts = posts || [];
+  const [listings, setListings] = useState<SafeListing[]>([]);
+  const [workers, setWorkers] = useState<SafeEmployee[]>([]);
+  const [shops, setShops] = useState<SafeShop[]>([]);
+  const [posts, setPosts] = useState<SafePost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/favorites')
+      .then((r) => r.json())
+      .then((data) => {
+        setListings(data.listings || []);
+        setWorkers(data.workers || []);
+        setShops(data.shops || []);
+        setPosts(data.posts || []);
+      })
+      .catch(() => {
+        setListings([]);
+        setWorkers([]);
+        setShops([]);
+        setPosts([]);
+      })
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  const safeListings = listings;
+  const safeWorkers = workers;
+  const safeShops = shops;
+  const safePosts = posts;
 
   const totalCount = safeListings.length + safeWorkers.length + safeShops.length + safePosts.length;
 
@@ -75,6 +93,63 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
 
     return items;
   }, [activeTab, safeListings, safeWorkers, safeShops, safePosts]);
+
+  // Inline skeleton while loading
+  if (isLoading) {
+    return (
+      <Container>
+        <PageHeader currentUser={currentUser} currentPage="Favorites" />
+
+        <div className="mt-8">
+          {/* Page title */}
+          <div className="mb-8">
+            <div className={`${sk} rounded-md h-8 w-32 mb-2`} />
+            <div className={`${sk} rounded-md h-3.5 w-28`} />
+          </div>
+
+          {/* Tab bar — 5 pills */}
+          <div className="flex items-center gap-2 mb-8 overflow-x-hidden pb-1">
+            {[
+              { w: 'w-14' },
+              { w: 'w-28' },
+              { w: 'w-32' },
+              { w: 'w-20' },
+              { w: 'w-20' },
+            ].map((tab, i) => (
+              <div key={i} className={`${sk} rounded-full h-9 ${tab.w} shrink-0`} />
+            ))}
+          </div>
+
+          {/* Non-post grid — horizontal listing card skeletons */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="flex gap-3 p-3">
+                <div className={`${sk} rounded-xl shrink-0`} style={{ width: 120, height: 120 }} />
+                <div className="flex flex-col justify-center gap-2 flex-1 min-w-0">
+                  <div className={`${sk} rounded-md h-4 w-3/4`} />
+                  <div className={`${sk} rounded-md h-3 w-1/2`} />
+                  <div className={`${sk} rounded-md h-3 w-2/3`} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Posts header */}
+          <div className="mt-10 mb-6 flex items-center gap-3">
+            <div className={`${sk} rounded-md h-6 w-16`} />
+            <div className={`${sk} rounded-full h-6 w-8`} />
+          </div>
+
+          {/* Posts mosaic */}
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-0.5 rounded-xl overflow-hidden">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className={`${sk} aspect-square w-full`} />
+            ))}
+          </div>
+        </div>
+      </Container>
+    );
+  }
 
   return (
     <Container>

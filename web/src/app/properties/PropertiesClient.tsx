@@ -2,7 +2,7 @@
 
 import { toast } from "react-hot-toast";
 import axios from "axios";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { categories } from '@/components/Categories';
 import { SafeListing, SafeUser } from "@/app/types";
@@ -11,21 +11,38 @@ import ListingCard from "@/components/listings/ListingCard";
 import Button from "@/components/ui/Button";
 import Container from "@/components/Container";
 import PageHeader from "@/components/PageHeader";
+import Skeleton, { PageHeaderSkeleton, ContainerSkeleton, ListingCardSkeleton } from "@/components/ui/Skeleton";
 import { PencilEdit01Icon, Delete02Icon } from 'hugeicons-react';
 
 interface PropertiesClientProps {
-  listings: SafeListing[],
   currentUser?: SafeUser | null,
 }
 
 export const dynamic = 'force-dynamic';
 
 const PropertiesClient: React.FC<PropertiesClientProps> = ({
-  listings,
   currentUser
 }) => {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState('');
+
+  // Client-side fetch listings
+  const [listings, setListings] = useState<SafeListing[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    fetch(`/api/listings?userId=${currentUser.id}&limit=100`)
+      .then((r) => r.json())
+      .then((data) => {
+        setListings(data.listings || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setListings([]);
+        setIsLoading(false);
+      });
+  }, [currentUser]);
 
   const onEdit = useCallback((listing: SafeListing) => {
     router.push(`/listing/${listing.id}/edit`);
@@ -46,6 +63,25 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
       setDeletingId('');
     })
   }, [router]);
+
+  if (isLoading) {
+    return (
+      <ContainerSkeleton>
+        <PageHeaderSkeleton />
+        <div className="mt-8">
+          <div className="mb-8">
+            <Skeleton className="h-8 w-36 mb-2" />
+            <Skeleton className="h-3.5 w-20" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <ListingCardSkeleton key={i} />
+            ))}
+          </div>
+        </div>
+      </ContainerSkeleton>
+    );
+  }
 
   return (
     <Container>

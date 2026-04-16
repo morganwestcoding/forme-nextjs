@@ -185,6 +185,9 @@ const ConversationCard: React.FC<{
 
 const InboxModal = () => {
   const [conversations, setConversations] = useState<SafeConversation[]>(conversationsCache || []);
+  // Only show the loader on the very first fetch (no cache). After that we render
+  // the cached list immediately and refresh silently in the background.
+  const [conversationsLoading, setConversationsLoading] = useState<boolean>(conversationsCache === null);
   const messageModal = useMessageModal();
   const inboxModal = useInboxModal();
   const currentUser = inboxModal.currentUser;
@@ -218,6 +221,8 @@ const InboxModal = () => {
       setUnreadMessages(unread);
     } catch (error) {
       toast.error('Failed to load conversations');
+    } finally {
+      setConversationsLoading(false);
     }
   };
 
@@ -387,7 +392,43 @@ const InboxModal = () => {
     .custom-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.1) transparent; }
   `;
 
-  const bodyContent = (
+  const bodyContent = conversationsLoading ? (
+    <div className="flex flex-col h-[580px] pb-2 pt-6 md:pt-8 px-4">
+      <style>{styles}</style>
+      <div className="mx-auto w-full max-w-[520px] flex flex-col flex-1 min-h-0">
+        {/* Header skeleton */}
+        <div className="text-center mb-6">
+          <div className="h-9 w-40 mx-auto rounded-md animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+          <div className="h-3 w-56 mx-auto mt-3 rounded-md animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+        </div>
+        {/* Search skeleton */}
+        <div className="mb-6">
+          <div className="h-11 w-full rounded-2xl animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+        </div>
+        {/* Conversation row skeletons */}
+        <div className="flex-1 overflow-hidden -mx-2 px-2">
+          <div className="space-y-2 py-1">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-3 p-3">
+                <div className="h-12 w-12 rounded-full shrink-0 animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-3 mb-1.5">
+                    <div className="h-4 w-28 rounded-md animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+                    <div className="h-3 w-8 rounded-md animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+                  </div>
+                  <div className="h-3 w-40 rounded-md animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Footer link skeleton */}
+        <div className="pt-4 mt-auto">
+          <div className="h-10 w-full rounded-xl animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+        </div>
+      </div>
+    </div>
+  ) : (
     <div className="flex flex-col h-[580px] pb-2 pt-6 md:pt-8 px-4">
       <style>{styles}</style>
 

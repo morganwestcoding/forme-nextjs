@@ -413,10 +413,10 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
       }
 
       toast.error(signInRes?.error || 'Login after registration failed.');
+      setIsLoading(false);
       router.push('/');
     } catch (error: any) {
       safeToastError(error);
-    } finally {
       setIsLoading(false);
     }
   };

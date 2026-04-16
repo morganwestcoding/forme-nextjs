@@ -103,19 +103,19 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
     return (
       <div
         onClick={() => router.push(`/listings/${data.id}`)}
-        className="group cursor-pointer rounded-xl overflow-visible relative transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+        className="group cursor-pointer rounded-2xl overflow-visible relative transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
       >
-        {/* White background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white to-stone-50/80 rounded-xl" />
+        {/* Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white to-stone-50/80 dark:from-stone-900 dark:to-stone-950 rounded-2xl" />
         {/* Border overlay — renders on top of watermark */}
-        <div className="absolute inset-0 z-30 rounded-xl border border-stone-200/80 group-hover:border-stone-300 dark:border-stone-700 transition-colors pointer-events-none" />
+        <div className="absolute inset-0 z-30 rounded-2xl border border-stone-200/80 dark:border-stone-800 group-hover:border-stone-300 dark:group-hover:border-stone-700 transition-colors pointer-events-none" />
 
         <div className="relative z-10">
           <div className={compact ? 'relative h-[180px]' : 'relative h-[280px]'}>
             {/* Bold editorial layout */}
-            <div className="absolute inset-0 flex flex-col z-20 overflow-hidden rounded-xl">
+            <div className="absolute inset-0 flex flex-col z-20 overflow-hidden rounded-2xl">
               {/* Large rating watermark in background */}
-              <div className="absolute -right-2 -top-4 text-[80px] font-black text-stone-100/80 leading-none select-none pointer-events-none">
+              <div className="absolute -right-2 -top-4 text-[80px] font-black text-stone-100/80 dark:text-stone-800/60 leading-none select-none pointer-events-none">
                 {Number(data.rating ?? 5.0).toFixed(1)}
               </div>
 
@@ -157,19 +157,25 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
 
               {/* Content */}
               <div className="relative flex flex-col h-full p-5">
-                {/* Category */}
-                {data.category && (
-                  <span className="text-[11px] text-stone-400 dark:text-stone-500 font-medium mb-1.5">
-                    {data.category}
-                  </span>
-                )}
+                {/* Listing image */}
+                <div className="mb-3">
+                  <div className="w-12 h-12 rounded-xl overflow-hidden relative bg-stone-100 dark:bg-stone-800">
+                    <Image
+                      src={cardImage}
+                      alt={data.title}
+                      fill
+                      className="object-cover"
+                      sizes="48px"
+                    />
+                  </div>
+                </div>
 
-                {/* Title - large and bold */}
+                {/* Title */}
                 <h3 className="text-[17px] font-black text-stone-900 dark:text-stone-100 leading-[1.15] line-clamp-2 tracking-tight pr-8">
                   {data.title}
                 </h3>
 
-                {/* Location - understated */}
+                {/* Location */}
                 <p className="mt-1.5 text-[11px] text-stone-400 dark:text-stone-500 font-medium">
                   {city && state ? `${city}, ${state}` : city || state || 'Location'}
                 </p>
@@ -187,7 +193,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
                     height="20"
                     viewBox="0 0 24 24"
                     fill="none"
-                    className="text-stone-300 group-hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 group-hover:translate-x-0.5 transition-all duration-300 mb-1"
+                    className="text-stone-300 dark:text-stone-700 group-hover:text-stone-900 dark:group-hover:text-stone-100 group-hover:translate-x-0.5 transition-all duration-300 mb-1"
                   >
                     <path d="M7 17L17 7M17 7H8M17 7V16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>

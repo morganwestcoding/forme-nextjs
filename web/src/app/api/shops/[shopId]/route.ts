@@ -4,6 +4,20 @@ import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { apiError, apiErrorCode } from "@/app/utils/api";
 
+export async function GET(
+  _request: Request,
+  { params }: { params: { shopId: string } }
+) {
+  try {
+    const getShopById = (await import("@/app/actions/getShopById")).default;
+    const shop = await getShopById({ shopId: params.shopId });
+    if (!shop) return apiError("Shop not found", 404);
+    return NextResponse.json(shop);
+  } catch (error) {
+    return apiErrorCode('INTERNAL_ERROR');
+  }
+}
+
 export async function PUT(
   request: Request,
   { params }: { params: { shopId: string } }

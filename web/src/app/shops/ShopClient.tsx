@@ -68,13 +68,34 @@ const BANNERS = [
 
 
 const ShopClient: React.FC<ShopClientProps> = ({
-  initialShops = [],
-  featuredProducts = [],
+  initialShops: serverShops = [],
+  featuredProducts: serverProducts = [],
   currentUser,
 }) => {
   const params = useSearchParams();
   const router = useRouter();
   const isSidebarCollapsed = useSidebarState();
+
+  // Client-side fetch when no server data
+  const [fetchedShops, setFetchedShops] = useState<SafeShop[] | null>(serverShops.length ? serverShops : null);
+  const [fetchedProducts, setFetchedProducts] = useState<SafeProduct[] | null>(serverProducts.length ? serverProducts : null);
+  const isLoadingData = fetchedShops === null;
+
+  useEffect(() => {
+    if (serverShops.length > 0) return;
+    Promise.all([
+      fetch('/api/shops?limit=6&sort=newest').then(r => r.json()),
+      fetch('/api/products?limit=8&sort=newest').then(r => r.json()),
+    ])
+      .then(([shops, products]) => {
+        setFetchedShops(shops || []);
+        setFetchedProducts(products || []);
+      })
+      .catch(() => { setFetchedShops([]); setFetchedProducts([]); });
+  }, [serverShops]);
+
+  const initialShops = fetchedShops || [];
+  const featuredProducts = fetchedProducts || [];
   const selectedLocation = useLocationModal((s) => s.selectedLocation);
 
   // Dynamic items per page: 12 when sidebar collapsed, 10 when expanded
@@ -274,6 +295,67 @@ const ShopClient: React.FC<ShopClientProps> = ({
     <>
       <PageHeader currentUser={currentUser} />
 
+      {/* Inline skeleton while fetching */}
+      {isLoadingData && (
+        <div>
+          <div className="mt-8">
+            <div className="rounded-2xl animate-pulse bg-stone-200/60 dark:bg-stone-800/60 w-full aspect-[4/1]" />
+            <div className="flex gap-1.5 mt-3 justify-center">
+              <div className="h-1.5 w-4 rounded-full animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+              <div className="h-1.5 w-1.5 rounded-full animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+              <div className="h-1.5 w-1.5 rounded-full animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+            </div>
+          </div>
+          <div className="mt-8 mb-5">
+            <div className="h-7 w-52 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60 mb-5" />
+            <div className="flex gap-6 overflow-x-hidden pb-2 pl-4 pr-4 -ml-4">
+              {Array.from({ length: 9 }).map((_, i) => (
+                <div key={i} className="flex flex-col items-center gap-2 shrink-0">
+                  <div className="w-[100px] h-[100px] rounded-full animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                  <div className="h-3 w-14 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-8">
+            <div className="h-7 w-40 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60 mb-5" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i}>
+                  <div className="flex flex-row gap-3">
+                    <div className="w-[120px] h-[120px] rounded-xl shrink-0 animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                    <div className="flex flex-col justify-center min-w-0">
+                      <div className="h-4 w-36 mb-2 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                      <div className="h-3 w-24 mb-2 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                      <div className="h-3 w-16 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-2.5">
+                    {Array.from({ length: 4 }).map((_, j) => (
+                      <div key={j} className="w-9 h-9 rounded-xl shrink-0 animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-8 pb-8">
+            <div className="h-7 w-48 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60 mb-5" />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-0.5 overflow-hidden rounded-xl">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <div key={i}>
+                  <div className="w-full aspect-[5/6] animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                  <div className="h-3 w-16 mt-2 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                  <div className="h-4 w-3/4 mt-1.5 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Real content — hidden while loading */}
+      {!isLoadingData && <>
       {/* Editorial Banner */}
       <div className="mt-8">
         <div
@@ -577,6 +659,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
           )}
         </div>
       </div>
+      </>}
     </>
   );
 };

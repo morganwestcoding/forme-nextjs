@@ -1,11 +1,12 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeUser } from '@/app/types';
 import { AnalyticsData } from '@/app/actions/getAnalyticsData';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 import Container from '@/components/Container';
 import PageHeader from '@/components/PageHeader';
+import Skeleton, { PageHeaderSkeleton, ContainerSkeleton } from '@/components/ui/Skeleton';
 import { useTheme } from '@/app/context/ThemeContext';
 
 const CHART_THEME = (isDark: boolean) => ({
@@ -17,17 +18,119 @@ import { AnalyticsUpIcon as TrendingUp, AnalyticsDownIcon as TrendingDown, UserM
 
 interface AnalyticsClientProps {
   currentUser: SafeUser;
-  analyticsData: AnalyticsData;
 }
 
 const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
   currentUser,
-  analyticsData
 }) => {
   type TabType = 'overview' | 'listings' | 'revenue' | 'engagement' | 'reviews';
   const [activeTab, setActiveTab] = useState('overview' as TabType);
   const { isDarkMode } = useTheme();
   const chartTheme = CHART_THEME(isDarkMode);
+
+  // Client-side fetch analytics data
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/analytics')
+      .then((r) => r.json())
+      .then((data) => {
+        setAnalyticsData(data);
+        setAnalyticsLoading(false);
+      })
+      .catch(() => {
+        setAnalyticsLoading(false);
+      });
+  }, []);
+
+  if (analyticsLoading || !analyticsData) {
+    return (
+      <ContainerSkeleton>
+        <PageHeaderSkeleton />
+        <div className="mt-8">
+          <div className="mb-8">
+            <Skeleton className="h-8 w-32 mb-2" />
+            <Skeleton className="h-3.5 w-48" />
+          </div>
+          <div className="flex items-center gap-2 mb-8 overflow-x-hidden pb-1">
+            {['w-24', 'w-20', 'w-24', 'w-28', 'w-24'].map((w, i) => (
+              <Skeleton key={i} rounded="full" className={`h-9 ${w} shrink-0`} />
+            ))}
+          </div>
+        </div>
+        <div className="pb-12 space-y-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 dark:border-stone-800">
+                <Skeleton className="h-3 w-28 mb-3" />
+                <Skeleton className="h-8 w-24 mb-2" />
+                <Skeleton className="h-3 w-16" />
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 dark:border-stone-800">
+              <Skeleton className="h-3 w-44 mb-8" />
+              <Skeleton rounded="lg" className="h-[300px] w-full" />
+            </div>
+            <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 dark:border-stone-800">
+              <Skeleton className="h-3 w-32 mb-8" />
+              <div className="space-y-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-center justify-between py-3 border-b border-stone-100 dark:border-stone-800 last:border-0">
+                    <div>
+                      <Skeleton className="h-4 w-32 mb-1.5" />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                    <div className="text-right">
+                      <Skeleton className="h-4 w-10 mb-1.5 ml-auto" />
+                      <Skeleton className="h-3 w-16 ml-auto" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 dark:border-stone-800">
+              <Skeleton className="h-3 w-48 mb-8" />
+              <div className="space-y-1">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-4 py-3 border-b border-stone-100 dark:border-stone-800 last:border-0">
+                    <div className="flex-1">
+                      <Skeleton className="h-4 w-36 mb-1.5" />
+                      <Skeleton className="h-3 w-44" />
+                    </div>
+                    <div className="text-right">
+                      <Skeleton className="h-4 w-14 mb-1.5 ml-auto" />
+                      <Skeleton className="h-3 w-16 ml-auto" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 dark:border-stone-800">
+              <Skeleton className="h-3 w-32 mb-8" />
+              <div className="space-y-1">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="py-3 border-b border-stone-100 dark:border-stone-800 last:border-0">
+                    <Skeleton className="h-3 w-full mb-1.5" />
+                    <Skeleton className="h-3 w-3/4 mb-3" />
+                    <div className="flex items-center gap-4">
+                      <Skeleton className="h-3 w-10" />
+                      <Skeleton className="h-3 w-10" />
+                      <Skeleton className="h-3 w-16" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </ContainerSkeleton>
+    );
+  }
 
   const { overview, recentActivity, monthlyData, topServices, listings, reviews } = analyticsData;
 

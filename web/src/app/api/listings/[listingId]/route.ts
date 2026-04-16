@@ -32,6 +32,17 @@ interface EmployeeInput {
   serviceIds?: string[];
 }
 
+export async function GET(_request: Request, { params }: { params: IParams }) {
+  const { listingId } = params;
+  if (!listingId) return apiError('Listing ID required', 400);
+
+  const { default: getListingById } = await import('@/app/actions/getListingById');
+  const listing = await getListingById({ listingId });
+  if (!listing) return apiError('Listing not found', 404);
+
+  return NextResponse.json(listing);
+}
+
 export async function PUT(request: Request, { params }: { params: IParams }) {
   const currentUser = await getCurrentUser();
   if (!currentUser) return apiErrorCode('UNAUTHORIZED');

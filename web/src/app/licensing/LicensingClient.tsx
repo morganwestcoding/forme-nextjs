@@ -1,11 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { SafeUser } from "@/app/types";
 import Container from "@/components/Container";
 import PageHeader from "@/components/PageHeader";
 import Button from "@/components/ui/Button";
+import Skeleton, { PageHeaderSkeleton, ContainerSkeleton } from "@/components/ui/Skeleton";
 import { useAcademies } from "@/app/hooks/useAcademies";
 import { Clock01Icon, CheckmarkCircle02Icon, ArrowRight01Icon, Link01Icon, StarIcon, ShieldUserIcon, Certificate01Icon, PlusSignIcon as Plus } from 'hugeicons-react';
 
@@ -20,6 +21,11 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedAcademy, setSelectedAcademy] = useState<string>('');
   const { academies: partnerAcademies, isLoading: academiesLoading, error: academiesError } = useAcademies();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const verificationStatus = currentUser?.verificationStatus || 'none';
   const [searchParams] = useState(() => {
@@ -43,6 +49,76 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
     else if (currentUser?.id) router.push(`/profile/${currentUser.id}`);
     else router.push('/');
   };
+
+  if (!mounted) {
+    return (
+      <ContainerSkeleton>
+        <PageHeaderSkeleton />
+        <div className="mt-8">
+          <div className="mb-8">
+            <div className="flex items-start justify-between">
+              <div>
+                <Skeleton className="h-8 w-64 mb-2" />
+                <Skeleton className="h-3.5 w-56" />
+              </div>
+              <Skeleton rounded="full" className="h-7 w-20" />
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mb-8">
+            <Skeleton rounded="full" className="h-9 w-36" />
+            <Skeleton rounded="full" className="h-9 w-32" />
+          </div>
+          <div>
+            <div className="rounded-2xl border border-stone-200/60 dark:border-stone-800 bg-white dark:bg-stone-900 overflow-hidden mb-6">
+              <div className="flex flex-col md:flex-row">
+                <div className="md:w-[240px] flex-shrink-0 border-b md:border-b-0 md:border-r border-stone-100 dark:border-stone-800">
+                  <div className="h-[200px] p-5">
+                    <Skeleton rounded="xl" className="w-full h-full" />
+                  </div>
+                </div>
+                <div className="flex-1 p-6 flex flex-col justify-between">
+                  <div>
+                    <Skeleton className="h-4 w-48 mb-2" />
+                    <Skeleton className="h-3 w-full mb-1.5" />
+                    <Skeleton className="h-3 w-full mb-1.5" />
+                    <Skeleton className="h-3 w-3/4 mb-5" />
+                    <div className="flex flex-wrap gap-1.5 mb-5">
+                      {['w-24', 'w-28', 'w-20', 'w-24'].map((w, i) => (
+                        <Skeleton key={i} rounded="full" className={`h-6 ${w}`} />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Skeleton rounded="full" className="h-11 w-48" />
+                    <Skeleton className="h-4 w-12" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-2xl border border-stone-200/60 dark:border-stone-800 bg-white dark:bg-stone-900 p-6 mb-6">
+              <Skeleton className="h-3 w-24 mb-4" />
+              <div className="flex items-start">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="flex-1 flex items-start gap-3">
+                    {i > 0 && <div className="w-px h-10 bg-stone-100 dark:bg-stone-800 flex-shrink-0 -ml-px mr-3" />}
+                    <div>
+                      <Skeleton className="h-5 w-8 mb-2" />
+                      <Skeleton className="h-4 w-16 mb-1" />
+                      <Skeleton className="h-3 w-40" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Skeleton className="h-3 w-3" />
+              <Skeleton className="h-3 w-64" />
+            </div>
+          </div>
+        </div>
+      </ContainerSkeleton>
+    );
+  }
 
   return (
     <Container>

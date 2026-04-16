@@ -49,7 +49,7 @@ export async function GET(request: Request) {
         orderBy: { createdAt: 'desc' },
         include: {
           services: true,
-          employees: { include: { user: { select: { id: true, name: true, image: true } } } },
+          employees: { include: { user: { select: { id: true, name: true, image: true, userType: true, academy: { select: { name: true } } } } } },
           storeHours: true,
           user: { select: { id: true, name: true, image: true, verificationStatus: true } },
         },
@@ -57,8 +57,20 @@ export async function GET(request: Request) {
       prisma.listing.count({ where }),
     ]);
 
+    // Map employee.user.academy.name → employee.user.academyName so WorkerCard can read it
+    const mapped = listings.map((l: any) => ({
+      ...l,
+      employees: (l.employees || []).map((e: any) => ({
+        ...e,
+        user: {
+          ...e.user,
+          academyName: e.user?.academy?.name ?? null,
+        },
+      })),
+    }));
+
     return NextResponse.json({
-      listings,
+      listings: mapped,
       totalCount,
       hasMore: skip + listings.length < totalCount,
     });

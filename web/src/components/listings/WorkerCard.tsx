@@ -186,7 +186,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                     {isStudent && (
                       <div
                         title={studentAcademyName ? `Student at ${studentAcademyName}` : 'Student'}
-                        className="absolute -bottom-1 -right-1 w-[22px] h-[22px] rounded-full bg-gradient-to-br from-stone-600 to-stone-900 ring-[1.5px] ring-white flex items-center justify-center shadow-[0_1px_3px_rgba(49,46,129,0.35)]"
+                        className="absolute -bottom-1 -right-1 w-[22px] h-[22px] rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 ring-[1.5px] ring-white flex items-center justify-center shadow-[0_1px_3px_rgba(49,46,129,0.35)]"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
@@ -268,7 +268,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
           {isStudent && (
             <div
               title={studentAcademyName ? `Student at ${studentAcademyName}` : 'Student'}
-              className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-gradient-to-br from-stone-600 to-stone-900 ring-[1.5px] ring-white flex items-center justify-center shadow-[0_2px_8px_rgba(49,46,129,0.4)]"
+              className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 ring-[1.5px] ring-white flex items-center justify-center shadow-[0_2px_8px_rgba(49,46,129,0.4)]"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>

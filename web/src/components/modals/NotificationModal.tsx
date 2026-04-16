@@ -313,7 +313,15 @@ const NotificationsModal = () => {
     .custom-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.06) transparent; }
   `;
 
-  const bodyContent = (
+  const bodyContent = loading ? (
+    <div className="h-[600px] flex items-center justify-center">
+      <div className="flex items-center gap-1.5">
+        <div className="w-1.5 h-1.5 rounded-full bg-black dark:bg-white animate-[bounce_1s_ease-in-out_infinite]" />
+        <div className="w-1.5 h-1.5 rounded-full bg-black dark:bg-white animate-[bounce_1s_ease-in-out_0.15s_infinite]" />
+        <div className="w-1.5 h-1.5 rounded-full bg-black dark:bg-white animate-[bounce_1s_ease-in-out_0.3s_infinite]" />
+      </div>
+    </div>
+  ) : (
     <div className="flex flex-col h-[600px] py-6">
       <style>{styles}</style>
 
@@ -346,11 +354,7 @@ const NotificationsModal = () => {
 
         {/* Notifications List */}
         <div className="flex-1 overflow-y-auto custom-scrollbar -mx-6 px-6">
-          {loading ? (
-            <div className="flex items-center justify-center h-48">
-              <BouncingDots />
-            </div>
-          ) : notifications.length === 0 ? (
+          {notifications.length === 0 ? (
             <div className="text-center pt-20">
               <div className="w-12 h-12 bg-stone-50 dark:bg-stone-900 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Notification03Icon className="w-5 h-5 text-stone-400 dark:text-stone-500" strokeWidth={1.5} />

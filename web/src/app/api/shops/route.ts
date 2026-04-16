@@ -179,7 +179,10 @@ export async function GET(request: Request) {
 
     const shops = await prisma.shop.findMany({
       where,
-      include: { user: { select: { id: true, name: true, image: true } } },
+      include: {
+        user: { select: { id: true, name: true, image: true } },
+        products: { take: 4, select: { id: true, name: true, mainImage: true } },
+      },
       take: limit ? parseInt(limit) : undefined,
       orderBy: { createdAt: 'desc' }
     });
@@ -188,6 +191,7 @@ export async function GET(request: Request) {
       ...s,
       createdAt: s.createdAt.toISOString(),
       updatedAt: s.updatedAt.toISOString(),
+      products: (s.products || []).map((p: any) => ({ ...p, image: p.mainImage })),
     }));
 
     return NextResponse.json(safe);

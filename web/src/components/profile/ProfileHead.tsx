@@ -18,6 +18,7 @@ import useReviewModal from '@/app/hooks/useReviewModal';
 import useMessageModal from '@/app/hooks/useMessageModal';
 import ReviewCard from '@/components/reviews/ReviewCard';
 import VerificationBadge from '@/components/VerificationBadge';
+import { useTheme } from '@/app/context/ThemeContext';
 
 interface ProfileHeadProps {
   user: SafeUser;
@@ -72,6 +73,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
   // Extract dominant color from profile image
   const profileImage = image || imageSrc || placeholderDataUri(name || 'User');
   const [dominantColor, setDominantColor] = useState<string | null>(null);
+  const { isDarkMode } = useTheme();
   useEffect(() => {
     if (profileImage.startsWith('data:')) return;
     const img = new window.Image();
@@ -281,16 +283,18 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
       {dropdownMenu}
 
       {/* ========== TWO-COLUMN LAYOUT ========== */}
-      <div className="flex gap-6 -mx-6 md:-mx-24 px-6 md:px-24 -mt-2 md:-mt-8 md:h-[calc(100vh-2rem)] md:overflow-hidden">
+      <div className="flex gap-6 -mx-6 md:-mx-24 px-6 md:px-24 -mt-2 md:-mt-8">
 
         {/* ===== LEFT COLUMN - Profile Card ===== */}
-        <div ref={leftColumnRef} className="w-[320px] flex-shrink-0 hidden md:flex flex-col gap-4 py-10">
+        <div ref={leftColumnRef} className="w-[320px] flex-shrink-0 hidden md:flex flex-col gap-4 py-10 md:sticky md:top-4 md:self-start md:max-h-[calc(100vh-2rem)] md:overflow-y-auto scrollbar-hide">
           <div
-            className="rounded-2xl overflow-hidden border border-stone-200/40 shadow-sm transition-colors duration-700"
+            className="rounded-2xl overflow-hidden border border-stone-200/40 dark:border-stone-800 shadow-sm transition-colors duration-700"
             style={{
               background: dominantColor
-                ? `linear-gradient(180deg, rgba(${dominantColor}, 0.06) 0%, rgba(${dominantColor}, 0.02) 40%, white 100%)`
-                : 'white',
+                ? isDarkMode
+                  ? `linear-gradient(180deg, rgba(${dominantColor}, 0.10) 0%, rgba(${dominantColor}, 0.04) 40%, #1c1917 100%)`
+                  : `linear-gradient(180deg, rgba(${dominantColor}, 0.06) 0%, rgba(${dominantColor}, 0.02) 40%, white 100%)`
+                : isDarkMode ? '#1c1917' : 'white',
             }}
           >
             {/* Centered Avatar & Identity */}
@@ -326,7 +330,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 {isStudent && (
                   <div
                     title={studentAcademyName ? `Student at ${studentAcademyName}` : 'Student'}
-                    className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-gradient-to-br from-stone-600 to-stone-900 ring-[1.5px] ring-white flex items-center justify-center shadow-[0_2px_8px_rgba(49,46,129,0.4)]"
+                    className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 ring-[1.5px] ring-white flex items-center justify-center shadow-[0_2px_8px_rgba(49,46,129,0.4)]"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
@@ -485,7 +489,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         </div>
 
         {/* ===== RIGHT COLUMN - Content ===== */}
-        <div ref={rightColumnRef} className="flex-1 min-w-0 md:overflow-y-auto md:py-14 scrollbar-hide md:px-2 md:-mx-2">
+        <div ref={rightColumnRef} className="flex-1 min-w-0 md:py-14 md:px-2 md:-mx-2">
           {/* Mobile Profile Header (hidden on desktop) */}
           <div className="md:hidden mb-6">
             <div className="flex items-center gap-4">
@@ -529,11 +533,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 <button className="text-xs font-medium text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
               </div>
               {posts.length > 0 ? (
-                <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-0.5 overflow-hidden rounded-xl">
-                  {posts.slice(0, 16).map((post, idx) => {
+                <div className="grid grid-cols-6 gap-0.5 overflow-hidden rounded-xl">
+                  {posts.slice(0, 12).map((post, idx) => {
                     // Calculate which corners to round (outside corners only)
-                    const cols = 8; // max columns at lg
-                    const total = Math.min(posts.length, 16);
+                    const cols = 6;
+                    const total = Math.min(posts.length, 12);
                     const isFirstRow = idx < cols;
                     const isLastRow = idx >= total - (total % cols || cols);
                     const isFirstCol = idx % cols === 0;
@@ -584,7 +588,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 </div>
               </div>
               {services.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 -mx-1 px-1 py-1 mb-10">
+                <div className="grid grid-cols-4 gap-4 -mx-1 px-1 py-1 mb-10">
                   {services.map((svc, idx) => {
                     const stubListing = {
                       id: svc.listingId,
@@ -644,7 +648,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   <button className="text-xs font-medium text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
                 </div>
                 {visibleListings.length > 0 ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 -mx-1 px-1 py-1">
+                  <div className="grid grid-cols-4 gap-4 -mx-1 px-1 py-1">
                     {visibleListings.slice(0, 8).map((listing, idx) => (
                       <div
                         key={listing.id}
@@ -682,7 +686,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 <button className="text-xs font-medium text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
               </div>
               {galleryImages.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 -mx-1 px-1 py-1">
+                <div className="grid grid-cols-4 gap-4 -mx-1 px-1 py-1">
                   {galleryImages.map((img, idx) => (
                     <div
                       key={idx}
@@ -718,7 +722,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 <button className="text-xs font-medium text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
               </div>
               {reviews.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-4 gap-4">
                   {reviews.slice(0, 6).map((review, idx) => (
                     <div
                       key={review.id}

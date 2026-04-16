@@ -25,54 +25,142 @@ import { placeholderDataUri } from '@/lib/placeholders';
 import { Navigation03Icon, Call02Icon, CalendarAdd02Icon, Tick02Icon, Cancel01Icon, UserAccountIcon, InboxIcon as Inbox, ArrowUpRight01Icon as ArrowUpRight, Clock01Icon as Clock, Location01Icon as MapPin, UserIcon, Cancel01Icon as X, Search01Icon as Search, Navigation03Icon as Navigation, Call02Icon as Phone, CalendarAdd02Icon as CalendarPlus, Share08Icon as Share2, StarIcon as Star, RefreshIcon as RotateCw, ArrowRight01Icon as ChevronRight, SparklesIcon as Sparkles, Tick02Icon as Check, RotateLeft03Icon as Undo2, ArrowLeftRightIcon as ArrowLeftRight } from 'hugeicons-react';
 
 interface ReservationsClientProps {
-  incomingReservations: SafeReservation[];
-  outgoingReservations: SafeReservation[];
   currentUser?: SafeUser | null;
 }
 
 type DirectionTab = 'outgoing' | 'incoming';
 type TimeTab = 'upcoming' | 'past';
 
+const TripRowSkeleton: React.FC = () => (
+  <div className="relative rounded-3xl bg-white dark:bg-stone-900 border border-stone-200/70 dark:border-stone-800 overflow-hidden">
+    <div className="relative flex items-stretch">
+      {/* Date block */}
+      <div className="relative flex-shrink-0 w-[96px] flex flex-col items-center justify-center py-6 bg-gradient-to-b from-stone-50/80 to-white dark:from-stone-900 dark:to-stone-900 gap-1.5">
+        <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-3 w-8" />
+        <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-9 w-8" />
+        <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-3 w-8" />
+      </div>
+      {/* Hairline */}
+      <div className="w-px bg-gradient-to-b from-transparent via-stone-200/80 dark:via-stone-800 to-transparent" />
+      {/* Main content */}
+      <div className="flex-1 min-w-0 px-5 py-5 flex flex-col justify-center gap-3">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 flex-1">
+            <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-3 w-20 mb-2" />
+            <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-5 w-48 mb-1.5" />
+            <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-3 w-36" />
+          </div>
+          <div className="shrink-0 text-right">
+            <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-7 w-16 mb-1.5 ml-auto" />
+            <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-3 w-12 ml-auto" />
+          </div>
+        </div>
+        {/* Avatar + meta bottom row */}
+        <div className="flex items-center gap-3 pt-2 border-t border-stone-100 dark:border-stone-800">
+          <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-full h-8 w-8 shrink-0" />
+          <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-3 w-32" />
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const ReservationsSkeleton: React.FC = () => (
+  <div className="mt-8 pb-20">
+    {/* Title + subtitle */}
+    <div className="mb-8">
+      <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-8 w-32 mb-2" />
+      <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-3.5 w-48" />
+    </div>
+
+    {/* Tabs + search */}
+    <div className="flex items-center gap-2 mb-8 overflow-x-hidden pb-1">
+      {[{ w: 'w-32' }, { w: 'w-20' }, { w: 'w-28' }].map((tab, i) => (
+        <div key={i} className={`animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-full h-9 ${tab.w} shrink-0`} />
+      ))}
+      <div className="relative ml-auto w-full sm:w-72">
+        <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-xl h-10 w-full" />
+      </div>
+    </div>
+
+    {/* Timeline groups */}
+    <div className="space-y-12">
+      {[
+        { label: 'w-32', sub: 'w-40', rows: 3 },
+        { label: 'w-28', sub: 'w-32', rows: 2 },
+      ].map((group, gi) => (
+        <section key={gi}>
+          <div className="flex items-baseline gap-3 mb-5">
+            <div className={`animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-5 ${group.label}`} />
+            <div className={`animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-3 ${group.sub}`} />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+            {Array.from({ length: group.rows }).map((_, i) => (
+              <TripRowSkeleton key={i} />
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </div>
+);
+
 const ReservationsClient: React.FC<ReservationsClientProps> = ({
-  incomingReservations,
-  outgoingReservations,
   currentUser,
 }) => {
   const router = useRouter();
+  const [incomingReservations, setIncomingReservations] = useState<SafeReservation[]>([]);
+  const [outgoingReservations, setOutgoingReservations] = useState<SafeReservation[]>([]);
+  const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState('');
   const [directionTab, setDirectionTab] = useState<DirectionTab>('outgoing');
   const [timeTab, setTimeTab] = useState<TimeTab>('upcoming');
   const [query, setQuery] = useState('');
+
+  const fetchReservations = useCallback(() => {
+    setLoading(true);
+    axios.get('/api/reservations')
+      .then(res => {
+        setOutgoingReservations(res.data.outgoing || []);
+        setIncomingReservations(res.data.incoming || []);
+      })
+      .catch(() => toast.error('Failed to load reservations'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    fetchReservations();
+  }, [fetchReservations]);
 
   const onAccept = useCallback(async (id: string) => {
     setProcessingId(id);
     try {
       await axios.patch(`/api/reservations/${id}`, { action: 'accept' });
       toast.success('Reservation accepted');
-      router.refresh();
+      fetchReservations();
     } catch { toast.error('Something went wrong.'); }
     finally { setProcessingId(''); }
-  }, [router]);
+  }, [fetchReservations]);
 
   const onDecline = useCallback(async (id: string) => {
     setProcessingId(id);
     try {
       await axios.delete(`/api/reservations/${id}`);
       toast.success('Reservation declined');
-      router.refresh();
+      fetchReservations();
     } catch { toast.error('Something went wrong.'); }
     finally { setProcessingId(''); }
-  }, [router]);
+  }, [fetchReservations]);
 
   const onCancel = useCallback(async (id: string) => {
     setProcessingId(id);
     try {
       await axios.delete(`/api/reservations/${id}`);
       toast.success('Booking cancelled');
-      router.refresh();
+      fetchReservations();
     } catch { toast.error('Something went wrong.'); }
     finally { setProcessingId(''); }
-  }, [router]);
+  }, [fetchReservations]);
 
   const onRefund = useCallback(async (id: string) => {
     if (!confirm('Request a refund for this booking?')) return;
@@ -83,11 +171,11 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
       });
       if (res.data.status === 'completed') toast.success('Refund processed');
       else toast.success('Refund request submitted');
-      router.refresh();
+      fetchReservations();
     } catch (error: any) {
       toast.error(error?.response?.data?.error || 'Failed to process refund');
     } finally { setProcessingId(''); }
-  }, [router]);
+  }, [fetchReservations]);
 
   const baseList = directionTab === 'outgoing' ? outgoingReservations : incomingReservations;
   const now = new Date();
@@ -170,6 +258,15 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
     ).length;
     return { next7, monthValue, pending };
   }, [baseList, upcomingAll, now]);
+
+  if (loading) {
+    return (
+      <Container>
+        <PageHeader currentUser={currentUser} />
+        <ReservationsSkeleton />
+      </Container>
+    );
+  }
 
   return (
     <Container>

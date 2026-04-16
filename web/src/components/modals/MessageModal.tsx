@@ -265,7 +265,37 @@ const MessageModal: React.FC = () => {
 
   const avatarColor = getAvatarColor(otherUser?.name);
 
-  const bodyContent = (
+  const bodyContent = isLoading ? (
+    <div className="flex flex-col h-[500px] relative">
+      {/* Header skeleton (avatar + name) */}
+      <div className="flex items-center justify-center py-4 px-4 border-b border-stone-100 dark:border-stone-800">
+        <div className="flex items-center gap-3">
+          <div className="h-11 w-11 rounded-full animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+          <div className="h-4 w-28 rounded-md animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+        </div>
+      </div>
+      {/* Message bubble skeletons */}
+      <div className="flex-grow overflow-hidden px-4 py-4 space-y-3">
+        {[
+          { side: 'start', w: 'w-56' },
+          { side: 'end', w: 'w-40' },
+          { side: 'start', w: 'w-48' },
+          { side: 'start', w: 'w-64' },
+          { side: 'end', w: 'w-32' },
+          { side: 'end', w: 'w-52' },
+          { side: 'start', w: 'w-36' },
+        ].map((m, i) => (
+          <div key={i} className={`w-full flex ${m.side === 'end' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`h-10 max-w-[80%] rounded-xl ${m.w} animate-pulse bg-stone-200/80 dark:bg-stone-800/80`} />
+          </div>
+        ))}
+      </div>
+      {/* Input skeleton */}
+      <div className="p-3.5 border-t border-stone-100 dark:border-stone-800">
+        <div className="h-11 w-full rounded-2xl animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+      </div>
+    </div>
+  ) : (
     <div className="flex flex-col h-[500px] relative">
       {/* Back button */}
       <button
@@ -318,16 +348,7 @@ const MessageModal: React.FC = () => {
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="flex-grow flex items-center justify-center">
-          <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-black animate-[bounce_1s_ease-in-out_infinite]" />
-            <div className="w-1.5 h-1.5 rounded-full bg-black animate-[bounce_1s_ease-in-out_0.15s_infinite]" />
-            <div className="w-1.5 h-1.5 rounded-full bg-black animate-[bounce_1s_ease-in-out_0.3s_infinite]" />
-          </div>
-        </div>
-      ) : (
-        <>
+      <>
           {/* Messages Area */}
           <div className="flex-grow overflow-y-auto px-4 py-3 space-y-3">
             {Object.entries(groupMessagesByDate(messages)).map(([dateKey, dateMessages]) => (
@@ -407,7 +428,6 @@ const MessageModal: React.FC = () => {
             </div>
           </div>
         </>
-      )}
     </div>
   );
 

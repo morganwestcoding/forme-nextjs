@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -9,11 +9,11 @@ import Button from '@/components/ui/Button';
 import { TeamData, TeamMember, TeamBooking } from '@/app/actions/getTeamData';
 import Container from '@/components/Container';
 import PageHeader from '@/components/PageHeader';
+import Skeleton, { PageHeaderSkeleton, ContainerSkeleton } from '@/components/ui/Skeleton';
 import toast from 'react-hot-toast';
 
 interface TeamClientProps {
   currentUser: SafeUser;
-  teamData: TeamData;
 }
 
 type TeamTab = 'overview' | 'schedule' | 'bookings' | 'clients' | 'pay';
@@ -44,9 +44,25 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
-const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
+const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
   const router = useRouter();
   const { status } = useSession();
+
+  // Client-side fetch team data
+  const [teamData, setTeamData] = useState<TeamData | null>(null);
+  const [teamLoading, setTeamLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/team/data')
+      .then((r) => r.json())
+      .then((data) => {
+        setTeamData(data);
+        setTeamLoading(false);
+      })
+      .catch(() => {
+        setTeamLoading(false);
+      });
+  }, []);
 
   const [activeTab, setActiveTab] = useState<TeamTab>('overview');
   const [searchQuery, setSearchQuery] = useState('');
@@ -64,26 +80,26 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
   const [payouts, setPayouts] = useState<Record<string, any[]>>({});
   const [payPeriods, setPayPeriods] = useState<Record<string, any[]>>({});
 
-  const { members: allMembers, todayBookings: allTodayBookings, upcomingBookings: allUpcomingBookings, stats: allStats, listings, ownedListingIds } = teamData;
+  const { members: allMembers, todayBookings: allTodayBookings, upcomingBookings: allUpcomingBookings, stats: allStats, listings, ownedListingIds } = teamData || { members: [], todayBookings: [], upcomingBookings: [], stats: { weekRevenue: 0 } as any, listings: [] as any[], ownedListingIds: [] as string[] };
 
   // Listing filter — when connected to multiple listings
   const [selectedListingId, setSelectedListingId] = useState<string>(listings[0]?.id || '');
 
   // Filter everything by selected listing
-  const members = allMembers.filter((m) => m.listingId === selectedListingId);
-  const todayBookings = allTodayBookings.filter((b) => members.some((m) => m.id === b.employeeId));
-  const upcomingBookings = allUpcomingBookings.filter((b) => members.some((m) => m.id === b.employeeId));
+  const members = allMembers.filter((m: any) => m.listingId === selectedListingId);
+  const todayBookings = allTodayBookings.filter((b: any) => members.some((m: any) => m.id === b.employeeId));
+  const upcomingBookings = allUpcomingBookings.filter((b: any) => members.some((m: any) => m.id === b.employeeId));
   const stats = {
     totalMembers: members.length,
-    activeMembers: members.filter((m) => m.isActive).length,
+    activeMembers: members.filter((m: any) => m.isActive).length,
     todayBookingCount: todayBookings.length,
-    weekRevenue: allStats.weekRevenue, // TODO: filter by listing when needed
-    monthRevenue: members.reduce((sum, m) => sum + m.monthlyRevenue, 0),
-    pendingTimeOff: members.flatMap((m) => m.timeOffRequests).filter((t) => t.status === 'pending').length,
+    weekRevenue: allStats.weekRevenue,
+    monthRevenue: members.reduce((sum: number, m: any) => sum + m.monthlyRevenue, 0),
+    pendingTimeOff: members.flatMap((m: any) => m.timeOffRequests).filter((t: any) => t.status === 'pending').length,
   };
-  const selectedListing = listings.find((l) => l.id === selectedListingId);
+  const selectedListing = listings.find((l: any) => l.id === selectedListingId);
   const isOwnerOfSelected = ownedListingIds.includes(selectedListingId);
-  const myEmployee = members.find((m) => m.userId === currentUser.id);
+  const myEmployee = members.find((m: any) => m.userId === currentUser.id);
 
   // Pay request state for employees
   const [payoutAmount, setPayoutAmount] = useState('');
@@ -339,6 +355,83 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser, teamData }) => {
   // Guard against sign-out re-render
   if (!currentUser || status === 'unauthenticated') {
     return null;
+  }
+
+  // Inline skeleton while loading team data
+  if (teamLoading || !teamData) {
+    return (
+      <ContainerSkeleton>
+        <PageHeaderSkeleton />
+        <div className="mt-8 pb-16">
+          <div className="mb-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <Skeleton className="h-8 w-60 mb-2" />
+                <Skeleton className="h-3.5 w-56" />
+              </div>
+              <Skeleton rounded="xl" className="h-10 w-44" />
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mb-8 overflow-x-hidden pb-1">
+            {[{ w: 'w-24' }, { w: 'w-24' }, { w: 'w-24' }, { w: 'w-20' }, { w: 'w-16' }].map((tab, i) => (
+              <Skeleton key={i} rounded="full" className={`h-9 ${tab.w} shrink-0`} />
+            ))}
+          </div>
+          <div className="space-y-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="rounded-2xl border border-stone-200/60 dark:border-stone-800 p-5 bg-white dark:bg-stone-900">
+                  <Skeleton className="h-3 w-24 mb-3" />
+                  <Skeleton className="h-8 w-20" />
+                </div>
+              ))}
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <Skeleton className="h-5 w-44" />
+                <Skeleton className="h-3.5 w-14" />
+              </div>
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-4 p-4 rounded-2xl border border-stone-200/60 dark:border-stone-800 bg-white dark:bg-stone-900">
+                    <Skeleton rounded="full" className="h-11 w-11 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <Skeleton className="h-4 w-40 mb-1.5" />
+                      <Skeleton className="h-3 w-28" />
+                    </div>
+                    <Skeleton className="h-4 w-12" />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <Skeleton className="h-5 w-16 mb-4" />
+              <div className="space-y-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-4 p-4 rounded-2xl border border-stone-200/60 dark:border-stone-800 bg-white dark:bg-stone-900">
+                    <Skeleton rounded="full" className="h-11 w-11 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton rounded="full" className="h-4 w-14" />
+                      </div>
+                      <Skeleton className="h-3 w-28" />
+                    </div>
+                    <div className="flex items-center gap-4 text-right">
+                      <div>
+                        <Skeleton className="h-4 w-16 mb-1 ml-auto" />
+                        <Skeleton className="h-3 w-20 ml-auto" />
+                      </div>
+                      <Skeleton rounded="full" className="h-2 w-2 shrink-0" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </ContainerSkeleton>
+    );
   }
 
   const to12h = (time: string) => {
