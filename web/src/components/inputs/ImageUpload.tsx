@@ -1,16 +1,10 @@
 'use client';
 
-import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
 import Image from 'next/image';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
-
-declare global {
-  // eslint-disable-next-line no-var
-  var cloudinary: any;
-}
-
-const UPLOAD_PRESET = 'cs0am6m7';
+import ImageCropModal from './ImageCropModal';
+import { uploadToCloudinary, buildTransformUrl } from '@/lib/cloudinary';
 
 type Ratio = 'square' | 'landscape' | 'portrait' | 'wide' | 'tall';
 
@@ -22,16 +16,34 @@ interface ImageUploadProps {
   label?: string;
   hint?: string;
   disabled?: boolean;
-  accept?: Array<'png' | 'jpg' | 'jpeg' | 'webp' | 'svg'>;
+  accept?: string[];
   maxFileSizeMB?: number;
   ratio?: Ratio;
   rounded?: 'lg' | 'xl' | '2xl' | 'full';
   showRemove?: boolean;
   enableCrop?: boolean;
-  cropMode?: 'free' | 'fixed';
+  folder?: string;
+  gravity?: string;
+  cropMode?: string;
+  /** Custom aspect ratio number — overrides ratio prop for crop */
   customAspectRatio?: number;
-  uploadId?: string;
 }
+
+const ASPECT_MAP: Record<Ratio, number> = {
+  square: 1,
+  landscape: 4 / 3,
+  portrait: 3 / 4,
+  tall: 2 / 3,
+  wide: 21 / 9,
+};
+
+const DIMENSION_MAP: Record<Ratio, { w: number; h: number }> = {
+  square: { w: 400, h: 400 },
+  landscape: { w: 800, h: 600 },
+  portrait: { w: 600, h: 800 },
+  tall: { w: 600, h: 900 },
+  wide: { w: 1200, h: 514 },
+};
 
 export default function ImageUpload({
   value,
@@ -41,294 +53,237 @@ export default function ImageUpload({
   label = 'Image',
   hint,
   disabled = false,
-  accept = ['png', 'jpg', 'jpeg', 'webp', 'svg'],
+  accept = ['png', 'jpg', 'jpeg', 'webp'],
   maxFileSizeMB = 10,
   ratio = 'landscape',
   rounded = '2xl',
   showRemove = true,
   enableCrop = true,
-  cropMode = 'fixed',
+  folder = 'uploads',
+  gravity = 'g_auto',
   customAspectRatio,
-  uploadId = 'default',
 }: ImageUploadProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+
   const roundedClass =
-    rounded === 'full'
-      ? 'rounded-full'
-      : rounded === '2xl'
-      ? 'rounded-2xl'
-      : rounded === 'lg'
-      ? 'rounded-xl'
-      : 'rounded-xl';
+    rounded === 'full' ? 'rounded-full'
+    : rounded === '2xl' ? 'rounded-2xl'
+    : 'rounded-xl';
 
   const hasExplicitSize = !!className && /\b(h-|min-h-|max-h-|aspect-)/.test(className);
-  
+
   const aspectClasses = useMemo(() => {
     if (hasExplicitSize) return '';
     switch (ratio) {
-      case 'square':
-        return 'aspect-square';
-      case 'portrait':
-        return 'aspect-[3/4]';
-      case 'tall':
-        return 'aspect-[2/3]';
-      case 'wide':
-        return 'aspect-[21/9]';
+      case 'square': return 'aspect-square';
+      case 'portrait': return 'aspect-[3/4]';
+      case 'tall': return 'aspect-[2/3]';
+      case 'wide': return 'aspect-[21/9]';
       case 'landscape':
-      default:
-        return 'aspect-[4/3]';
+      default: return 'aspect-[4/3]';
     }
   }, [ratio, hasExplicitSize]);
 
-  const getCropAspectRatio = useCallback(() => {
-    if (customAspectRatio) return customAspectRatio;
-    
-    switch (ratio) {
-      case 'square':
-        return 1;
-      case 'portrait':
-        return 3 / 4;
-      case 'tall':
-        return 2 / 3;
-      case 'wide':
-        return 21 / 9;
-      case 'landscape':
-      default:
-        return 4 / 3;
-    }
-  }, [ratio, customAspectRatio]);
+  const cropAspect = customAspectRatio ?? ASPECT_MAP[ratio];
 
-  const buildCloudinaryUrl = useCallback((publicId: string, cloudName: string) => {
-    if (!enableCrop) {
-      return `https://res.cloudinary.com/${cloudName}/image/upload/${publicId}`;
+  const acceptString = accept.map((ext) => `.${ext}`).join(',');
+
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Reset input so re-selecting the same file triggers change
+    e.target.value = '';
+
+    if (file.size > maxFileSizeMB * 1_000_000) {
+      return;
     }
 
-    const aspectRatio = getCropAspectRatio();
-
-    let width: number;
-    let height: number;
-
-    if (ratio === 'square') {
-      width = 400;
-      height = 400;
-    } else if (ratio === 'landscape') {
-      width = 800;
-      height = Math.round(800 / aspectRatio);
-    } else if (ratio === 'wide') {
-      width = 1200;
-      height = Math.round(1200 / aspectRatio);
+    if (enableCrop) {
+      const objectUrl = URL.createObjectURL(file);
+      setCropSrc(objectUrl);
     } else {
-      width = 600;
-      height = Math.round(width / aspectRatio);
+      handleUpload(file);
     }
+  }, [enableCrop, maxFileSizeMB]);
 
-    let cropTransform: string;
-    let gravity: string;
+  const handleUpload = useCallback(async (blob: Blob) => {
+    setUploading(true);
+    try {
+      const data = await uploadToCloudinary(blob, folder);
 
-    if (ratio === 'square') {
-      cropTransform = 'c_thumb';
-      gravity = 'g_auto';
-    } else {
-      cropTransform = 'c_fill';
-      gravity = 'g_auto';
+      const dims = DIMENSION_MAP[ratio];
+      const w = customAspectRatio ? dims.w : dims.w;
+      const h = customAspectRatio ? Math.round(dims.w / customAspectRatio) : dims.h;
+      const cropType = ratio === 'square' ? 'c_thumb' : 'c_fill';
+      const transforms = `q_auto:good,f_auto,w_${w},h_${h},${cropType},${gravity}`;
+
+      const finalUrl = buildTransformUrl(data.public_id, transforms);
+      onChange(finalUrl);
+    } catch {
+      // upload failed — user can retry
+    } finally {
+      setUploading(false);
     }
+  }, [folder, ratio, gravity, customAspectRatio, onChange]);
 
-    const transformations = [
-      'q_auto:good',
-      'f_auto',
-      `w_${width}`,
-      `h_${height}`,
-      cropTransform,
-      gravity,
-    ].join(',');
+  const handleCropComplete = useCallback((blob: Blob) => {
+    setCropSrc(null);
+    handleUpload(blob);
+  }, [handleUpload]);
 
-    return `https://res.cloudinary.com/${cloudName}/image/upload/${transformations}/${publicId}`;
-  }, [enableCrop, getCropAspectRatio, ratio, uploadId]);
-
-  const handleUpload = useCallback(
-    (result: CldUploadWidgetResults) => {
-      const info = result?.info;
-
-      if (info && typeof info === 'object') {
-        const publicId = info.public_id;
-
-        let cloudName: string | null = null;
-
-        if (typeof info.cloud_name === 'string') {
-          cloudName = info.cloud_name;
-        }
-
-        if (!cloudName && typeof info.secure_url === 'string') {
-          const urlMatch = info.secure_url.match(/res\.cloudinary\.com\/([^\/]+)/);
-          cloudName = urlMatch ? urlMatch[1] : null;
-        }
-
-        if (publicId && cloudName) {
-          const finalUrl = enableCrop
-            ? buildCloudinaryUrl(publicId, cloudName)
-            : info.secure_url;
-
-          onChange(finalUrl);
-        } else {
-          if (typeof info.secure_url === 'string') {
-            onChange(info.secure_url);
-          }
-        }
-      }
-    },
-    [onChange, enableCrop, buildCloudinaryUrl, uploadId]
-  );
-
-  const cloudinaryOptions = useMemo(() => {
-    const aspectRatio = getCropAspectRatio();
-    
-    const options = {
-      multiple: false,
-      maxFiles: 1,
-      sources: ['local', 'url', 'camera'] as ('local' | 'url' | 'camera')[],
-      resourceType: 'image' as const,
-      clientAllowedFormats: accept,
-      maxImageFileSize: maxFileSizeMB * 1_000_000,
-      folder: `uploads/${uploadId}`,
-      cropping: enableCrop,
-      croppingAspectRatio: enableCrop && cropMode === 'fixed' ? aspectRatio : undefined,
-      croppingShowBackButton: true,
-      croppingValidateDimensions: true,
-      showSkipCropButton: cropMode === 'free',
-      croppingShowDimensions: true,
-      quality: 'auto:good' as const,
-      publicId: `${uploadId}_${Date.now()}`,
-    };
-
-    return options;
-  }, [accept, maxFileSizeMB, enableCrop, cropMode, getCropAspectRatio, uploadId]);
+  const handleCropClose = useCallback(() => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+  }, [cropSrc]);
 
   return (
     <div className="w-full h-full">
       {hint && (
-        <div className="mb-2 text-xs text-stone-500  dark:text-stone-500  ">
+        <div className="mb-2 text-xs text-stone-500 dark:text-stone-500">
           {hint}
         </div>
       )}
 
-      <CldUploadWidget
-        uploadPreset={UPLOAD_PRESET}
-        onUpload={handleUpload}
-        options={cloudinaryOptions}
+      <input
+        ref={inputRef}
+        type="file"
+        accept={acceptString}
+        onChange={handleFileSelect}
+        className="hidden"
+      />
+
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label={value ? 'Change image' : 'Upload image'}
+        onClick={() => !disabled && !uploading && inputRef.current?.click()}
+        onKeyDown={(e) => {
+          if (disabled || uploading) return;
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            inputRef.current?.click();
+          }
+        }}
+        className={clsx(
+          'group relative',
+          rounded === 'full' ? 'aspect-square' : aspectClasses,
+          roundedClass,
+          'border-2 border-dashed border-stone-200 dark:border-stone-800',
+          'bg-stone-50/30',
+          'hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50/30',
+          'transition-all duration-200',
+          (disabled || uploading) ? 'opacity-60 pointer-events-none' : 'cursor-pointer',
+          className,
+        )}
       >
-        {({ open }) => (
-          <div
-            role="button"
-            tabIndex={0}
-            aria-label={value ? 'Change image' : 'Upload image'}
-            onClick={() => !disabled && open?.()}
-            onKeyDown={(e) => {
-              if (disabled) return;
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                open?.();
-              }
-            }}
-            className={clsx(
-              'group relative',
-              rounded === 'full' ? 'aspect-square' : aspectClasses,
-              roundedClass,
-              'border-2 border-dashed border-stone-200 dark:border-stone-800',
-              'bg-stone-50/30',
-              'hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50/30',
-              'transition-all duration-200',
-              disabled ? 'opacity-60 pointer-events-none' : 'cursor-pointer',
-              className
-            )}
-          >
-            {!value && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="32"
-                  height="32"
-                  fill="none"
-                  className="text-stone-400  group-hover:text-stone-500 dark:text-stone-400  transition-colors duration-200 flex-shrink-0 mt-3.5"
-                  style={{ display: 'block' }}
-                >
-                  <path d="M3 16L7.46967 11.5303C7.80923 11.1908 8.26978 11 8.75 11C9.23022 11 9.69077 11.1908 10.0303 11.5303L14 15.5M15.5 17L14 15.5M21 16L18.5303 13.5303C18.1908 13.1908 17.7302 13 17.25 13C16.7698 13 16.3092 13.1908 15.9697 13.5303L14 15.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                  <path d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                  <path d="M3.69797 19.7472C2.5 18.3446 2.5 16.2297 2.5 12C2.5 7.77027 2.5 5.6554 3.69797 4.25276C3.86808 4.05358 4.05358 3.86808 4.25276 3.69797C5.6554 2.5 7.77027 2.5 12 2.5C16.2297 2.5 18.3446 2.5 19.7472 3.69797C19.9464 3.86808 20.1319 4.05358 20.302 4.25276C21.5 5.6554 21.5 7.77027 21.5 12C21.5 16.2297 21.5 18.3446 20.302 19.7472C20.1319 19.9464 19.9464 20.1319 19.7472 20.302C18.3446 21.5 16.2297 21.5 12 21.5C7.77027 21.5 5.6554 21.5 4.25276 20.302C4.05358 20.1319 3.86808 19.9464 3.69797 19.7472Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+        {/* Empty state */}
+        {!value && !uploading && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="32"
+              height="32"
+              fill="none"
+              className="text-stone-400 group-hover:text-stone-500 dark:text-stone-400 transition-colors duration-200 flex-shrink-0 mt-3.5"
+              style={{ display: 'block' }}
+            >
+              <path d="M3 16L7.46967 11.5303C7.80923 11.1908 8.26978 11 8.75 11C9.23022 11 9.69077 11.1908 10.0303 11.5303L14 15.5M15.5 17L14 15.5M21 16L18.5303 13.5303C18.1908 13.1908 17.7302 13 17.25 13C16.7698 13 16.3092 13.1908 15.9697 13.5303L14 15.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M15.5 8C15.7761 8 16 7.77614 16 7.5C16 7.22386 15.7761 7 15.5 7M15.5 8C15.2239 8 15 7.77614 15 7.5C15 7.22386 15.2239 7 15.5 7M15.5 8V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M3.69797 19.7472C2.5 18.3446 2.5 16.2297 2.5 12C2.5 7.77027 2.5 5.6554 3.69797 4.25276C3.86808 4.05358 4.05358 3.86808 4.25276 3.69797C5.6554 2.5 7.77027 2.5 12 2.5C16.2297 2.5 18.3446 2.5 19.7472 3.69797C19.9464 3.86808 20.1319 4.05358 20.302 4.25276C21.5 5.6554 21.5 7.77027 21.5 12C21.5 16.2297 21.5 18.3446 20.302 19.7472C20.1319 19.9464 19.9464 20.1319 19.7472 20.302C18.3446 21.5 16.2297 21.5 12 21.5C7.77027 21.5 5.6554 21.5 4.25276 20.302C4.05358 20.1319 3.86808 19.9464 3.69797 19.7472Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <h3 className="text-sm font-medium text-stone-600 group-hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors duration-200 text-center">
+              {label}
+            </h3>
+          </div>
+        )}
+
+        {/* Uploading state */}
+        {uploading && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+            <div className="w-6 h-6 border-2 border-stone-200 border-t-stone-600 dark:border-stone-700 dark:border-t-stone-300 rounded-full animate-spin" />
+            <span className="text-xs font-medium text-stone-500">Uploading...</span>
+          </div>
+        )}
+
+        {/* Image preview */}
+        {value && !uploading && (
+          <>
+            <Image
+              src={value}
+              alt="Uploaded"
+              fill
+              className={clsx('object-cover', rounded !== 'full' && roundedClass)}
+              sizes="(max-width: 768px) 100vw, 800px"
+              priority
+            />
+
+            {rounded === 'full' && (
+              <div className="absolute inset-0 pointer-events-none">
+                <svg className="w-full h-full" viewBox="0 0 100 100">
+                  <defs>
+                    <mask id="circle-mask">
+                      <rect x="0" y="0" width="100" height="100" fill="white" />
+                      <circle cx="50" cy="50" r="48" fill="black" />
+                    </mask>
+                  </defs>
+                  <rect x="0" y="0" width="100" height="100" fill="black" fillOpacity="0.5" mask="url(#circle-mask)" />
+                  <circle cx="50" cy="50" r="48" fill="none" stroke="white" strokeWidth="0.5" strokeDasharray="2,2" />
                 </svg>
-                <h3 className="text-sm font-medium text-stone-600  group-hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors duration-200 text-center">
-                  {label}
-                </h3>
               </div>
             )}
 
-            {value && (
-              <>
-                <Image
-                  src={value}
-                  alt="Uploaded"
-                  fill
-                  className={clsx("object-cover", rounded !== 'full' && roundedClass)}
-                  sizes="(max-width: 768px) 100vw, 800px"
-                  priority
-                />
+            <div className="absolute bottom-2 right-2 flex gap-1">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  inputRef.current?.click();
+                }}
+                className="inline-flex items-center gap-1.5 rounded-xl px-2 py-1 text-xs font-medium
+                  bg-white/90 text-stone-900 dark:text-stone-100 ring-1 ring-stone-200 hover:bg-white dark:bg-stone-900"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
+                </svg>
+                Replace
+              </button>
 
-                {/* Circular overlay for rounded full images */}
-                {rounded === 'full' && (
-                  <div className="absolute inset-0 pointer-events-none">
-                    <svg className="w-full h-full" viewBox="0 0 100 100">
-                      <defs>
-                        <mask id="circle-mask">
-                          <rect x="0" y="0" width="100" height="100" fill="white" />
-                          <circle cx="50" cy="50" r="48" fill="black" />
-                        </mask>
-                      </defs>
-                      <rect x="0" y="0" width="100" height="100" fill="black" fillOpacity="0.5" mask="url(#circle-mask)" />
-                      <circle cx="50" cy="50" r="48" fill="none" stroke="white" strokeWidth="0.5" strokeDasharray="2,2" />
-                    </svg>
-                  </div>
-                )}
-
-
-                <div className="absolute bottom-2 right-2 flex gap-1">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      (document.activeElement as HTMLElement)?.blur();
-                      open?.();
-                    }}
-                    className="inline-flex items-center gap-1.5 rounded-xl px-2 py-1 text-xs font-medium
-                               bg-white/90 text-stone-900 dark:text-stone-100 ring-1 ring-stone-200 hover:bg-white dark:bg-stone-900"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"/>
-                    </svg>
-                    Replace
-                  </button>
-
-                  {showRemove && onRemove && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onRemove();
-                      }}
-                      className="inline-flex items-center gap-1.5 rounded-xl px-2 py-1 text-xs font-medium
-                                 bg-white/90 text-stone-900 dark:text-stone-100 ring-1 ring-stone-200 hover:bg-white dark:bg-stone-900"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                      </svg>
-                      Remove
-                    </button>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
+              {showRemove && onRemove && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemove();
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-xl px-2 py-1 text-xs font-medium
+                    bg-white/90 text-stone-900 dark:text-stone-100 ring-1 ring-stone-200 hover:bg-white dark:bg-stone-900"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                  Remove
+                </button>
+              )}
+            </div>
+          </>
         )}
-      </CldUploadWidget>
+      </div>
+
+      {/* Crop modal */}
+      {cropSrc && (
+        <ImageCropModal
+          isOpen
+          imageSrc={cropSrc}
+          aspect={cropAspect}
+          onClose={handleCropClose}
+          onComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
 }

@@ -35,12 +35,12 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
 
       {/* Newsfeed-style layout: media card + side panel */}
       <div className="flex items-center gap-5">
-        {/* Media card — same 4:5 proportions as newsfeed */}
+        {/* Media card — same 9:16 proportions as newsfeed */}
         <div
           className="relative overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-800 flex-shrink-0"
           style={{
             width: '280px',
-            aspectRatio: '4 / 5',
+            aspectRatio: '9 / 16',
             boxShadow: 'inset 0 0 30px rgba(0,0,0,0.08), inset 0 0 6px rgba(0,0,0,0.04)',
           }}
           onMouseEnter={() => hasBeforeAfter && setShowBefore(true)}

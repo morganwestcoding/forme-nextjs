@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
+import { useState, useCallback, useRef } from 'react';
 
 import Image from 'next/image';
 import TypeformHeading from '@/components/registration/TypeformHeading';
 import { Cancel01Icon, PencilEdit01Icon, ArrowDown01Icon as ChevronDown, PlusSignIcon as Plus, Cancel01Icon as X, ArrowLeft01Icon as ArrowLeft } from 'hugeicons-react';
 import Button from '@/components/ui/Button';
+import { uploadToCloudinary, buildTransformUrl } from '@/lib/cloudinary';
 
 interface ProductData {
   name: string;
@@ -24,8 +24,6 @@ interface ShopProductFormStepProps {
   initialData?: ProductData | null;
 }
 
-const UPLOAD_PRESET = 'cs0am6m7';
-
 function ProductImageUpload({
   value,
   onUpload,
@@ -33,62 +31,79 @@ function ProductImageUpload({
   index,
 }: {
   value: string;
-  onUpload: (result: CldUploadWidgetResults) => void;
+  onUpload: (url: string) => void;
   onRemove: () => void;
   index: number;
 }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    setUploading(true);
+    try {
+      const data = await uploadToCloudinary(file, 'uploads/shops/products');
+      const finalUrl = buildTransformUrl(data.public_id, 'q_auto:good,f_auto,w_400,h_400,c_fill,g_auto');
+      onUpload(finalUrl);
+    } catch {
+      // upload failed
+    } finally {
+      setUploading(false);
+    }
+  }, [onUpload]);
+
   return (
-    <CldUploadWidget
-      onSuccess={onUpload}
-      uploadPreset={UPLOAD_PRESET}
-      options={{
-        multiple: false,
-        maxFiles: 1,
-        sources: ['local', 'camera'],
-        resourceType: 'image',
-        clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp'],
-        maxImageFileSize: 10_000_000,
-        folder: 'uploads/shops/products',
-      }}
-    >
-      {(props) => (
-        <div
-          onClick={() => props?.open?.()}
-          className={`
-            group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300
-            ${value
-              ? ''
-              : 'border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 hover:border-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
-            }
-          `}
-          style={{ width: '175px', height: '175px' }}
-        >
-          {value ? (
-            <>
-              <Image src={value} alt={`Product ${index + 1}`} fill className="object-cover" />
-              <div className="absolute inset-0 rounded-xl bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <PencilEdit01Icon className="w-5 h-5 text-white drop-shadow-sm" />
-              </div>
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); onRemove(); }}
-                className="absolute top-2 right-2 w-7 h-7 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
-              >
-                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </>
-          ) : (
-            <div className="h-full flex flex-col items-center justify-center">
-              <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center shadow-sm">
-                <Plus className="w-5 h-5 text-stone-400 dark:text-stone-500" />
-              </div>
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".png,.jpg,.jpeg,.webp"
+        onChange={handleFileSelect}
+        className="hidden"
+      />
+      <div
+        onClick={() => !uploading && inputRef.current?.click()}
+        className={`
+          group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300
+          ${value
+            ? ''
+            : 'border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 hover:border-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
+          }
+          ${uploading ? 'opacity-60 pointer-events-none' : ''}
+        `}
+        style={{ width: '175px', height: '175px' }}
+      >
+        {uploading ? (
+          <div className="h-full flex items-center justify-center">
+            <div className="w-6 h-6 border-2 border-stone-200 border-t-stone-600 rounded-full animate-spin" />
+          </div>
+        ) : value ? (
+          <>
+            <Image src={value} alt={`Product ${index + 1}`} fill className="object-cover" />
+            <div className="absolute inset-0 rounded-xl bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+              <PencilEdit01Icon className="w-5 h-5 text-white drop-shadow-sm" />
             </div>
-          )}
-        </div>
-      )}
-    </CldUploadWidget>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onRemove(); }}
+              className="absolute top-2 right-2 w-7 h-7 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+            >
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </>
+        ) : (
+          <div className="h-full flex flex-col items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center shadow-sm">
+              <Plus className="w-5 h-5 text-stone-400 dark:text-stone-500" />
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
@@ -104,28 +119,13 @@ export default function ShopProductFormStep({
   const [images, setImages] = useState<string[]>(initialData?.images || ['', '', '']);
   const [sizes, setSizes] = useState<string[]>(initialData?.sizes || []);
   const [currentSize, setCurrentSize] = useState('');
-  const [uploading, setUploading] = useState(false);
 
-  const handleImageUpload = useCallback((result: CldUploadWidgetResults, index: number) => {
-    const info = result?.info;
-    if (info && typeof info === 'object' && 'secure_url' in info) {
-      const publicId = info.public_id;
-      let cloudName: string | null = null;
-      if (typeof info.secure_url === 'string') {
-        const urlMatch = info.secure_url.match(/res\.cloudinary\.com\/([^/]+)/);
-        cloudName = urlMatch ? urlMatch[1] : null;
-      }
-      const finalUrl = publicId && cloudName
-        ? `https://res.cloudinary.com/${cloudName}/image/upload/q_auto:good,f_auto,w_400,h_400,c_fill,g_auto/${publicId}`
-        : (info.secure_url as string);
-
-      setImages(prev => {
-        const next = [...prev];
-        next[index] = finalUrl;
-        return next;
-      });
-    }
-    setUploading(false);
+  const handleImageUpload = useCallback((url: string, index: number) => {
+    setImages(prev => {
+      const next = [...prev];
+      next[index] = url;
+      return next;
+    });
   }, []);
 
   const removeImage = (index: number) => {
@@ -178,7 +178,7 @@ export default function ShopProductFormStep({
               <ProductImageUpload
                 key={index}
                 value={image}
-                onUpload={(result) => handleImageUpload(result, index)}
+                onUpload={(url) => handleImageUpload(url, index)}
                 onRemove={() => removeImage(index)}
                 index={index}
               />
@@ -272,7 +272,7 @@ export default function ShopProductFormStep({
               {sizes.map((size) => (
                 <div key={size} className="bg-stone-100 dark:bg-stone-800 px-3 py-1 rounded-full flex items-center gap-1.5 text-sm">
                   <span>{size}</span>
-                  <button type="button" onClick={() => setSizes(prev => prev.filter(s => s !== size))} className="text-stone-400  hover:text-stone-600 dark:text-stone-300">
+                  <button type="button" onClick={() => setSizes(prev => prev.filter(s => s !== size))} className="text-stone-400 hover:text-stone-600 dark:text-stone-300">
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -287,7 +287,7 @@ export default function ShopProductFormStep({
       <button
         type="button"
         onClick={onBack}
-        className="fixed top-6 right-6 z-50 w-10 h-10 rounded-full flex items-center justify-center text-stone-400  hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-all"
+        className="fixed top-6 right-6 z-50 w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-all"
       >
         <Cancel01Icon className="w-5 h-5" strokeWidth={1.5} />
       </button>
@@ -298,7 +298,7 @@ export default function ShopProductFormStep({
           <button
             type="button"
             onClick={onBack}
-            className="flex items-center gap-2 text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
+            className="flex items-center gap-2 text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm">Back</span>

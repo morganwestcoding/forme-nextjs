@@ -1,45 +1,53 @@
 'use client';
 
-import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
-import { useCallback } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import TypeformHeading from '@/components/registration/TypeformHeading';
 import { PencilEdit01Icon, PlusSignIcon as Plus } from 'hugeicons-react';
+import ImageCropModal from '@/components/inputs/ImageCropModal';
+import { uploadToCloudinary, buildTransformUrl } from '@/lib/cloudinary';
 
 interface ShopDetailsStepProps {
   logo: string;
   onLogoChange: (url: string) => void;
 }
 
-const UPLOAD_PRESET = 'cs0am6m7';
 const LISTING_CARD_ASPECT = 250 / 280;
 
 export default function ShopDetailsStep({ logo, onLogoChange }: ShopDetailsStepProps) {
   const { register, formState: { errors } } = useFormContext();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
-  const handleUpload = useCallback((result: CldUploadWidgetResults) => {
-    const info = result?.info;
-    if (info && typeof info === 'object' && 'secure_url' in info) {
-      const publicId = (info as any).public_id;
-      let cloudName: string | null = null;
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    setCropSrc(URL.createObjectURL(file));
+  }, []);
 
-      if (typeof info.secure_url === 'string') {
-        const urlMatch = info.secure_url.match(/res\.cloudinary\.com\/([^/]+)/);
-        cloudName = urlMatch ? urlMatch[1] : null;
-      }
-
-      if (publicId && cloudName) {
-        const width = 500;
-        const height = Math.round(width / LISTING_CARD_ASPECT);
-        const transformations = `q_auto:good,f_auto,w_${width},h_${height},c_fill,g_auto`;
-        const finalUrl = `https://res.cloudinary.com/${cloudName}/image/upload/${transformations}/${publicId}`;
-        onLogoChange(finalUrl);
-      } else {
-        onLogoChange(info.secure_url as string);
-      }
+  const handleCropComplete = useCallback(async (blob: Blob) => {
+    setCropSrc(null);
+    setUploading(true);
+    try {
+      const data = await uploadToCloudinary(blob, 'uploads/shops');
+      const width = 500;
+      const height = Math.round(width / LISTING_CARD_ASPECT);
+      const finalUrl = buildTransformUrl(data.public_id, `q_auto:good,f_auto,w_${width},h_${height},c_fill,g_auto`);
+      onLogoChange(finalUrl);
+    } catch {
+      // upload failed
+    } finally {
+      setUploading(false);
     }
   }, [onLogoChange]);
+
+  const handleCropClose = useCallback(() => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+  }, [cropSrc]);
 
   return (
     <div>
@@ -48,58 +56,51 @@ export default function ShopDetailsStep({ logo, onLogoChange }: ShopDetailsStepP
         subtitle="This is how clients will find you"
       />
 
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".png,.jpg,.jpeg,.webp"
+        onChange={handleFileSelect}
+        className="hidden"
+      />
+
       <div className="flex flex-col sm:flex-row gap-6 sm:items-center">
         {/* Left: Image upload / preview */}
         <div className="flex-shrink-0">
-          <CldUploadWidget
-            uploadPreset={UPLOAD_PRESET}
-            onSuccess={handleUpload}
-            options={{
-              multiple: false,
-              maxFiles: 1,
-              sources: ['local', 'camera'],
-              resourceType: 'image',
-              clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp'],
-              maxImageFileSize: 10_000_000,
-              cropping: true,
-              croppingAspectRatio: LISTING_CARD_ASPECT,
-              croppingShowBackButton: true,
-              showSkipCropButton: false,
-              folder: 'uploads/shops',
-            }}
+          <div
+            onClick={() => !uploading && inputRef.current?.click()}
+            className={`
+              group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300
+              ${logo
+                ? 'hover:shadow-lg bg-stone-900 hover:-translate-y-1'
+                : 'border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 hover:border-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'}
+              ${uploading ? 'opacity-60 pointer-events-none' : ''}
+            `}
+            style={{ width: '200px', height: '224px' }}
           >
-            {(props) => (
-              <div
-                onClick={() => props?.open?.()}
-                className={`
-                  group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300
-                  ${logo
-                    ? 'hover:shadow-lg bg-stone-900 hover:-translate-y-1'
-                    : 'border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 hover:border-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'}
-                `}
-                style={{ width: '200px', height: '224px' }}
-              >
-                {logo ? (
-                  <>
-                    <img
-                      src={logo}
-                      alt="Shop preview"
-                      className="w-full h-full object-cover transition-[transform,filter] duration-500 ease-out group-hover:scale-105 group-hover:brightness-105"
-                    />
-                    <div className="absolute inset-0 rounded-xl bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                      <PencilEdit01Icon className="w-5 h-5 text-white drop-shadow-sm" />
-                    </div>
-                  </>
-                ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-center p-4">
-                    <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center shadow-sm">
-                      <Plus className="w-5 h-5 text-stone-400 dark:text-stone-500" />
-                    </div>
-                  </div>
-                )}
+            {uploading ? (
+              <div className="h-full flex items-center justify-center">
+                <div className="w-6 h-6 border-2 border-stone-200 border-t-stone-600 rounded-full animate-spin" />
+              </div>
+            ) : logo ? (
+              <>
+                <img
+                  src={logo}
+                  alt="Shop preview"
+                  className="w-full h-full object-cover transition-[transform,filter] duration-500 ease-out group-hover:scale-105 group-hover:brightness-105"
+                />
+                <div className="absolute inset-0 rounded-xl bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <PencilEdit01Icon className="w-5 h-5 text-white drop-shadow-sm" />
+                </div>
+              </>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-center p-4">
+                <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center shadow-sm">
+                  <Plus className="w-5 h-5 text-stone-400 dark:text-stone-500" />
+                </div>
               </div>
             )}
-          </CldUploadWidget>
+          </div>
         </div>
 
         {/* Right: Form inputs */}
@@ -137,6 +138,16 @@ export default function ShopDetailsStep({ logo, onLogoChange }: ShopDetailsStepP
           </div>
         </div>
       </div>
+
+      {cropSrc && (
+        <ImageCropModal
+          isOpen
+          imageSrc={cropSrc}
+          aspect={LISTING_CARD_ASPECT}
+          onClose={handleCropClose}
+          onComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
 }

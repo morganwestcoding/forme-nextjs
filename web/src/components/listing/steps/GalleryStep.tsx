@@ -1,55 +1,53 @@
 'use client';
 
-import { CldUploadWidget, type CldUploadWidgetResults } from 'next-cloudinary';
-import { useCallback, useRef, useEffect } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 import Image from 'next/image';
 import TypeformHeading from '@/components/registration/TypeformHeading';
 import { itemVariants } from '@/components/registration/TypeformStep';
 import { PlusSignIcon as Plus } from 'hugeicons-react';
+import { uploadToCloudinary, buildTransformUrl } from '@/lib/cloudinary';
 
 interface GalleryStepProps {
   galleryImages: string[];
   onGalleryChange: (images: string[]) => void;
 }
 
-const UPLOAD_PRESET = 'cs0am6m7';
-
 export default function GalleryStep({
   galleryImages,
   onGalleryChange,
 }: GalleryStepProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef(galleryImages);
+  const [uploading, setUploading] = useState(false);
 
-  useEffect(() => {
-    galleryRef.current = galleryImages;
-  }, [galleryImages]);
+  // Keep ref in sync
+  galleryRef.current = galleryImages;
 
-  const handleUpload = useCallback((result: CldUploadWidgetResults) => {
-    const info = result?.info;
-    if (info && typeof info === 'object' && 'secure_url' in info) {
-      const publicId = info.public_id;
-      let cloudName: string | null = null;
-
-      if (typeof info.secure_url === 'string') {
-        const urlMatch = info.secure_url.match(/res\.cloudinary\.com\/([^/]+)/);
-        cloudName = urlMatch ? urlMatch[1] : null;
-      }
-
-      let finalUrl: string;
-      if (publicId && cloudName) {
-        const transformations = `q_auto:good,f_auto,w_800,h_800,c_fill,g_auto`;
-        finalUrl = `https://res.cloudinary.com/${cloudName}/image/upload/${transformations}/${publicId}`;
-      } else {
-        finalUrl = info.secure_url as string;
-      }
-
-      const updated = [...galleryRef.current, finalUrl];
-      galleryRef.current = updated;
+  const handleFiles = useCallback(async (files: FileList) => {
+    setUploading(true);
+    try {
+      const uploads = Array.from(files).map(async (file) => {
+        const data = await uploadToCloudinary(file, 'uploads/listings/gallery');
+        return buildTransformUrl(data.public_id, 'q_auto:good,f_auto,w_800,h_800,c_fill,g_auto');
+      });
+      const urls = await Promise.all(uploads);
+      const updated = [...galleryRef.current, ...urls];
       onGalleryChange(updated);
+    } catch {
+      // upload failed
+    } finally {
+      setUploading(false);
     }
   }, [onGalleryChange]);
+
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    e.target.value = '';
+    handleFiles(files);
+  }, [handleFiles]);
 
   const removeImage = (index: number) => {
     onGalleryChange(galleryImages.filter((_, i) => i !== index));
@@ -60,6 +58,15 @@ export default function GalleryStep({
       <TypeformHeading
         question="Add more photos"
         subtitle="Showcase your work with additional images (optional)"
+      />
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".png,.jpg,.jpeg,.webp"
+        multiple
+        onChange={handleFileSelect}
+        className="hidden"
       />
 
       <div className="flex flex-wrap gap-3">
@@ -89,32 +96,20 @@ export default function GalleryStep({
         ))}
 
         {/* Add Photo Button */}
-        <CldUploadWidget
-          uploadPreset={UPLOAD_PRESET}
-          onSuccess={handleUpload}
-          options={{
-            multiple: true,
-            maxFiles: 20,
-            sources: ['local', 'camera'],
-            resourceType: 'image',
-            clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp'],
-            maxImageFileSize: 10_000_000,
-            folder: 'uploads/listings/gallery',
-          }}
+        <motion.div
+          onClick={() => !uploading && inputRef.current?.click()}
+          variants={itemVariants}
+          className={`cursor-pointer rounded-xl overflow-hidden border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 hover:border-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-all duration-300 flex flex-col items-center justify-center ${uploading ? 'opacity-60 pointer-events-none' : ''}`}
+          style={{ width: '175px', height: '175px' }}
         >
-          {(props) => (
-            <motion.div
-              onClick={() => props?.open?.()}
-              variants={itemVariants}
-              className="cursor-pointer rounded-xl overflow-hidden border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 hover:border-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-all duration-300 flex flex-col items-center justify-center"
-              style={{ width: '175px', height: '175px' }}
-            >
-              <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center shadow-sm">
-                <Plus className="w-5 h-5 text-stone-400 dark:text-stone-500" />
-              </div>
-            </motion.div>
+          {uploading ? (
+            <div className="w-6 h-6 border-2 border-stone-200 border-t-stone-600 rounded-full animate-spin" />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center shadow-sm">
+              <Plus className="w-5 h-5 text-stone-400 dark:text-stone-500" />
+            </div>
           )}
-        </CldUploadWidget>
+        </motion.div>
       </div>
 
       {galleryImages.length === 0 && (
