@@ -126,31 +126,39 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? `${id || "modal"}-title` : undefined}
-      className="fixed inset-0 z-[9999] backdrop-blur-sm bg-stone-900/60 animate-in fade-in duration-200"
+      className="fixed inset-0 z-[9999] backdrop-blur-sm bg-stone-900/60 animate-in fade-in duration-200 overscroll-contain"
       onMouseDown={handleBackdropClick}
     >
       {backdropVideo && <ModalBackdrop videoSrc={backdropVideo} />}
 
-      <div className="fixed inset-0 flex items-center justify-center overflow-y-auto p-4">
+      <div className="fixed inset-0 flex items-end md:items-center justify-center overflow-y-auto md:p-4 overscroll-contain">
         <div
           className={`relative ${className || "w-full md:w-4/6 lg:w-3/6 xl:w-2/5"} mx-auto`}
           // stop backdrop handler when clicking inside content
           onMouseDown={(e) => e.stopPropagation()}
         >
-          {/* Slide + fade with GPU acceleration */}
+          {/* Slide + fade — bottom sheet on mobile, centered on desktop */}
           <div
             className={`transform transition-all duration-200 ease-out will-change-transform
-              ${showModal ? "translate-y-0 opacity-100 scale-100" : "translate-y-4 opacity-0 scale-[0.98]"}`}
+              ${showModal
+                ? "translate-y-0 opacity-100 md:scale-100"
+                : "translate-y-full md:translate-y-4 opacity-0 md:scale-[0.98]"
+              }`}
           >
             <div
               id={id}
-              className="relative flex flex-col w-full bg-white/95 dark:bg-stone-900/95 backdrop-blur-xl border border-stone-200/60 dark:border-stone-700/60 rounded-2xl shadow-2xl shadow-stone-900/20 overflow-hidden"
+              className="relative flex flex-col w-full bg-white/95 dark:bg-stone-900/95 backdrop-blur-xl border border-stone-200/60 dark:border-stone-700/60 rounded-t-2xl md:rounded-2xl shadow-elevation-3 overflow-hidden safe-bottom"
             >
+              {/* Mobile drag handle */}
+              <div className="md:hidden flex justify-center pt-2 pb-1">
+                <div className="w-9 h-1 rounded-full bg-stone-300 dark:bg-stone-600" />
+              </div>
+
               {/* Close (X) */}
               <button
                 aria-label="Close"
                 onClick={(e) => { e.stopPropagation(); handleClose(); }}
-                className="absolute right-5 top-5 p-2 rounded-xl hover:bg-stone-100/80 dark:hover:bg-stone-700/80 active:bg-stone-200/80 dark:active:bg-stone-600/80 transition-all duration-200 z-10 group"
+                className="absolute right-5 top-5 md:top-5 p-2 rounded-xl hover:bg-stone-100/80 dark:hover:bg-stone-700/80 active:bg-stone-200/80 dark:active:bg-stone-600/80 transition-all duration-200 z-10 group"
               >
                 <X size={20} className="text-stone-400 dark:text-stone-500 group-hover:text-stone-600 dark:group-hover:text-stone-300 transition-colors duration-200" />
               </button>

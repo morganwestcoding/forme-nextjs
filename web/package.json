@@ -27,7 +27,6 @@
     "hugeicons-react": "^0.3.0",
     "isomorphic-dompurify": "^3.8.0",
     "jose": "^4.15.9",
-    "lucide-react": "^0.298.0",
     "mapbox-gl": "^3.9.4",
     "next": "^14.2.35",
     "next-auth": "^4.24.8",

@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { validateEnv } from './utils/env'
@@ -29,6 +29,18 @@ import WelcomeModal from '@/components/modals/WelcomeModal';
 import WalkthroughOverlay from '@/components/walkthrough/WalkthroughOverlay';
 import UpgradeModal from '@/components/modals/UpgradeModal';
 import UnreadBadgeProvider from '@/components/UnreadBadgeProvider';
+import NavigationProgress from '@/components/NavigationProgress';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0c0a09' },
+  ],
+}
 
 export const metadata: Metadata = {
   title: {
@@ -41,9 +53,11 @@ export const metadata: Metadata = {
     siteName: 'ForMe',
     title: 'ForMe — Your Complete Business Ecosystem',
     description: 'Book services, manage your business, and grow your professional presence — all in one platform.',
+    images: [{ url: '/api/og?title=ForMe&description=Your+Complete+Business+Ecosystem', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
+    images: ['/api/og?title=ForMe&description=Your+Complete+Business+Ecosystem'],
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://forme.app'),
 }
@@ -74,6 +88,7 @@ export default async function RootLayout({
             <html lang="en">
               <body className={inter.className}>
               <ComingSoonGate>
+                <NavigationProgress />
                 <div className="min-h-screen">
                   <LayoutContent>
                     {children}

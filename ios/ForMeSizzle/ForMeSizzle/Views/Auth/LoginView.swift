@@ -14,83 +14,101 @@ struct LoginView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                VStack(spacing: 8) {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 0) {
+                // Header
+                VStack(spacing: 6) {
                     Text("Welcome back")
-                        .font(.title.bold())
+                        .font(.system(size: 22, weight: .bold))
                         .foregroundColor(ForMe.textPrimary)
 
                     Text("Sign in to your account")
-                        .foregroundColor(ForMe.textSecondary)
+                        .font(.system(size: 14))
+                        .foregroundColor(ForMe.textTertiary)
                 }
                 .padding(.top, 40)
+                .padding(.bottom, 32)
 
-                VStack(spacing: 16) {
-                    // Email field
+                // Form
+                VStack(spacing: ForMe.space4) {
+                    // Email
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Email")
-                            .font(.subheadline.weight(.medium))
-                            .foregroundColor(ForMe.textPrimary)
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(ForMe.textSecondary)
 
-                        ZStack(alignment: .leading) {
-                            if email.isEmpty {
-                                Text("Email address")
-                                    .foregroundColor(ForMe.textTertiary)
-                            }
-                            TextField("", text: $email)
-                                .keyboardType(.emailAddress)
-                                .autocapitalization(.none)
-                                .focused($focusedField, equals: .email)
-                        }
-                        .forMeInput()
+                        TextField("you@example.com", text: $email)
+                            .font(.system(size: 15))
+                            .keyboardType(.emailAddress)
+                            .autocapitalization(.none)
+                            .textContentType(.emailAddress)
+                            .focused($focusedField, equals: .email)
+                            .padding(.horizontal, ForMe.space4)
+                            .padding(.vertical, 14)
+                            .background(ForMe.surface)
+                            .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                                    .stroke(focusedField == .email ? ForMe.borderHover : ForMe.borderLight, lineWidth: 1)
+                            )
                     }
 
-                    // Password field
+                    // Password
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Password")
-                            .font(.subheadline.weight(.medium))
-                            .foregroundColor(ForMe.textPrimary)
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(ForMe.textSecondary)
 
-                        HStack {
-                            if showPassword {
-                                TextField("Enter your password", text: $password)
-                                    .textContentType(.password)
-                                    .focused($focusedField, equals: .password)
-                            } else {
-                                SecureField("Enter your password", text: $password)
-                                    .textContentType(.password)
-                                    .focused($focusedField, equals: .password)
+                        HStack(spacing: 10) {
+                            Group {
+                                if showPassword {
+                                    TextField("Enter your password", text: $password)
+                                } else {
+                                    SecureField("Enter your password", text: $password)
+                                }
                             }
+                            .font(.system(size: 15))
+                            .textContentType(.password)
+                            .focused($focusedField, equals: .password)
 
                             Button {
                                 showPassword.toggle()
                             } label: {
                                 Image(systemName: showPassword ? "eye.slash" : "eye")
+                                    .font(.system(size: 15))
                                     .foregroundColor(ForMe.textTertiary)
-                                    .font(.body)
                             }
                         }
-                        .forMeInput()
+                        .padding(.horizontal, ForMe.space4)
+                        .padding(.vertical, 14)
+                        .background(ForMe.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                                .stroke(focusedField == .password ? ForMe.borderHover : ForMe.borderLight, lineWidth: 1)
+                        )
 
                         HStack {
                             Spacer()
                             Button("Forgot password?") {
-                                // TODO: Implement forgot password
+                                // TODO: forgot password flow
                             }
-                            .font(.caption)
-                            .foregroundColor(ForMe.accent)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(ForMe.textTertiary)
                         }
                     }
                 }
 
+                // Error
                 if let error = authViewModel.error {
                     Text(error)
-                        .foregroundColor(.red)
-                        .font(.caption)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(Color(hex: "F43F5E"))
                         .multilineTextAlignment(.center)
+                        .padding(.top, ForMe.space3)
                 }
 
+                // Submit
                 Button {
                     Task {
                         focusedField = nil
@@ -107,25 +125,28 @@ struct LoginView: View {
                 }
                 .buttonStyle(ForMeAccentButtonStyle(isEnabled: isFormValid))
                 .disabled(!isFormValid || authViewModel.isLoading)
+                .padding(.top, 24)
 
+                // Footer
                 HStack(spacing: 4) {
-                    Text("First time using ForMe?")
-                        .foregroundColor(ForMe.textSecondary)
-                    Button("Create an account") {
+                    Text("Don't have an account?")
+                        .foregroundColor(ForMe.textTertiary)
+                    Button("Sign up") {
                         dismiss()
                     }
-                    .foregroundColor(ForMe.accent)
-                    .fontWeight(.medium)
+                    .foregroundColor(ForMe.textPrimary)
+                    .fontWeight(.semibold)
                 }
-                .font(.subheadline)
+                .font(.system(size: 13))
+                .padding(.top, ForMe.space5)
 
                 Spacer()
             }
             .padding(.horizontal, 24)
         }
-        .tint(ForMe.textPrimary)
         .background(ForMe.background)
         .navigationBarTitleDisplayMode(.inline)
+        .tint(ForMe.textPrimary)
         .onAppear {
             focusedField = .email
         }

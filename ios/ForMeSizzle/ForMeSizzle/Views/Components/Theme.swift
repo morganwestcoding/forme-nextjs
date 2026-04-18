@@ -21,18 +21,17 @@ enum ForMe {
     static let space8: CGFloat = 32
     static let space10: CGFloat = 40
 
+    // MARK: - Page-level spacing (matches web spacing tokens)
+    static let pageHorizontal: CGFloat = 16   // px-4
+    static let pageTop: CGFloat = 32          // mt-8
+    static let sectionGap: CGFloat = 32       // gap between page sections
+    static let cardPadding: CGFloat = 20      // p-5
+
     // MARK: - Accent
     static let accent = Color(hex: "60A5FA")         // sky-400
     static let accentHover = Color(hex: "3B82F6")    // blue-500
     static let accentLight = Color(hex: "60A5FA", opacity: 0.1)
     static let accentShadow = Color(hex: "60A5FA", opacity: 0.25)
-
-    // MARK: - Backgrounds
-    static let background = Color(hex: "FAFAF9")     // stone-50
-    static let cardTop = Color(hex: "FAFAF9")
-    static let cardBottom = Color(hex: "F7F7F6")
-    static let surface = Color.white
-    static let inputBg = Color(hex: "F9FAFB")        // gray-50
 
     // MARK: - Stone Scale (matching web)
     static let stone50 = Color(hex: "FAFAF9")
@@ -45,17 +44,24 @@ enum ForMe {
     static let stone700 = Color(hex: "44403C")
     static let stone800 = Color(hex: "292524")
     static let stone900 = Color(hex: "1C1917")
+    static let stone950 = Color(hex: "0C0A09")
 
-    // MARK: - Borders
-    static let border = Color(hex: "D6D3D1", opacity: 0.9) // stone-300/90
-    static let borderLight = Color(hex: "E7E5E4")    // stone-200
-    static let borderHover = Color(hex: "A8A29E")    // stone-400
+    // MARK: - Adaptive Colors (light/dark)
+    static let background = Color("background")
+    static let surface = Color("surface")
+    static let cardBg = Color("cardBg")
+    static let inputBg = Color("inputBg")
 
-    // MARK: - Text
-    static let textPrimary = Color(hex: "171717")    // neutral-900
-    static let textSecondary = Color(hex: "78716C")  // stone-500
-    static let textTertiary = Color(hex: "A8A29E")   // stone-400
+    // MARK: - Adaptive Text
+    static let textPrimary = Color("textPrimary")
+    static let textSecondary = Color("textSecondary")
+    static let textTertiary = Color("textTertiary")
     static let textOnDark = Color.white
+
+    // MARK: - Adaptive Borders
+    static let border = Color("border")
+    static let borderLight = Color("borderLight")
+    static let borderHover = Color("borderHover")
 
     // MARK: - Status Colors
     static let statusConfirmed = Color(hex: "34D399")  // emerald-400
@@ -67,6 +73,37 @@ enum ForMe {
     // MARK: - Chat
     static let chatSent = Color(hex: "3B82F6")       // blue-500
     static let chatReceived = Color(hex: "F3F4F6")    // gray-100
+
+    // MARK: - Elevation System (matches web shadow-elevation-1/2/3)
+    enum Elevation {
+        case level1  // subtle — resting state
+        case level2  // cards — interactive hover
+        case level3  // modals, dropdowns, popovers
+
+        var radius: CGFloat {
+            switch self {
+            case .level1: return 3
+            case .level2: return 16
+            case .level3: return 48
+            }
+        }
+
+        var opacity: Double {
+            switch self {
+            case .level1: return 0.06
+            case .level2: return 0.06
+            case .level3: return 0.12
+            }
+        }
+
+        var y: CGFloat {
+            switch self {
+            case .level1: return 1
+            case .level2: return 4
+            case .level3: return 16
+            }
+        }
+    }
 
     // MARK: - Category System (matches web Categories.tsx exactly)
     enum Category: String, CaseIterable, Codable {
@@ -153,32 +190,43 @@ extension Color {
     }
 }
 
+// MARK: - Elevation Modifier
+
+struct ForMeElevation: ViewModifier {
+    let level: ForMe.Elevation
+
+    func body(content: Content) -> some View {
+        content
+            .shadow(color: .black.opacity(level.opacity), radius: level.radius, x: 0, y: level.y)
+    }
+}
+
+extension View {
+    func elevation(_ level: ForMe.Elevation) -> some View {
+        modifier(ForMeElevation(level: level))
+    }
+}
+
 // MARK: - Card Style (rounded-2xl)
 
 struct ForMeCardStyle: ViewModifier {
-    var padding: CGFloat = ForMe.space4
+    var padding: CGFloat = ForMe.cardPadding
 
     func body(content: Content) -> some View {
         content
             .padding(padding)
-            .background(
-                LinearGradient(
-                    colors: [ForMe.cardTop, ForMe.cardBottom],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
+            .background(ForMe.cardBg)
             .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
                     .stroke(ForMe.border, lineWidth: 1)
             )
-            .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
+            .elevation(.level1)
     }
 }
 
 extension View {
-    func forMeCard(padding: CGFloat = ForMe.space4) -> some View {
+    func forMeCard(padding: CGFloat = ForMe.cardPadding) -> some View {
         modifier(ForMeCardStyle(padding: padding))
     }
 }
@@ -187,34 +235,71 @@ extension View {
 
 struct ForMeAccentButtonStyle: ButtonStyle {
     var isEnabled: Bool = true
+    @Environment(\.colorScheme) private var colorScheme
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.system(size: 15, weight: .semibold))
-            .foregroundColor(.white)
+            .foregroundColor(colorScheme == .dark ? ForMe.stone900 : .white)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(isEnabled ? ForMe.stone900 : ForMe.textTertiary)
+            .frame(minHeight: 48)
+            .background(
+                colorScheme == .dark
+                    ? (isEnabled ? Color.white : ForMe.stone600)
+                    : (isEnabled ? ForMe.stone900 : ForMe.textTertiary)
+            )
             .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
-            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .elevation(.level1)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
             .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 
 struct ForMeSecondaryButtonStyle: ButtonStyle {
+    @Environment(\.colorScheme) private var colorScheme
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.system(size: 15, weight: .semibold))
             .foregroundColor(ForMe.textPrimary)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(Color.white)
+            .frame(minHeight: 48)
+            .background(ForMe.surface)
             .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
-                    .stroke(ForMe.borderLight, lineWidth: 1)
+                    .stroke(ForMe.border, lineWidth: 1)
             )
-            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
+
+struct ForMeDestructiveButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 15, weight: .semibold))
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 48)
+            .background(Color(hex: "F43F5E")) // rose-500
+            .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+            .shadow(color: Color(hex: "F43F5E", opacity: 0.25), radius: 8, x: 0, y: 2)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
+
+struct ForMeGhostButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 15, weight: .semibold))
+            .foregroundColor(ForMe.textSecondary)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 48)
+            .background(configuration.isPressed ? ForMe.stone100 : Color.clear)
+            .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
             .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
     }
 }
@@ -279,11 +364,11 @@ struct ForMeSearchBar: View {
             RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
                 .stroke(isFocused ? ForMe.borderHover : ForMe.border, lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
+        .elevation(.level1)
     }
 }
 
-// MARK: - Header Icon Button (rounded-full)
+// MARK: - Header Icon Button (48pt touch target, matches web w-12 h-12)
 
 struct HeaderIconButton: View {
     let icon: String
@@ -294,14 +379,12 @@ struct HeaderIconButton: View {
             Image(icon)
                 .renderingMode(.template)
                 .resizable()
-                .frame(width: 18, height: 18)
+                .frame(width: 20, height: 20)
                 .foregroundColor(ForMe.textSecondary)
-                .frame(width: 38, height: 38)
-                .background(ForMe.stone100)
-                .clipShape(Circle())
-                .overlay(Circle().stroke(ForMe.border, lineWidth: 1))
-                .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
+                .frame(width: 48, height: 48)
+                .contentShape(Circle())
         }
+        .buttonStyle(.plain)
     }
 }
 
@@ -311,23 +394,32 @@ struct CategoryPill: View {
     let category: ForMe.Category
     let isSelected: Bool
     let action: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         Button(action: action) {
             Text(category.rawValue)
                 .font(.system(size: 13, weight: .medium))
-                .foregroundColor(isSelected ? .white : ForMe.textSecondary)
+                .foregroundColor(
+                    isSelected
+                        ? (colorScheme == .dark ? ForMe.stone900 : .white)
+                        : ForMe.textSecondary
+                )
                 .padding(.horizontal, ForMe.space4)
                 .frame(height: 36)
-                .background(isSelected ? ForMe.stone900 : .clear)
+                .background(
+                    isSelected
+                        ? (colorScheme == .dark ? Color.white : ForMe.stone900)
+                        : Color.clear
+                )
                 .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
-                        .stroke(isSelected ? ForMe.stone900 : ForMe.stone200, lineWidth: 1)
+                        .stroke(isSelected ? Color.clear : ForMe.stone200, lineWidth: 1)
                 )
         }
         .buttonStyle(.plain)
-        .scaleEffect(1.0) // prevents inherited scale
+        .scaleEffect(1.0)
     }
 }
 
@@ -410,6 +502,10 @@ extension View {
             .buttonStyle(ForMeAccentButtonStyle())
         Button("Secondary Button") {}
             .buttonStyle(ForMeSecondaryButtonStyle())
+        Button("Destructive") {}
+            .buttonStyle(ForMeDestructiveButtonStyle())
+        Button("Ghost") {}
+            .buttonStyle(ForMeGhostButtonStyle())
         Text("Card content goes here")
             .frame(maxWidth: .infinity, alignment: .leading)
             .forMeCard()

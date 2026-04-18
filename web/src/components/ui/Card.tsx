@@ -27,7 +27,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
           dark:bg-stone-900 dark:border-stone-800
           ${PADDING_CLASSES[padding]}
           ${interactive
-            ? 'transition-all duration-200 hover:border-stone-300 hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] cursor-pointer'
+            ? 'transition-all duration-200 hover:border-stone-300 hover:shadow-elevation-2 cursor-pointer'
             : ''}
           ${className}
         `}

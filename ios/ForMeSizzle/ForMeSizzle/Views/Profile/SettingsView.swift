@@ -144,7 +144,6 @@ struct SettingsView: View {
                 Button("Cancel", role: .cancel) {}
             }
         }
-        .preferredColorScheme(isDarkMode ? .dark : .light)
     }
 
     private func settingRow<Content: View>(

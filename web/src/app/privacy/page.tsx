@@ -7,19 +7,19 @@ export const metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-stone-950">
       <div className="max-w-3xl mx-auto px-6 py-16">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm text-stone-400 hover:text-stone-600 transition-colors mb-10"
+          className="inline-flex items-center gap-2 text-sm text-stone-400 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300 transition-colors mb-10"
         >
           &larr; Back to ForMe
         </Link>
 
-        <h1 className="text-3xl font-bold text-stone-900 tracking-tight mb-2">ForMe Privacy Policy</h1>
-        <p className="text-sm text-stone-400 mb-12">Effective Date: January 1, 2026</p>
+        <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100 tracking-tight mb-2">ForMe Privacy Policy</h1>
+        <p className="text-sm text-stone-400 dark:text-stone-500 mb-12">Effective Date: January 1, 2026</p>
 
-        <div className="prose prose-stone prose-sm max-w-none [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-stone-900 [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-stone-800 [&_h3]:mt-6 [&_h3]:mb-3 [&_p]:text-stone-600 [&_p]:leading-relaxed [&_ul]:text-stone-600 [&_li]:text-stone-600">
+        <div className="prose prose-stone prose-sm max-w-none [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-stone-900 dark:[&_h2]:text-stone-100 [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-stone-800 dark:[&_h3]:text-stone-200 [&_h3]:mt-6 [&_h3]:mb-3 [&_p]:text-stone-600 dark:[&_p]:text-stone-400 [&_p]:leading-relaxed [&_ul]:text-stone-600 dark:[&_ul]:text-stone-400 [&_li]:text-stone-600 dark:[&_li]:text-stone-400 [&_a]:text-stone-600 dark:[&_a]:text-stone-400 [&_a]:underline hover:[&_a]:text-stone-800 dark:hover:[&_a]:text-stone-200">
 
           <h2>1. Introduction</h2>
           <p>Welcome to ForMe.</p>

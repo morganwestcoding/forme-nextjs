@@ -120,6 +120,61 @@ html {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
+/* ── Premium typographic refinements ── */
+html {
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Safe-area insets for notch / dynamic island devices ── */
+@supports (padding: env(safe-area-inset-bottom)) {
+  body {
+    padding-left:   env(safe-area-inset-left);
+    padding-right:  env(safe-area-inset-right);
+  }
+
+  /* Fixed-position shells (modals, full-screen flows) handle their own insets */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* ── Viewport meta handled in layout, but ensure meta-theme works ── */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    color-scheme: dark;
+  }
+}
+
+/* ── Mobile touch & scroll refinements ── */
+@media (hover: none) and (pointer: coarse) {
+  /* Ensure minimum 44px touch targets on mobile */
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Exempt inline/text links and tiny icon badges from the 44px rule */
+  a:not([class*="flex"]):not([class*="button"]):not([class*="rounded"]),
+  .prose a,
+  nav a {
+    min-height: unset;
+    min-width: unset;
+  }
+}
+
+/* ── Selection color ── */
+::selection {
+  background-color: #d6d3d1; /* stone-300 */
+  color: #1c1917;            /* stone-900 */
+}
+
+.dark ::selection {
+  background-color: #44403c; /* stone-700 */
+  color: #fafaf9;            /* stone-50 */
+}
+
 /* ---------- Leaflet map overrides ---------- */
 .leaflet-bottom,
 .leaflet-control,

@@ -58,6 +58,22 @@ module.exports = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      /* ── Elevation system ── */
+      boxShadow: {
+        'elevation-1': '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+        'elevation-2': '0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)',
+        'elevation-3': '0 16px 48px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06)',
+        'dark-drop-shadow': '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)',
+      },
+      /* ── Page-level spacing tokens ── */
+      spacing: {
+        'page-x-mobile': '1rem',       /* 16px — px-4 */
+        'page-x-tablet': '1.5rem',     /* 24px — px-6 */
+        'page-x-desktop': '2rem',      /* 32px — px-8 */
+        'page-top': '2rem',            /* 32px — mt-8 */
+        'section-gap': '2rem',         /* 32px — gap between page sections */
+        'card-padding': '1.25rem',     /* 20px — p-5 */
+      },
       keyframes: {
         "accordion-down": {
           from: { height: 0 },
@@ -77,10 +93,6 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
         "shimmer": "shimmer 2s infinite",
       },
-      boxShadow: {
-        'dark-drop-shadow': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
-      },
-      
     },
   },
   plugins: [

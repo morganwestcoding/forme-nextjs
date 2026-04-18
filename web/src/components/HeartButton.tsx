@@ -11,8 +11,6 @@ interface HeartButtonProps {
   favoriteIds?: string[];
 }
 
-const FILL_COLOR = '#292524'; // stone-900 — solid dark fill when active
-
 const HeartButton: React.FC<HeartButtonProps> = ({
   listingId,
   currentUser,
@@ -28,97 +26,36 @@ const HeartButton: React.FC<HeartButtonProps> = ({
     toggleFavorite(e as unknown as React.MouseEvent<HTMLDivElement>);
   }, [toggleFavorite]);
 
-  /** ----- Worker variant ----- */
-  if (variant === 'worker') {
-    return (
-      <svg
-        onClick={handleToggle}
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        width="24"
-        height="24"
-        className="transition-all duration-500 ease-out cursor-pointer active:scale-[0.97]"
-        aria-label={hasFavorited ? 'Remove from favorites' : 'Add to favorites'}
-        role="button"
-      >
-        <title>Save</title>
-        <path
-          d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z"
-          fill={hasFavorited ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.3)'}
-          stroke={hasFavorited ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)'}
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
+  /*
+   * Two contexts:
+   *  - "on-light" (card, listingHead) — dark fill/stroke for contrast on white
+   *  - "on-dark"  (default, worker)   — light fill/stroke for contrast on images/dark bg
+   */
+  const onLight = variant === 'card' || variant === 'listingHead';
 
-  /** ----- ListingHead variant ----- */
-  if (variant === 'listingHead') {
-    return (
-      <svg
-        onClick={handleToggle}
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        width="20"
-        height="20"
-        className="transition-all duration-300 ease-out cursor-pointer active:scale-[0.92] hover:scale-110"
-        aria-label={hasFavorited ? 'Remove from favorites' : 'Add to favorites'}
-        role="button"
-      >
-        <path
-          d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z"
-          fill={hasFavorited ? '#e11d48' : 'none'}
-          stroke={hasFavorited ? '#e11d48' : '#d4d4d4'}
-          strokeWidth="1.5"
-        />
-      </svg>
-    );
-  }
+  const activeFill   = onLight ? '#292524' : 'rgba(255,255,255,0.9)';   // stone-900 / white
+  const activeStroke  = onLight ? '#292524' : 'rgba(255,255,255,0.9)';
+  const inactiveFill  = 'none';
+  const inactiveStroke = onLight ? '#a8a29e' : 'rgba(255,255,255,0.6)'; // stone-400 / white-60
 
-  /** ----- Card variant (visible on white backgrounds) ----- */
-  if (variant === 'card') {
-    return (
-      <svg
-        onClick={handleToggle}
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        width="20"
-        height="20"
-        className="transition-all duration-500 ease-out cursor-pointer active:scale-[0.97]"
-        aria-label={hasFavorited ? 'Remove from favorites' : 'Add to favorites'}
-        role="button"
-      >
-        <path
-          d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z"
-          fill={hasFavorited ? FILL_COLOR : 'none'}
-          stroke={hasFavorited ? FILL_COLOR : '#78716c'}
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
+  const size = variant === 'worker' ? 24 : 20;
 
-  /** ----- Default variant (on dark/image backgrounds) ----- */
   return (
     <svg
       onClick={handleToggle}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      className="transition-all duration-500 ease-out cursor-pointer active:scale-[0.97]"
+      width={size}
+      height={size}
+      className="transition-all duration-500 ease-out cursor-pointer active:scale-[0.92] hover:scale-110"
       aria-label={hasFavorited ? 'Remove from favorites' : 'Add to favorites'}
       role="button"
     >
       <title>Save</title>
       <path
         d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z"
-        fill={hasFavorited ? 'rgba(255,255,255,0.9)' : 'none'}
-        stroke={hasFavorited ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.8)'}
+        fill={hasFavorited ? activeFill : inactiveFill}
+        stroke={hasFavorited ? activeStroke : inactiveStroke}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"

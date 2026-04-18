@@ -3,66 +3,133 @@ import SwiftUI
 struct WelcomeView: View {
     @State private var showLogin = false
     @State private var showRegister = false
-    @State private var particlesReady = false
+    @State private var logoReady = false
+    @State private var taglineReady = false
     @State private var contentReady = false
+    @State private var glowPulse = false
 
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(hex: "0A0A0A").ignoresSafeArea()
+                Color.black.ignoresSafeArea()
 
-                // Particle field
-                ParticleFieldView()
-                    .ignoresSafeArea()
-                    .opacity(particlesReady ? 1 : 0)
+                // Top-down vignette
+                VStack(spacing: 0) {
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.04),
+                            Color.white.opacity(0.01),
+                            Color.clear
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(height: 300)
+                    Spacer()
+                }
+                .ignoresSafeArea()
 
-                // Content
                 VStack(spacing: 0) {
                     Spacer()
 
-                    Image("LogoWhite")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 200)
-                        .shadow(color: .white.opacity(0.15), radius: 20, x: 0, y: 0)
-                        .opacity(contentReady ? 1 : 0)
-                        .scaleEffect(contentReady ? 1 : 0.97)
+                    ZStack {
+                        // Breathing ambient glow — visible on black
+                        Circle()
+                            .fill(
+                                RadialGradient(
+                                    colors: [
+                                        Color.white.opacity(0.15),
+                                        Color.white.opacity(0.06),
+                                        Color.clear
+                                    ],
+                                    center: .center,
+                                    startRadius: 10,
+                                    endRadius: 160
+                                )
+                            )
+                            .frame(width: 320, height: 320)
+                            .scaleEffect(glowPulse ? 1.1 : 0.92)
+                            .opacity(glowPulse ? 1 : 0.4)
+                            .animation(
+                                .easeInOut(duration: 5)
+                                .repeatForever(autoreverses: true),
+                                value: glowPulse
+                            )
+
+                        // Logo + tagline
+                        VStack(spacing: 28) {
+                            Image("LogoWhite")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 140)
+                                .mask(
+                                    RadialGradient(
+                                        colors: [.white, .white, .white.opacity(0)],
+                                        center: .center,
+                                        startRadius: 30,
+                                        endRadius: 80
+                                    )
+                                )
+                                .opacity(logoReady ? 1 : 0)
+                                .scaleEffect(logoReady ? 1 : 0.95)
+
+                            Text("Your complete business ecosystem")
+                                .font(.system(size: 15, weight: .regular))
+                                .foregroundColor(Color.white.opacity(0.35))
+                                .tracking(0.3)
+                                .opacity(taglineReady ? 1 : 0)
+                                .offset(y: taglineReady ? 0 : 6)
+                        }
+                    }
 
                     Spacer()
 
-                    // Actions
-                    VStack(spacing: 10) {
+                    // Buttons
+                    VStack(spacing: 12) {
                         Button {
+                            UIImpactFeedbackGenerator(style: .soft).impactOccurred()
                             showRegister = true
                         } label: {
                             Text("Get Started")
-                                .font(.system(size: 16, weight: .semibold, design: .rounded))
-                                .foregroundColor(Color(hex: "0A0A0A"))
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundColor(.black)
                                 .frame(maxWidth: .infinity)
-                                .frame(height: 54)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                        .fill(.white)
-                                        .shadow(color: .white.opacity(0.15), radius: 20, x: 0, y: 0)
-                                )
+                                .frame(height: 52)
+                                .contentShape(Rectangle())
                         }
-                        .buttonStyle(WelcomePressStyle())
+                        .background(
+                            RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                                .fill(.white)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
 
                         Button {
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
                             showLogin = true
                         } label: {
-                            Text("I already have an account")
-                                .font(.system(size: 14, weight: .medium, design: .rounded))
-                                .foregroundColor(.white.opacity(0.3))
+                            Text("Sign In")
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundColor(.white.opacity(0.7))
                                 .frame(maxWidth: .infinity)
-                                .frame(height: 44)
+                                .frame(height: 52)
+                                .contentShape(Rectangle())
                         }
-                        .buttonStyle(WelcomePressStyle())
+                        .background(
+                            RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                                .stroke(Color.white.opacity(0.18), lineWidth: 1)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+
+                        Text("By continuing you agree to our Terms & Privacy Policy")
+                            .font(.system(size: 11))
+                            .foregroundColor(Color.white.opacity(0.2))
+                            .multilineTextAlignment(.center)
+                            .padding(.top, 8)
                     }
-                    .padding(.horizontal, 28)
-                    .padding(.bottom, 36)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 48)
                     .opacity(contentReady ? 1 : 0)
-                    .offset(y: contentReady ? 0 : 12)
+                    .offset(y: contentReady ? 0 : 16)
                 }
             }
             .navigationDestination(isPresented: $showLogin) {
@@ -72,109 +139,20 @@ struct WelcomeView: View {
                 OnboardingFlowView()
             }
             .onAppear {
-                withAnimation(.easeOut(duration: 0.8)) {
-                    particlesReady = true
+                withAnimation(.easeOut(duration: 0.7).delay(0.2)) {
+                    logoReady = true
                 }
-                withAnimation(.easeOut(duration: 0.9).delay(0.6)) {
+                withAnimation(.easeOut(duration: 0.5).delay(0.5)) {
+                    taglineReady = true
+                }
+                withAnimation(.easeOut(duration: 0.6).delay(0.8)) {
                     contentReady = true
                 }
-            }
-        }
-    }
-}
-
-// MARK: - Particle field
-
-private struct Particle: Identifiable {
-    let id = UUID()
-    var x: CGFloat
-    var y: CGFloat
-    let size: CGFloat
-    let opacity: Double
-    let speed: CGFloat
-    let color: Color
-}
-
-private struct ParticleFieldView: View {
-    @State private var particles: [Particle] = []
-    @State private var canvasSize: CGSize = .zero
-
-    private let colors: [Color] = [
-        Color(hex: "60A5FA"),
-        Color(hex: "A78BFA"),
-        Color(hex: "F472B6"),
-        Color(hex: "34D399"),
-        .white,
-        .white,
-        .white,
-    ]
-
-    var body: some View {
-        GeometryReader { geo in
-            TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { timeline in
-                Canvas { context, size in
-                    for particle in particles {
-                        let rect = CGRect(
-                            x: particle.x - particle.size / 2,
-                            y: particle.y - particle.size / 2,
-                            width: particle.size,
-                            height: particle.size
-                        )
-                        context.opacity = particle.opacity
-                        context.fill(
-                            Circle().path(in: rect),
-                            with: .color(particle.color)
-                        )
-                    }
-                }
-                .onChange(of: timeline.date) {
-                    updateParticles()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                    glowPulse = true
                 }
             }
-            .onAppear {
-                canvasSize = geo.size
-                spawnInitialParticles()
-            }
-            .onChange(of: geo.size) {
-                canvasSize = geo.size
-            }
         }
-    }
-
-    private func spawnInitialParticles() {
-        particles = (0..<60).map { _ in
-            Particle(
-                x: CGFloat.random(in: 0...canvasSize.width),
-                y: CGFloat.random(in: 0...canvasSize.height),
-                size: CGFloat.random(in: 2...5),
-                opacity: Double.random(in: 0.25...0.7),
-                speed: CGFloat.random(in: 0.15...0.6),
-                color: colors.randomElement()!
-            )
-        }
-    }
-
-    private func updateParticles() {
-        for i in particles.indices {
-            particles[i].y -= particles[i].speed
-            particles[i].x += CGFloat.random(in: -0.15...0.15)
-
-            if particles[i].y < -10 {
-                particles[i].y = canvasSize.height + 10
-                particles[i].x = CGFloat.random(in: 0...canvasSize.width)
-            }
-        }
-    }
-}
-
-// MARK: - Button style
-
-private struct WelcomePressStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
-            .opacity(configuration.isPressed ? 0.8 : 1.0)
-            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 
