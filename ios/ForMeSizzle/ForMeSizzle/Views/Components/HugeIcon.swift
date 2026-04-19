@@ -46,6 +46,22 @@ extension HugeIcon {
     ]
 }
 
+// MARK: - MoreHorizontal (3-dot horizontal — matches hugeicons MoreHorizontalIcon)
+
+struct HugeMoreHorizontal: View {
+    var size: CGFloat = 18
+    var color: Color = ForMe.textTertiary
+
+    var body: some View {
+        HStack(spacing: size * 0.18) {
+            Circle().fill(color).frame(width: size * 0.18, height: size * 0.18)
+            Circle().fill(color).frame(width: size * 0.18, height: size * 0.18)
+            Circle().fill(color).frame(width: size * 0.18, height: size * 0.18)
+        }
+        .frame(width: size, height: size)
+    }
+}
+
 // MARK: - SVG Path Parser (shared; previously in FeedView)
 
 extension CGPath {

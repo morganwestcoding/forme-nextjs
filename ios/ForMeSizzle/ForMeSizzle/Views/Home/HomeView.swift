@@ -345,10 +345,10 @@ private extension HomeView {
                         .padding(.horizontal)
                         .padding(.bottom, 4)
 
-                    VStack(spacing: 30) {
-                        ForEach(Array(filteredListings.prefix(9).enumerated()), id: \.element.id) { index, listing in
+                    LazyVStack(spacing: 4) {
+                        ForEach(Array(filteredListings.enumerated()), id: \.element.id) { index, listing in
                             NavigationLink(value: listing) {
-                                ListingFullWidthCard(listing: listing)
+                                ListingRow(listing: listing)
                             }
                             .buttonStyle(.plain)
                             .staggeredFadeIn(index: index)
@@ -479,6 +479,27 @@ struct ListingRow: View {
             }
 
             Spacer()
+
+            // Trailing 3-dot menu
+            Menu {
+                Button {
+                    quickBook()
+                } label: {
+                    Label("Quick Book", systemImage: "calendar.badge.plus")
+                }
+                Button {
+                    shareListing()
+                } label: {
+                    Label("Share", systemImage: "square.and.arrow.up")
+                }
+            } label: {
+                HugeMoreHorizontal(size: 18, color: ForMe.textTertiary)
+                    .frame(width: 36, height: 36)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .menuOrder(.fixed)
+            .padding(.trailing, -8)
         }
         .padding(ForMe.space3)
     }
@@ -492,6 +513,20 @@ struct ListingRow: View {
         // Matches web: if rating is 0, show 5.0 (fresh listings default)
         let r = listing.rating ?? 0
         return r == 0 ? "5.0" : String(format: "%.1f", r)
+    }
+
+    private func quickBook() {
+        // TODO: present BookingView for the first available service
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+
+    private func shareListing() {
+        let text = "\(listing.title) on ForMe"
+        let activityVC = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let root = scene.windows.first?.rootViewController {
+            root.present(activityVC, animated: true)
+        }
     }
 }
 

@@ -56,22 +56,18 @@ class HomeViewModel: ObservableObject {
 
             for listing in response.listings {
                 if let owner = listing.user, seen.insert(owner.id).inserted {
-                    // Owner: use their image, fall back to the listing's hero image
-                    let ownerWithImage = CompactUser(
-                        id: owner.id,
-                        name: owner.name,
-                        image: owner.image ?? listing.imageSrc
-                    )
-                    aggregated.append(Professional(id: owner.id, user: ownerWithImage, listing: listing))
+                    aggregated.append(Professional(id: owner.id, user: owner, listing: listing))
                 }
                 for employee in (listing.employees ?? []) {
-                    let userId = employee.userId ?? employee.id
+                    // The API returns the employee's profile image nested under employee.user.image
+                    // (or .imageSrc). Employee.imageSrc on the root object is not populated.
+                    guard let employeeUser = employee.user else { continue }
+                    let userId = employeeUser.id
                     guard seen.insert(userId).inserted else { continue }
-                    // Employee: use their image, fall back to the business's listing image
                     let user = CompactUser(
                         id: userId,
                         name: employee.fullName,
-                        image: employee.imageSrc ?? listing.imageSrc
+                        image: employeeUser.image ?? employeeUser.imageSrc
                     )
                     aggregated.append(Professional(id: userId, user: user, listing: listing))
                 }

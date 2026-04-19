@@ -30,39 +30,36 @@ struct PostCard: View {
                 )
             }
 
-            // Heart + Share — top right, vertical (matches web)
-            VStack(spacing: 10) {
+            // 3-dot menu — top right (favorite, share, report)
+            Menu {
                 Button {
-                    isLiked.toggle()
-                    Task {
-                        do {
-                            if isLiked {
-                                try await APIService.shared.addFavorite(listingId: post.id)
-                            } else {
-                                try await APIService.shared.removeFavorite(listingId: post.id)
-                            }
-                        } catch {
-                            isLiked.toggle()
-                        }
-                    }
+                    toggleFavorite()
                 } label: {
-                    Image(systemName: isLiked ? "heart.fill" : "heart")
-                        .font(.system(size: 20, weight: .medium))
-                        .foregroundColor(isLiked ? .red : .white.opacity(0.85))
-                        .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+                    Label(isLiked ? "Unfavorite" : "Favorite",
+                          systemImage: isLiked ? "heart.slash" : "heart")
                 }
                 Button {
-                    let text = post.content ?? ""
-                    let activityVC = UIActivityViewController(activityItems: [text], applicationActivities: nil)
-                    if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                       let root = scene.windows.first?.rootViewController {
-                        root.present(activityVC, animated: true)
-                    }
+                    sharePost()
                 } label: {
-                    HugeIcon(paths: HugeIcon.sharePaths, size: 20, color: .white.opacity(0.85))
-                        .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+                    Label("Share", systemImage: "square.and.arrow.up")
                 }
+                Button {
+                    // TODO: bookmark post
+                } label: {
+                    Label("Save", systemImage: "bookmark")
+                }
+                Button(role: .destructive) {
+                    // TODO: report post
+                } label: {
+                    Label("Report", systemImage: "flag")
+                }
+            } label: {
+                HugeMoreHorizontal(size: 20, color: .white.opacity(0.85))
+                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+                    .frame(width: 36, height: 36)
+                    .contentShape(Rectangle())
             }
+            .menuOrder(.fixed)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .padding(ForMe.space4)
 
@@ -171,6 +168,30 @@ struct PostCard: View {
         let f = DateFormatter()
         f.dateFormat = "MMM d"
         return f.string(from: date)
+    }
+
+    private func sharePost() {
+        let text = post.content ?? ""
+        let activityVC = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let root = scene.windows.first?.rootViewController {
+            root.present(activityVC, animated: true)
+        }
+    }
+
+    private func toggleFavorite() {
+        isLiked.toggle()
+        Task {
+            do {
+                if isLiked {
+                    try await APIService.shared.addFavorite(listingId: post.id)
+                } else {
+                    try await APIService.shared.removeFavorite(listingId: post.id)
+                }
+            } catch {
+                isLiked.toggle()
+            }
+        }
     }
 }
 
