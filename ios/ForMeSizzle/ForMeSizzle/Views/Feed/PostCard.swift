@@ -6,7 +6,7 @@ struct PostCard: View {
     @State private var isLiked = false
 
     private var isTextPost: Bool { post.imageSrc == nil && post.mediaUrl == nil }
-    private var isVideo: Bool { post.mediaType == "video" }
+    private var isVideo: Bool { post.isVideoPost }
     private var likeCount: Int { post.likes?.count ?? 0 }
     private var commentCount: Int { post.comments?.count ?? 0 }
 
@@ -59,9 +59,7 @@ struct PostCard: View {
                         root.present(activityVC, animated: true)
                     }
                 } label: {
-                    Image(systemName: "arrow.up.right")
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundColor(.white.opacity(0.7))
+                    HugeIcon(paths: HugeIcon.sharePaths, size: 20, color: .white.opacity(0.85))
                         .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                 }
             }
@@ -138,6 +136,9 @@ struct PostCard: View {
                     .lineLimit(7)
                     .padding(20)
             }
+        } else if isVideo, let videoUrl = post.mediaUrl, let url = URL(string: videoUrl) {
+            // Extract first-frame thumbnail for videos on the discover feed
+            VideoThumbnail(url: url)
         } else if let imageUrl = post.imageSrc ?? post.thumbnailUrl ?? post.mediaUrl {
             AsyncImage(url: URL(string: imageUrl)) { phase in
                 switch phase {

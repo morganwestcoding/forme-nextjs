@@ -104,20 +104,18 @@ private extension HomeView {
 
             Spacer()
 
-            HStack(spacing: 12) {
-                // Plus / Create button
+            HStack(spacing: 2) {
+                // Plus / Create button — matches HeaderIconButton styling
                 Button {
                     appState.showingCreateMenu = true
                 } label: {
                     Image(systemName: "plus")
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.system(size: 20, weight: .regular))
                         .foregroundColor(ForMe.textSecondary)
-                        .frame(width: 38, height: 38)
-                        .background(ForMe.stone100)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(ForMe.border, lineWidth: 1))
-                        .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
+                        .frame(width: 48, height: 48)
+                        .contentShape(Circle())
                 }
+                .buttonStyle(.plain)
 
                 HeaderIconButton(icon: "AlertBell") {
                     appState.showingNotifications = true
@@ -134,6 +132,7 @@ private extension HomeView {
                         size: .smallMedium
                     )
                 }
+                .padding(.leading, 4)
             }
         }
         .padding(.horizontal)
@@ -536,9 +535,7 @@ struct ListingFullWidthCard: View {
                     Button {
                         shareListing()
                     } label: {
-                        Image(systemName: "arrow.up.right")
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(.white.opacity(0.85))
+                        HugeIcon(paths: HugeIcon.sharePaths, size: 20, color: .white.opacity(0.85))
                             .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                     }
                 }

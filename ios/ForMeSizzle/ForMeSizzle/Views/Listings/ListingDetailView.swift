@@ -43,11 +43,9 @@ struct ListingDetailView: View {
                             .clipShape(Circle())
                     }
                     Button {
-                        // TODO: share
+                        shareListing()
                     } label: {
-                        Image(systemName: "square.and.arrow.up")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(ForMe.textPrimary)
+                        HugeIcon(paths: HugeIcon.sharePaths, size: 16, color: ForMe.textPrimary)
                             .frame(width: 34, height: 34)
                             .background(.ultraThinMaterial)
                             .clipShape(Circle())
@@ -71,6 +69,15 @@ struct ListingDetailView: View {
 private extension ListingDetailView {
     var heroSection: some View {
         Color.clear.frame(height: 20)
+    }
+
+    func shareListing() {
+        let text = "\(listing.title) on ForMe"
+        let activityVC = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let root = scene.windows.first?.rootViewController {
+            root.present(activityVC, animated: true)
+        }
     }
 }
 
