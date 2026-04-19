@@ -68,19 +68,6 @@ struct PostCard: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .padding(ForMe.space4)
 
-            // Video badge — top left
-            if isVideo {
-                Image(systemName: "play.fill")
-                    .font(.system(size: 8))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 5)
-                    .background(.black.opacity(0.5))
-                    .clipShape(Capsule())
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                    .padding(ForMe.space4)
-            }
-
             // Bottom info — avatar + name + content + stats (matches web)
             HStack(alignment: .bottom, spacing: 6) {
                 // Avatar — small circle with white ring
@@ -151,7 +138,7 @@ struct PostCard: View {
                     .lineLimit(7)
                     .padding(20)
             }
-        } else if let imageUrl = post.imageSrc ?? post.mediaUrl ?? post.thumbnailUrl {
+        } else if let imageUrl = post.imageSrc ?? post.thumbnailUrl ?? post.mediaUrl {
             AsyncImage(url: URL(string: imageUrl)) { phase in
                 switch phase {
                 case .success(let image):

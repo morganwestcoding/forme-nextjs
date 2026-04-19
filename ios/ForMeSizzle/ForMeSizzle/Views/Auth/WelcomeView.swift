@@ -88,12 +88,17 @@ struct WelcomeView: View {
                                 .opacity(logoReady ? 1 : 0)
                                 .scaleEffect(logoReady ? 1 : 0.95)
 
-                            Text("Your complete business ecosystem")
-                                .font(.system(size: 15, weight: .regular))
-                                .foregroundColor(Color.white.opacity(0.5))
-                                .tracking(0.3)
-                                .opacity(taglineReady ? 1 : 0)
-                                .offset(y: taglineReady ? 0 : 6)
+                            VStack(spacing: 4) {
+                                Text("The professionals you love.")
+                                    .foregroundColor(Color.white.opacity(0.65))
+                                Text("The experiences you'll remember.")
+                                    .foregroundColor(Color.white.opacity(0.45))
+                            }
+                            .font(.system(size: 15, weight: .regular))
+                            .tracking(0.2)
+                            .multilineTextAlignment(.center)
+                            .opacity(taglineReady ? 1 : 0)
+                            .offset(y: taglineReady ? 0 : 6)
                         }
                     }
 
