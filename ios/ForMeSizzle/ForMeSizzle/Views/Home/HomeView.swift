@@ -381,16 +381,11 @@ private extension HomeView {
                         .padding(.bottom, 4)
 
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
-                        ForEach(Array(viewModel.employees.prefix(9).enumerated()), id: \.element.id) { index, provider in
-                            let providerListing = viewModel.listings.first { $0.user?.id == provider.id || $0.userId == provider.id }
-                            if let listing = providerListing {
-                                NavigationLink(value: listing) {
-                                    ProviderCard(user: provider)
-                                }
-                                .buttonStyle(.plain)
-                            } else {
-                                ProviderCard(user: provider)
+                        ForEach(Array(viewModel.employees.enumerated()), id: \.element.id) { index, professional in
+                            NavigationLink(value: professional.listing) {
+                                ProviderCard(user: professional.user, listing: professional.listing)
                             }
+                            .buttonStyle(.plain)
                         }
                     }
                     .padding(.horizontal)
@@ -460,18 +455,26 @@ struct ListingRow: View {
                         .lineLimit(1)
                 }
 
-                // Rating
-                HStack(spacing: 4) {
-                    GoldStar(size: 10)
-                    Text(String(format: "%.1f", listing.rating ?? 0))
-                        .font(.system(size: 13, weight: .bold, design: .rounded))
-                        .foregroundColor(ForMe.textPrimary)
+                // Rating | Price (matches web ListingCard)
+                HStack(spacing: 0) {
+                    GoldStar(size: 11)
+                        .padding(.trailing, 4)
 
-                    dotSeparator
+                    Text(ratingText)
+                        .font(.system(size: 11))
+                        .foregroundColor(ForMe.stone500)
+                        .monospacedDigit()
 
-                    Text("\(listing.ratingCount ?? 0) reviews")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(ForMe.textTertiary)
+                    if let price = listing.priceRange {
+                        Text("|")
+                            .font(.system(size: 11))
+                            .foregroundColor(ForMe.stone300)
+                            .padding(.horizontal, 6)
+                        Text(price)
+                            .font(.system(size: 11))
+                            .foregroundColor(ForMe.textTertiary)
+                            .monospacedDigit()
+                    }
                 }
             }
 
@@ -485,10 +488,10 @@ struct ListingRow: View {
             .fill(LinearGradient(colors: [ForMe.stone100, ForMe.stone200], startPoint: .topLeading, endPoint: .bottomTrailing))
     }
 
-    private var dotSeparator: some View {
-        Circle()
-            .fill(ForMe.stone300)
-            .frame(width: 3, height: 3)
+    private var ratingText: String {
+        // Matches web: if rating is 0, show 5.0 (fresh listings default)
+        let r = listing.rating ?? 0
+        return r == 0 ? "5.0" : String(format: "%.1f", r)
     }
 }
 
@@ -550,26 +553,33 @@ struct ListingFullWidthCard: View {
                     .foregroundColor(ForMe.textPrimary)
                     .lineLimit(1)
 
+                // Location | ★ Rating | Price (matches web ListingCard)
                 HStack(spacing: 0) {
                     if let location = listing.location {
                         Text(location)
                             .font(.system(size: 12))
                             .foregroundColor(ForMe.textTertiary)
+                            .padding(.trailing, 6)
                     }
 
-                    Circle()
-                        .fill(ForMe.stone300)
-                        .frame(width: 3, height: 3)
-                        .padding(.horizontal, 6)
+                    GoldStar(size: 12)
+                        .padding(.trailing, 4)
 
-                    GoldStar(size: 9)
-                    Text(" \(String(format: "%.1f", listing.rating ?? 0))")
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundColor(ForMe.textPrimary)
+                    Text(ratingText)
+                        .font(.system(size: 12))
+                        .foregroundColor(ForMe.stone500)
+                        .monospacedDigit()
 
-                    Text(" (\(listing.ratingCount ?? 0))")
-                        .font(.system(size: 11))
-                        .foregroundColor(ForMe.textTertiary)
+                    if let price = listing.priceRange {
+                        Text("|")
+                            .font(.system(size: 12))
+                            .foregroundColor(ForMe.stone300)
+                            .padding(.horizontal, 6)
+                        Text(price)
+                            .font(.system(size: 12))
+                            .foregroundColor(ForMe.textTertiary)
+                            .monospacedDigit()
+                    }
                 }
             }
             .padding(.top, 16)
@@ -602,6 +612,11 @@ struct ListingFullWidthCard: View {
            let root = scene.windows.first?.rootViewController {
             root.present(activityVC, animated: true)
         }
+    }
+
+    private var ratingText: String {
+        let r = listing.rating ?? 0
+        return r == 0 ? "5.0" : String(format: "%.1f", r)
     }
 }
 
@@ -663,31 +678,74 @@ struct ListingGridCard: View {
 struct ProviderCard: View {
     let name: String
     let image: String?
+    let listing: Listing?
 
-    init(user: User) {
+    init(user: User, listing: Listing? = nil) {
         self.name = user.name ?? "Provider"
         self.image = user.image
+        self.listing = listing
     }
 
-    init(user: CompactUser) {
+    init(user: CompactUser, listing: Listing? = nil) {
         self.name = user.name ?? "Provider"
         self.image = user.image
+        self.listing = listing
     }
 
     var body: some View {
         VStack(spacing: 10) {
-            DynamicAvatar(name: name, imageUrl: image, size: .extraLarge)
+            DynamicAvatar(name: name, imageUrl: image, size: .extraLarge, showBorder: false)
 
-            Text(name)
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(ForMe.textPrimary)
-                .lineLimit(1)
+            VStack(spacing: 3) {
+                Text(name)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(ForMe.textPrimary)
+                    .lineLimit(1)
 
-            Text("Service Provider")
-                .font(.system(size: 11, weight: .medium))
-                .foregroundColor(ForMe.textTertiary)
+                // Job title / associated listing
+                Text(subtitleText)
+                    .font(.system(size: 11))
+                    .foregroundColor(ForMe.textTertiary)
+                    .lineLimit(1)
+
+                // ★ Rating | Price (matches web ListingRow format)
+                if listing != nil {
+                    HStack(spacing: 0) {
+                        GoldStar(size: 10)
+                            .padding(.trailing, 3)
+
+                        Text(ratingText)
+                            .font(.system(size: 11))
+                            .foregroundColor(ForMe.stone500)
+                            .monospacedDigit()
+
+                        if let price = listing?.priceRange {
+                            Text("|")
+                                .font(.system(size: 11))
+                                .foregroundColor(ForMe.stone300)
+                                .padding(.horizontal, 5)
+                            Text(price)
+                                .font(.system(size: 11))
+                                .foregroundColor(ForMe.textTertiary)
+                                .monospacedDigit()
+                        }
+                    }
+                }
+            }
         }
-        .frame(width: 100)
+        .frame(maxWidth: .infinity)
+    }
+
+    private var subtitleText: String {
+        // Show the listing's location (city, state)
+        if let location = listing?.location, !location.isEmpty { return location }
+        if let display = listing?.displayLocation, !display.isEmpty { return display }
+        return "Location"
+    }
+
+    private var ratingText: String {
+        let r = listing?.rating ?? 0
+        return r == 0 ? "5.0" : String(format: "%.1f", r)
     }
 }
 

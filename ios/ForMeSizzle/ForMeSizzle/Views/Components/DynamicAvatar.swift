@@ -4,6 +4,7 @@ struct DynamicAvatar: View {
     let name: String
     var imageUrl: String?
     var size: Size = .medium
+    var showBorder: Bool = true
 
     enum Size {
         case tiny, small, smallMedium, medium, large, extraLarge
@@ -54,16 +55,22 @@ struct DynamicAvatar: View {
             .frame(width: size.dimension, height: size.dimension)
             .clipShape(Circle())
             .overlay(
-                Circle()
-                    .stroke(ForMe.border, lineWidth: size.borderWidth)
+                Group {
+                    if showBorder {
+                        Circle().stroke(ForMe.border, lineWidth: size.borderWidth)
+                    }
+                }
             )
         } else {
             initialsView
                 .frame(width: size.dimension, height: size.dimension)
                 .clipShape(Circle())
                 .overlay(
-                    Circle()
-                        .stroke(ForMe.border, lineWidth: size.borderWidth)
+                    Group {
+                        if showBorder {
+                            Circle().stroke(ForMe.border, lineWidth: size.borderWidth)
+                        }
+                    }
                 )
         }
     }
