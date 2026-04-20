@@ -41,7 +41,7 @@ struct MessagesListView: View {
                         .overlay(Circle().stroke(ForMe.border, lineWidth: 1))
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, ForMe.space6)
             .padding(.top, ForMe.space4)
             .padding(.bottom, ForMe.space3)
 
@@ -74,7 +74,7 @@ struct MessagesListView: View {
                 RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
                     .stroke(ForMe.borderLight, lineWidth: 1)
             )
-            .padding(.horizontal)
+            .padding(.horizontal, ForMe.space6)
             .padding(.bottom, ForMe.space3)
 
             Divider()
@@ -87,7 +87,7 @@ struct MessagesListView: View {
                         .foregroundColor(ForMe.textTertiary)
                         .textCase(.uppercase)
                         .tracking(0.6)
-                        .padding(.horizontal)
+                        .padding(.horizontal, ForMe.space6)
                         .padding(.top, ForMe.space3)
                         .padding(.bottom, 4)
 

@@ -21,7 +21,6 @@ struct StoreHours: Codable, Identifiable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(String.self, forKey: .id)
         // Handle both string ("Monday") and int (1) formats
         if let str = try? container.decode(String.self, forKey: .dayOfWeek) {
             dayOfWeek = str
@@ -31,6 +30,10 @@ struct StoreHours: Codable, Identifiable {
         } else {
             dayOfWeek = "Unknown"
         }
+        // The single-listing endpoint strips storeHours ids, but we still need
+        // a stable Identifiable key for ForEach. Day-of-week is unique per
+        // listing so it's a safe fallback.
+        id = (try? container.decode(String.self, forKey: .id)) ?? dayOfWeek
         openTime = try container.decodeIfPresent(String.self, forKey: .openTime)
         closeTime = try container.decodeIfPresent(String.self, forKey: .closeTime)
         isClosed = (try? container.decode(Bool.self, forKey: .isClosed)) ?? false

@@ -28,30 +28,15 @@ struct ListingDetailView: View {
             .padding(.bottom, 100)
         }
         .background(ForMe.background)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                HStack(spacing: 8) {
-                    Button {
-                        Task { await viewModel.toggleFavorite(listingId: listing.id) }
-                    } label: {
-                        Image(systemName: viewModel.isFavorite ? "heart.fill" : "heart")
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundColor(viewModel.isFavorite ? .red : ForMe.textPrimary)
-                            .frame(width: 34, height: 34)
-                            .background(.ultraThinMaterial)
-                            .clipShape(Circle())
-                    }
-                    Button {
-                        shareListing()
-                    } label: {
-                        HugeIcon(paths: HugeIcon.sharePaths, size: 16, color: ForMe.textPrimary)
-                            .frame(width: 34, height: 34)
-                            .background(.ultraThinMaterial)
-                            .clipShape(Circle())
-                    }
-                }
-            }
+        // Hide the system nav bar entirely — iOS 17+ toolbars wrap Menu in a
+        // translucent capsule/chrome that can't be suppressed with buttonStyle
+        // or menuStyle. A plain overlay HStack gives pixel parity with the
+        // web's absolute-positioned top row and leaves us full control over
+        // geometry and backgrounds.
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+        .overlay(alignment: .top) {
+            topBar
         }
         .sheet(isPresented: $showBooking) {
             if let service = viewModel.selectedService {
@@ -61,6 +46,63 @@ struct ListingDetailView: View {
         .task {
             await viewModel.loadServices(for: listing.id)
         }
+    }
+
+    private var topBar: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                HugeIcon(paths: HugeIcon.arrowLeftPaths, size: 20, color: ForMe.stone500)
+                    .frame(width: 40, height: 40)
+                    .background(Circle().fill(ForMe.stone100))
+                    .overlay(Circle().stroke(ForMe.stone200, lineWidth: 1))
+            }
+            .buttonStyle(.plain)
+
+            Spacer()
+
+            Menu {
+                Button {
+                    // TODO: QR modal
+                } label: {
+                    Label("View QR Code", systemImage: "qrcode")
+                }
+                Button {
+                    // TODO: follow/unfollow
+                } label: {
+                    Label("Follow", systemImage: "person.badge.plus")
+                }
+                Button {
+                    Task { await viewModel.toggleFavorite(listingId: listing.id) }
+                } label: {
+                    Label(
+                        viewModel.isFavorite ? "Favorited" : "Favorite",
+                        systemImage: viewModel.isFavorite ? "heart.fill" : "heart"
+                    )
+                }
+                Button {
+                    // TODO: review modal
+                } label: {
+                    Label("Add Review", systemImage: "star")
+                }
+                Divider()
+                Button {
+                    shareListing()
+                } label: {
+                    Label("Share", systemImage: "square.and.arrow.up")
+                }
+            } label: {
+                HugeMoreVertical(size: 20, color: ForMe.stone500)
+                    .frame(width: 40, height: 40)
+                    .background(Circle().fill(ForMe.stone100))
+                    .overlay(Circle().stroke(ForMe.stone200, lineWidth: 1))
+            }
+            .menuOrder(.fixed)
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 12)
+        .padding(.top, 8)
     }
 }
 
@@ -146,9 +188,15 @@ private extension ListingDetailView {
                     .lineSpacing(5)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, ForMe.space6)
-                    .padding(.top, ForMe.space4)
+                    .padding(.top, 28)
                     .lineLimit(4)
             }
+
+            // Save + Share — matches the web, sits directly under the bio as
+            // secondary actions (primary CTAs live below this row).
+            saveShareRow
+                .padding(.top, 16)
+                .padding(.bottom, 28)
 
             // Action buttons
             actionButtons
@@ -163,15 +211,12 @@ private extension ListingDetailView {
             if !storeHours.isEmpty {
                 let today = todayHours
                 if let hours = today {
-                    HStack(spacing: 4) {
-                        Circle()
-                            .fill(hours.isClosed ? ForMe.statusCancelled : ForMe.statusConfirmed)
-                            .frame(width: 6, height: 6)
+                    HStack(spacing: 0) {
                         Text(hours.isClosed ? "Closed" : "Open")
                             .font(.system(size: 13, weight: .medium))
                             .foregroundColor(hours.isClosed ? ForMe.statusCancelled : ForMe.statusConfirmed)
                         if !hours.isClosed, let close = hours.closeTime {
-                            Text("· Closes \(close)")
+                            Text(" · Closes \(close)")
                                 .font(.system(size: 13))
                                 .foregroundColor(ForMe.stone400)
                         }
@@ -189,20 +234,21 @@ private extension ListingDetailView {
     }
 
     var ratingView: some View {
-        HStack(spacing: 3) {
+        // Mirrors web's ListingHead rating row: 14pt stars, same SVG path for
+        // both filled (gold gradient) and empty (#e5e7eb) positions, with the
+        // total review count in stone-400 to the right.
+        HStack(spacing: 4) {
             ForEach(0..<5, id: \.self) { i in
                 if i < Int((listing.rating ?? 0).rounded()) {
-                    GoldStar(size: 13)
+                    GoldStar(size: 14)
                 } else {
-                    Image(systemName: "star")
-                        .font(.system(size: 13))
-                        .foregroundColor(ForMe.stone200)
+                    GoldStar(size: 14, fillColor: Color(hex: "e5e7eb"))
                 }
             }
             Text("\(listing.ratingCount ?? 0)")
                 .font(.system(size: 12))
                 .foregroundColor(ForMe.stone400)
-                .padding(.leading, 4)
+                .padding(.leading, 6)
         }
     }
 
@@ -229,6 +275,28 @@ private extension ListingDetailView {
         .frame(maxWidth: .infinity)
     }
 
+    // Save + Share under the bio — icons only, matching web's 1.5pt stroke weight.
+    var saveShareRow: some View {
+        HStack(spacing: 28) {
+            Button {
+                Task { await viewModel.toggleFavorite(listingId: listing.id) }
+            } label: {
+                Image(systemName: viewModel.isFavorite ? "heart.fill" : "heart")
+                    .font(.system(size: 24, weight: .light))
+                    .foregroundColor(viewModel.isFavorite ? ForMe.textPrimary : ForMe.stone400)
+            }
+            .buttonStyle(.plain)
+
+            Button {
+                shareListing()
+            } label: {
+                HugeIcon(paths: HugeIcon.sharePaths, size: 24, color: ForMe.stone400, lineWidth: 1.5)
+            }
+            .buttonStyle(.plain)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
     var actionButtons: some View {
         HStack(spacing: 10) {
             Button {
@@ -241,7 +309,7 @@ private extension ListingDetailView {
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 13)
+                    .padding(.vertical, 16)
                     .background(ForMe.stone900)
                     .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
             }
@@ -253,7 +321,7 @@ private extension ListingDetailView {
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(ForMe.stone700)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 13)
+                    .padding(.vertical, 16)
                     .background(ForMe.stone50)
                     .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
                     .overlay(
@@ -290,7 +358,7 @@ private extension ListingDetailView {
 
     var servicesSection: some View {
         VStack(alignment: .leading, spacing: ForMe.space3) {
-            SectionHeader(title: "Services")
+            SectionHeader(title: "Book A Service")
 
             if viewModel.isLoading && services.isEmpty {
                 ProgressView().frame(maxWidth: .infinity).padding()
@@ -317,48 +385,18 @@ private extension ListingDetailView {
     }
 
     var employeesSection: some View {
-        VStack(spacing: ForMe.space3) {
-            Text("Team")
-                .font(.system(size: 17, weight: .semibold))
+        VStack(alignment: .leading, spacing: ForMe.space3) {
+            Text("Meet Our Team")
+                .font(ForMe.font(.bold, size: 18))
                 .foregroundColor(ForMe.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
+            // Match Discover's employee layout: vertical list of ProviderRow,
+            // one per row, keyed off the same CompactUser + Listing shape.
+            LazyVStack(spacing: 4) {
                 ForEach(employees) { employee in
-                    VStack(spacing: 10) {
-                        DynamicAvatar(
-                            name: employee.fullName,
-                            imageUrl: employee.user?.image,
-                            size: .large
-                        )
-                        VStack(spacing: 3) {
-                            Text(employee.fullName)
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(ForMe.textPrimary)
-                                .lineLimit(1)
-                            if let title = employee.jobTitle {
-                                Text(title)
-                                    .font(.system(size: 12, weight: .medium))
-                                    .foregroundColor(ForMe.textTertiary)
-                                    .lineLimit(1)
-                            }
-                            if employee.user?.isStudent == true,
-                               let academy = employee.user?.academyName {
-                                Text("Student at \(academy)")
-                                    .font(.system(size: 10, weight: .medium))
-                                    .foregroundColor(Color(red: 0.71, green: 0.45, blue: 0.05))
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 3)
-                                    .background(
-                                        Capsule()
-                                            .fill(Color(red: 1.0, green: 0.97, blue: 0.92))
-                                    )
-                                    .overlay(
-                                        Capsule()
-                                            .stroke(Color(red: 0.99, green: 0.90, blue: 0.71), lineWidth: 1)
-                                    )
-                                    .lineLimit(1)
-                            }
-                        }
+                    if let user = employee.user {
+                        ProviderRow(user: user, listing: listing)
                     }
                 }
             }
@@ -367,7 +405,7 @@ private extension ListingDetailView {
 
     var storeHoursSection: some View {
         VStack(alignment: .leading, spacing: ForMe.space3) {
-            SectionHeader(title: "Hours")
+            SectionHeader(title: "When We're Open")
 
             VStack(spacing: 8) {
                 ForEach(storeHours) { hour in
@@ -396,11 +434,14 @@ private extension ListingDetailView {
     }
 
     func gallerySection(images: [String]) -> some View {
-        VStack(spacing: ForMe.space3) {
-            Text("Gallery")
-                .font(.system(size: 17, weight: .semibold))
+        VStack(alignment: .leading, spacing: ForMe.space3) {
+            Text("A Peek Inside")
+                .font(ForMe.font(.bold, size: 18))
                 .foregroundColor(ForMe.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
+            // Only the grid bleeds edge-to-edge — headline stays at the same
+            // horizontal inset as the other section titles.
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 1), count: 3), spacing: 1) {
                 ForEach(images, id: \.self) { imageUrl in
                     AsyncImage(url: URL(string: imageUrl)) { phase in
@@ -416,8 +457,8 @@ private extension ListingDetailView {
                     .clipped()
                 }
             }
+            .padding(.horizontal, -ForMe.space4)
         }
-        .padding(.horizontal, -ForMe.space4) // bleed edge to edge
     }
 }
 
@@ -429,57 +470,65 @@ struct ServiceRow: View {
 
     private var priceInt: Int { Int(service.price) }
 
+    // Half-height port of the web's ServiceCard solidBackground+compact —
+    // same gradient, border, watermark and bottom row, scaled proportionally
+    // to 90pt so it reads like the web card but takes half the vertical room.
     var body: some View {
         Button(action: onBook) {
-            ZStack(alignment: .topTrailing) {
-                // Price watermark
-                Text("$\(priceInt)")
-                    .font(.system(size: 64, weight: .black, design: .rounded))
+            ZStack {
+                // Ghosted price watermark — explicitly aligned to top-right so it
+                // doesn't drag the VStack with it (that was clipping the name).
+                Text("\(priceInt)")
+                    .font(ForMe.font(.bold, size: 40))
                     .foregroundColor(ForMe.stone100.opacity(0.8))
-                    .offset(x: 8, y: -8)
+                    .tracking(-1)
+                    .lineLimit(1)
+                    .offset(x: 4, y: -8)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                    .allowsHitTesting(false)
 
-                // Content
                 VStack(alignment: .leading, spacing: 0) {
-                    Spacer().frame(height: 20)
-
                     Text(service.serviceName)
-                        .font(.system(size: 17, weight: .black))
+                        .font(ForMe.font(.bold, size: 14))
                         .foregroundColor(ForMe.textPrimary)
-                        .lineLimit(3)
+                        .lineLimit(1)
                         .tracking(-0.2)
+                        .multilineTextAlignment(.leading)
+                        .padding(.trailing, 22) // clear the watermark
 
-                    if let duration = service.duration {
-                        Text(service.formattedDuration)
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundColor(ForMe.stone400)
-                            .padding(.top, 4)
-                    }
+                    // Web falls back to "60 min" when there's no duration — match that
+                    // so every card has a meta line. Georgia italic 11pt stone-400,
+                    // same treatment as ListingCard's category.
+                    Text(service.duration == nil ? "60 min" : service.formattedDuration)
+                        .font(.custom("Georgia", size: 11).italic())
+                        .foregroundColor(ForMe.stone400)
+                        .padding(.top, 2)
 
-                    Spacer()
+                    Spacer(minLength: 0)
 
-                    // Bottom row — price + arrow
                     HStack(alignment: .bottom) {
                         Text("$\(priceInt)")
-                            .font(.system(size: 24, weight: .black, design: .rounded))
+                            .font(ForMe.font(.bold, size: 18))
                             .foregroundColor(ForMe.textPrimary)
+                            .monospacedDigit()
 
                         Spacer()
 
                         Image(systemName: "arrow.up.right")
-                            .font(.system(size: 14, weight: .medium))
+                            .font(.system(size: 12, weight: .regular))
                             .foregroundColor(ForMe.stone300)
-                            .padding(.bottom, 4)
                     }
                 }
-                .padding(ForMe.space5)
+                .padding(16)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
-            .frame(height: 160)
+            .frame(height: 110)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 LinearGradient(
                     colors: [.white, ForMe.stone50.opacity(0.8)],
-                    startPoint: .top,
-                    endPoint: .bottom
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
                 )
             )
             .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))

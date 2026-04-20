@@ -26,17 +26,13 @@ struct ProfileView: View {
             .padding(.bottom, 100)
         }
         .background(ForMe.background)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            if isCurrentUser {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button { showSettings = true } label: {
-                        Image(systemName: "gearshape")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(ForMe.textPrimary)
-                    }
-                }
-            }
+        // Mirror the new ListingDetailView chrome: hide the system nav bar
+        // entirely and render a custom overlay top bar so the back button +
+        // 3-dot menu sit in pill-shaped chrome that we fully control.
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+        .overlay(alignment: .top) {
+            topBar
         }
         .sheet(isPresented: $showEditProfile) {
             EditProfileView()
@@ -50,6 +46,63 @@ struct ProfileView: View {
             } else if let id = authViewModel.currentUser?.id {
                 await viewModel.loadProfile(userId: id)
             }
+        }
+    }
+
+    private var topBar: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                HugeIcon(paths: HugeIcon.arrowLeftPaths, size: 20, color: ForMe.stone500)
+                    .frame(width: 40, height: 40)
+                    .background(Circle().fill(ForMe.stone100))
+                    .overlay(Circle().stroke(ForMe.stone200, lineWidth: 1))
+            }
+            .buttonStyle(.plain)
+
+            Spacer()
+
+            Menu {
+                if isCurrentUser {
+                    Button { showSettings = true } label: {
+                        Label("Settings", systemImage: "gearshape")
+                    }
+                    Button { showEditProfile = true } label: {
+                        Label("Edit Profile", systemImage: "pencil")
+                    }
+                } else {
+                    Button {
+                        Task { await viewModel.toggleFollow() }
+                    } label: {
+                        Label(viewModel.isFollowing ? "Following" : "Follow",
+                              systemImage: "person.badge.plus")
+                    }
+                }
+                Divider()
+                Button { shareProfile() } label: {
+                    Label("Share", systemImage: "square.and.arrow.up")
+                }
+            } label: {
+                HugeMoreVertical(size: 20, color: ForMe.stone500)
+                    .frame(width: 40, height: 40)
+                    .background(Circle().fill(ForMe.stone100))
+                    .overlay(Circle().stroke(ForMe.stone200, lineWidth: 1))
+            }
+            .menuOrder(.fixed)
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 12)
+        .padding(.top, 8)
+    }
+
+    private func shareProfile() {
+        let name = user?.name ?? "Profile"
+        let text = "\(name) on ForMe"
+        let activityVC = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let root = scene.windows.first?.rootViewController {
+            root.present(activityVC, animated: true)
         }
     }
 }

@@ -322,6 +322,15 @@ class APIService {
         return try await perform(request)
     }
 
+    // Mirrors the web's /profile/[userId] data fetch — returns the full
+    // bundle the page renders (user, posts, listings, services they perform
+    // as an employee/owner, reviews, and aggregate review stats) in one round
+    // trip so the iOS profile screen has everything to draw the new layout.
+    func getUserProfile(userId: String) async throws -> UserProfileResponse {
+        let request = try buildRequest(endpoint: "/users/\(userId)/profile")
+        return try await perform(request)
+    }
+
     func toggleFollow(userId: String) async throws {
         let request = try buildRequest(endpoint: "/follow/\(userId)", method: "POST")
         let _: EmptyResponse = try await perform(request)
@@ -454,6 +463,26 @@ struct CreateReservationRequest: Codable {
 
 struct SearchResponse: Codable {
     let results: [SearchResultItem]?
+}
+
+// MARK: - Unified Profile Response
+
+// Mirrors GET /users/[userId]/profile on the web. `services` are the
+// ProviderService rows the web returns (every service this user can
+// perform, whether owner or assigned employee) — we accept them as plain
+// `Service` since iOS Service has all the same fields plus listingId.
+struct UserProfileResponse: Decodable {
+    let user: User
+    let listings: [Listing]?
+    let posts: [Post]?
+    let services: [Service]?
+    let reviews: [Review]?
+    let reviewStats: ReviewStats?
+}
+
+struct ReviewStats: Decodable, Hashable {
+    let totalCount: Int
+    let averageRating: Double
 }
 
 struct SearchResultItem: Codable, Identifiable, Hashable {

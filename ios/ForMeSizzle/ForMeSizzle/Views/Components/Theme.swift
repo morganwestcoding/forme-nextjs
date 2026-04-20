@@ -27,6 +27,28 @@ enum ForMe {
     static let sectionGap: CGFloat = 32       // gap between page sections
     static let cardPadding: CGFloat = 20      // p-5
 
+    // MARK: - Typography (matches web: Inter from next/font/google)
+    // Inter is bundled via ios/ForMeSizzle/ForMeSizzle/Fonts/ and registered in
+    // Info.plist. Font.weight(_) on a custom font is ignored by CoreText for
+    // Inter's static faces — the weight must come from the PostScript name, so
+    // we resolve per-weight here.
+    enum FontWeight {
+        case regular, medium, semibold, bold
+
+        var interName: String {
+            switch self {
+            case .regular:  return "Inter-Regular"
+            case .medium:   return "Inter-Medium"
+            case .semibold: return "Inter-SemiBold"
+            case .bold:     return "Inter-Bold"
+            }
+        }
+    }
+
+    static func font(_ weight: FontWeight = .regular, size: CGFloat) -> Font {
+        Font.custom(weight.interName, size: size)
+    }
+
     // MARK: - Accent
     static let accent = Color(hex: "60A5FA")         // sky-400
     static let accentHover = Color(hex: "3B82F6")    // blue-500
@@ -456,6 +478,10 @@ struct TypeformHeading: View {
 
 struct GoldStar: View {
     var size: CGFloat = 11
+    // When set, the star is filled with this solid color instead of the gold
+    // gradient — used for "empty" rating positions so the shape stays identical
+    // to the filled version (matches the web's #e5e7eb empty stars).
+    var fillColor: Color? = nil
 
     // Exact path from web: ListingCard.tsx listingStarGold
     private static let starPath = "M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z"
@@ -466,14 +492,19 @@ struct GoldStar: View {
             guard let cgPath = CGPath.from(svgPath: Self.starPath) else { return }
             let scaledPath = Path(cgPath)
                 .applying(CGAffineTransform(scaleX: scale, y: scale))
-            context.fill(
-                scaledPath,
-                with: .linearGradient(
-                    Gradient(colors: [Color(hex: "f5c842"), Color(hex: "d4a017")]),
-                    startPoint: .zero,
-                    endPoint: CGPoint(x: canvasSize.width, y: canvasSize.height)
+            if let solid = fillColor {
+                context.fill(scaledPath, with: .color(solid))
+            } else {
+                // Web uses a vertical gradient #fbbf24 → #f59e0b (top to bottom).
+                context.fill(
+                    scaledPath,
+                    with: .linearGradient(
+                        Gradient(colors: [Color(hex: "fbbf24"), Color(hex: "f59e0b")]),
+                        startPoint: .zero,
+                        endPoint: CGPoint(x: 0, y: canvasSize.height)
+                    )
                 )
-            )
+            }
         }
         .frame(width: size, height: size)
     }

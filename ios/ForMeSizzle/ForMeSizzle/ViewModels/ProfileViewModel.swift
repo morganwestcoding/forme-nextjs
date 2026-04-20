@@ -6,47 +6,31 @@ class ProfileViewModel: ObservableObject {
     @Published var user: User?
     @Published var posts: [Post] = []
     @Published var listings: [Listing] = []
+    @Published var services: [Service] = []
     @Published var reviews: [Review] = []
+    @Published var reviewStats: ReviewStats?
     @Published var isFollowing = false
     @Published var isLoading = false
 
     private let api = APIService.shared
 
+    // Single round-trip via /users/[userId]/profile so user, posts, listings,
+    // services, and review aggregates all stay in sync — same source the web's
+    // /profile/[userId] page uses.
     func loadProfile(userId: String) async {
         isLoading = true
-
-        async let userTask: () = loadUser(userId: userId)
-        async let postsTask: () = loadPosts(userId: userId)
-        async let listingsTask: () = loadListings(userId: userId)
-
-        await userTask
-        await postsTask
-        await listingsTask
-
-        isLoading = false
-    }
-
-    private func loadUser(userId: String) async {
+        defer { isLoading = false }
         do {
-            user = try await api.getUser(id: userId)
+            let resp = try await api.getUserProfile(userId: userId)
+            user = resp.user
+            posts = resp.posts ?? []
+            listings = resp.listings ?? []
+            services = resp.services ?? []
+            reviews = resp.reviews ?? []
+            reviewStats = resp.reviewStats
         } catch {
-            // silent
-        }
-    }
-
-    private func loadPosts(userId: String) async {
-        do {
-            posts = try await api.getUserPosts(userId: userId)
-        } catch {
-            // silent
-        }
-    }
-
-    private func loadListings(userId: String) async {
-        do {
-            listings = try await api.getUserListings(userId: userId)
-        } catch {
-            // silent
+            // Silent — view will fall back to authViewModel.currentUser when
+            // viewing self, or render an empty state when viewing others.
         }
     }
 

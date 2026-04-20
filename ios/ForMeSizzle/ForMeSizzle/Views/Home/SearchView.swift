@@ -4,33 +4,44 @@ struct SearchView: View {
     @StateObject private var viewModel = SearchViewModel()
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var authViewModel: AuthViewModel
-    @State private var searchText = ""
     @State private var showMessages = false
+    @FocusState private var searchFieldFocused: Bool
 
+    // Reflects what the user actually sees after category + query filtering,
+    // so the empty state triggers when *their* filters return nothing — not
+    // just when /listings came back empty.
     private var hasResults: Bool {
-        !viewModel.listings.isEmpty || !viewModel.workers.isEmpty
+        !viewModel.displayListings.isEmpty || !viewModel.workers.isEmpty
     }
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
-                // Header
+            VStack(spacing: 28) {
+                VStack(spacing: 16) {
+                // Header — matches Discover (Logo on the left, plus + bell + chat + avatar on the right)
                 HStack(alignment: .center) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Search")
-                            .font(.largeTitle.bold())
-                            .foregroundColor(ForMe.textPrimary)
-
-                        Text("Find services near you")
-                            .font(.subheadline)
-                            .foregroundColor(ForMe.textSecondary)
-                    }
+                    Image("Logo")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 36)
+                        .opacity(0.9)
 
                     Spacer()
 
-                    HStack(spacing: 12) {
+                    HStack(spacing: 2) {
+                        Button {
+                            appState.showingCreateMenu = true
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.system(size: 20, weight: .regular))
+                                .foregroundColor(ForMe.textSecondary)
+                                .frame(width: 48, height: 48)
+                                .contentShape(Circle())
+                        }
+                        .buttonStyle(.plain)
+
                         HeaderIconButton(icon: "AlertBell") {
-                            // TODO: alerts
+                            appState.showingNotifications = true
                         }
 
                         HeaderIconButton(icon: "HeaderChat") {
@@ -46,31 +57,73 @@ struct SearchView: View {
                                 size: .smallMedium
                             )
                         }
+                        .padding(.leading, 4)
                     }
                 }
                 .padding(.horizontal)
 
-                ForMeSearchBar(text: $searchText, placeholder: "Looking for something?")
-                    .padding(.horizontal)
+                // Search bar — matches Discover exactly (inline markup, same placeholder/styling).
+                HStack(spacing: 0) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 15))
+                        .foregroundColor(ForMe.textTertiary)
+                        .padding(.leading, ForMe.space4)
 
-                // Category filter
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(ServiceCategory.allCases, id: \.self) { category in
-                            FilterChip(
-                                title: category.rawValue,
-                                isSelected: viewModel.selectedCategory == category
-                            ) {
-                                if viewModel.selectedCategory == category {
-                                    viewModel.selectedCategory = nil
-                                } else {
-                                    viewModel.selectedCategory = category
+                    // Bound directly to viewModel.query so typing instantly narrows
+                    // the list client-side — no debounce, no re-fetch, full 100-item
+                    // loaded set stays searchable rather than being capped at 5.
+                    TextField("Search posts, users, listings, shops…", text: $viewModel.query)
+                        .font(.system(size: 15))
+                        .foregroundColor(ForMe.textPrimary)
+                        .tint(ForMe.accent)
+                        .focused($searchFieldFocused)
+                        .padding(.horizontal, 10)
+                        .submitLabel(.search)
+
+                    if !viewModel.query.isEmpty {
+                        Button {
+                            viewModel.query = ""
+                            searchFieldFocused = false
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 14))
+                                .foregroundColor(ForMe.stone400)
+                        }
+                        .padding(.trailing, 14)
+                    }
+                }
+                .frame(height: 46)
+                .background(ForMe.stone100)
+                .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                        .stroke(searchFieldFocused ? ForMe.borderHover : ForMe.border, lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
+                .padding(.horizontal)
+                }
+
+                // Sort row — the Search-only control that makes results rank-aware.
+                // Hidden until we have results to sort so the empty state stays clean.
+                if !viewModel.displayListings.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "arrow.up.arrow.down")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(ForMe.textTertiary)
+                                .padding(.leading, 2)
+
+                            ForEach(SearchSortOption.allCases) { option in
+                                FilterChip(
+                                    title: option.label,
+                                    isSelected: viewModel.sortOption == option
+                                ) {
+                                    viewModel.sortOption = option
                                 }
-                                Task { await viewModel.search() }
                             }
                         }
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
                 }
 
                 // Results
@@ -79,15 +132,7 @@ struct SearchView: View {
                     ProgressView()
                     Spacer()
                 } else if !hasResults {
-                    VStack(spacing: 12) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 40))
-                            .foregroundColor(ForMe.textTertiary)
-                        Text(searchText.isEmpty ? "Start typing to search" : "No results found")
-                            .font(.subheadline)
-                            .foregroundColor(ForMe.textSecondary)
-                    }
-                    .padding(.top, 60)
+                    emptyState
                 } else {
                     VStack(spacing: 24) {
                         // Workers section
@@ -117,18 +162,14 @@ struct SearchView: View {
                             }
                         }
 
-                        // Listings section
-                        if !viewModel.listings.isEmpty {
+                        // Listings section — uses displayListings so sort + query + category all apply.
+                        if !viewModel.displayListings.isEmpty {
                             VStack(alignment: .leading, spacing: 12) {
-                                if !viewModel.workers.isEmpty {
-                                    Text("Services")
-                                        .font(.headline)
-                                        .foregroundColor(ForMe.textPrimary)
-                                        .padding(.horizontal)
-                                }
+                                resultsSummary
+                                    .padding(.horizontal)
 
                                 LazyVStack(spacing: 4) {
-                                    ForEach(Array(viewModel.listings.enumerated()), id: \.element.id) { index, listing in
+                                    ForEach(Array(viewModel.displayListings.enumerated()), id: \.element.id) { index, listing in
                                         NavigationLink(value: listing) {
                                             ListingRow(listing: listing)
                                         }
@@ -149,13 +190,6 @@ struct SearchView: View {
         .navigationDestination(for: Listing.self) { listing in
             ListingDetailView(listing: listing)
         }
-        .onChange(of: searchText) { _, newValue in
-            viewModel.query = newValue
-            Task {
-                try? await Task.sleep(nanoseconds: 300_000_000)
-                await viewModel.search()
-            }
-        }
         .task {
             await viewModel.search()
         }
@@ -165,6 +199,78 @@ struct SearchView: View {
             }
         }
     }
+
+    // MARK: - Subviews
+
+    // Small header above the ranked list — shows the count + active sort so the
+    // user understands *why* the ordering shifted. Discover never shows this
+    // because its ordering is editorial, not user-chosen.
+    private var resultsSummary: some View {
+        let count = viewModel.displayListings.count
+        return HStack(spacing: 4) {
+            Text("\(count) \(count == 1 ? "result" : "results")")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(ForMe.textPrimary)
+
+            if viewModel.sortOption != .relevance {
+                Text("• sorted by \(viewModel.sortOption.label)")
+                    .font(.system(size: 13))
+                    .foregroundColor(ForMe.textTertiary)
+            }
+
+            Spacer()
+        }
+    }
+
+    // Empty state — when filters are active, suggest loosening them rather than
+    // just saying "no results". On Discover we swap the category; on Search,
+    // the answer is usually to relax the filters the user applied themselves.
+    private var emptyState: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 40))
+                .foregroundColor(ForMe.textTertiary)
+
+            Text(emptyStateTitle)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundColor(ForMe.textSecondary)
+
+            if let hint = emptyStateHint {
+                Text(hint)
+                    .font(.system(size: 13))
+                    .foregroundColor(ForMe.textTertiary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
+            }
+
+            if !viewModel.query.isEmpty {
+                Button {
+                    viewModel.query = ""
+                } label: {
+                    Text("Clear search")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 18)
+                        .padding(.vertical, 9)
+                        .background(ForMe.textPrimary)
+                        .clipShape(Capsule())
+                }
+                .padding(.top, 4)
+            }
+        }
+        .padding(.top, 60)
+    }
+
+    private var emptyStateTitle: String {
+        viewModel.query.isEmpty ? "Start typing to search" : "No results found"
+    }
+
+    private var emptyStateHint: String? {
+        viewModel.query.isEmpty
+            ? nil
+            : "We couldn't find anything for \"\(viewModel.query)\". Try a broader term."
+    }
+
 }
 
 struct FilterChip: View {

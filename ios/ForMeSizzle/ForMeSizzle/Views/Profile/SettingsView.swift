@@ -31,7 +31,7 @@ struct SettingsView: View {
                             .font(.system(size: 13))
                             .foregroundColor(ForMe.stone400)
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, ForMe.space6)
                     .padding(.top, ForMe.space3)
 
                     // Dark Mode toggle
@@ -85,7 +85,7 @@ struct SettingsView: View {
                         RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
                             .stroke(ForMe.borderLight, lineWidth: 1)
                     )
-                    .padding(.horizontal)
+                    .padding(.horizontal, ForMe.space6)
 
                     // Account section
                     VStack(alignment: .leading, spacing: 0) {
@@ -100,7 +100,7 @@ struct SettingsView: View {
                         accountRow(icon: "lock", label: "Privacy") {}
                         accountRow(icon: "questionmark.circle", label: "Help & Support") {}
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, ForMe.space6)
 
                     // Sign out
                     Button {
@@ -118,7 +118,7 @@ struct SettingsView: View {
                                     .stroke(ForMe.statusCancelled.opacity(0.3), lineWidth: 1)
                             )
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, ForMe.space6)
                     .padding(.top, ForMe.space3)
                 }
                 .padding(.bottom, 80)
@@ -170,7 +170,7 @@ struct SettingsView: View {
             RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
                 .stroke(ForMe.borderLight, lineWidth: 1)
         )
-        .padding(.horizontal)
+        .padding(.horizontal, ForMe.space6)
     }
 
     private func accountRow(icon: String, label: String, action: @escaping () -> Void) -> some View {

@@ -2,108 +2,130 @@ import SwiftUI
 
 struct PostCard: View {
     let post: Post
-    var width: CGFloat = 180
+    var width: CGFloat? = 180
     @State private var isLiked = false
+
+    private var aspectRatio: CGFloat { 5 / 6 }
 
     private var isTextPost: Bool { post.imageSrc == nil && post.mediaUrl == nil }
     private var isVideo: Bool { post.isVideoPost }
+    private var videoURL: URL? {
+        guard isVideo else { return nil }
+        if let m = post.mediaUrl, let u = URL(string: m) { return u }
+        if let i = post.imageSrc, let u = URL(string: i) { return u }
+        return nil
+    }
     private var likeCount: Int { post.likes?.count ?? 0 }
     private var commentCount: Int { post.comments?.count ?? 0 }
 
     var body: some View {
-        ZStack {
-            // Media fills entire card
-            mediaContent
-                .frame(width: width, height: width * 6 / 5)
-                .clipped()
-
-            // Bottom gradient for text readability
-            if !isTextPost {
-                LinearGradient(
-                    stops: [
-                        .init(color: .clear, location: 0.35),
-                        .init(color: .black.opacity(0.3), location: 0.6),
-                        .init(color: .black.opacity(0.65), location: 1.0),
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            }
-
-            // 3-dot menu — top right (favorite, share, report)
-            Menu {
-                Button {
-                    toggleFavorite()
-                } label: {
-                    Label(isLiked ? "Unfavorite" : "Favorite",
-                          systemImage: isLiked ? "heart.slash" : "heart")
-                }
-                Button {
-                    sharePost()
-                } label: {
-                    Label("Share", systemImage: "square.and.arrow.up")
-                }
-                Button {
-                    // TODO: bookmark post
-                } label: {
-                    Label("Save", systemImage: "bookmark")
-                }
-                Button(role: .destructive) {
-                    // TODO: report post
-                } label: {
-                    Label("Report", systemImage: "flag")
-                }
-            } label: {
-                HugeMoreHorizontal(size: 20, color: .white.opacity(0.85))
-                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
-                    .frame(width: 36, height: 36)
-                    .contentShape(Rectangle())
-            }
-            .menuOrder(.fixed)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-            .padding(ForMe.space4)
-
-            // Bottom info — avatar + name + content + stats (matches web)
-            HStack(alignment: .bottom, spacing: 6) {
-                // Avatar — small circle with white ring
-                if let user = post.user {
-                    AsyncImage(url: URL(string: user.image ?? "")) { img in
-                        img.resizable().aspectRatio(contentMode: .fill)
-                    } placeholder: {
-                        Circle().fill(ForMe.stone400)
-                            .overlay(
-                                Text(user.name?.prefix(1).uppercased() ?? "")
-                                    .font(.system(size: 8, weight: .bold))
-                                    .foregroundColor(.white)
-                            )
-                    }
-                    .frame(width: 22, height: 22)
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(.white.opacity(0.8), lineWidth: 1.5))
-                }
-
-                VStack(alignment: .leading, spacing: 2) {
-                    if let user = post.user {
-                        Text(user.name ?? "")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundColor(.white)
-                            .lineLimit(1)
-                            .shadow(color: .black.opacity(0.3), radius: 1, x: 0, y: 1)
-                    }
-
-                    if let content = post.content, !content.isEmpty, !isTextPost {
-                        Text(content)
-                            .font(.system(size: 10))
-                            .foregroundColor(.white.opacity(0.7))
-                            .lineLimit(1)
+        // Each layer is a separate overlay so the base's size strictly bounds it.
+        // Single-ZStack approach leaked media intrinsic size and pushed labels off-screen.
+        cardBase
+            .overlay(
+                mediaContent
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipped()
+            )
+            .overlay(
+                Group {
+                    if !isTextPost {
+                        LinearGradient(
+                            stops: [
+                                .init(color: .clear, location: 0.35),
+                                .init(color: .black.opacity(0.3), location: 0.6),
+                                .init(color: .black.opacity(0.65), location: 1.0),
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
                     }
                 }
+            )
+            .overlay(alignment: .bottomLeading) { bottomInfo.allowsHitTesting(false) }
+            .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
+            .contentShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
+            .overlay(alignment: .topTrailing) { menuButton }
+    }
+
+    private var cardBase: some View {
+        Group {
+            if let width {
+                Color.clear.frame(width: width, height: width / aspectRatio)
+            } else {
+                Color.clear
+                    .frame(maxWidth: .infinity)
+                    .aspectRatio(aspectRatio, contentMode: .fit)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
-            .padding(ForMe.space4)
         }
-        .frame(width: width, height: width * 6 / 5)
-        .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
+    }
+
+    private var menuButton: some View {
+        Menu {
+            Button {
+                toggleFavorite()
+            } label: {
+                Label(isLiked ? "Unfavorite" : "Favorite",
+                      systemImage: isLiked ? "heart.slash" : "heart")
+            }
+            Button { sharePost() } label: {
+                Label("Share", systemImage: "square.and.arrow.up")
+            }
+            Button {} label: {
+                Label("Save", systemImage: "bookmark")
+            }
+            Button(role: .destructive) {} label: {
+                Label("Report", systemImage: "flag")
+            }
+        } label: {
+            HugeMoreHorizontal(size: 20, color: .white.opacity(0.85))
+                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+                .frame(width: 36, height: 36)
+                .contentShape(Rectangle())
+        }
+        .menuOrder(.fixed)
+        .padding(ForMe.space4)
+    }
+
+    @ViewBuilder
+    private var bottomInfo: some View {
+        HStack(alignment: .bottom, spacing: 10) {
+            if let user = post.user {
+                AsyncImage(url: URL(string: user.image ?? "")) { img in
+                    img.resizable().aspectRatio(contentMode: .fill)
+                } placeholder: {
+                    Circle().fill(ForMe.stone400)
+                        .overlay(
+                            Text(user.name?.prefix(1).uppercased() ?? "")
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundColor(.white)
+                        )
+                }
+                .frame(width: 30, height: 30)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(.white.opacity(0.8), lineWidth: 1.5))
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                if let user = post.user {
+                    Text(user.name ?? "")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .shadow(color: .black.opacity(0.3), radius: 1, x: 0, y: 1)
+                }
+
+                if let content = post.content, !content.isEmpty, !isTextPost {
+                    Text(content)
+                        .font(.system(size: 12))
+                        .foregroundColor(.white.opacity(0.8))
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+            }
+        }
+        .padding(ForMe.space4)
     }
 
     // MARK: - Media Content
@@ -133,7 +155,7 @@ struct PostCard: View {
                     .lineLimit(7)
                     .padding(20)
             }
-        } else if isVideo, let videoUrl = post.mediaUrl, let url = URL(string: videoUrl) {
+        } else if let url = videoURL {
             // Extract first-frame thumbnail for videos on the discover feed
             VideoThumbnail(url: url)
         } else if let imageUrl = post.imageSrc ?? post.thumbnailUrl ?? post.mediaUrl {

@@ -131,15 +131,55 @@ final class ThumbnailCache {
 
 // MARK: - Video detection helper
 
+// MARK: - Cloudinary URL rewriting for AVPlayer compatibility
+
+/// Rewrite a Cloudinary video URL so AVPlayer can decode it reliably.
+///
+/// Web browsers transparently handle WebM/VP9, but AVPlayer only decodes
+/// H.264 / HEVC / AAC. Cloudinary uploads are stored in their original
+/// container — if a user uploaded a WebM, `secure_url` points at the raw
+/// WebM, which AVPlayer rejects with kFigAssetError / kFigFileReaderError.
+///
+/// Injecting `f_mp4,vc_h264,ac_aac` forces Cloudinary to transcode to an
+/// mp4/H.264/AAC stream that AVPlayer can always play.
+///
+/// Input:  https://res.cloudinary.com/foo/video/upload/v123/clip.webm
+/// Output: https://res.cloudinary.com/foo/video/upload/f_mp4,vc_h264,ac_aac/v123/clip.mp4
+func avPlayerCompatibleURL(from url: URL) -> URL {
+    let s = url.absoluteString
+    guard s.contains("res.cloudinary.com"), s.contains("/video/upload/") else {
+        return url
+    }
+
+    // Always inject our transform as the FIRST segment so it takes priority
+    // over any pre-existing transformations (e.g. f_auto, which can still
+    // serve WebM to some User-Agent strings). Cloudinary applies `/`-separated
+    // transform chains in order, so putting ours first guarantees the final
+    // container is mp4/H.264/AAC.
+    var transformed = s.replacingOccurrences(
+        of: "/video/upload/",
+        with: "/video/upload/f_mp4,vc_h264,ac_aac/"
+    )
+
+    // Swap non-mp4 extensions to .mp4 so the URL is internally consistent.
+    let videoExts = [".webm", ".mov", ".m4v", ".avi", ".mkv", ".ogv", ".ogg"]
+    for ext in videoExts where transformed.lowercased().hasSuffix(ext) {
+        transformed = String(transformed.dropLast(ext.count)) + ".mp4"
+        break
+    }
+
+    return URL(string: transformed) ?? url
+}
+
 extension Post {
     var resolvedMediaType: String? {
         if let type = mediaType { return type }
-        // Infer from URL patterns
-        if let url = mediaUrl?.lowercased() {
-            let videoExts = [".mp4", ".mov", ".m4v", ".webm", ".avi"]
-            if videoExts.contains(where: { url.hasSuffix($0) }) { return "video" }
+        // Infer from URL patterns — check both mediaUrl and imageSrc
+        let videoExts = [".mp4", ".mov", ".m4v", ".webm", ".avi"]
+        for candidate in [mediaUrl, imageSrc].compactMap({ $0?.lowercased() }) {
+            if videoExts.contains(where: { candidate.hasSuffix($0) }) { return "video" }
             // Cloudinary video URLs contain /video/upload/
-            if url.contains("/video/upload/") { return "video" }
+            if candidate.contains("/video/upload/") { return "video" }
         }
         return nil
     }

@@ -8,17 +8,35 @@ struct UserMenuView: View {
 
     private var user: User? { authViewModel.currentUser }
 
-    private let menuItems: [(icon: String, label: String, action: MenuAction)] = [
-        ("person.crop.circle", "Profile", .profile),
-        ("square.grid.2x2", "Listings", .listings),
-        ("chart.line.uptrend.xyaxis", "Analytics", .analytics),
-        ("heart", "Favorites", .favorites),
-        ("person.2", "Team", .team),
-        ("creditcard", "Subscription", .subscription),
+    private let menuItems: [(label: String, action: MenuAction)] = [
+        ("Profile", .profile),
+        ("Listings", .listings),
+        ("Analytics", .analytics),
+        ("Favorites", .favorites),
+        ("Team", .team),
+        ("Subscription", .subscription),
     ]
 
     enum MenuAction {
         case profile, listings, analytics, favorites, team, subscription
+    }
+
+    @ViewBuilder
+    private func icon(for action: MenuAction) -> some View {
+        switch action {
+        case .profile:
+            HugeIcon(paths: HugeIcon.userPaths, size: 20, color: ForMe.stone600, lineWidth: 1.5)
+        case .listings:
+            HugeIcon(paths: HugeIcon.gridViewPaths, size: 20, color: ForMe.stone600, lineWidth: 1.5)
+        case .analytics:
+            HugeIcon(paths: HugeIcon.analyticsUpPaths, size: 20, color: ForMe.stone600, lineWidth: 1.5)
+        case .favorites:
+            HugeIcon(paths: HugeIcon.favouritePaths, size: 20, color: ForMe.stone600, lineWidth: 1.5)
+        case .team:
+            HugeIcon(paths: HugeIcon.userMultiplePaths, size: 20, color: ForMe.stone600, lineWidth: 1.5)
+        case .subscription:
+            HugeIcon(paths: HugeIcon.creditCardPaths, size: 20, color: ForMe.stone600, lineWidth: 1.5)
+        }
     }
 
     var body: some View {
@@ -27,7 +45,7 @@ struct UserMenuView: View {
             Capsule()
                 .fill(ForMe.stone200)
                 .frame(width: 36, height: 4)
-                .padding(.top, 8)
+                .padding(.top, ForMe.space4)
 
             // User header
             if let user = user {
@@ -49,8 +67,8 @@ struct UserMenuView: View {
                     }
                     Spacer()
                 }
-                .padding(.horizontal, ForMe.space5)
-                .padding(.top, ForMe.space4)
+                .padding(.horizontal, ForMe.space6)
+                .padding(.top, ForMe.space5)
                 .padding(.bottom, ForMe.space4)
             }
 
@@ -64,9 +82,7 @@ struct UserMenuView: View {
                         handleAction(item.action)
                     } label: {
                         HStack(spacing: 14) {
-                            Image(systemName: item.icon)
-                                .font(.system(size: 16))
-                                .foregroundColor(ForMe.stone600)
+                            icon(for: item.action)
                                 .frame(width: 24)
                             Text(item.label)
                                 .font(.system(size: 15, weight: .medium))
@@ -106,7 +122,7 @@ struct UserMenuView: View {
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(ForMe.stone300)
                 }
-                .padding(.horizontal, ForMe.space5)
+                .padding(.horizontal, ForMe.space6)
                 .padding(.vertical, 14)
             }
             .buttonStyle(.plain)
@@ -124,7 +140,7 @@ struct UserMenuView: View {
                         .foregroundColor(ForMe.statusCancelled)
                     Spacer()
                 }
-                .padding(.horizontal, ForMe.space5)
+                .padding(.horizontal, ForMe.space6)
                 .padding(.vertical, 14)
             }
             .buttonStyle(.plain)

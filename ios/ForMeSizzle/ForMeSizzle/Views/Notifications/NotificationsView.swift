@@ -37,7 +37,7 @@ struct NotificationsView: View {
                                 }
                             }
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, ForMe.space6)
                         .padding(.top, ForMe.space3)
                     }
                 }

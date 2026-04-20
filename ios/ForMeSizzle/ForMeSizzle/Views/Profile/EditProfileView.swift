@@ -56,7 +56,7 @@ struct EditProfileView: View {
                         formField(label: "Bio", text: $bio, isMultiline: true)
                         formField(label: "Location", text: $location)
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, ForMe.space6)
                 }
                 .padding(.bottom, 80)
             }

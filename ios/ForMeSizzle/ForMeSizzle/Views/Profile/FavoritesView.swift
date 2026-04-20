@@ -12,7 +12,7 @@ struct FavoritesView: View {
             VStack(spacing: 0) {
                 // Tabs
                 FavoritesTabBar(selectedTab: $selectedTab, tabs: tabs)
-                    .padding(.horizontal)
+                    .padding(.horizontal, ForMe.space6)
                     .padding(.top, ForMe.space2)
                     .padding(.bottom, ForMe.space3)
 
@@ -73,7 +73,7 @@ struct FavoritesView: View {
                     .buttonStyle(.plain)
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, ForMe.space6)
         }
     }
 
@@ -87,7 +87,7 @@ struct FavoritesView: View {
                     ProviderCard(user: worker)
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, ForMe.space6)
         }
     }
 
@@ -106,7 +106,7 @@ struct FavoritesView: View {
                         .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, ForMe.space6)
         }
     }
 
@@ -120,7 +120,7 @@ struct FavoritesView: View {
                     PostCard(post: post)
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, ForMe.space6)
         }
     }
 

@@ -28,43 +28,44 @@ struct FeedView: View {
                 LazyVStack(spacing: 0) {
                     ForEach(Array(posts.enumerated()), id: \.element.id) { index, post in
                         ZStack {
-                            FeedCard(post: post, screenSize: screen.size)
+                            FeedCard(post: post, screenSize: screen.size, isActive: currentIndex == index)
 
-                            // Per-card actions only (no tabs)
-                            VStack(spacing: 0) {
-                                Spacer().frame(height: 110)
-
-                                HStack {
-                                    Spacer()
-                                    VStack(spacing: 22) {
-                                        ActionButton(
-                                            icon: .heart,
-                                            label: "\(likeCounts[post.id] ?? post.likeCount)",
-                                            isActive: likedPosts.contains(post.id)
-                                        ) {
-                                            toggleLike(post)
-                                        }
-                                        ActionButton(icon: .comment, label: "\(commentCounts[post.id] ?? post.commentCount)") {
-                                            activePostId = post.id
-                                            activeComments = post.comments ?? []
-                                            showComments = true
-                                        }
-                                        ActionButton(
-                                            icon: .bookmark,
-                                            label: "\(bookmarkCounts[post.id] ?? post.bookmarkCount)",
-                                            isActive: bookmarkedPosts.contains(post.id)
-                                        ) {
-                                            toggleBookmark(post)
-                                        }
-                                        ActionButton(icon: .share, label: "Share") {
-                                            sharePost(post)
-                                        }
+                            // Per-card actions — centered on the right edge
+                            HStack {
+                                Spacer()
+                                VStack(spacing: 22) {
+                                    Button { dismiss() } label: {
+                                        Image(systemName: "xmark")
+                                            .font(.system(size: 22, weight: .semibold))
+                                            .foregroundColor(.white)
+                                            .frame(width: 26, height: 40)
+                                            .shadow(color: .black.opacity(0.4), radius: 3, x: 0, y: 1)
+                                    }
+                                    ActionButton(
+                                        icon: .heart,
+                                        label: "\(likeCounts[post.id] ?? post.likeCount)",
+                                        isActive: likedPosts.contains(post.id)
+                                    ) {
+                                        toggleLike(post)
+                                    }
+                                    ActionButton(icon: .comment, label: "\(commentCounts[post.id] ?? post.commentCount)") {
+                                        activePostId = post.id
+                                        activeComments = post.comments ?? []
+                                        showComments = true
+                                    }
+                                    ActionButton(
+                                        icon: .bookmark,
+                                        label: "\(bookmarkCounts[post.id] ?? post.bookmarkCount)",
+                                        isActive: bookmarkedPosts.contains(post.id)
+                                    ) {
+                                        toggleBookmark(post)
+                                    }
+                                    ActionButton(icon: .share, label: "Share") {
+                                        sharePost(post)
                                     }
                                 }
-                                .padding(.horizontal, ForMe.space5)
-
-                                Spacer()
                             }
+                            .padding(.horizontal, ForMe.space5)
                         }
                         .frame(width: screen.width, height: screen.height)
                         .id(index)
@@ -78,20 +79,8 @@ struct FeedView: View {
 
             // Fixed top bar (doesn't scroll)
             VStack {
-                HStack(alignment: .center) {
-                    Button { dismiss() } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.white)
-                            .shadow(color: .black.opacity(0.5), radius: 3, x: 0, y: 1)
-                            .frame(width: 36, height: 36)
-                    }
-                    Spacer()
-                    FeedTabs(selectedTab: $selectedTab)
-                    Spacer()
-                    Color.clear.frame(width: 36, height: 36)
-                }
-                .padding(.horizontal, ForMe.space4)
+                FeedTabs(selectedTab: $selectedTab)
+                    .padding(.horizontal, ForMe.space4)
                 Spacer()
             }
             .padding(.top, 10)
@@ -520,9 +509,16 @@ extension CGPath {
 struct FeedCard: View {
     let post: Post
     let screenSize: CGSize
+    var isActive: Bool = true
 
     private var isTextPost: Bool { post.imageSrc == nil && post.mediaUrl == nil }
     private var isVideo: Bool { post.isVideoPost }
+    private var videoURL: URL? {
+        guard isVideo else { return nil }
+        if let m = post.mediaUrl, let u = URL(string: m) { return u }
+        if let i = post.imageSrc, let u = URL(string: i) { return u }
+        return nil
+    }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -597,8 +593,13 @@ struct FeedCard: View {
                     .multilineTextAlignment(.center)
                     .lineSpacing(6).padding(40)
             }
-        } else if isVideo, let videoUrl = post.mediaUrl, let url = URL(string: videoUrl) {
-            FeedVideoPlayer(url: url)
+        } else if let url = videoURL {
+            // Thumbnail behind the player so a slow-loading or failed video
+            // shows a still frame instead of a silent black rectangle.
+            ZStack {
+                VideoThumbnail(url: url)
+                FeedVideoPlayer(url: url, isActive: isActive)
+            }
         } else if let imageUrl = post.imageSrc ?? post.mediaUrl ?? post.thumbnailUrl {
             AsyncImage(url: URL(string: imageUrl)) { phase in
                 switch phase {
@@ -628,51 +629,149 @@ struct FeedCard: View {
 }
 
 // MARK: - Video Player (looping, muted, auto-play)
+//
+// Uses AVPlayerLayer directly so there's no AVPlayerViewController UI
+// that can show its own play/pause overlay.
 
-struct FeedVideoPlayer: UIViewControllerRepresentable {
+final class FeedVideoPlayerView: UIView {
+    override class var layerClass: AnyClass { AVPlayerLayer.self }
+    var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }
+
+    var shouldPlayWhenVisible: Bool = true
+
+    var player: AVPlayer? {
+        get { playerLayer.player }
+        set {
+            playerLayer.player = newValue
+            playerLayer.videoGravity = .resizeAspectFill
+        }
+    }
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        // Kick off playback once the view is actually in the hierarchy.
+        // AVPlayer will silently ignore play() calls made before attachment on
+        // the first card, leaving it paused until user interaction.
+        if window != nil, shouldPlayWhenVisible, let player, player.rate == 0 {
+            player.play()
+        }
+    }
+}
+
+struct FeedVideoPlayer: UIViewRepresentable {
     let url: URL
+    let isActive: Bool
 
-    func makeUIViewController(context: Context) -> AVPlayerViewController {
-        // Configure audio session to allow silent playback
+    init(url: URL, isActive: Bool = true) {
+        self.url = url
+        self.isActive = isActive
+    }
+
+    func makeUIView(context: Context) -> FeedVideoPlayerView {
         try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .moviePlayback, options: [.mixWithOthers])
         try? AVAudioSession.sharedInstance().setActive(true)
 
-        let item = AVPlayerItem(url: url)
+        // Cloudinary stores videos in their uploaded format (often WebM/VP9
+        // from browsers). AVPlayer can't decode those, so force H.264/MP4.
+        let playbackURL = avPlayerCompatibleURL(from: url)
+        let item = AVPlayerItem(url: playbackURL)
         let player = AVQueuePlayer(playerItem: item)
         player.isMuted = true
-        player.automaticallyWaitsToMinimizeStalling = false
+        // Default automaticallyWaitsToMinimizeStalling = true — let AVPlayer
+        // wait for the buffer to fill then start. Setting this to false would
+        // cause play() to be silently ignored when the buffer is empty,
+        // which happens on the first card before anything has been buffered.
         player.actionAtItemEnd = .none
 
-        // Native looping via AVPlayerLooper
         context.coordinator.looper = AVPlayerLooper(player: player, templateItem: item)
         context.coordinator.player = player
+        context.coordinator.shouldPlayProvider = { isActive }
+        context.coordinator.startObserving()
 
-        let controller = AVPlayerViewController()
-        controller.player = player
-        controller.showsPlaybackControls = false
-        controller.videoGravity = .resizeAspectFill
-        controller.view.backgroundColor = .black
-        controller.allowsPictureInPicturePlayback = false
-
-        // Kick off playback — small delay ensures the view is attached before play()
-        DispatchQueue.main.async {
-            player.play()
-        }
-        return controller
+        let view = FeedVideoPlayerView()
+        view.backgroundColor = .black
+        view.player = player
+        view.shouldPlayWhenVisible = isActive
+        if isActive { player.play() }
+        return view
     }
 
-    func updateUIViewController(_ controller: AVPlayerViewController, context: Context) {
-        // Ensure playback resumes if the view returns to visibility
-        if controller.player?.rate == 0 {
-            controller.player?.play()
+    func updateUIView(_ view: FeedVideoPlayerView, context: Context) {
+        guard let player = context.coordinator.player else { return }
+        view.shouldPlayWhenVisible = isActive
+        context.coordinator.shouldPlayProvider = { isActive }
+        if isActive {
+            player.play()
+        } else {
+            player.pause()
+            player.seek(to: .zero)
         }
+    }
+
+    static func dismantleUIView(_ view: FeedVideoPlayerView, coordinator: Coordinator) {
+        coordinator.teardown()
     }
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
-    class Coordinator {
+    final class Coordinator {
         var player: AVQueuePlayer?
         var looper: AVPlayerLooper?
+        var shouldPlayProvider: () -> Bool = { true }
+        private var itemObservation: NSKeyValueObservation?
+        private var statusObservation: NSKeyValueObservation?
+        private var rateObservation: NSKeyValueObservation?
+
+        func startObserving() {
+            guard let player else { return }
+
+            // When AVPlayerLooper swaps the current item, re-bind the status
+            // observer to the new item.
+            itemObservation = player.observe(\.currentItem, options: [.initial, .new]) { [weak self] _, _ in
+                self?.bindStatusObserver()
+            }
+
+            // If timeControlStatus goes to .waitingToPlay or .paused while we
+            // want to be playing, retry play() — unless the current item is
+            // in a failed state (would spin forever).
+            rateObservation = player.observe(\.timeControlStatus, options: [.new]) { [weak self] player, _ in
+                guard let self, self.shouldPlayProvider() else { return }
+                if player.currentItem?.status == .failed { return }
+                if player.timeControlStatus != .playing {
+                    DispatchQueue.main.async { player.play() }
+                }
+            }
+        }
+
+        private func bindStatusObserver() {
+            statusObservation?.invalidate()
+            guard let item = player?.currentItem else { return }
+            statusObservation = item.observe(\.status, options: [.initial, .new]) { [weak self] item, _ in
+                guard let self else { return }
+                if item.status == .failed, let err = item.error {
+                    print("[FeedVideoPlayer] item failed: \(err.localizedDescription) — url: \(((item.asset as? AVURLAsset)?.url.absoluteString ?? "?"))")
+                    return
+                }
+                guard item.status == .readyToPlay else { return }
+                DispatchQueue.main.async {
+                    if self.shouldPlayProvider(), let player = self.player {
+                        player.play()
+                    }
+                }
+            }
+        }
+
+        func teardown() {
+            itemObservation?.invalidate()
+            statusObservation?.invalidate()
+            rateObservation?.invalidate()
+            itemObservation = nil
+            statusObservation = nil
+            rateObservation = nil
+            player?.pause()
+            player = nil
+            looper = nil
+        }
     }
 }
 

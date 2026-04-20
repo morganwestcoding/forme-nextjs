@@ -4,16 +4,32 @@ struct CreateMenuView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var appState: AppState
 
-    private let items: [(icon: String, label: String, description: String, destination: CreateDestination)] = [
-        ("photo.on.rectangle.angled", "Post", "Share your work", .post),
-        ("square.grid.2x2", "Listing", "Create a business", .listing),
-        ("bag", "Shop", "Open a storefront", .shop),
-        ("cube.box", "Product", "Add to your shop", .product),
-        ("person.badge.plus", "Worker", "Add a team member", .worker),
+    private let items: [(label: String, description: String, destination: CreateDestination)] = [
+        ("Post", "Share your work", .post),
+        ("Listing", "Create a business", .listing),
+        ("Shop", "Open a storefront", .shop),
+        ("Product", "Add to your shop", .product),
+        ("Worker", "Add a team member", .worker),
     ]
 
     enum CreateDestination {
         case post, listing, shop, product, worker
+    }
+
+    @ViewBuilder
+    private func icon(for destination: CreateDestination) -> some View {
+        switch destination {
+        case .post:
+            HugePostIcon(size: 22, color: ForMe.stone500, lineWidth: 1.5)
+        case .listing:
+            HugeIcon(paths: HugeIcon.gridViewPaths, size: 22, color: ForMe.stone500, lineWidth: 1.5)
+        case .shop:
+            HugeIcon(paths: HugeIcon.shopPaths, size: 22, color: ForMe.stone500, lineWidth: 1.5)
+        case .product:
+            HugeIcon(paths: HugeIcon.productPaths, size: 22, color: ForMe.stone500, lineWidth: 1.5)
+        case .worker:
+            HugeIcon(paths: HugeIcon.userAddPaths, size: 22, color: ForMe.stone500, lineWidth: 1.5)
+        }
     }
 
     var body: some View {
@@ -28,7 +44,7 @@ struct CreateMenuView: View {
                         .font(.system(size: 13))
                         .foregroundColor(ForMe.stone400)
                 }
-                .padding(.horizontal, ForMe.space5)
+                .padding(.horizontal, ForMe.space6)
                 .padding(.top, ForMe.space4)
                 .padding(.bottom, ForMe.space5)
 
@@ -44,9 +60,7 @@ struct CreateMenuView: View {
                             handleNavigation(item.destination)
                         } label: {
                             VStack(spacing: 8) {
-                                Image(systemName: item.icon)
-                                    .font(.system(size: 20))
-                                    .foregroundColor(ForMe.stone500)
+                                icon(for: item.destination)
 
                                 VStack(spacing: 3) {
                                     Text(item.label)
@@ -70,7 +84,7 @@ struct CreateMenuView: View {
                         .buttonStyle(.plain)
                     }
                 }
-                .padding(.horizontal, ForMe.space5)
+                .padding(.horizontal, ForMe.space6)
 
                 Spacer()
             }
