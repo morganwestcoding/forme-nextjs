@@ -1,6 +1,5 @@
-import MapsClient from './MapsClient';
 import getCurrentUser from '@/app/actions/getCurrentUser';
-import BetaGate from '@/components/BetaGate';
+import MapsClient from './MapsClient';
 
 export const metadata = {
   title: 'Maps - ForMe',
@@ -11,12 +10,7 @@ export const dynamic = 'force-dynamic';
 
 async function MapsPage() {
   const currentUser = await getCurrentUser();
-
-  return (
-    <BetaGate>
-      <MapsClient currentUser={currentUser} />
-    </BetaGate>
-  );
+  return <MapsClient currentUser={currentUser} />;
 }
 
 export default MapsPage;

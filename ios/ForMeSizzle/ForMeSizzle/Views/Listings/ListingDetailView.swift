@@ -138,13 +138,14 @@ private extension ListingDetailView {
                         .fill(ForMe.stone200)
                 }
             }
-            .frame(width: 88, height: 88)
+            .frame(width: 96, height: 96)
             .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
                     .stroke(.white, lineWidth: 3)
             )
             .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
+            .padding(.bottom, 12)
 
             // Title + verification
             HStack(spacing: 6) {
@@ -175,6 +176,7 @@ private extension ListingDetailView {
             // Rating stars
             ratingView
                 .padding(.top, ForMe.space3)
+                .padding(.bottom, ForMe.space2)
 
             // Stats row
             statsRow
@@ -192,15 +194,9 @@ private extension ListingDetailView {
                     .lineLimit(4)
             }
 
-            // Save + Share — matches the web, sits directly under the bio as
-            // secondary actions (primary CTAs live below this row).
-            saveShareRow
-                .padding(.top, 16)
-                .padding(.bottom, 28)
-
             // Action buttons
             actionButtons
-                .padding(.top, ForMe.space4)
+                .padding(.top, 28)
                 .padding(.horizontal)
         }
         .padding(.bottom, ForMe.space4)
@@ -271,28 +267,6 @@ private extension ListingDetailView {
             Text(label)
                 .font(.system(size: 12))
                 .foregroundColor(ForMe.stone400)
-        }
-        .frame(maxWidth: .infinity)
-    }
-
-    // Save + Share under the bio — icons only, matching web's 1.5pt stroke weight.
-    var saveShareRow: some View {
-        HStack(spacing: 28) {
-            Button {
-                Task { await viewModel.toggleFavorite(listingId: listing.id) }
-            } label: {
-                Image(systemName: viewModel.isFavorite ? "heart.fill" : "heart")
-                    .font(.system(size: 24, weight: .light))
-                    .foregroundColor(viewModel.isFavorite ? ForMe.textPrimary : ForMe.stone400)
-            }
-            .buttonStyle(.plain)
-
-            Button {
-                shareListing()
-            } label: {
-                HugeIcon(paths: HugeIcon.sharePaths, size: 24, color: ForMe.stone400, lineWidth: 1.5)
-            }
-            .buttonStyle(.plain)
         }
         .frame(maxWidth: .infinity)
     }

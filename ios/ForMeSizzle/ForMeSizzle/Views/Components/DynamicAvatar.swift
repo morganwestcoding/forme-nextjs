@@ -15,7 +15,7 @@ struct DynamicAvatar: View {
             case .small: return 32
             case .smallMedium: return 38
             case .medium: return 48
-            case .large: return 80
+            case .large: return 96
             case .extraLarge: return 110
             }
         }

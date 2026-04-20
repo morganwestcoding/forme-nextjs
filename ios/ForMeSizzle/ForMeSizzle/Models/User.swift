@@ -49,6 +49,7 @@ struct User: Codable, Identifiable, Hashable {
     // Professional
     var managedListings: [String]?
     var role: String?
+    var jobTitle: String?
 
     // User type + student academy
     var userType: String?     // "customer" | "individual" | "team" | "student"

@@ -386,7 +386,7 @@ private extension HomeView {
                                 Image("Category\(cat.rawValue)")
                                     .resizable()
                                     .aspectRatio(contentMode: .fill)
-                                    .frame(width: 72, height: 72)
+                                    .frame(width: 69, height: 69)
                                     .clipShape(Circle())
                                     .overlay(
                                         Circle()
