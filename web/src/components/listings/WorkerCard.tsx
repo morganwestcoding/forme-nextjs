@@ -5,7 +5,8 @@ import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser, SafeEmployee, SafeStoreHours } from '@/app/types';
-import HeartButton from '../HeartButton';
+import useFavorite from '@/app/hooks/useFavorite';
+import CardActionMenu from './CardActionMenu';
 
 interface WorkerCardProps {
   employee: SafeEmployee & {
@@ -70,6 +71,10 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
 }) => {
   const [imageError, setImageError] = useState(false);
   const router = useRouter();
+  const { hasFavorited, toggleFavorite } = useFavorite({ listingId: listing.id, currentUser });
+  const workerShareUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/profile/${employee.userId}`
+    : `/profile/${employee.userId}`;
 
   const handleCardClick = () => {
     if (onCardClick) {
@@ -126,26 +131,18 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         {/* Border overlay — renders on top of watermark */}
         <div className="absolute inset-0 z-30 rounded-2xl border border-stone-200/80 dark:border-stone-800 group-hover:border-stone-300 dark:group-hover:border-stone-700 transition-colors pointer-events-none" />
 
-        {/* Heart + Share — top right, visible on hover */}
-        <div className="absolute top-3 right-[18px] z-30 flex flex-col items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" onClick={(e) => e.stopPropagation()}>
-          <HeartButton listingId={listing.id} currentUser={currentUser} variant="listingHead" />
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (navigator.share) {
-                navigator.share({ title: employee.fullName, url: `${window.location.origin}/profile/${employee.userId}` });
-              } else {
-                navigator.clipboard.writeText(`${window.location.origin}/profile/${employee.userId}`);
-              }
-            }}
-            aria-label="Share"
-            className="transition-all duration-300 text-stone-300 hover:text-stone-900"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
-              <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
-            </svg>
-          </button>
+        {/* 3-dot menu — top right, visible on hover */}
+        <div
+          className="absolute top-3 right-[18px] z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <CardActionMenu
+            shareUrl={workerShareUrl}
+            shareTitle={employee.fullName}
+            hasFavorited={hasFavorited}
+            onToggleFavorite={(e) => toggleFavorite(e as any)}
+            iconColorClass="text-stone-400 hover:text-stone-700 dark:text-stone-300 dark:hover:text-stone-100"
+          />
         </div>
 
         <div className="relative z-10">
@@ -313,29 +310,18 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         </div>
       </div>
 
-      {/* Right actions — heart + share, hover only */}
+      {/* Right actions — 3-dot menu, hover only */}
       <div
-        className="flex flex-col items-center justify-center gap-3 flex-shrink-0 mr-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        className="flex items-center justify-center flex-shrink-0 mr-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="-ml-0.5"><HeartButton listingId={listing.id} currentUser={currentUser} variant="card" /></div>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            if (navigator.share) {
-              navigator.share({ title: employee.fullName, url: `${window.location.origin}/listings/${listing.id}` });
-            } else {
-              navigator.clipboard.writeText(`${window.location.origin}/listings/${listing.id}`);
-            }
-          }}
-          aria-label="Share"
-          className="transition-colors duration-200 text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
-            <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
-          </svg>
-        </button>
+        <CardActionMenu
+          shareUrl={workerShareUrl}
+          shareTitle={employee.fullName}
+          hasFavorited={hasFavorited}
+          onToggleFavorite={(e) => toggleFavorite(e as any)}
+          iconColorClass="text-stone-500 hover:text-stone-700 dark:text-stone-300 dark:hover:text-stone-100"
+        />
       </div>
     </div>
   );

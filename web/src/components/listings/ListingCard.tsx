@@ -4,9 +4,9 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { SafeListing, SafeUser } from '@/app/types';
-import HeartButton from '../HeartButton';
 import useFavorite from '@/app/hooks/useFavorite';
 import { placeholderDataUri } from '@/lib/placeholders';
+import CardActionMenu from './CardActionMenu';
 
 interface ListingCardProps {
   data: SafeListing;
@@ -119,40 +119,18 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
                 {Number(data.rating ?? 5.0).toFixed(1)}
               </div>
 
-              {/* Heart + Share — top right, visible on hover */}
+              {/* 3-dot menu — top right, visible on hover */}
               <div
-                className="absolute top-3 right-[18px] z-30 flex flex-col items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                className="absolute top-3 right-[18px] z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                 onClick={(e) => e.stopPropagation()}
               >
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavorite(e);
-                  }}
-                  aria-label="Favorite"
-                  className="transition-all duration-300"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill={hasFavorited ? '#e11d48' : 'none'}>
-                    <path d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z" stroke={hasFavorited ? '#e11d48' : '#d4d4d4'} strokeWidth="1.5" />
-                  </svg>
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (navigator.share) {
-                      navigator.share({ title: data.title, url: `${window.location.origin}/listings/${data.id}` });
-                    } else {
-                      navigator.clipboard.writeText(`${window.location.origin}/listings/${data.id}`);
-                    }
-                  }}
-                  aria-label="Share"
-                  className="transition-all duration-300 text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
-                    <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
-                  </svg>
-                </button>
+                <CardActionMenu
+                  shareUrl={`${typeof window !== 'undefined' ? window.location.origin : ''}/listings/${data.id}`}
+                  shareTitle={data.title}
+                  hasFavorited={hasFavorited}
+                  onToggleFavorite={(e) => toggleFavorite(e as any)}
+                  iconColorClass="text-stone-400 hover:text-stone-700 dark:text-stone-300 dark:hover:text-stone-100"
+                />
               </div>
 
               {/* Content */}
@@ -246,12 +224,17 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
 
         <div className="relative z-10">
           <div className="relative h-[280px]">
-            {/* Heart button */}
-            <div className="absolute top-4 right-4 z-20">
-              <HeartButton
-                listingId={data.id}
-                currentUser={currentUser}
-                variant="default"
+            {/* 3-dot menu */}
+            <div
+              className="absolute top-4 right-4 z-20"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <CardActionMenu
+                shareUrl={`${typeof window !== 'undefined' ? window.location.origin : ''}/listings/${data.id}`}
+                shareTitle={data.title}
+                hasFavorited={hasFavorited}
+                onToggleFavorite={(e) => toggleFavorite(e as any)}
+                iconColorClass="text-white/90 hover:text-white drop-shadow"
               />
             </div>
 
@@ -349,27 +332,16 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
       {/* Right actions */}
       {customActions ? customActions : !hideActions && (
         <div
-          className="flex flex-col items-center justify-center gap-3 flex-shrink-0 mr-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          className="flex items-center justify-center flex-shrink-0 mr-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="-ml-0.5"><HeartButton listingId={data.id} currentUser={currentUser} variant="card" /></div>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (navigator.share) {
-                navigator.share({ title: data.title, url: `${window.location.origin}/listings/${data.id}` });
-              } else {
-                navigator.clipboard.writeText(`${window.location.origin}/listings/${data.id}`);
-              }
-            }}
-            aria-label="Share"
-            className="transition-colors duration-200 text-stone-500     hover:text-stone-700  dark:text-stone-200 dark:hover:text-stone-200"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
-              <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
-            </svg>
-          </button>
+          <CardActionMenu
+            shareUrl={`${typeof window !== 'undefined' ? window.location.origin : ''}/listings/${data.id}`}
+            shareTitle={data.title}
+            hasFavorited={hasFavorited}
+            onToggleFavorite={(e) => toggleFavorite(e as any)}
+            iconColorClass="text-stone-500 hover:text-stone-700 dark:text-stone-300 dark:hover:text-stone-100"
+          />
         </div>
       )}
     </div>
