@@ -28,24 +28,37 @@ struct Reservation: Codable, Identifiable {
 enum ReservationStatus: String, Codable {
     case pending
     case confirmed
+    case accepted   // server writes this via /api/reservations/[id] PATCH
+    case declined   // server writes this via /api/reservations/[id] PATCH
     case cancelled
     case completed
+    case unknown
+
+    // Any status the server introduces later shouldn't crash decoding of
+    // the entire reservations response — fall back to `.unknown`.
+    init(from decoder: Decoder) throws {
+        let raw = try decoder.singleValueContainer().decode(String.self)
+        self = ReservationStatus(rawValue: raw) ?? .unknown
+    }
 
     var displayName: String {
         switch self {
         case .pending: return "Pending"
-        case .confirmed: return "Confirmed"
+        case .confirmed, .accepted: return "Confirmed"
+        case .declined: return "Declined"
         case .cancelled: return "Cancelled"
         case .completed: return "Completed"
+        case .unknown: return "Unknown"
         }
     }
 
     var color: String {
         switch self {
         case .pending: return "FBBF24"     // amber
-        case .confirmed: return "34D399"   // emerald
-        case .cancelled: return "FB7185"   // rose
+        case .confirmed, .accepted: return "34D399"   // emerald
+        case .declined, .cancelled: return "FB7185"   // rose
         case .completed: return "60A5FA"   // sky
+        case .unknown: return "9CA3AF"     // gray
         }
     }
 }

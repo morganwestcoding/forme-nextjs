@@ -3,55 +3,51 @@ import Combine
 
 @MainActor
 class AnalyticsViewModel: ObservableObject {
-    @Published var listings: [Listing] = []
-    @Published var listingsCount = 0
-    @Published var reservationsCount = 0
-    @Published var totalRevenue = 0
-    @Published var thisMonthRevenue = 0
-    @Published var postsCount = 0
-    @Published var followersCount = 0
-    @Published var followingCount = 0
-    @Published var avgRating = 0.0
-    @Published var totalReviews = 0
-    @Published var ratingDistribution: [Int: Int] = [5: 60, 4: 25, 3: 10, 2: 3, 1: 2]
-    @Published var revenueData: [RevenueDataPoint] = []
+    @Published var data: AnalyticsData?
+    @Published var isLoading = false
+    @Published var error: String?
 
     private let api = APIService.shared
 
     func load() async {
+        isLoading = true
+        defer { isLoading = false }
         do {
-            let user = try await api.getCurrentUser()
-            listings = try await api.getUserListings(userId: user.id)
-            listingsCount = listings.count
-            followersCount = user.followers?.count ?? 0
-            followingCount = user.following?.count ?? 0
-
-            let reservations = (try? await api.getReservations()) ?? []
-            reservationsCount = reservations.count
-            totalRevenue = reservations.compactMap { $0.totalPrice.map { Int($0) } }.reduce(0, +)
-            thisMonthRevenue = totalRevenue / 3 // rough estimate
-
-            // Mock revenue data for chart
-            revenueData = [
-                .init(month: "Jan", revenue: 1200),
-                .init(month: "Feb", revenue: 1800),
-                .init(month: "Mar", revenue: 1500),
-                .init(month: "Apr", revenue: 2400),
-                .init(month: "May", revenue: 2100),
-                .init(month: "Jun", revenue: 2800),
-                .init(month: "Jul", revenue: 3200),
-            ]
-
-            avgRating = listings.compactMap { $0.rating }.reduce(0, +) / Double(max(listings.count, 1))
-            totalReviews = listings.compactMap { $0.ratingCount }.reduce(0, +)
+            data = try await api.getAnalytics()
         } catch {
-            // silent
+            self.error = error.localizedDescription
         }
     }
-}
 
-struct RevenueDataPoint: Identifiable {
-    let id = UUID()
-    let month: String
-    let revenue: Int
+    // MARK: - Derived stats (mirror web's Overview tab growth calcs)
+
+    var reservationGrowth: Double {
+        guard let data = data, data.monthlyData.count >= 2 else { return 0 }
+        let cur = data.monthlyData.last!.reservations
+        let prev = data.monthlyData[data.monthlyData.count - 2].reservations
+        guard prev > 0 else { return 0 }
+        return (Double(cur - prev) / Double(prev)) * 100
+    }
+
+    var revenueGrowth: Double {
+        guard let data = data, data.monthlyData.count >= 2 else { return 0 }
+        let cur = data.monthlyData.last!.revenue
+        let prev = data.monthlyData[data.monthlyData.count - 2].revenue
+        guard prev > 0 else { return 0 }
+        return ((cur - prev) / prev) * 100
+    }
+
+    // Reviews needed to reach target rating — matches web's
+    // calculateReviewsNeeded. Assumes all new reviews are 5-star.
+    func reviewsNeeded(to target: Double) -> Int {
+        guard let reviews = data?.reviews, reviews.totalReviews > 0 else { return 0 }
+        if reviews.averageRating >= target { return 0 }
+        let currentSum = reviews.ratingDistribution.reduce(0.0) {
+            $0 + Double($1.rating * $1.count)
+        }
+        let denom = 5 - target
+        guard denom > 0 else { return 0 }
+        let needed = ceil((target * Double(reviews.totalReviews) - currentSum) / denom)
+        return max(Int(needed), 0)
+    }
 }

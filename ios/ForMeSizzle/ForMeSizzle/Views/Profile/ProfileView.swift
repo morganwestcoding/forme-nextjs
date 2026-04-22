@@ -8,6 +8,7 @@ struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
     @State private var showEditProfile = false
     @State private var showSettings = false
+    @State private var showReserveFlow = false
 
     private var user: User? {
         viewModel.user ?? (userId == nil ? authViewModel.currentUser : nil)
@@ -21,8 +22,14 @@ struct ProfileView: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
                 Color.clear.frame(height: 20)
-                profileCard
-                contentSections
+                if user != nil {
+                    profileCard
+                    contentSections
+                } else {
+                    ProgressView()
+                        .padding(.top, 120)
+                        .frame(maxWidth: .infinity)
+                }
             }
             .padding(.bottom, 100)
         }
@@ -40,6 +47,15 @@ struct ProfileView: View {
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
+        }
+        .sheet(isPresented: $showReserveFlow) {
+            if let user = user {
+                ProfileReserveFlow(
+                    profileUser: user,
+                    listings: viewModel.listings,
+                    services: viewModel.services
+                )
+            }
         }
         .task {
             if let id = userId {
@@ -288,9 +304,7 @@ private extension ProfileView {
         } else {
             HStack(spacing: 10) {
                 Button {
-                    if let first = viewModel.services.first, let listingId = first.listingId {
-                        appState.navigationPath.append(ListingIdRoute(id: listingId))
-                    }
+                    showReserveFlow = true
                 } label: {
                     Text("Reserve")
                         .font(.system(size: 13, weight: .semibold))

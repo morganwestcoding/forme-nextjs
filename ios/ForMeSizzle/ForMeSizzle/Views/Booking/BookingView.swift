@@ -5,9 +5,20 @@ import SwiftUI
 struct BookingView: View {
     let listing: Listing
     let service: Service
+    let fixedEmployee: Employee?
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var appState: AppState
     @StateObject private var viewModel = BookingViewModel()
-    @State private var step: BookingStep = .provider
+    @State private var step: BookingStep
+
+    init(listing: Listing, service: Service, fixedEmployee: Employee? = nil) {
+        self.listing = listing
+        self.service = service
+        self.fixedEmployee = fixedEmployee
+        // When the employee is already known (e.g. booking from that
+        // employee's profile), skip the provider picker and start on date.
+        _step = State(initialValue: fixedEmployee != nil ? .date : .provider)
+    }
 
     enum BookingStep: Int, CaseIterable {
         case provider = 0, date, time, summary
@@ -23,7 +34,15 @@ struct BookingView: View {
     }
 
     private var progress: CGFloat {
-        CGFloat(step.rawValue + 1) / CGFloat(BookingStep.allCases.count)
+        if fixedEmployee != nil {
+            // Three visible steps: date, time, summary (raw values 1..3)
+            return CGFloat(step.rawValue) / 3.0
+        }
+        return CGFloat(step.rawValue + 1) / CGFloat(BookingStep.allCases.count)
+    }
+
+    private var isFirstStep: Bool {
+        fixedEmployee != nil ? step == .date : step == .provider
     }
 
     var body: some View {
@@ -59,18 +78,23 @@ struct BookingView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
-                        if step == .provider {
+                        if isFirstStep {
                             dismiss()
                         } else {
                             withAnimation(.easeInOut(duration: 0.25)) {
-                                step = BookingStep(rawValue: step.rawValue - 1) ?? .provider
+                                step = BookingStep(rawValue: step.rawValue - 1) ?? step
                             }
                         }
                     } label: {
-                        Image(systemName: step == .provider ? "xmark" : "chevron.left")
+                        Image(systemName: isFirstStep ? "xmark" : "chevron.left")
                             .font(.system(size: 15, weight: .medium))
                             .foregroundColor(ForMe.textPrimary)
                     }
+                }
+            }
+            .onAppear {
+                if let emp = fixedEmployee, viewModel.selectedEmployee == nil {
+                    viewModel.selectedEmployee = emp
                 }
             }
             .alert("Error", isPresented: .constant(viewModel.error != nil)) {
@@ -96,7 +120,12 @@ struct BookingView: View {
                     date: viewModel.selectedDate,
                     time: viewModel.selectedTime ?? "",
                     employee: viewModel.selectedEmployee,
-                    onDismiss: { dismiss() }
+                    onDismiss: { dismiss() },
+                    onViewBookings: {
+                        appState.pendingBookingRefresh = true
+                        appState.selectedTab = .bookings
+                        dismiss()
+                    }
                 )
             }
         }
@@ -116,11 +145,6 @@ private extension BookingView {
                 .padding(.horizontal)
 
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                    ProviderOption(
-                        name: "Any Available",
-                        isSelected: viewModel.selectedEmployee == nil
-                    ) { viewModel.selectedEmployee = nil }
-
                     if let employees = listing.employees {
                         ForEach(employees) { employee in
                             ProviderOption(
@@ -352,7 +376,7 @@ private extension BookingView {
 
     var canProceed: Bool {
         switch step {
-        case .provider: return true
+        case .provider: return viewModel.selectedEmployee != nil
         case .date: return true
         case .time: return viewModel.selectedTime != nil
         case .summary: return viewModel.canBook

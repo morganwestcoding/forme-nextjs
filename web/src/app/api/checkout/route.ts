@@ -146,6 +146,10 @@ export async function POST(request: Request) {
           date: { gte: startOfDay, lte: endOfDay },
           status: { not: 'cancelled' },
           paymentStatus: { not: 'refunded' },
+          // Only real bookings block the slot — unpaid pending rows (no
+          // paymentIntentId yet) can exist from abandoned checkout attempts
+          // and must not lock their own slot on retry.
+          paymentIntentId: { not: null },
         },
         include: {
           service: { select: { durationMinutes: true } },
@@ -176,6 +180,7 @@ export async function POST(request: Request) {
     let employee: any = null;
     let businessOwner: any = null;
     let listingAcademy: { id: string; stripeConnectAccountId: string | null; stripeConnectChargesEnabled: boolean; name: string } | null = null;
+    let listingTitle: string | null = null;
 
     if (employeeId && employeeId !== "any") {
       employee = await prisma.employee.findUnique({
@@ -206,6 +211,7 @@ export async function POST(request: Request) {
       if (employee) {
         businessOwner = employee.listing.user;
         listingAcademy = employee.listing.academy;
+        listingTitle = employee.listing.title;
       }
     }
 
@@ -235,7 +241,12 @@ export async function POST(request: Request) {
       if (listing) {
         businessOwner = listing.user;
         listingAcademy = listing.academy;
+        listingTitle = listing.title;
       }
+    }
+
+    if (!businessOwner) {
+      return apiError("Listing not found", 404);
     }
 
     // Academy-owned listings route payment to the academy's Connect account
@@ -289,9 +300,9 @@ export async function POST(request: Request) {
         date: new Date(date).toISOString(),
         time,
         note: note || '',
-        businessName: businessName || employee.listing.title,
+        businessName: businessName || listingTitle || '',
         businessOwnerId: businessOwner.id,
-        employeeUserId: employee.userId,
+        employeeUserId: employee?.userId || '',
         platformFeePercent: String(PLATFORM_FEE_PERCENT),
         transactionFeePercent: String(transactionFeePercent),
         // When set, the booking is for an academy-owned listing (e.g. a student).

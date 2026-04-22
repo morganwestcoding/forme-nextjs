@@ -39,12 +39,12 @@ class BookingViewModel: ObservableObject {
     }
 
     var canBook: Bool {
-        selectedTime != nil
+        selectedTime != nil && selectedEmployee != nil
     }
 
     /// Create reservation then initiate Stripe checkout
     func createBooking(listingId: String, serviceId: String, serviceName: String, price: Double, businessName: String?) async -> Bool {
-        guard let time = selectedTime else { return false }
+        guard let time = selectedTime, let employee = selectedEmployee else { return false }
 
         isLoading = true
         error = nil
@@ -54,19 +54,13 @@ class BookingViewModel: ObservableObject {
         let dateStr = dateFormatter.string(from: selectedDate)
 
         do {
-            // 1. Create pending reservation
-            _ = try await api.createReservation(CreateReservationRequest(
-                listingId: listingId,
-                serviceId: serviceId,
-                serviceName: serviceName,
-                employeeId: selectedEmployee?.id ?? "any",
-                date: dateStr,
-                time: time,
-                totalPrice: price,
-                note: note.isEmpty ? nil : note
-            ))
-
-            // 2. Create Stripe checkout session
+            // Create Stripe checkout session. The reservation row itself is
+            // created server-side by the Stripe webhook (and the verify
+            // fallback) after payment succeeds — see
+            // web/src/app/libs/createReservationFromCheckout.ts. Creating a
+            // pending reservation up-front here would trip /api/checkout's
+            // own overlap check ("This time slot is no longer available")
+            // because it would look like an existing conflict.
             let checkout = try await api.createCheckoutSession(CheckoutRequest(
                 totalPrice: price,
                 date: dateStr,
@@ -74,8 +68,8 @@ class BookingViewModel: ObservableObject {
                 listingId: listingId,
                 serviceId: serviceId,
                 serviceName: serviceName,
-                employeeId: selectedEmployee?.id ?? "any",
-                employeeName: selectedEmployee?.fullName,
+                employeeId: employee.id,
+                employeeName: employee.fullName,
                 note: note.isEmpty ? nil : note,
                 businessName: businessName,
                 platform: "ios"

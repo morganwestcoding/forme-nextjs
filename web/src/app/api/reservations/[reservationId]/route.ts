@@ -92,6 +92,11 @@ export async function PATCH(
            userId: true
          }
        },
+       employee: {
+         select: {
+           userId: true
+         }
+       },
        user: {
          select: {
            name: true
@@ -104,8 +109,9 @@ export async function PATCH(
      throw new Error('Reservation not found');
    }
 
-   // Verify the current user is the listing owner (or master/admin)
-   if (!canModifyResource(currentUser, reservation.listing.userId)) {
+   // Verify the current user is the listing owner, the assigned employee, or master/admin
+   const isAssignedEmployee = reservation.employee?.userId === currentUser.id;
+   if (!canModifyResource(currentUser, reservation.listing.userId) && !isAssignedEmployee) {
      throw new Error('Unauthorized');
    }
 
@@ -182,6 +188,11 @@ export async function DELETE(
            userId: true
          }
        },
+       employee: {
+         select: {
+           userId: true
+         }
+       },
        user: {
          select: {
            name: true
@@ -194,12 +205,13 @@ export async function DELETE(
      throw new Error('Reservation not found');
    }
 
-   // Check if the current user is either the reservation owner, listing owner, or master/admin
+   // Check if the current user is either the reservation owner, listing owner, assigned employee, or master/admin
    const isReservationOwner = reservation.userId === currentUser.id;
    const isListingOwner = reservation.listing.userId === currentUser.id;
+   const isAssignedEmployee = reservation.employee?.userId === currentUser.id;
    const isMaster = isMasterUser(currentUser);
 
-   if (!isReservationOwner && !isListingOwner && !isMaster) {
+   if (!isReservationOwner && !isListingOwner && !isAssignedEmployee && !isMaster) {
      throw new Error('Unauthorized');
    }
 
@@ -211,8 +223,8 @@ export async function DELETE(
    });
 
    // Create appropriate notification based on who cancelled
-   if (isListingOwner) {
-     // Business owner cancelled the reservation
+   if (isListingOwner || isAssignedEmployee || isMaster) {
+     // Business side (owner, assigned employee, or admin) cancelled the reservation
      await prisma.notification.create({
        data: {
          type: 'RESERVATION_CANCELLED_BY_BUSINESS',

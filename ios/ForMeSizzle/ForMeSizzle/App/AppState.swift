@@ -14,6 +14,11 @@ class AppState: ObservableObject {
     @Published var selectedTab: Tab = .home
     @Published var navigationPath = NavigationPath()
 
+    // Set to true after a booking completes so BookingsView re-fetches
+    // (with retries) when it next mounts, covering the Stripe-webhook
+    // → reservation-row latency. BookingsView clears the flag on read.
+    @Published var pendingBookingRefresh = false
+
     // Modal presentation state
     @Published var showingInbox = false
     @Published var showingNotifications = false

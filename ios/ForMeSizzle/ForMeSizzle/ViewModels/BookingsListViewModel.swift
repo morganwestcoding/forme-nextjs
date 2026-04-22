@@ -19,6 +19,16 @@ class BookingsListViewModel: ObservableObject {
         isLoading = false
     }
 
+    // Used right after a booking completes: load now, then re-load a couple
+    // seconds later to cover the Stripe-webhook → reservation-row latency.
+    func loadWithPostBookingRetry() async {
+        await loadReservations()
+        try? await Task.sleep(nanoseconds: 2_500_000_000)
+        await loadReservations()
+        try? await Task.sleep(nanoseconds: 3_000_000_000)
+        await loadReservations()
+    }
+
     func cancelReservation(id: String) async {
         do {
             try await api.cancelReservation(id: id)

@@ -56,9 +56,22 @@ export async function POST(req: Request) {
       // ----- A) Reservations (existing) -----
       if (kind !== 'subscription') {
         try {
-          await createReservationFromCheckoutSession(session);
-        } catch {
-          // Reservation creation failed; the verify endpoint will retry as a fallback
+          const result = await createReservationFromCheckoutSession(session);
+          if (!result.created) {
+            // Log but don't 4xx — the verify endpoint is the fallback and
+            // Stripe will retry the webhook if we 500, which we don't want
+            // for permanent failures like missing metadata.
+            console.warn('[webhook] reservation not created', {
+              sessionId: session.id,
+              reason: result.reason,
+              reservationId: result.reservationId,
+            });
+          }
+        } catch (err) {
+          console.error('[webhook] createReservationFromCheckoutSession threw', {
+            sessionId: session.id,
+            error: err instanceof Error ? err.message : String(err),
+          });
         }
         return NextResponse.json({ received: true });
       }

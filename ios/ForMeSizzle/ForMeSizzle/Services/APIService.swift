@@ -217,8 +217,22 @@ class APIService {
     // MARK: - Reservations
 
     func getReservations() async throws -> [Reservation] {
+        // Server returns { outgoing, incoming } — a reservation you made
+        // (outgoing) can also be on a listing you own (incoming), so
+        // dedupe by id when flattening for the bookings list.
+        struct ReservationsResponse: Codable {
+            let outgoing: [Reservation]
+            let incoming: [Reservation]
+        }
         let request = try buildRequest(endpoint: "/reservations")
-        return try await perform(request)
+        let response: ReservationsResponse = try await perform(request)
+        var seen = Set<String>()
+        var combined: [Reservation] = []
+        for r in response.outgoing + response.incoming where !seen.contains(r.id) {
+            seen.insert(r.id)
+            combined.append(r)
+        }
+        return combined
     }
 
     func createReservation(_ reservation: CreateReservationRequest) async throws -> Reservation {
@@ -288,6 +302,13 @@ class APIService {
             throw APIError.serverError("Search failed with status \(statusCode): \(raw.prefix(200))")
         }
         return try decoder.decode(SearchResponse.self, from: data)
+    }
+
+    // MARK: - Analytics
+
+    func getAnalytics() async throws -> AnalyticsData {
+        let request = try buildRequest(endpoint: "/analytics")
+        return try await perform(request)
     }
 
     // MARK: - Favorites

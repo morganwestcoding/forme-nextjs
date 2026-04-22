@@ -68,10 +68,10 @@ struct TeamView: View {
 
                 // Stat cards
                 LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
-                    StatCard(label: "Team Members", value: "\(viewModel.employees.count)", trend: nil)
-                    StatCard(label: "Active Now", value: "\(viewModel.activeCount)", trend: nil)
-                    StatCard(label: "Today's Bookings", value: "\(viewModel.todayBookings)", trend: nil)
-                    StatCard(label: "Monthly Revenue", value: "$\(viewModel.monthlyRevenue)", trend: "+5%")
+                    StatCard(title: "Team members", value: "\(viewModel.employees.count)")
+                    StatCard(title: "Active now", value: "\(viewModel.activeCount)")
+                    StatCard(title: "Today's bookings", value: "\(viewModel.todayBookings)")
+                    StatCard(title: "Monthly revenue", value: "$\(viewModel.monthlyRevenue)", growth: 5)
                 }
                 .padding(.horizontal)
 
