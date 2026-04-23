@@ -5,12 +5,21 @@ import Foundation
 // timeseries, top services, recent activity, listings table, and review
 // aggregates all come from /api/analytics.
 struct AnalyticsData: Codable {
+    let period: Period
     let overview: Overview
     let reviews: ReviewStatsBlock
     let recentActivity: RecentActivity
     let monthlyData: [MonthlyPoint]
     let topServices: [ServiceStat]
     let listings: [ListingStat]
+
+    struct Period: Codable {
+        let start: String
+        let end: String
+        let label: String
+        let days: Int
+        let granularity: String   // "day" | "week" | "month"
+    }
 
     struct Overview: Codable {
         let totalListings: Int

@@ -306,8 +306,22 @@ class APIService {
 
     // MARK: - Analytics
 
-    func getAnalytics() async throws -> AnalyticsData {
-        let request = try buildRequest(endpoint: "/analytics")
+    func getAnalytics(start: Date, end: Date) async throws -> AnalyticsData {
+        // Send date-only "YYYY-MM-DD" in the user's local calendar. Pass
+        // via `queryItems` rather than embedding in the endpoint string —
+        // `buildRequest` assigns `components.queryItems = queryItems`,
+        // which will WIPE any inline query string when the argument is
+        // nil. (That was the silent bug behind the stale chart: the
+        // server saw bare `/analytics` and fell through to the default.)
+        let df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd"
+        df.calendar = Calendar.current
+        df.timeZone = .current
+        let items = [
+            URLQueryItem(name: "start", value: df.string(from: start)),
+            URLQueryItem(name: "end",   value: df.string(from: end)),
+        ]
+        let request = try buildRequest(endpoint: "/analytics", queryItems: items)
         return try await perform(request)
     }
 

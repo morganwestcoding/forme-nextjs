@@ -5,6 +5,7 @@ struct AnalyticsView: View {
     @StateObject private var viewModel = AnalyticsViewModel()
     @EnvironmentObject var authViewModel: AuthViewModel
     @State private var selectedTab: Tab = .overview
+    @State private var showingDatePicker = false
 
     enum Tab: String, CaseIterable, Identifiable {
         case overview, listings, revenue, engagement, reviews
@@ -44,6 +45,18 @@ struct AnalyticsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .refreshable { await viewModel.load() }
         .task { await viewModel.load() }
+        .sheet(isPresented: $showingDatePicker) {
+            AnalyticsDateRangePicker(
+                initialStart: viewModel.rangeStart,
+                initialEnd: viewModel.rangeEnd,
+                initialPreset: viewModel.selectedPreset,
+                onApply: { start, end in
+                    Task { await viewModel.applyCustomRange(start: start, end: end) }
+                },
+                onCancel: {}
+            )
+            .presentationDetents([.large])
+        }
     }
 
     // MARK: - Header
@@ -94,6 +107,31 @@ struct AnalyticsView: View {
         }
     }
 
+    // The only chart-level control: a capsule that shows the current
+    // range and opens the date-range picker sheet on tap.
+    @ViewBuilder
+    private func rangeCapsule(_ data: AnalyticsData) -> some View {
+        RangeCapsuleButton(
+            label: compactRangeLabel(start: viewModel.rangeStart, end: viewModel.rangeEnd),
+            action: { showingDatePicker = true }
+        )
+    }
+
+    // "Feb 10 – Mar 17"  (same year)
+    // "Feb 10, '23 – Mar 17, '24"  (crosses a year)
+    // "Mar 17"  (single-day window)
+    private func compactRangeLabel(start: Date, end: Date) -> String {
+        let cal = Calendar.current
+        if cal.isDate(start, inSameDayAs: end) {
+            let f = DateFormatter(); f.dateFormat = "MMM d"
+            return f.string(from: start)
+        }
+        let sameYear = cal.component(.year, from: start) == cal.component(.year, from: end)
+        let f = DateFormatter()
+        f.dateFormat = sameYear ? "MMM d" : "MMM d, ''yy"
+        return "\(f.string(from: start)) – \(f.string(from: end))"
+    }
+
     private var emptyState: some View {
         VStack(spacing: 8) {
             Image(systemName: "chart.bar")
@@ -121,18 +159,24 @@ private extension AnalyticsView {
         VStack(spacing: 20) {
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
                 StatCard(title: "Total listings", value: "\(data.overview.totalListings)")
+                // Growth % compares the last bucket vs the previous one. That
+                // only means "this month vs last month" when range = year —
+                // for Week/Month the buckets are days, so drop the indicator
+                // to avoid showing a misleading day-over-day delta.
                 StatCard(title: "Total reservations",
                          value: "\(data.overview.totalReservations)",
-                         growth: viewModel.reservationGrowth)
+                         growth: viewModel.showsGrowth ? viewModel.reservationGrowth : nil)
                 StatCard(title: "Total revenue",
                          value: currency(data.overview.totalRevenue),
-                         growth: viewModel.revenueGrowth)
+                         growth: viewModel.showsGrowth ? viewModel.revenueGrowth : nil)
                 StatCard(title: "Total posts", value: "\(data.overview.totalPosts)")
                 StatCard(title: "Followers", value: "\(data.overview.totalFollowers)")
                 StatCard(title: "Following", value: "\(data.overview.totalFollowing)")
             }
 
-            AnalyticsCard(title: "Revenue & reservations") {
+            AnalyticsCard(title: "Trends",
+                          subtitle: data.period.label,
+                          toolbar: { rangeCapsule(data) }) {
                 Chart(data.monthlyData) { point in
                     LineMark(x: .value("Month", point.month),
                              y: .value("Reservations", point.reservations),
@@ -141,29 +185,46 @@ private extension AnalyticsView {
                         .interpolationMethod(.catmullRom)
                         .lineStyle(StrokeStyle(lineWidth: 2))
 
+                    // PointMark on the same (x,y) guarantees something
+                    // renders even with a single bucket — LineMark needs
+                    // 2+ points to draw anything at all.
+                    PointMark(x: .value("Month", point.month),
+                              y: .value("Reservations", point.reservations))
+                        .foregroundStyle(ForMe.accent)
+                        .symbolSize(data.monthlyData.count == 1 ? 60 : 0)
+
                     LineMark(x: .value("Month", point.month),
                              y: .value("Revenue", point.revenue),
                              series: .value("Series", "Revenue"))
                         .foregroundStyle(Color(hex: "C4B5FD"))
                         .interpolationMethod(.catmullRom)
                         .lineStyle(StrokeStyle(lineWidth: 2))
+
+                    PointMark(x: .value("Month", point.month),
+                              y: .value("Revenue", point.revenue))
+                        .foregroundStyle(Color(hex: "C4B5FD"))
+                        .symbolSize(data.monthlyData.count == 1 ? 60 : 0)
                 }
                 .frame(height: 220)
                 .chartYAxis {
-                    AxisMarks { _ in
-                        AxisGridLine().foregroundStyle(ForMe.stone100)
+                    // Just 3 gridlines — any more clutters a card-sized chart.
+                    AxisMarks(values: .automatic(desiredCount: 3)) { _ in
+                        AxisGridLine()
+                            .foregroundStyle(ForMe.stone100)
                         AxisValueLabel()
-                            .font(.system(size: 10))
+                            .font(.system(size: 11, weight: .medium))
                             .foregroundStyle(ForMe.stone400)
                     }
                 }
                 .chartXAxis {
-                    // 12 months of timeseries — thin to ~4 labels so the
-                    // month/year strings don't overlap on a phone-width chart.
-                    AxisMarks(values: .automatic(desiredCount: 4)) { _ in
-                        AxisValueLabel()
-                            .font(.system(size: 10))
-                            .foregroundStyle(ForMe.stone400)
+                    AxisMarks(values: sampledMonths(data.monthlyData)) { value in
+                        AxisValueLabel {
+                            if let s = value.as(String.self) {
+                                Text(axisLabel(s))
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundStyle(ForMe.stone500)
+                            }
+                        }
                     }
                 }
             }
@@ -366,7 +427,9 @@ private extension AnalyticsView {
 private extension AnalyticsView {
     func revenueTab(_ data: AnalyticsData) -> some View {
         VStack(spacing: 20) {
-            AnalyticsCard(title: "Monthly revenue") {
+            AnalyticsCard(title: "Revenue",
+                          subtitle: data.period.label,
+                          toolbar: { rangeCapsule(data) }) {
                 Chart(data.monthlyData) { point in
                     AreaMark(x: .value("Month", point.month),
                              y: .value("Revenue", point.revenue))
@@ -381,23 +444,33 @@ private extension AnalyticsView {
                         .foregroundStyle(ForMe.accent)
                         .interpolationMethod(.catmullRom)
                         .lineStyle(StrokeStyle(lineWidth: 2))
+
+                    // Fallback dot for single-bucket ranges ("Today").
+                    PointMark(x: .value("Month", point.month),
+                              y: .value("Revenue", point.revenue))
+                        .foregroundStyle(ForMe.accent)
+                        .symbolSize(data.monthlyData.count == 1 ? 60 : 0)
                 }
                 .frame(height: 260)
                 .chartYAxis {
-                    AxisMarks { _ in
-                        AxisGridLine().foregroundStyle(ForMe.stone100)
+                    // Just 3 gridlines — any more clutters a card-sized chart.
+                    AxisMarks(values: .automatic(desiredCount: 3)) { _ in
+                        AxisGridLine()
+                            .foregroundStyle(ForMe.stone100)
                         AxisValueLabel()
-                            .font(.system(size: 10))
+                            .font(.system(size: 11, weight: .medium))
                             .foregroundStyle(ForMe.stone400)
                     }
                 }
                 .chartXAxis {
-                    // 12 months of timeseries — thin to ~4 labels so the
-                    // month/year strings don't overlap on a phone-width chart.
-                    AxisMarks(values: .automatic(desiredCount: 4)) { _ in
-                        AxisValueLabel()
-                            .font(.system(size: 10))
-                            .foregroundStyle(ForMe.stone400)
+                    AxisMarks(values: sampledMonths(data.monthlyData)) { value in
+                        AxisValueLabel {
+                            if let s = value.as(String.self) {
+                                Text(axisLabel(s))
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundStyle(ForMe.stone500)
+                            }
+                        }
                     }
                 }
             }
@@ -406,7 +479,9 @@ private extension AnalyticsView {
                 if data.topServices.isEmpty {
                     placeholderRow("No service revenue yet")
                 } else {
-                    Chart(data.topServices.prefix(8), id: \.id) { service in
+                    // Cap at 5 bars — beyond that the stacked vertical
+                    // labels start running into the legend row below.
+                    Chart(data.topServices.prefix(5), id: \.id) { service in
                         BarMark(x: .value("Service", service.serviceName),
                                 y: .value("Revenue", service.revenue))
                             .foregroundStyle(ForMe.accent)
@@ -414,20 +489,22 @@ private extension AnalyticsView {
                     }
                     .frame(height: 220)
                     .chartYAxis {
-                        AxisMarks { _ in
+                        AxisMarks(values: .automatic(desiredCount: 3)) { _ in
                             AxisGridLine().foregroundStyle(ForMe.stone100)
                             AxisValueLabel()
-                                .font(.system(size: 10))
+                                .font(.system(size: 11, weight: .medium))
                                 .foregroundStyle(ForMe.stone400)
                         }
                     }
                     .chartXAxis {
-                        AxisMarks { _ in
-                            // Service names can be long — angle them so
-                            // adjacent bars don't collide horizontally.
-                            AxisValueLabel(orientation: .verticalReversed)
-                                .font(.system(size: 10))
-                                .foregroundStyle(ForMe.stone400)
+                        AxisMarks { value in
+                            AxisValueLabel(orientation: .verticalReversed) {
+                                if let s = value.as(String.self) {
+                                    Text(s)
+                                        .font(.system(size: 11, weight: .medium))
+                                        .foregroundStyle(ForMe.stone500)
+                                }
+                            }
                         }
                     }
                 }
@@ -447,7 +524,9 @@ private extension AnalyticsView {
                 StatCard(title: "Following", value: "\(data.overview.totalFollowing)")
             }
 
-            AnalyticsCard(title: "Monthly posts") {
+            AnalyticsCard(title: "Posts",
+                          subtitle: data.period.label,
+                          toolbar: { rangeCapsule(data) }) {
                 Chart(data.monthlyData) { point in
                     BarMark(x: .value("Month", point.month),
                             y: .value("Posts", point.posts))
@@ -456,20 +535,24 @@ private extension AnalyticsView {
                 }
                 .frame(height: 240)
                 .chartYAxis {
-                    AxisMarks { _ in
-                        AxisGridLine().foregroundStyle(ForMe.stone100)
+                    // Just 3 gridlines — any more clutters a card-sized chart.
+                    AxisMarks(values: .automatic(desiredCount: 3)) { _ in
+                        AxisGridLine()
+                            .foregroundStyle(ForMe.stone100)
                         AxisValueLabel()
-                            .font(.system(size: 10))
+                            .font(.system(size: 11, weight: .medium))
                             .foregroundStyle(ForMe.stone400)
                     }
                 }
                 .chartXAxis {
-                    // 12 months of timeseries — thin to ~4 labels so the
-                    // month/year strings don't overlap on a phone-width chart.
-                    AxisMarks(values: .automatic(desiredCount: 4)) { _ in
-                        AxisValueLabel()
-                            .font(.system(size: 10))
-                            .foregroundStyle(ForMe.stone400)
+                    AxisMarks(values: sampledMonths(data.monthlyData)) { value in
+                        AxisValueLabel {
+                            if let s = value.as(String.self) {
+                                Text(axisLabel(s))
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundStyle(ForMe.stone500)
+                            }
+                        }
                     }
                 }
             }
@@ -749,6 +832,38 @@ private extension AnalyticsView {
         return f.string(from: NSNumber(value: value)) ?? "$\(Int(value))"
     }
 
+    // Pick x-axis tick values. Swift Charts ignores
+    // `.automatic(desiredCount:)` on categorical String axes, so we pass
+    // an explicit values array. Endpoints are *always* included so the
+    // user can see the actual start/end of their selected window
+    // reflected on the axis, not just three interior ticks. axisLabel()
+    // shortens month buckets (e.g. "Apr 2025" → "Apr '25") so year-spanning
+    // charts don't overhang.
+    func sampledMonths(_ points: [AnalyticsData.MonthlyPoint]) -> [String] {
+        let n = points.count
+        guard n > 0 else { return [] }
+        if n <= 5 { return points.map(\.month) }
+        // First + last, plus three evenly-spaced interior ticks. Five
+        // labels is the most iPhone widths fit without clipping.
+        let indices = [0, n / 4, n / 2, (3 * n) / 4, n - 1]
+        let unique = Array(NSOrderedSet(array: indices)) as? [Int] ?? indices
+        return unique.sorted().map { points[$0].month }
+    }
+
+    // Compress the server's bucket label for display on the chart axis.
+    // Monthly buckets come back as "Apr 2026" — we shorten to "Apr '26"
+    // so labels on a year-spanning chart disambiguate across the boundary.
+    // Weekly/daily buckets ("Apr 15") already read well as-is.
+    func axisLabel(_ raw: String) -> String {
+        guard viewModel.data?.period.granularity == "month" else { return raw }
+        let parts = raw.split(separator: " ")
+        guard parts.count == 2 else { return raw }
+        let month = parts[0]
+        let year = parts[1]
+        let shortYear = year.count == 4 ? "'\(year.suffix(2))" : "'\(year)"
+        return "\(month) \(shortYear)"
+    }
+
     func shortDate(_ iso: String) -> String {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -770,18 +885,90 @@ private extension AnalyticsView {
 
 }
 
-// MARK: - Reusable card + stat
+// MARK: - Range capsule
+// Single chart-level control. Tapping opens the full date-range picker
+// sheet (presets + calendar + From/To fields). The capsule shows the
+// currently-loaded span so you always know what window you're looking at
+// without needing a separate label elsewhere.
 
-struct AnalyticsCard<Content: View>: View {
-    let title: String
-    @ViewBuilder let content: Content
+private struct RangeCapsuleButton: View {
+    let label: String
+    let action: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(title)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundColor(ForMe.stone500)
-            content
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Image(systemName: "calendar")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(ForMe.stone500)
+                Text(label)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(ForMe.textPrimary)
+                    .lineLimit(1)
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundColor(ForMe.stone500)
+            }
+            .padding(.horizontal, 12)
+            .frame(height: 28)
+            .background(Capsule().fill(ForMe.stone100))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Reusable card + stat
+
+// Card layout:
+//   ┌───────────────────────────────────┐
+//   │ Title                             │  ← always full-width
+//   │ [toolbar row, if provided]        │  ← period nav + range pills
+//   │ <content>                         │
+//   └───────────────────────────────────┘
+// Stacking toolbar under the title gives the picker space and stops the
+// tab row + range pills from getting visually confused.
+struct AnalyticsCard<Content: View, Toolbar: View>: View {
+    let title: String
+    // Optional "10 Feb 2026 – 22 Apr 2026" style range label. Rendered
+    // directly under the title so the plot the user is looking at always
+    // carries its precise window in text — no hunting back up to the
+    // capsule trigger to remember what's selected.
+    let subtitle: String?
+    @ViewBuilder let toolbar: () -> Toolbar
+    @ViewBuilder let content: () -> Content
+
+    init(
+        title: String,
+        subtitle: String? = nil,
+        @ViewBuilder toolbar: @escaping () -> Toolbar = { EmptyView() },
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.title = title
+        self.subtitle = subtitle
+        self.toolbar = toolbar
+        self.content = content
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(ForMe.textPrimary)
+                        .tracking(-0.2)
+                    if let subtitle {
+                        Text(subtitle)
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundColor(ForMe.stone500)
+                    }
+                }
+                Spacer()
+                toolbar()
+            }
+
+            content()
+                .padding(.top, 4)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)

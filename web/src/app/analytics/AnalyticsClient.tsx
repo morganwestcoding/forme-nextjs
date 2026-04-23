@@ -1,23 +1,69 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SafeUser } from '@/app/types';
 import { AnalyticsData } from '@/app/actions/getAnalyticsData';
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 import Container from '@/components/Container';
 import PageHeader from '@/components/PageHeader';
 import Skeleton, { PageHeaderSkeleton, ContainerSkeleton } from '@/components/ui/Skeleton';
 import { useTheme } from '@/app/context/ThemeContext';
+import DateRangePicker, { AnalyticsPreset, presetRange, matchingPreset } from './DateRangePicker';
 
+// Shared palette for the charts. `accent` is the primary line/area/bar
+// colour; `secondary` is the companion series (reservations+revenue
+// overlay, stacked bars, etc.). `grid` / `axis` are the chart chrome.
 const CHART_THEME = (isDark: boolean) => ({
   accent: isDark ? '#f5f5f4' : '#1c1917',
+  secondary: isDark ? '#a8a29e' : '#78716c',
   grid: isDark ? '#292524' : '#e7e5e4',
   axis: isDark ? '#78716c' : '#9ca3af',
+  surface: isDark ? '#1c1917' : '#ffffff',
+  text: isDark ? '#f5f5f4' : '#1c1917',
+  muted: isDark ? '#a8a29e' : '#78716c',
 });
-import { AnalyticsUpIcon as TrendingUp, AnalyticsDownIcon as TrendingDown, UserMultipleIcon as Users, Calendar03Icon as Calendar, DollarCircleIcon as DollarSign, File02Icon as FileText, ViewIcon as Eye, FavouriteIcon as Heart, MessageMultiple01Icon as MessageCircle, StarIcon as Star } from 'hugeicons-react';
+import { AnalyticsUpIcon as TrendingUp, AnalyticsDownIcon as TrendingDown, FavouriteIcon as Heart, MessageMultiple01Icon as MessageCircle, StarIcon as Star } from 'hugeicons-react';
 
 interface AnalyticsClientProps {
   currentUser: SafeUser;
+}
+
+// Recharts' default tooltip doesn't honour dark mode and renders series
+// values as bare numbers. We want brand chrome (stone borders, subtle
+// shadow, rounded-xl) + currency formatting when the series is revenue.
+function BrandTooltip({
+  active,
+  payload,
+  label,
+  isDarkMode,
+  formatCurrency,
+}: any) {
+  if (!active || !payload || !payload.length) return null;
+  return (
+    <div
+      className={`rounded-xl border px-3 py-2 text-[12px] shadow-md ${
+        isDarkMode
+          ? 'border-stone-700 bg-stone-900 text-stone-100'
+          : 'border-stone-200 bg-white text-stone-900'
+      }`}
+    >
+      <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+        {label}
+      </div>
+      {payload.map((entry: any) => {
+        const isRevenue = /revenue/i.test(entry.name ?? entry.dataKey);
+        return (
+          <div key={`${entry.name}-${entry.dataKey}`} className="flex items-center gap-2 py-0.5">
+            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
+            <span className="text-stone-500 dark:text-stone-400">{entry.name ?? entry.dataKey}</span>
+            <span className="ml-auto font-semibold tabular-nums">
+              {isRevenue ? formatCurrency(entry.value as number) : entry.value}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
@@ -28,12 +74,21 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
   const { isDarkMode } = useTheme();
   const chartTheme = CHART_THEME(isDarkMode);
 
-  // Client-side fetch analytics data
+  // Currently-loaded window. Default matches the iOS ViewModel —
+  // Last 1 Year — so both clients land on the same initial chart.
+  const initialRange = useMemo(() => presetRange('last1Year'), []);
+  const [rangeStart, setRangeStart] = useState<Date>(initialRange.start);
+  const [rangeEnd, setRangeEnd] = useState<Date>(initialRange.end);
+  const [rangePreset, setRangePreset] = useState<AnalyticsPreset | null>('last1Year');
+
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [analyticsLoading, setAnalyticsLoading] = useState(true);
 
-  useEffect(() => {
-    fetch('/api/analytics')
+  const fetchAnalytics = useCallback((start: Date, end: Date) => {
+    const toYMD = (d: Date) =>
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    setAnalyticsLoading(true);
+    fetch(`/api/analytics?start=${toYMD(start)}&end=${toYMD(end)}`)
       .then((r) => r.json())
       .then((data) => {
         setAnalyticsData(data);
@@ -44,7 +99,19 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
       });
   }, []);
 
-  if (analyticsLoading || !analyticsData) {
+  useEffect(() => {
+    fetchAnalytics(rangeStart, rangeEnd);
+  }, [fetchAnalytics, rangeStart, rangeEnd]);
+
+  const handleApplyRange = useCallback((start: Date, end: Date, preset: AnalyticsPreset | null) => {
+    setRangeStart(start);
+    setRangeEnd(end);
+    setRangePreset(preset ?? matchingPreset(start, end));
+  }, []);
+
+  // First render = full skeleton. After the first response, re-fetches
+  // from a new range show a subtle overlay instead of wiping the page.
+  if (!analyticsData) {
     return (
       <ContainerSkeleton>
         <PageHeaderSkeleton />
@@ -132,7 +199,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
     );
   }
 
-  const { overview, recentActivity, monthlyData, topServices, listings, reviews } = analyticsData;
+  const { overview, recentActivity, monthlyData, topServices, listings, reviews, period } = analyticsData;
 
   // Calculate how many 5-star reviews needed to reach a target rating
   const calculateReviewsNeeded = (targetRating: number) => {
@@ -147,17 +214,44 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
     return Math.max(0, needed);
   };
 
-  // Calculate growth percentages (simplified)
-  const currentMonthData = monthlyData[monthlyData.length - 1];
-  const previousMonthData = monthlyData[monthlyData.length - 2];
-  
-  const reservationGrowth = previousMonthData 
-    ? ((currentMonthData.reservations - previousMonthData.reservations) / Math.max(previousMonthData.reservations, 1)) * 100
+  // Growth % compares the last bucket vs the one before it. That's only
+  // meaningful at monthly granularity — the same math plotted over daily
+  // or weekly buckets would be a day-over-day delta mislabelled as
+  // month-over-month. Hide the indicator unless we're on months.
+  const showsGrowth = period?.granularity === 'month' && monthlyData.length >= 2;
+  const currentBucket = monthlyData[monthlyData.length - 1];
+  const previousBucket = monthlyData[monthlyData.length - 2];
+
+  const reservationGrowth = showsGrowth && currentBucket && previousBucket
+    ? ((currentBucket.reservations - previousBucket.reservations) / Math.max(previousBucket.reservations, 1)) * 100
     : 0;
-    
-  const revenueGrowth = previousMonthData 
-    ? ((currentMonthData.revenue - previousMonthData.revenue) / Math.max(previousMonthData.revenue, 1)) * 100
+
+  const revenueGrowth = showsGrowth && currentBucket && previousBucket
+    ? ((currentBucket.revenue - previousBucket.revenue) / Math.max(previousBucket.revenue, 1)) * 100
     : 0;
+
+  // Pick explicit x-axis tick values so the chart always shows the real
+  // first + last buckets (the user's selected endpoints) no matter how
+  // long the range is. Recharts auto-ticks otherwise drop the endpoints
+  // at narrow widths, which hid the actual selection from the user.
+  const axisTicks: string[] = (() => {
+    const labels = monthlyData.map((p) => p.month);
+    const n = labels.length;
+    if (n <= 5) return labels;
+    const indices = new Set<number>([0, Math.round(n / 3), Math.round((2 * n) / 3), n - 1]);
+    return Array.from(indices).sort((a, b) => a - b).map((i) => labels[i]);
+  })();
+
+  // Compact month buckets like "Apr 2026" → "Apr '26" so labels on a
+  // year-spanning chart disambiguate across the year boundary without
+  // eating more horizontal space. Weekly/daily labels ("Apr 15") are
+  // already compact.
+  const formatBucketLabel = (raw: string) => {
+    if (period?.granularity !== 'month') return raw;
+    const [m, y] = raw.split(' ');
+    if (!m || !y) return raw;
+    return `${m} '${y.slice(2)}`;
+  };
 
   function StatCard({ title, value, growth }: {
     title: string;
@@ -178,6 +272,39 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
           )}
         </div>
         <div className="text-[28px] font-bold tracking-tight text-stone-900 dark:text-stone-100 tabular-nums">{value}</div>
+      </div>
+    );
+  }
+
+  // Card wrapper used for every chart. Title + optional subtitle
+  // (the server's period.label — "10 Feb 2026 – 22 Apr 2026" style), so
+  // the user can see exactly which range the chart is plotting without
+  // having to glance back at the capsule picker up top.
+  function ChartCard({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+    return (
+      <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+        <div className="mb-6 flex items-start justify-between gap-3">
+          <div>
+            <h3 className="text-[14px] font-semibold text-stone-900 dark:text-stone-100 tracking-tight">{title}</h3>
+            {subtitle && (
+              <p className="mt-0.5 text-[11px] font-medium text-stone-500 dark:text-stone-400 tabular-nums">{subtitle}</p>
+            )}
+          </div>
+        </div>
+        {children}
+      </div>
+    );
+  }
+
+  function ChartLegend({ items }: { items: { color: string; label: string }[] }) {
+    return (
+      <div className="mt-4 flex flex-wrap items-center gap-4">
+        {items.map((item) => (
+          <div key={item.label} className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
+            <span className="text-[11px] font-medium text-stone-500 dark:text-stone-400">{item.label}</span>
+          </div>
+        ))}
       </div>
     );
   }
@@ -209,21 +336,36 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             <p className="text-[14px] text-stone-400 dark:text-stone-500 mt-1">Welcome back, {currentUser.name}</p>
           </div>
 
-          {/* Tab bar */}
-          <div className="flex items-center gap-2 mb-8 overflow-x-auto scrollbar-hide pb-1">
-            {['overview', 'listings', 'revenue', 'engagement', 'reviews'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab as typeof activeTab)}
-                className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
-                  activeTab === tab
-                    ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)] dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-[0_1px_3px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.8)]'
-                    : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
-                }`}
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            ))}
+          {/* Tab bar + range picker. Tabs scroll if they run out of
+              horizontal space; the range picker stays pinned to the right
+              so it's always reachable. */}
+          <div className="mb-8 flex items-center gap-3">
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1 flex-1 min-w-0">
+              {['overview', 'listings', 'revenue', 'engagement', 'reviews'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab as typeof activeTab)}
+                  className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
+                    activeTab === tab
+                      ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)] dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-[0_1px_3px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.8)]'
+                      : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
+                  }`}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </button>
+              ))}
+            </div>
+            <div className="shrink-0 flex items-center gap-2">
+              {analyticsLoading && (
+                <span className="h-3 w-3 rounded-full border-2 border-stone-300 border-t-stone-600 animate-spin dark:border-stone-700 dark:border-t-stone-300" aria-label="Updating" />
+              )}
+              <DateRangePicker
+                start={rangeStart}
+                end={rangeEnd}
+                preset={rangePreset}
+                onApply={handleApplyRange}
+              />
+            </div>
           </div>
         </div>
 
@@ -241,12 +383,12 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
               <StatCard
                 title="Total Reservations"
                 value={overview.totalReservations}
-                growth={reservationGrowth}
+                growth={showsGrowth ? reservationGrowth : undefined}
               />
               <StatCard
                 title="Total Revenue"
                 value={formatCurrency(overview.totalRevenue)}
-                growth={revenueGrowth}
+                growth={showsGrowth ? revenueGrowth : undefined}
               />
               <StatCard
                 title="Total Posts"
@@ -265,27 +407,29 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* Revenue & Reservations Chart */}
-              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
-                <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Revenue & Reservations</h3>
+              <ChartCard title="Reservations & Revenue" subtitle={period?.label}>
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={monthlyData}>
+                  <LineChart data={monthlyData} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} vertical={false} />
-                    <XAxis dataKey="month" stroke={chartTheme.axis} fontSize={11} tickLine={false} />
-                    <YAxis stroke={chartTheme.axis} fontSize={11} tickLine={false} />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: 'white',
-                        border: '1px solid #f3f4f6',
-                        borderRadius: '8px',
-                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
-                      }}
+                    <XAxis
+                      dataKey="month"
+                      stroke={chartTheme.axis}
+                      fontSize={11}
+                      tickLine={false}
+                      axisLine={false}
+                      ticks={axisTicks}
+                      tickFormatter={formatBucketLabel}
+                      interval={0}
                     />
+                    <YAxis stroke={chartTheme.axis} fontSize={11} tickLine={false} axisLine={false} width={40} />
+                    <Tooltip content={<BrandTooltip isDarkMode={isDarkMode} formatCurrency={formatCurrency} />} />
                     <Line
                       type="monotone"
                       dataKey="reservations"
                       stroke={chartTheme.accent}
                       strokeWidth={2}
-                      dot={false}
+                      dot={monthlyData.length === 1 ? { r: 4, fill: chartTheme.accent } : false}
+                      activeDot={{ r: 4 }}
                       name="Reservations"
                     />
                     <Line
@@ -293,12 +437,19 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                       dataKey="revenue"
                       stroke="#c4b5fd"
                       strokeWidth={2}
-                      dot={false}
-                      name="Revenue ($)"
+                      dot={monthlyData.length === 1 ? { r: 4, fill: '#c4b5fd' } : false}
+                      activeDot={{ r: 4 }}
+                      name="Revenue"
                     />
                   </LineChart>
                 </ResponsiveContainer>
-              </div>
+                <ChartLegend
+                  items={[
+                    { color: chartTheme.accent, label: 'Reservations' },
+                    { color: '#c4b5fd', label: 'Revenue' },
+                  ]}
+                />
+              </ChartCard>
 
               {/* Top Services */}
               <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
@@ -421,54 +572,76 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
         {activeTab === 'revenue' && (
           <div className="space-y-5">
             {/* Revenue Chart */}
-            <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
-              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Monthly Revenue</h3>
-              <ResponsiveContainer width="100%" height={400}>
-                <AreaChart data={monthlyData}>
+            <ChartCard title="Revenue over time" subtitle={period?.label}>
+              <ResponsiveContainer width="100%" height={360}>
+                <AreaChart data={monthlyData} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="analyticsRevenueFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={chartTheme.accent} stopOpacity={0.3} />
+                      <stop offset="100%" stopColor={chartTheme.accent} stopOpacity={0.02} />
+                    </linearGradient>
+                  </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} vertical={false} />
-                  <XAxis dataKey="month" stroke={chartTheme.axis} fontSize={11} tickLine={false} />
-                  <YAxis stroke={chartTheme.axis} fontSize={11} tickLine={false} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #f3f4f6',
-                      borderRadius: '8px',
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
-                    }}
+                  <XAxis
+                    dataKey="month"
+                    stroke={chartTheme.axis}
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    ticks={axisTicks}
+                    tickFormatter={formatBucketLabel}
+                    interval={0}
                   />
+                  <YAxis
+                    stroke={chartTheme.axis}
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    width={50}
+                    tickFormatter={(v) => (v >= 1000 ? `$${(v / 1000).toFixed(1)}k` : `$${v}`)}
+                  />
+                  <Tooltip content={<BrandTooltip isDarkMode={isDarkMode} formatCurrency={formatCurrency} />} />
                   <Area
                     type="monotone"
                     dataKey="revenue"
                     stroke={chartTheme.accent}
-                    fill={chartTheme.accent}
-                    fillOpacity={0.15}
+                    fill="url(#analyticsRevenueFill)"
                     strokeWidth={2}
-                    name="Revenue ($)"
+                    dot={monthlyData.length === 1 ? { r: 4, fill: chartTheme.accent } : false}
+                    activeDot={{ r: 4 }}
+                    name="Revenue"
                   />
                 </AreaChart>
               </ResponsiveContainer>
-            </div>
+            </ChartCard>
 
             {/* Revenue by Service */}
-            <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
-              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Revenue by Service</h3>
+            <ChartCard title="Revenue by service">
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={topServices}>
+                <BarChart data={topServices.slice(0, 8)} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} vertical={false} />
-                  <XAxis dataKey="serviceName" stroke={chartTheme.axis} fontSize={11} tickLine={false} />
-                  <YAxis stroke={chartTheme.axis} fontSize={11} tickLine={false} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #f3f4f6',
-                      borderRadius: '8px',
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
-                    }}
+                  <XAxis
+                    dataKey="serviceName"
+                    stroke={chartTheme.axis}
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    interval={0}
+                    tickFormatter={(v: string) => (v.length > 10 ? `${v.slice(0, 10)}…` : v)}
                   />
-                  <Bar dataKey="revenue" fill={chartTheme.accent} radius={[6, 6, 0, 0]} />
+                  <YAxis
+                    stroke={chartTheme.axis}
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    width={50}
+                    tickFormatter={(v) => (v >= 1000 ? `$${(v / 1000).toFixed(1)}k` : `$${v}`)}
+                  />
+                  <Tooltip content={<BrandTooltip isDarkMode={isDarkMode} formatCurrency={formatCurrency} />} />
+                  <Bar dataKey="revenue" fill={chartTheme.accent} radius={[6, 6, 0, 0]} maxBarSize={48} />
                 </BarChart>
               </ResponsiveContainer>
-            </div>
+            </ChartCard>
           </div>
         )}
 
@@ -492,25 +665,26 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             </div>
 
             {/* Posts Chart */}
-            <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
-              <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Monthly Posts</h3>
+            <ChartCard title="Posts over time" subtitle={period?.label}>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={monthlyData}>
+                <BarChart data={monthlyData} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} vertical={false} />
-                  <XAxis dataKey="month" stroke={chartTheme.axis} fontSize={11} tickLine={false} />
-                  <YAxis stroke={chartTheme.axis} fontSize={11} tickLine={false} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #f3f4f6',
-                      borderRadius: '8px',
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
-                    }}
+                  <XAxis
+                    dataKey="month"
+                    stroke={chartTheme.axis}
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    ticks={axisTicks}
+                    tickFormatter={formatBucketLabel}
+                    interval={0}
                   />
-                  <Bar dataKey="posts" fill={chartTheme.accent} radius={[6, 6, 0, 0]} />
+                  <YAxis stroke={chartTheme.axis} fontSize={11} tickLine={false} axisLine={false} width={40} />
+                  <Tooltip content={<BrandTooltip isDarkMode={isDarkMode} formatCurrency={formatCurrency} />} />
+                  <Bar dataKey="posts" fill={chartTheme.accent} radius={[6, 6, 0, 0]} maxBarSize={32} />
                 </BarChart>
               </ResponsiveContainer>
-            </div>
+            </ChartCard>
           </div>
         )}
 
