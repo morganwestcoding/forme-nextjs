@@ -22,18 +22,25 @@ interface RateLimiterOptions {
 const stores = new Map<string, Map<string, RateLimitEntry>>();
 
 // Periodic cleanup every 60 s so stale entries don't accumulate.
+// Skipped in serverless (each instance has short lifetime anyway).
 let cleanupScheduled = false;
 function scheduleCleanup() {
   if (cleanupScheduled) return;
   cleanupScheduled = true;
-  setInterval(() => {
-    const now = Date.now();
-    stores.forEach((store) => {
-      store.forEach((entry, key) => {
-        if (now >= entry.resetAt) store.delete(key);
+  try {
+    const handle = setInterval(() => {
+      const now = Date.now();
+      stores.forEach((store) => {
+        store.forEach((entry, key) => {
+          if (now >= entry.resetAt) store.delete(key);
+        });
       });
-    });
-  }, 60_000).unref();
+    }, 60_000);
+    // .unref() may be missing on some runtimes — guard so module init never throws.
+    (handle as any)?.unref?.();
+  } catch {
+    // never block module init on cleanup scheduling
+  }
 }
 
 export function createRateLimiter(name: string, opts: RateLimiterOptions) {

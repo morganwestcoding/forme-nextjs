@@ -6,7 +6,16 @@ import { sanitizeText } from "@/app/utils/sanitize";
 import { validateBody, createShopSchema } from "@/app/utils/validations";
 import { createRateLimiter, getIP } from "@/app/libs/rateLimit";
 
-const shopLimiter = createRateLimiter("shops", { limit: 5, windowSeconds: 60 });
+export const runtime = 'nodejs';
+export const maxDuration = 60;
+
+let _shopLimiter: ReturnType<typeof createRateLimiter> | null = null;
+function getShopLimiter() {
+  if (!_shopLimiter) {
+    _shopLimiter = createRateLimiter("shops", { limit: 5, windowSeconds: 60 });
+  }
+  return _shopLimiter;
+}
 
 interface ProductInput {
   name: string;
@@ -39,9 +48,10 @@ async function createProductsForShop(
   for (const productData of products) {
     const { name, description, price, category, image, images, sizes } = productData;
 
-    if (!name || !description || !price) {
-      continue;
-    }
+    if (!name || !description || !price) continue;
+
+    const mainImage = image || (images?.length ? images[0] : null);
+    if (!mainImage) continue;
 
     const options = sizes?.length ? [{ name: 'Size', values: sizes }] : null;
     const variants = sizes?.length
@@ -51,11 +61,6 @@ async function createProductsForShop(
           optionValues: { Size: size }
         }))
       : null;
-
-    const mainImage = image || (images?.length ? images[0] : null);
-    if (!mainImage) {
-      continue;
-    }
 
     try {
       const categoryToUse = category || "Uncategorized";
@@ -86,13 +91,19 @@ async function createProductsForShop(
       });
 
       created.push(product);
+    } catch (e) {
+      console.error('[api/shops] product create failed', e);
+    }
+  }
 
+  if (created.length > 0) {
+    try {
       await prisma.shop.update({
         where: { id: shopId },
-        data: { featuredProducts: { push: product.id } }
+        data: { featuredProducts: { set: created.map((p) => p.id) } }
       });
     } catch (e) {
-      // Product creation failed; continue with remaining products
+      console.error('[api/shops] featuredProducts update failed', e);
     }
   }
 
@@ -105,7 +116,7 @@ const isObjectId = (v: unknown): v is string =>
 export async function POST(request: Request) {
   try {
     const ip = getIP(request);
-    const rl = shopLimiter(ip);
+    const rl = getShopLimiter()(ip);
     if (!rl.allowed) {
       return apiError(`Too many requests. Try again in ${rl.retryAfterSeconds}s`, 429);
     }

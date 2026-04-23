@@ -1,7 +1,6 @@
 import ShopClient from '@/app/shops/ShopClient';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import Container from '@/components/Container';
-import BetaGate from '@/components/BetaGate';
 
 export const metadata = {
   title: 'Shop - ForMe',
@@ -14,16 +13,14 @@ async function ShopPage() {
   const currentUser = await getCurrentUser();
 
   return (
-    <BetaGate>
-      <Container>
-        <ShopClient
-          initialShops={[]}
-          featuredProducts={[]}
-          categories={[]}
-          currentUser={currentUser}
-        />
-      </Container>
-    </BetaGate>
+    <Container>
+      <ShopClient
+        initialShops={[]}
+        featuredProducts={[]}
+        categories={[]}
+        currentUser={currentUser}
+      />
+    </Container>
   );
 }
 
