@@ -110,14 +110,14 @@ export const createReviewSchema = z.object({
 // Shop creation schema
 export const createShopSchema = z.object({
   name: z.string().min(1, 'Shop name is required'),
-  description: z.string().optional(),
-  logo: z.string().optional(),
-  coverImage: z.string().optional(),
-  location: z.string().optional(),
-  address: z.string().optional(),
-  isOnlineOnly: z.boolean().optional(),
-  storeUrl: z.string().url().optional().or(z.literal('')),
-  listingId: z.string().optional(),
+  description: z.string().nullish(),
+  logo: z.string().nullish(),
+  coverImage: z.string().nullish(),
+  location: z.string().nullish(),
+  address: z.string().nullish(),
+  isOnlineOnly: z.boolean().nullish(),
+  storeUrl: z.string().url().nullish().or(z.literal('')),
+  listingId: z.string().nullish(),
 });
 
 // Product creation schema

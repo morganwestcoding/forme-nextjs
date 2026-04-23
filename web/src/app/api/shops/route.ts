@@ -99,58 +99,67 @@ async function createProductsForShop(
   return created;
 }
 
+const isObjectId = (v: unknown): v is string =>
+  typeof v === 'string' && /^[a-f\d]{24}$/i.test(v);
+
 export async function POST(request: Request) {
-  const ip = getIP(request);
-  const rl = shopLimiter(ip);
-  if (!rl.allowed) {
-    return apiError(`Too many requests. Try again in ${rl.retryAfterSeconds}s`, 429);
-  }
-
-  const currentUser = await getCurrentUser();
-  if (!currentUser) return apiErrorCode('UNAUTHORIZED');
-
-  const body = await request.json();
-  const validation = validateBody(createShopSchema, body);
-  if (!validation.success) {
-    return apiError(validation.error, 400);
-  }
-
-  const {
-    name,
-    description,
-    logo,
-    coverImage,
-    location,
-    address,
-    isOnlineOnly,
-    storeUrl,
-    listingId,
-  } = validation.data;
-  const { category, zipCode, galleryImages, shopEnabled, products } = body;
-
-  const sanitizedName = sanitizeText(name);
-  const sanitizedDescription = description ? sanitizeText(description) : '';
-
   try {
+    const ip = getIP(request);
+    const rl = shopLimiter(ip);
+    if (!rl.allowed) {
+      return apiError(`Too many requests. Try again in ${rl.retryAfterSeconds}s`, 429);
+    }
+
+    const currentUser = await getCurrentUser();
+    if (!currentUser) return apiErrorCode('UNAUTHORIZED');
+
+    let body: any;
+    try {
+      body = await request.json();
+    } catch {
+      return apiError('Invalid JSON body', 400);
+    }
+
+    const validation = validateBody(createShopSchema, body);
+    if (!validation.success) {
+      return apiError(validation.error, 400);
+    }
+
+    const {
+      name,
+      description,
+      logo,
+      coverImage,
+      location,
+      address,
+      isOnlineOnly,
+      storeUrl,
+      listingId,
+    } = validation.data;
+    const { category, zipCode, galleryImages, shopEnabled, products } = body;
+
+    const sanitizedName = sanitizeText(name);
+    const sanitizedDescription = description ? sanitizeText(description) : '';
+
     const shop = await prisma.shop.create({
       data: {
         name: sanitizedName,
         description: sanitizedDescription,
-        category,
+        category: category || null,
         logo: logo || '',
         coverImage: coverImage || null,
-        location,
+        location: location || null,
         address: address || null,
         zipCode: zipCode || null,
         isOnlineOnly: !!isOnlineOnly,
         userId: currentUser.id,
         storeUrl: storeUrl || null,
-        galleryImages: galleryImages || [],
+        galleryImages: Array.isArray(galleryImages) ? galleryImages : [],
         isVerified: false,
         shopEnabled: shopEnabled !== undefined ? !!shopEnabled : true,
         featuredProducts: [],
         followers: [],
-        listingId: listingId || null,
+        listingId: isObjectId(listingId) ? listingId : null,
       },
       include: {
         user: { select: { id: true, name: true, image: true } },
@@ -158,13 +167,19 @@ export async function POST(request: Request) {
     });
 
     let createdProducts: any[] = [];
-    if (products?.length) {
-      createdProducts = await createProductsForShop(products as ProductInput[], shop.id, currentUser.id);
+    if (Array.isArray(products) && products.length > 0) {
+      try {
+        createdProducts = await createProductsForShop(products as ProductInput[], shop.id, currentUser.id);
+      } catch (productErr) {
+        console.error('[api/shops POST] product creation failed', productErr);
+      }
     }
 
     return NextResponse.json({ ...shop, products: createdProducts });
   } catch (error) {
-    return apiErrorCode('INTERNAL_ERROR');
+    console.error('[api/shops POST] failed', error);
+    const msg = error instanceof Error ? error.message : 'Internal server error';
+    return apiError(msg, 500);
   }
 }
 
