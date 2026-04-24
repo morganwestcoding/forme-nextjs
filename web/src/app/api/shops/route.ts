@@ -188,9 +188,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ...shop, products: createdProducts });
   } catch (error) {
-    console.error('[api/shops POST] failed', error);
+    const stack = error instanceof Error ? error.stack : undefined;
+    const name = error instanceof Error ? error.name : typeof error;
     const msg = error instanceof Error ? error.message : 'Internal server error';
-    return apiError(msg, 500);
+    console.error('[api/shops POST] failed', { name, msg, stack });
+    const body: Record<string, unknown> = { error: msg };
+    if (process.env.NODE_ENV !== 'production') body.stack = stack;
+    return NextResponse.json(body, { status: 500 });
   }
 }
 
