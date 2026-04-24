@@ -1,11 +1,16 @@
-import DOMPurify from 'isomorphic-dompurify';
-
 /**
  * Strip all HTML tags from user input, returning plain text.
  * Use for fields like names, titles, bios, and messages.
+ *
+ * Does not pull in JSDOM / DOMPurify — those pull html-encoding-sniffer which
+ * hit an ERR_REQUIRE_ESM on @exodus/bytes in Node runtime on Vercel.
  */
 export function sanitizeText(input: string): string {
-  return DOMPurify.sanitize(input, { ALLOWED_TAGS: [] }).trim();
+  return input
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, '')
+    .replace(/<[^>]*>/g, '')
+    .trim();
 }
 
 /**
