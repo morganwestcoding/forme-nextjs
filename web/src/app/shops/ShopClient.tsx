@@ -84,12 +84,12 @@ const ShopClient: React.FC<ShopClientProps> = ({
   useEffect(() => {
     if (serverShops.length > 0) return;
     Promise.all([
-      fetch('/api/shops?limit=6&sort=newest').then(r => r.json()),
-      fetch('/api/products?limit=8&sort=newest').then(r => r.json()),
+      fetch('/api/shops?sort=newest').then(r => r.json()),
+      fetch('/api/products?limit=24&sort=newest').then(r => r.json()),
     ])
       .then(([shops, products]) => {
-        setFetchedShops(shops || []);
-        setFetchedProducts(products || []);
+        setFetchedShops(Array.isArray(shops) ? shops : []);
+        setFetchedProducts(Array.isArray(products) ? products : []);
       })
       .catch(() => { setFetchedShops([]); setFetchedProducts([]); });
   }, [serverShops]);

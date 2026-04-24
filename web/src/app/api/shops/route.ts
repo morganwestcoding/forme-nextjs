@@ -4,7 +4,8 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import { apiError, apiErrorCode } from "@/app/utils/api";
 import { sanitizeText } from "@/app/utils/sanitize";
 import { validateBody, createShopSchema } from "@/app/utils/validations";
-import { createRateLimiter, getIP } from "@/app/libs/rateLimit";
+import { createRateLimiter } from "@/app/libs/rateLimit";
+import { revalidatePath } from "next/cache";
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -12,7 +13,7 @@ export const maxDuration = 60;
 let _shopLimiter: ReturnType<typeof createRateLimiter> | null = null;
 function getShopLimiter() {
   if (!_shopLimiter) {
-    _shopLimiter = createRateLimiter("shops", { limit: 5, windowSeconds: 60 });
+    _shopLimiter = createRateLimiter("shops", { limit: 20, windowSeconds: 60 });
   }
   return _shopLimiter;
 }
@@ -115,14 +116,13 @@ const isObjectId = (v: unknown): v is string =>
 
 export async function POST(request: Request) {
   try {
-    const ip = getIP(request);
-    const rl = getShopLimiter()(ip);
+    const currentUser = await getCurrentUser();
+    if (!currentUser) return apiErrorCode('UNAUTHORIZED');
+
+    const rl = getShopLimiter()(currentUser.id);
     if (!rl.allowed) {
       return apiError(`Too many requests. Try again in ${rl.retryAfterSeconds}s`, 429);
     }
-
-    const currentUser = await getCurrentUser();
-    if (!currentUser) return apiErrorCode('UNAUTHORIZED');
 
     let body: any;
     try {
@@ -185,6 +185,8 @@ export async function POST(request: Request) {
         console.error('[api/shops POST] product creation failed', productErr);
       }
     }
+
+    revalidatePath('/shops');
 
     return NextResponse.json({ ...shop, products: createdProducts });
   } catch (error) {

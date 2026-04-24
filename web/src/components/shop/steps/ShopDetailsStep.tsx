@@ -2,6 +2,7 @@
 
 import { useRef, useState, useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
+import { toast } from 'react-hot-toast';
 
 import TypeformHeading from '@/components/registration/TypeformHeading';
 import { PencilEdit01Icon, PlusSignIcon as Plus } from 'hugeicons-react';
@@ -37,8 +38,9 @@ export default function ShopDetailsStep({ logo, onLogoChange }: ShopDetailsStepP
       const height = Math.round(width / LISTING_CARD_ASPECT);
       const finalUrl = buildTransformUrl(data.public_id, `q_auto:good,f_auto,w_${width},h_${height},c_fill,g_auto`);
       onLogoChange(finalUrl);
-    } catch {
-      // upload failed
+    } catch (err) {
+      console.error('[ShopDetailsStep] Cloudinary upload failed', err);
+      toast.error('Failed to upload logo. Please try again.');
     } finally {
       setUploading(false);
     }
