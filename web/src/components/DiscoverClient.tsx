@@ -39,6 +39,14 @@ const FADE_OUT_DURATION = 200;
 
 const BANNERS = [
   {
+    src: '/assets/people/v-drip.jpg',
+    alt: 'V-Drip',
+    tag: 'Featured',
+    title: 'V-Drip',
+    subtitle: 'Replenish, recover, glow',
+    href: '/shops',
+  },
+  {
     src: '/assets/people/banner-5.png',
     alt: 'Near You',
     tag: 'Local',
