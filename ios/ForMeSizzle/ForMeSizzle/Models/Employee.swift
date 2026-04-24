@@ -18,6 +18,7 @@ struct Employee: Codable, Identifiable, Hashable {
     var isIndependent: Bool?
     var listingTitle: String?
     var listingCategory: String?
+    var listing: Listing?
     var user: CompactUser?
     var createdAt: String?
 }

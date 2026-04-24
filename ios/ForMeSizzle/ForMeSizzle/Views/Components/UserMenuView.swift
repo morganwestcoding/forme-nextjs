@@ -179,7 +179,7 @@ struct UserMenuView: View {
             case .team:
                 appState.navigationPath.append(BusinessRoute.team)
             case .subscription:
-                break // TODO
+                appState.showingSubscription = true
             }
         }
     }

@@ -3,6 +3,8 @@ import SwiftUI
 struct TeamView: View {
     @StateObject private var viewModel = TeamViewModel()
     @State private var selectedTab = 0
+    @State private var editingScheduleFor: TeamMember?
+    @State private var showMessagesSheet = false
 
     private let tabs = ["Overview", "Schedule", "Bookings", "Pay"]
 
@@ -68,7 +70,7 @@ struct TeamView: View {
 
                 // Stat cards
                 LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
-                    StatCard(title: "Team members", value: "\(viewModel.employees.count)")
+                    StatCard(title: "Team members", value: "\(viewModel.members.count)")
                     StatCard(title: "Active now", value: "\(viewModel.activeCount)")
                     StatCard(title: "Today's bookings", value: "\(viewModel.todayBookings)")
                     StatCard(title: "Monthly revenue", value: "$\(viewModel.monthlyRevenue)", growth: 5)
@@ -118,6 +120,19 @@ struct TeamView: View {
         .task {
             await viewModel.load()
         }
+        .sheet(item: $editingScheduleFor) { member in
+            EditScheduleSheet(member: member) { schedule in
+                Task {
+                    let ok = await viewModel.saveSchedule(memberId: member.id, schedule: schedule)
+                    if ok { editingScheduleFor = nil }
+                }
+            }
+        }
+        .sheet(isPresented: $showMessagesSheet) {
+            NavigationStack {
+                MessagesListView()
+            }
+        }
     }
 }
 
@@ -130,7 +145,7 @@ private extension TeamView {
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundColor(ForMe.textPrimary)
 
-            if viewModel.employees.isEmpty {
+            if viewModel.members.isEmpty {
                 Text("No team members yet")
                     .font(.system(size: 13))
                     .foregroundColor(ForMe.stone400)
@@ -138,9 +153,9 @@ private extension TeamView {
                     .padding(.vertical, 40)
             } else {
                 VStack(spacing: 0) {
-                    ForEach(viewModel.employees) { employee in
-                        TeamMemberRow(employee: employee)
-                        if employee.id != viewModel.employees.last?.id {
+                    ForEach(viewModel.members) { member in
+                        TeamMemberRow(member: member)
+                        if member.id != viewModel.members.last?.id {
                             Divider().padding(.leading, 60)
                         }
                     }
@@ -165,29 +180,21 @@ private extension TeamView {
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundColor(ForMe.textPrimary)
 
-            VStack(spacing: 0) {
-                ForEach(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], id: \.self) { day in
-                    HStack {
-                        Text(day)
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(ForMe.textPrimary)
-                        Spacer()
-                        Text("9 am - 5 pm")
-                            .font(.system(size: 13))
-                            .foregroundColor(ForMe.stone500)
+            if viewModel.members.isEmpty {
+                Text("No team members to schedule")
+                    .font(.system(size: 13))
+                    .foregroundColor(ForMe.stone400)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 40)
+            } else {
+                VStack(spacing: 12) {
+                    ForEach(viewModel.members) { member in
+                        MemberScheduleCard(member: member) {
+                            editingScheduleFor = member
+                        }
                     }
-                    .padding(.horizontal, ForMe.space4)
-                    .padding(.vertical, 14)
-
-                    if day != "Sunday" { Divider() }
                 }
             }
-            .background(ForMe.surface)
-            .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
-                    .stroke(ForMe.borderLight, lineWidth: 1)
-            )
         }
     }
 }
@@ -229,69 +236,57 @@ private extension TeamView {
 private extension TeamView {
     var payTab: some View {
         VStack(alignment: .leading, spacing: ForMe.space4) {
-            Text("Pay Agreements")
+            Text(viewModel.isOwnerOfSelected ? "Pay Agreements" : "My Pay")
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundColor(ForMe.textPrimary)
 
-            if viewModel.employees.isEmpty {
-                Text("Add team members to set up pay agreements")
+            // Employee view — only own row + message-manager CTA when no agreement
+            if !viewModel.isOwnerOfSelected, let me = viewModel.myMember {
+                MemberPayRow(member: me, showMessageManager: true) {
+                    showMessagesSheet = true
+                }
+            } else if viewModel.isOwnerOfSelected {
+                if viewModel.members.isEmpty {
+                    Text("Add team members to set up pay agreements")
+                        .font(.system(size: 13))
+                        .foregroundColor(ForMe.stone400)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 40)
+                } else {
+                    VStack(spacing: 12) {
+                        ForEach(viewModel.members) { member in
+                            MemberPayRow(member: member, showMessageManager: false, onMessageManager: {})
+                        }
+                    }
+                }
+            } else {
+                Text("No pay info available")
                     .font(.system(size: 13))
                     .foregroundColor(ForMe.stone400)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 40)
-            } else {
-                VStack(spacing: 12) {
-                    ForEach(viewModel.employees) { employee in
-                        HStack(spacing: 14) {
-                            DynamicAvatar(
-                                name: employee.fullName,
-                                imageUrl: employee.user?.image,
-                                size: .small
-                            )
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(employee.fullName)
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundColor(ForMe.textPrimary)
-                                Text("70% commission · $350/wk rental")
-                                    .font(.system(size: 11))
-                                    .foregroundColor(ForMe.stone400)
-                            }
-                            Spacer()
-                            Text("$0")
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(ForMe.textPrimary)
-                        }
-                        .padding(ForMe.space4)
-                        .background(ForMe.surface)
-                        .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
-                                .stroke(ForMe.borderLight, lineWidth: 1)
-                        )
-                    }
-                }
             }
         }
     }
 }
 
-// MARK: - Team Member Row
+// MARK: - Team Member Row (Overview)
 
 struct TeamMemberRow: View {
-    let employee: Employee
+    let member: TeamMember
 
     var body: some View {
         HStack(spacing: 14) {
             DynamicAvatar(
-                name: employee.fullName,
-                imageUrl: employee.user?.image,
+                name: member.fullName,
+                imageUrl: member.user?.image,
                 size: .medium
             )
             VStack(alignment: .leading, spacing: 3) {
-                Text(employee.fullName)
+                Text(member.fullName)
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundColor(ForMe.textPrimary)
-                if let title = employee.jobTitle {
+                if let title = member.jobTitle {
                     Text(title)
                         .font(.system(size: 12))
                         .foregroundColor(ForMe.textTertiary)
@@ -299,11 +294,134 @@ struct TeamMemberRow: View {
             }
             Spacer()
             Circle()
-                .fill(ForMe.statusConfirmed)
+                .fill(member.isActive ? ForMe.statusConfirmed : ForMe.stone300)
                 .frame(width: 8, height: 8)
         }
         .padding(.horizontal, ForMe.space4)
         .padding(.vertical, ForMe.space3)
+    }
+}
+
+// MARK: - Member Schedule Card (Schedule tab)
+
+struct MemberScheduleCard: View {
+    let member: TeamMember
+    let onEdit: () -> Void
+
+    private let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    private let short: [String: String] = [
+        "Monday": "Mon", "Tuesday": "Tue", "Wednesday": "Wed", "Thursday": "Thu",
+        "Friday": "Fri", "Saturday": "Sat", "Sunday": "Sun",
+    ]
+
+    private func display(for day: String) -> String {
+        guard let a = member.availability.first(where: { $0.dayOfWeek == day }) else { return "Off" }
+        if a.isOff { return "Off" }
+        return "\(a.startTime) – \(a.endTime)"
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 10) {
+                DynamicAvatar(name: member.fullName, imageUrl: member.user?.image, size: .small)
+                Text(member.fullName)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(ForMe.textPrimary)
+                Spacer()
+                Button(action: onEdit) {
+                    Text("Edit")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(ForMe.textPrimary)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(ForMe.stone100)
+                        .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+
+            VStack(spacing: 0) {
+                ForEach(days, id: \.self) { day in
+                    HStack {
+                        Text(short[day] ?? day)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(ForMe.textSecondary)
+                            .frame(width: 40, alignment: .leading)
+                        Spacer()
+                        Text(display(for: day))
+                            .font(.system(size: 12))
+                            .foregroundColor(display(for: day) == "Off" ? ForMe.stone400 : ForMe.textPrimary)
+                    }
+                    .padding(.vertical, 8)
+                    if day != days.last { Divider() }
+                }
+            }
+        }
+        .padding(ForMe.space4)
+        .background(ForMe.surface)
+        .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
+                .stroke(ForMe.borderLight, lineWidth: 1)
+        )
+    }
+}
+
+// MARK: - Member Pay Row
+
+struct MemberPayRow: View {
+    let member: TeamMember
+    let showMessageManager: Bool
+    let onMessageManager: () -> Void
+
+    private var agreementLine: String {
+        guard let pa = member.payAgreement else { return "No pay agreement set up" }
+        switch pa.type {
+        case "commission":
+            let pct = pa.splitPercent.map { Int($0) } ?? 0
+            return "\(pct)% commission"
+        case "chair_rental":
+            let amt = pa.rentalAmount.map { Int($0) } ?? 0
+            let freq = pa.rentalFrequency ?? "weekly"
+            return "$\(amt)/\(freq) chair rental"
+        default:
+            return "No pay agreement set up"
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 14) {
+                DynamicAvatar(name: member.fullName, imageUrl: member.user?.image, size: .small)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(member.fullName)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(ForMe.textPrimary)
+                    Text(agreementLine)
+                        .font(.system(size: 11))
+                        .foregroundColor(ForMe.stone400)
+                }
+                Spacer()
+            }
+
+            if showMessageManager && member.payAgreement == nil {
+                Button(action: onMessageManager) {
+                    Text("Message your manager →")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(ForMe.textPrimary)
+                        .underline()
+                }
+                .buttonStyle(.plain)
+                .padding(.leading, 48)
+            }
+        }
+        .padding(ForMe.space4)
+        .background(ForMe.surface)
+        .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
+                .stroke(ForMe.borderLight, lineWidth: 1)
+        )
     }
 }
 

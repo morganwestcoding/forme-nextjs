@@ -41,7 +41,18 @@ export async function GET(request: Request) {
                   select: { id: true, name: true, image: true, imageSrc: true, backgroundImage: true },
                 },
                 listing: {
-                  select: { id: true, title: true, category: true },
+                  select: {
+                    id: true,
+                    title: true,
+                    category: true,
+                    location: true,
+                    imageSrc: true,
+                    rating: true,
+                    ratingCount: true,
+                    services: {
+                      select: { id: true, serviceName: true, price: true, category: true },
+                    },
+                  },
                 },
               },
               orderBy: { fullName: 'asc' },
@@ -136,6 +147,21 @@ export async function GET(request: Request) {
         createdAt: w.createdAt?.toISOString(),
         listingTitle: w.listing.title,
         listingCategory: w.listing.category,
+        listing: {
+          id: w.listing.id,
+          title: w.listing.title,
+          category: w.listing.category,
+          location: w.listing.location ?? null,
+          imageSrc: w.listing.imageSrc ?? null,
+          rating: w.listing.rating ?? null,
+          ratingCount: w.listing.ratingCount ?? 0,
+          services: (w.listing.services || []).map((s: any) => ({
+            id: s.id,
+            serviceName: s.serviceName,
+            price: s.price,
+            category: s.category,
+          })),
+        },
         user: {
           id: w.user.id,
           name: w.user.name,

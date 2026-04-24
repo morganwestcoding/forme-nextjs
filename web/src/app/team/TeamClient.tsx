@@ -11,6 +11,7 @@ import Container from '@/components/Container';
 import PageHeader from '@/components/PageHeader';
 import Skeleton, { PageHeaderSkeleton, ContainerSkeleton } from '@/components/ui/Skeleton';
 import toast from 'react-hot-toast';
+import useInboxModal from '@/app/hooks/useInboxModal';
 
 interface TeamClientProps {
   currentUser: SafeUser;
@@ -47,6 +48,7 @@ const StatusBadge = ({ status }: { status: string }) => {
 const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
   const router = useRouter();
   const { status } = useSession();
+  const inboxModal = useInboxModal();
 
   // Client-side fetch team data
   const [teamData, setTeamData] = useState<TeamData | null>(null);
@@ -83,7 +85,14 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
   const { members: allMembers, todayBookings: allTodayBookings, upcomingBookings: allUpcomingBookings, stats: allStats, listings, ownedListingIds } = teamData || { members: [], todayBookings: [], upcomingBookings: [], stats: { weekRevenue: 0 } as any, listings: [] as any[], ownedListingIds: [] as string[] };
 
   // Listing filter — when connected to multiple listings
-  const [selectedListingId, setSelectedListingId] = useState<string>(listings[0]?.id || '');
+  const [selectedListingId, setSelectedListingId] = useState<string>('');
+
+  // teamData arrives async, so seed the listing filter once listings land.
+  useEffect(() => {
+    if (!selectedListingId && listings.length > 0) {
+      setSelectedListingId(listings[0].id);
+    }
+  }, [listings, selectedListingId]);
 
   // Filter everything by selected listing
   const members = allMembers.filter((m: any) => m.listingId === selectedListingId);
@@ -1026,13 +1035,23 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
 
                 {/* Agreement info */}
                 <div className="border-t border-stone-100 dark:border-stone-800 pt-4 mb-4">
-                  <p className="text-[12px] text-stone-400 dark:text-stone-500">
-                    {myEmployee.payAgreement
-                      ? myEmployee.payAgreement.type === 'commission'
+                  {myEmployee.payAgreement ? (
+                    <p className="text-[12px] text-stone-400 dark:text-stone-500">
+                      {myEmployee.payAgreement.type === 'commission'
                         ? `You keep ${myEmployee.payAgreement.splitPercent}% of each booking`
-                        : `Chair rental: $${myEmployee.payAgreement.rentalAmount} ${myEmployee.payAgreement.rentalFrequency}`
-                      : 'No pay agreement set up — talk to your manager'}
-                  </p>
+                        : `Chair rental: $${myEmployee.payAgreement.rentalAmount} ${myEmployee.payAgreement.rentalFrequency}`}
+                    </p>
+                  ) : (
+                    <p className="text-[12px] text-stone-400 dark:text-stone-500">
+                      No pay agreement set up —{' '}
+                      <button
+                        onClick={() => inboxModal.onOpen(currentUser)}
+                        className="underline underline-offset-2 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
+                      >
+                        message your manager
+                      </button>
+                    </p>
+                  )}
                 </div>
 
                 {/* Payout request */}
@@ -1142,7 +1161,38 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
               <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
                 <p className="text-stone-400 dark:text-stone-500 text-[14px]">No team members to manage pay for.</p>
               </div>
-            ) : (
+            ) : (() => {
+              const unset = members.filter((m) => !m.payAgreement);
+              if (unset.length === 0) return null;
+              const firstUnset = unset[0];
+              return (
+                <button
+                  onClick={() => {
+                    setAgreementForm({ type: 'chair_rental', splitPercent: 70, rentalAmount: 350, rentalFrequency: 'weekly', autoApprovePayout: false });
+                    setEditingAgreement(firstUnset.id);
+                    requestAnimationFrame(() => {
+                      document
+                        .getElementById(`pay-member-${firstUnset.id}`)
+                        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    });
+                  }}
+                  className="w-full rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors p-5 flex items-center justify-between text-left"
+                >
+                  <div>
+                    <p className="text-[14px] font-semibold text-stone-900 dark:text-stone-100">
+                      {unset.length === 1 ? '1 member' : `${unset.length} members`} without a pay agreement
+                    </p>
+                    <p className="text-[12px] text-stone-400 dark:text-stone-500 mt-0.5">
+                      Set one up so they can receive payouts.
+                    </p>
+                  </div>
+                  <span className="text-[12px] font-medium text-stone-900 dark:text-stone-100 px-3 py-1.5 rounded-xl bg-stone-100 dark:bg-stone-800">
+                    Set up pay →
+                  </span>
+                </button>
+              );
+            })()}
+            {members.length > 0 && (
               members.map((member, idx) => {
                 const bal = balances[member.id];
                 const memberPayouts = payouts[member.id] || [];
@@ -1152,6 +1202,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                 return (
                   <div
                     key={member.id}
+                    id={`pay-member-${member.id}`}
                     className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 overflow-hidden"
                     style={{ opacity: 0, animation: 'fadeInUp 520ms ease-out both', animationDelay: `${60 + idx * 40}ms` }}
                   >

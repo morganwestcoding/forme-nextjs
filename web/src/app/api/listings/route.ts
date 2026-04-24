@@ -28,6 +28,10 @@ export async function GET(request: Request) {
   const location = searchParams.get('location');
   const userId = searchParams.get('userId');
   const includeAcademy = searchParams.get('includeAcademy') === 'true';
+  // When true and userId is set, also return listings where the user is an
+  // employee (not just the owner). Used by the Team view so employees see
+  // the listing they work at.
+  const includeEmployed = searchParams.get('includeEmployed') === 'true';
   const page = parseInt(searchParams.get('page') || '1');
   const limit = parseInt(searchParams.get('limit') || '20');
   const skip = (page - 1) * limit;
@@ -35,7 +39,16 @@ export async function GET(request: Request) {
   const where: any = {};
   if (category) where.category = category;
   if (location) where.location = { contains: location, mode: 'insensitive' };
-  if (userId) where.userId = userId;
+  if (userId) {
+    if (includeEmployed) {
+      where.OR = [
+        { userId },
+        { employees: { some: { userId } } },
+      ];
+    } else {
+      where.userId = userId;
+    }
+  }
   // Hide academy-owned listings from public discovery by default.
   // (See getListings.ts for the Mongo `isSet: false` rationale.)
   if (!includeAcademy) where.academyId = { isSet: false };

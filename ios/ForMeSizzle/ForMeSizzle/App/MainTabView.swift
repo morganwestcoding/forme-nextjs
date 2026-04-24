@@ -56,8 +56,23 @@ struct MainTabView: View {
         .sheet(isPresented: $appState.showingPostFlow) {
             PostFlow()
         }
+        .sheet(isPresented: $appState.showingListingFlow) {
+            ListingFlow()
+        }
+        .sheet(isPresented: $appState.showingShopFlow) {
+            ShopFlow()
+        }
+        .sheet(isPresented: $appState.showingWorkerFlow) {
+            WorkerFlow(listingId: appState.workerFlowListingId)
+        }
+        .sheet(isPresented: $appState.showingProductFlow) {
+            ProductFlow(shopId: appState.productFlowShopId)
+        }
         .sheet(isPresented: $appState.showingFavorites) {
             FavoritesView()
+        }
+        .sheet(isPresented: $appState.showingSubscription) {
+            SubscriptionView()
         }
         .sheet(isPresented: $appState.showingSettings) {
             SettingsView()

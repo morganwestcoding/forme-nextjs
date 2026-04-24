@@ -234,6 +234,12 @@ export default function ShopFlow({ mode = 'create', shopId, initialData }: ShopF
 
     const payload = {
       ...data,
+      // Server schema requires storeUrl to be a valid URL or empty; normalize
+      // partial values (e.g. "example.com") to empty so "push live" isn't
+      // silently rejected by validation.
+      storeUrl: typeof data.storeUrl === 'string' && /^https?:\/\//i.test(data.storeUrl)
+        ? data.storeUrl
+        : '',
       products,
     };
 
@@ -259,7 +265,11 @@ export default function ShopFlow({ mode = 'create', shopId, initialData }: ShopF
       }
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
-        toast.error(`Error: ${error.response.data || 'Something went wrong'}`);
+        const data = error.response.data;
+        const message = typeof data === 'string'
+          ? data
+          : data?.error || data?.message || 'Something went wrong';
+        toast.error(message);
       } else {
         toast.error('Something went wrong.');
       }

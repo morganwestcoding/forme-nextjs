@@ -4,6 +4,8 @@ struct FavoritesView: View {
     @StateObject private var viewModel = FavoritesViewModel()
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab = 0
+    @State private var showFeed = false
+    @State private var feedStartIndex = 0
 
     private let tabs = ["Listings", "Workers", "Shops", "Posts"]
 
@@ -54,6 +56,12 @@ struct FavoritesView: View {
             .navigationDestination(for: Listing.self) { listing in
                 ListingDetailView(listing: listing)
             }
+            .navigationDestination(for: ProfileRoute.self) { route in
+                ProfileView(userId: route.userId)
+            }
+            .fullScreenCover(isPresented: $showFeed) {
+                FeedView(posts: viewModel.posts, startIndex: feedStartIndex)
+            }
             .task {
                 await viewModel.loadFavorites()
             }
@@ -65,15 +73,15 @@ struct FavoritesView: View {
         if viewModel.listings.isEmpty {
             emptyState(icon: "heart.slash", text: "No favorite listings yet")
         } else {
-            VStack(spacing: 30) {
+            LazyVStack(spacing: 4) {
                 ForEach(viewModel.listings) { listing in
                     NavigationLink(value: listing) {
-                        ListingFullWidthCard(listing: listing)
+                        ListingRow(listing: listing)
                     }
                     .buttonStyle(.plain)
                 }
             }
-            .padding(.horizontal, ForMe.space6)
+            .padding(.horizontal)
         }
     }
 
@@ -82,12 +90,15 @@ struct FavoritesView: View {
         if viewModel.workers.isEmpty {
             emptyState(icon: "person.2.slash", text: "No favorite workers yet")
         } else {
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20) {
-                ForEach(viewModel.workers, id: \.id) { worker in
-                    ProviderCard(user: worker)
+            LazyVStack(spacing: 4) {
+                ForEach(viewModel.workers, id: \.id) { professional in
+                    NavigationLink(value: ProfileRoute(userId: professional.user.id)) {
+                        ProviderRow(user: professional.user, listing: professional.listing)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
-            .padding(.horizontal, ForMe.space6)
+            .padding(.horizontal)
         }
     }
 
@@ -96,17 +107,12 @@ struct FavoritesView: View {
         if viewModel.shops.isEmpty {
             emptyState(icon: "bag", text: "No favorite shops yet")
         } else {
-            VStack(spacing: 12) {
+            LazyVStack(spacing: 4) {
                 ForEach(viewModel.shops) { shop in
-                    Text(shop.name)
-                        .font(.system(size: 15, weight: .semibold))
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(ForMe.surface)
-                        .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
+                    ShopRow(shop: shop)
                 }
             }
-            .padding(.horizontal, ForMe.space6)
+            .padding(.horizontal)
         }
     }
 
@@ -115,12 +121,20 @@ struct FavoritesView: View {
         if viewModel.posts.isEmpty {
             emptyState(icon: "square.stack", text: "No bookmarked posts yet")
         } else {
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 2), spacing: 4) {
-                ForEach(viewModel.posts) { post in
-                    PostCard(post: post)
+            LazyVGrid(
+                columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)],
+                spacing: 8
+            ) {
+                ForEach(Array(viewModel.posts.enumerated()), id: \.element.id) { index, post in
+                    PostCard(post: post, width: nil)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            feedStartIndex = index
+                            showFeed = true
+                        }
                 }
             }
-            .padding(.horizontal, ForMe.space6)
+            .padding(.horizontal)
         }
     }
 

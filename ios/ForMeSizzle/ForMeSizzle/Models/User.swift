@@ -29,6 +29,10 @@ struct User: Codable, Identifiable, Hashable {
     var subscriptionStartDate: String?
     var subscriptionEndDate: String?
     var subscriptionTier: String?
+    var subscriptionStatus: String?
+    var subscriptionBillingInterval: String?
+    var currentPeriodEnd: String?
+    var subscriptionPriceId: String?
 
     // Stripe
     var stripeCustomerId: String?

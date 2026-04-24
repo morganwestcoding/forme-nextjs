@@ -60,7 +60,7 @@ export interface TeamBooking {
 
 export interface TeamData {
   members: TeamMember[];
-  listings: { id: string; title: string; category: string }[];
+  listings: { id: string; title: string; category: string; imageSrc: string | null }[];
   ownedListingIds: string[];
   todayBookings: TeamBooking[];
   upcomingBookings: TeamBooking[];
@@ -79,7 +79,7 @@ export default async function getTeamData(userId: string): Promise<TeamData> {
   const [ownedListings, employeeRecords] = await Promise.all([
     prisma.listing.findMany({
       where: { userId },
-      select: { id: true, title: true, category: true },
+      select: { id: true, title: true, category: true, imageSrc: true },
     }),
     prisma.employee.findMany({
       where: { userId },
@@ -101,7 +101,7 @@ export default async function getTeamData(userId: string): Promise<TeamData> {
   const additionalListings = missingIds.length > 0
     ? await prisma.listing.findMany({
         where: { id: { in: missingIds } },
-        select: { id: true, title: true, category: true },
+        select: { id: true, title: true, category: true, imageSrc: true },
       })
     : [];
 

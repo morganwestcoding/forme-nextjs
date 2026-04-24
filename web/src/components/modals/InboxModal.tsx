@@ -24,6 +24,13 @@ let readConversations = new Set<string>();
 // while a fresh fetch runs in the background.
 let conversationsCache: SafeConversation[] | null = null;
 
+// Let non-modal code (e.g. the unread-badge provider that already fetches
+// /api/conversations on app mount) seed the cache so the first open of the
+// inbox renders instantly instead of showing a skeleton.
+export function primeConversationsCache(data: SafeConversation[]) {
+  conversationsCache = data;
+}
+
 function useDebounced<T>(value: T, delay = 250) {
   const [v, setV] = useState(value);
   useEffect(() => {
@@ -210,6 +217,15 @@ const InboxModal = () => {
   }, [inboxModal.isOpen, currentUser]);
 
   const fetchConversations = async () => {
+    // If the cache has been primed since this component mounted (e.g. by
+    // UnreadBadgeProvider's initial fetch on app load), hydrate local state
+    // from it immediately so the inbox opens with data instead of a skeleton.
+    if (conversationsCache && conversationsCache.length > 0) {
+      setConversations(conversationsCache);
+      setConversationsLoading(false);
+    } else {
+      setConversationsLoading(true);
+    }
     try {
       const response = await axios.get('/api/conversations');
       conversationsCache = response.data;
@@ -220,7 +236,11 @@ const InboxModal = () => {
       ).length;
       setUnreadMessages(unread);
     } catch (error) {
-      toast.error('Failed to load conversations');
+      // Keep the previously-rendered conversations in place rather than
+      // clobbering with an empty list; only toast if we had nothing to show.
+      if (!conversationsCache || conversationsCache.length === 0) {
+        toast.error('Failed to load conversations');
+      }
     } finally {
       setConversationsLoading(false);
     }

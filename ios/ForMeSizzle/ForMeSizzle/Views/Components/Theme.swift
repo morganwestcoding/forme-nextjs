@@ -453,24 +453,27 @@ struct TypeformHeading: View {
     var stepNumber: Int? = nil
 
     var body: some View {
-        VStack(alignment: .leading, spacing: ForMe.space3) {
-            HStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .firstTextBaseline, spacing: 10) {
                 if let num = stepNumber {
-                    Text("\(num) →  ")
+                    Text("\(num) →")
                         .foregroundColor(ForMe.stone400)
                 }
                 Text(question)
             }
-            .font(.system(size: 26, weight: .semibold))
+            .font(.system(size: 28, weight: .semibold))
             .foregroundColor(ForMe.textPrimary)
             .lineSpacing(2)
+            .fixedSize(horizontal: false, vertical: true)
 
             if let subtitle = subtitle {
                 Text(subtitle)
-                    .font(.system(size: 16))
+                    .font(.system(size: 17))
                     .foregroundColor(ForMe.stone500)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
+        .padding(.bottom, 4)
     }
 }
 

@@ -90,7 +90,11 @@ const MessageModal: React.FC = () => {
       setOtherUser(messageModal.otherUserData || null);
 
       fetchMessages(cached.length === 0);
-      if (!messageModal.otherUserData) fetchOtherUser();
+      // Fetch the other user whenever we don't already have a usable name —
+      // otherUserData can be present but hollow ({name: null, image: null})
+      // when the conversation's users include didn't resolve, and we don't
+      // want to leave the header stuck on "Loading..." forever.
+      if (!messageModal.otherUserData?.name) fetchOtherUser();
     }
   }, [messageModal.isOpen, messageModal.conversationId, messageModal.otherUserId]);
 
@@ -265,37 +269,7 @@ const MessageModal: React.FC = () => {
 
   const avatarColor = getAvatarColor(otherUser?.name);
 
-  const bodyContent = isLoading ? (
-    <div className="flex flex-col h-[500px] relative">
-      {/* Header skeleton (avatar + name) */}
-      <div className="flex items-center justify-center py-4 px-4 border-b border-stone-100 dark:border-stone-800">
-        <div className="flex items-center gap-3">
-          <div className="h-11 w-11 rounded-full animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
-          <div className="h-4 w-28 rounded-md animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
-        </div>
-      </div>
-      {/* Message bubble skeletons */}
-      <div className="flex-grow overflow-hidden px-4 py-4 space-y-3">
-        {[
-          { side: 'start', w: 'w-56' },
-          { side: 'end', w: 'w-40' },
-          { side: 'start', w: 'w-48' },
-          { side: 'start', w: 'w-64' },
-          { side: 'end', w: 'w-32' },
-          { side: 'end', w: 'w-52' },
-          { side: 'start', w: 'w-36' },
-        ].map((m, i) => (
-          <div key={i} className={`w-full flex ${m.side === 'end' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`h-10 max-w-[80%] rounded-xl ${m.w} animate-pulse bg-stone-200/80 dark:bg-stone-800/80`} />
-          </div>
-        ))}
-      </div>
-      {/* Input skeleton */}
-      <div className="p-3.5 border-t border-stone-100 dark:border-stone-800">
-        <div className="h-11 w-full rounded-2xl animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
-      </div>
-    </div>
-  ) : (
+  const bodyContent = (
     <div className="flex flex-col h-[500px] relative">
       {/* Back button */}
       <button
@@ -342,7 +316,7 @@ const MessageModal: React.FC = () => {
           {/* Name */}
           <div>
             <h3 className="font-semibold text-stone-900 dark:text-stone-100 text-sm tracking-tight">
-              {otherUser?.name || 'Loading...'}
+              {otherUser?.name || 'Unknown user'}
             </h3>
           </div>
         </div>
@@ -351,6 +325,21 @@ const MessageModal: React.FC = () => {
       <>
           {/* Messages Area */}
           <div className="flex-grow overflow-y-auto px-4 py-3 space-y-3">
+            {isLoading && messages.length === 0 && (
+              <div className="space-y-3">
+                {[
+                  { side: 'start', w: 'w-56' },
+                  { side: 'end', w: 'w-40' },
+                  { side: 'start', w: 'w-48' },
+                  { side: 'end', w: 'w-32' },
+                  { side: 'start', w: 'w-36' },
+                ].map((m, i) => (
+                  <div key={i} className={`w-full flex ${m.side === 'end' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`h-10 max-w-[80%] rounded-xl ${m.w} animate-pulse bg-stone-200/80 dark:bg-stone-800/80`} />
+                  </div>
+                ))}
+              </div>
+            )}
             {Object.entries(groupMessagesByDate(messages)).map(([dateKey, dateMessages]) => (
               <React.Fragment key={dateKey}>
                 {renderDateSeparator(dateKey)}

@@ -20,5 +20,16 @@
 		<string>Inter-SemiBold.ttf</string>
 		<string>Inter-Bold.ttf</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.forme.sizzle</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>formesizzle</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

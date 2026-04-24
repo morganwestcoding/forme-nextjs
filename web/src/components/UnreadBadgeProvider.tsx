@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useSSE } from '@/app/hooks/useSSE';
 import useUnreadCounts from '@/app/hooks/useUnreadCounts';
+import { primeConversationsCache } from '@/components/modals/InboxModal';
 
 /**
  * Fetches initial unread counts on mount and listens for SSE events
@@ -23,6 +24,9 @@ export default function UnreadBadgeProvider() {
         ]);
         if (convRes.ok) {
           const conversations = await convRes.json();
+          // Seed the inbox modal so the first open renders instantly with
+          // the list we already paid for here.
+          primeConversationsCache(conversations);
           const unread = conversations.filter(
             (c: any) => c.lastMessage && !c.lastMessage.isRead
           ).length;

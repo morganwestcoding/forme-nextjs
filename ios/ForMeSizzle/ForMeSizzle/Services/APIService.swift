@@ -214,6 +214,116 @@ class APIService {
         return try await perform(request)
     }
 
+    /// Listings owned by a specific user. Used by the create menu's Worker
+    /// permission gate — iOS matches web's `/api/listings?userId=X&limit=1`
+    /// check before letting the user add a team member.
+    func getListingsForUser(userId: String, limit: Int = 20) async throws -> [Listing] {
+        let queryItems = [
+            URLQueryItem(name: "userId", value: userId),
+            URLQueryItem(name: "limit", value: "\(limit)"),
+        ]
+        let request = try buildRequest(endpoint: "/listings", queryItems: queryItems)
+        let response: ListingsResponse = try await perform(request)
+        return response.listings
+    }
+
+    // MARK: - Shops
+
+    /// Shops owned by a specific user. Backs Product permission gate.
+    func getShopsForUser(userId: String, limit: Int = 20) async throws -> [Shop] {
+        let queryItems = [
+            URLQueryItem(name: "userId", value: userId),
+            URLQueryItem(name: "limit", value: "\(limit)"),
+        ]
+        let request = try buildRequest(endpoint: "/shops", queryItems: queryItems)
+        return try await perform(request)
+    }
+
+    func createShop(_ shop: CreateShopRequest) async throws -> Shop {
+        let body = try encoder.encode(shop)
+        let request = try buildRequest(endpoint: "/shops", method: "POST", body: body)
+        return try await perform(request)
+    }
+
+    // MARK: - Products
+
+    func createProduct(_ product: CreateProductRequest) async throws -> ProductCreateResponse {
+        let body = try encoder.encode(product)
+        let request = try buildRequest(endpoint: "/products", method: "POST", body: body)
+        return try await perform(request)
+    }
+
+    // MARK: - Listing employees
+    //
+    // The web's /api/listings/[id] PUT is a full-replacement endpoint:
+    // you send services + employees + hours and it re-writes them. To
+    // append a single employee we fetch the current listing and echo
+    // back everything, adding the new row. Matches the web ListingFlow
+    // edit-save path.
+    func addEmployeeToListing(
+        listingId: String,
+        userId: String,
+        jobTitle: String?,
+        serviceIds: [String]
+    ) async throws -> Listing {
+        let listing = try await getListing(id: listingId)
+
+        let existingEmployees: [[String: Any]] = (listing.employees ?? []).map { e in
+            var dict: [String: Any] = [
+                "userId": e.userId ?? "",
+                "serviceIds": e.serviceIds ?? [],
+            ]
+            if let jt = e.jobTitle { dict["jobTitle"] = jt }
+            return dict
+        }
+
+        var newEmployee: [String: Any] = [
+            "userId": userId,
+            "serviceIds": serviceIds,
+        ]
+        if let jobTitle = jobTitle, !jobTitle.isEmpty {
+            newEmployee["jobTitle"] = jobTitle
+        }
+
+        let services: [[String: Any]] = (listing.services ?? []).map { s in
+            var dict: [String: Any] = [
+                "id": s.id,
+                "serviceName": s.serviceName,
+                "price": s.price,
+            ]
+            if let dur = s.duration { dict["duration"] = dur }
+            if let cat = s.category { dict["category"] = cat }
+            return dict
+        }
+
+        let hours: [[String: Any]] = (listing.storeHours ?? []).map { h in
+            [
+                "dayOfWeek": h.dayOfWeek,
+                "openTime": h.openTime ?? "",
+                "closeTime": h.closeTime ?? "",
+                "isClosed": h.isClosed,
+            ]
+        }
+
+        let payload: [String: Any] = [
+            "title": listing.title,
+            "description": listing.description ?? "",
+            "category": listing.category,
+            "location": listing.location ?? "",
+            "address": listing.address ?? "",
+            "zipCode": listing.zipCode ?? "",
+            "imageSrc": listing.imageSrc ?? "",
+            "galleryImages": listing.galleryImages ?? [],
+            "services": services,
+            "employees": existingEmployees + [newEmployee],
+            "storeHours": hours,
+        ]
+
+        let body = try JSONSerialization.data(withJSONObject: payload)
+        let request = try buildRequest(endpoint: "/listings/\(listingId)", method: "PUT", body: body)
+        return try await perform(request)
+    }
+
     // MARK: - Reservations
 
     func getReservations() async throws -> [Reservation] {
@@ -288,6 +398,16 @@ class APIService {
         return try await perform(request)
     }
 
+    // MARK: - User search (for Worker flow employee picker)
+
+    func searchUsers(term: String) async throws -> [CompactUser] {
+        struct Wrapped: Codable { let users: [CompactUser] }
+        let queryItems = [URLQueryItem(name: "term", value: term)]
+        let request = try buildRequest(endpoint: "/search/users", queryItems: queryItems)
+        let response: Wrapped = try await perform(request)
+        return response.users
+    }
+
     // MARK: - Search
 
     func search(query: String) async throws -> SearchResponse {
@@ -322,6 +442,60 @@ class APIService {
             URLQueryItem(name: "end",   value: df.string(from: end)),
         ]
         let request = try buildRequest(endpoint: "/analytics", queryItems: items)
+        return try await perform(request)
+    }
+
+    // MARK: - Subscription
+    //
+    // Mirrors web /api/subscription/*:
+    //   select    → switch to Bronze (free) locally, no Stripe
+    //   checkout  → Stripe Checkout session for Gold / Platinum (paid tiers)
+    //   cancel    → schedule cancellation at period end
+    //   change    → switch paid plans (Stripe proration)
+    //   portal    → billing portal URL for invoices / payment method edits
+    // The `platform: "ios"` flag on checkout tells the server to use the
+    // ios-return bounce so Stripe's HTTPS success_url ends up sending the
+    // user back to the app via the formesizzle:// scheme.
+
+    func selectBronzePlan(interval: String) async throws -> User {
+        let body = try encoder.encode(SubscriptionSelectRequest(plan: "Bronze", interval: interval))
+        let request = try buildRequest(endpoint: "/subscription/select", method: "POST", body: body)
+        return try await perform(request)
+    }
+
+    func subscriptionCheckout(planId: String, interval: String, isOnboarding: Bool) async throws -> SubscriptionCheckoutResponse {
+        let body = try encoder.encode(SubscriptionCheckoutRequest(
+            planId: planId,
+            interval: interval,
+            platform: "ios",
+            metadata: SubscriptionCheckoutMetadata(isOnboarding: isOnboarding ? "true" : "false")
+        ))
+        let request = try buildRequest(endpoint: "/subscription/checkout", method: "POST", body: body)
+        return try await perform(request)
+    }
+
+    func cancelSubscription() async throws -> SubscriptionCancelResponse {
+        let request = try buildRequest(endpoint: "/subscription/cancel", method: "POST")
+        return try await perform(request)
+    }
+
+    func changeSubscription(planId: String, interval: String) async throws -> SubscriptionChangeResponse {
+        let body = try encoder.encode(SubscriptionChangeRequest(planId: planId, interval: interval))
+        let request = try buildRequest(endpoint: "/subscription/change", method: "POST", body: body)
+        return try await perform(request)
+    }
+
+    func openBillingPortal() async throws -> SubscriptionPortalResponse {
+        let request = try buildRequest(endpoint: "/subscription/portal", method: "POST")
+        return try await perform(request)
+    }
+
+    /// Server-side confirmation of a completed Stripe Checkout session.
+    /// Returns the Stripe subscription metadata; we mostly call this just
+    /// to give the webhook time to catch up, then re-fetch the user.
+    func verifySubscription(sessionId: String) async throws -> SubscriptionVerifyResponse {
+        let queryItems = [URLQueryItem(name: "session_id", value: sessionId)]
+        let request = try buildRequest(endpoint: "/subscription/verify", queryItems: queryItems)
         return try await perform(request)
     }
 
@@ -409,6 +583,33 @@ class APIService {
         return response.listings
     }
 
+    /// Team view: listings the user OWNS or is an EMPLOYEE of.
+    /// Matches the web Team page's listing set.
+    func getTeamListings(userId: String) async throws -> [Listing] {
+        let queryItems = [
+            URLQueryItem(name: "userId", value: userId),
+            URLQueryItem(name: "includeEmployed", value: "true"),
+        ]
+        let request = try buildRequest(endpoint: "/listings", queryItems: queryItems)
+        let response: ListingsResponse = try await perform(request)
+        return response.listings
+    }
+
+    /// Full team data: members with availability and pay agreements, stats,
+    /// and today / upcoming bookings. Mirrors the web Team page.
+    func getTeamData() async throws -> TeamData {
+        let request = try buildRequest(endpoint: "/team/data")
+        return try await perform(request)
+    }
+
+    /// Bulk update one employee's weekly schedule.
+    /// Allowed for the listing owner OR the employee themselves (server-enforced).
+    func updateAvailability(employeeId: String, schedule: [TeamAvailability]) async throws {
+        let body = try encoder.encode(AvailabilityUpdateRequest(employeeId: employeeId, schedule: schedule))
+        let request = try buildRequest(endpoint: "/team/availability", method: "PUT", body: body)
+        let _: EmptyResponse = try await perform(request)
+    }
+
     func createPost(_ post: CreatePostRequest) async throws -> Post {
         let body = try encoder.encode(post)
         let request = try buildRequest(endpoint: "/post", method: "POST", body: body)
@@ -438,6 +639,8 @@ struct LikeResponse: Codable {
 
 struct FavoritesResponse: Codable {
     let listings: [Listing]
+    let workers: [Employee]?
+    let shops: [Shop]?
     let posts: [Post]
 }
 
@@ -453,6 +656,96 @@ struct CreateListingRequest: Codable {
     var address: String
     var zipCode: String
     var imageSrc: String?
+}
+
+struct CreateShopRequest: Codable {
+    var name: String
+    var description: String
+    var category: String?
+    var logo: String
+    var coverImage: String?
+    var location: String?
+    var address: String?
+    var zipCode: String?
+    var isOnlineOnly: Bool
+    var storeUrl: String?
+    var galleryImages: [String]
+    var shopEnabled: Bool
+    var listingId: String?
+}
+
+struct CreateProductRequest: Codable {
+    var name: String
+    var description: String
+    var price: Double
+    var category: String?
+    var image: String
+    var images: [String]
+    var sizes: [String]
+    var shopId: String
+}
+
+struct ProductCreateResponse: Codable {
+    let id: String?
+    let name: String?
+    let mainImage: String?
+}
+
+// MARK: - Subscription request/response types
+
+struct SubscriptionSelectRequest: Codable {
+    let plan: String
+    let interval: String
+}
+
+struct SubscriptionCheckoutRequest: Codable {
+    let planId: String
+    let interval: String
+    let platform: String
+    let metadata: SubscriptionCheckoutMetadata
+}
+
+struct SubscriptionCheckoutMetadata: Codable {
+    let isOnboarding: String
+}
+
+struct SubscriptionCheckoutResponse: Codable {
+    let sessionId: String
+    let url: String?
+}
+
+struct SubscriptionCancelResponse: Codable {
+    let ok: Bool?
+    let cancelAt: String?
+    let currentPeriodEnd: String?
+}
+
+struct SubscriptionChangeRequest: Codable {
+    let planId: String
+    let interval: String
+}
+
+struct SubscriptionChangeResponse: Codable {
+    let ok: Bool?
+    let plan: String?
+    let interval: String?
+}
+
+struct SubscriptionPortalResponse: Codable {
+    let url: String?
+}
+
+struct SubscriptionVerifyResponse: Codable {
+    let success: Bool?
+    let subscription: VerifiedSubscription?
+
+    struct VerifiedSubscription: Codable {
+        let id: String?
+        let status: String?
+        let priceId: String?
+        let interval: String?
+        let planDisplayName: String?
+    }
 }
 
 struct CreatePostRequest: Codable {

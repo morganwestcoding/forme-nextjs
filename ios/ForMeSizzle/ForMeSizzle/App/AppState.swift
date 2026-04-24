@@ -24,9 +24,21 @@ class AppState: ObservableObject {
     @Published var showingNotifications = false
     @Published var showingCreateMenu = false
     @Published var showingPostFlow = false
+    @Published var showingListingFlow = false
+    @Published var showingShopFlow = false
+    @Published var showingWorkerFlow = false
+    @Published var showingProductFlow = false
+
+    // Pre-selected context for Worker / Product flows — set by the create
+    // menu's permission gate (matching web's "use the user's first listing /
+    // shop") and read by the flow when it mounts. Nil means the flow must
+    // pick one itself (e.g. via a chooser screen).
+    @Published var workerFlowListingId: String?
+    @Published var productFlowShopId: String?
     @Published var showingSettings = false
     @Published var showingProfile = false
     @Published var showingFavorites = false
+    @Published var showingSubscription = false
 
     func resetNavigation() {
         navigationPath = NavigationPath()

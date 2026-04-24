@@ -85,10 +85,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { planId, interval, metadata } = (await request.json()) as {
+    const { planId, interval, metadata, platform } = (await request.json()) as {
       planId: PlanId;
       interval: Interval;
       metadata?: { isOnboarding?: string };
+      platform?: 'ios';
     };
 
     if (!planId || !interval) {
@@ -96,6 +97,7 @@ export async function POST(request: Request) {
     }
 
     const isOnboarding = metadata?.isOnboarding === 'true';
+    const isIOS = platform === 'ios';
 
     const currentUser = await prisma.user.findUnique({
       where: { email: session.user.email as string },
@@ -121,13 +123,26 @@ export async function POST(request: Request) {
       });
     }
 
-    const successUrl = isOnboarding
-      ? `${process.env.NEXT_PUBLIC_APP_URL}/subscription?status=success&session_id={CHECKOUT_SESSION_ID}&onboarding=true`
-      : `${process.env.NEXT_PUBLIC_APP_URL}/subscription?status=success&session_id={CHECKOUT_SESSION_ID}`;
+    // iOS opens Stripe Checkout inside an ASWebAuthenticationSession and
+    // watches for a `formesizzle://` redirect to know the flow is done.
+    // Stripe's success_url must be HTTPS, so we bounce through an API route
+    // that immediately 302s to the app's URL scheme.
+    const iosReturn = (status: 'success' | 'cancelled') =>
+      `${process.env.NEXT_PUBLIC_APP_URL}/api/subscription/ios-return` +
+      `?status=${status}` +
+      (status === 'success' ? `&session_id={CHECKOUT_SESSION_ID}` : '');
 
-    const cancelUrl = isOnboarding
-      ? `${process.env.NEXT_PUBLIC_APP_URL}/subscription?status=cancelled&onboarding=true`
-      : `${process.env.NEXT_PUBLIC_APP_URL}/subscription?status=cancelled`;
+    const successUrl = isIOS
+      ? iosReturn('success')
+      : isOnboarding
+        ? `${process.env.NEXT_PUBLIC_APP_URL}/subscription?status=success&session_id={CHECKOUT_SESSION_ID}&onboarding=true`
+        : `${process.env.NEXT_PUBLIC_APP_URL}/subscription?status=success&session_id={CHECKOUT_SESSION_ID}`;
+
+    const cancelUrl = isIOS
+      ? iosReturn('cancelled')
+      : isOnboarding
+        ? `${process.env.NEXT_PUBLIC_APP_URL}/subscription?status=cancelled&onboarding=true`
+        : `${process.env.NEXT_PUBLIC_APP_URL}/subscription?status=cancelled`;
 
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: "subscription",
@@ -154,7 +169,12 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ sessionId: checkoutSession.id });
+    // iOS needs the full hosted Stripe URL to open in ASWebAuthenticationSession
+    // (web uses stripe.redirectToCheckout() which takes just the sessionId).
+    return NextResponse.json({
+      sessionId: checkoutSession.id,
+      url: checkoutSession.url,
+    });
   } catch (error: any) {
     return apiError(error.message || "Something went wrong", 500);
   }

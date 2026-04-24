@@ -33,7 +33,12 @@ export async function GET(
       return apiError("Not authorized to access this conversation", 403);
     }
 
-    const allMessages = await prisma.message.findMany({
+    // Cap at the most recent N messages so long threads don't stall the
+    // initial load. Caller can opt into more via ?take=.
+    const url = new URL(request.url);
+    const take = Math.min(Math.max(parseInt(url.searchParams.get('take') || '50', 10) || 50, 1), 200);
+
+    const recent = await prisma.message.findMany({
       where: {
         conversationId: params.conversationId,
       },
@@ -47,11 +52,16 @@ export async function GET(
         }
       },
       orderBy: {
-        createdAt: 'asc'
-      }
+        createdAt: 'desc'
+      },
+      take,
     });
 
-    const messages = allMessages.filter((m: typeof allMessages[number]) => !m.deletedAt);
+    // Filter soft-deleted in JS — on MongoDB, querying `deletedAt: null`
+    // can skip legacy documents that don't have the field at all.
+    const messages = recent
+      .filter((m: typeof recent[number]) => !m.deletedAt)
+      .reverse();
 
     const safeMessages = messages.map((message: typeof messages[number]) => ({
       id: message.id,

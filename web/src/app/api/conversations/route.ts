@@ -12,15 +12,6 @@ export async function GET(request: Request) {
       return apiErrorCode('UNAUTHORIZED');
     }
 
-    // First, let's check if we can find any conversations for this user
-    const conversationCount = await prisma.conversation.count({
-      where: {
-        userIds: {
-          has: currentUser.id
-        }
-      }
-    });
-
     const conversations = await prisma.conversation.findMany({
       where: {
         userIds: {
@@ -28,12 +19,20 @@ export async function GET(request: Request) {
         }
       },
       include: {
-        users: true,
+        users: {
+          select: { id: true, name: true, image: true }
+        },
         messages: {
           orderBy: {
             createdAt: 'desc'
           },
-          take: 1
+          take: 1,
+          select: {
+            content: true,
+            createdAt: true,
+            isRead: true,
+            senderId: true,
+          }
         }
       },
       orderBy: {
