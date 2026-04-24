@@ -98,7 +98,7 @@ export const createReservationSchema = z.object({
 // Review creation schema
 export const createReviewSchema = z.object({
   rating: z.number().min(1).max(5),
-  comment: z.string().min(1, 'Review comment is required').max(1000),
+  comment: z.string().max(1000).optional(),
   targetUserId: z.string().optional(),
   targetListingId: z.string().optional(),
   reservationId: z.string().optional(),

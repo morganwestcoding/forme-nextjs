@@ -52,10 +52,11 @@ const ReviewModal: React.FC = () => {
     try {
       await axios.post('/api/reviews', {
         rating,
-        comment: comment.trim() || null,
+        comment: comment.trim(),
         targetType,
-        targetUserId: targetType === 'user' ? targetUser?.id : null,
-        targetListingId: targetType === 'listing' ? targetListing?.id : null,
+        ...(targetType === 'user'
+          ? { targetUserId: targetUser?.id }
+          : { targetListingId: targetListing?.id }),
       });
 
       toast.success('Review submitted successfully!');
