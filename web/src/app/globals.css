@@ -175,6 +175,20 @@ html {
   color: #fafaf9;            /* stone-50 */
 }
 
+/* ── Keyboard-only focus baseline ──
+   Low-specificity ring for any interactive element that doesn't define its
+   own focus-visible style. Components using focus-visible:ring-* (Button,
+   IconButton, etc.) win on specificity and override this. */
+:where(button, a, summary, [role="button"], [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid #1c1917; /* stone-900 */
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.dark :where(button, a, summary, [role="button"], [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline-color: #f5f5f4; /* stone-100 */
+}
+
 /* ---------- Leaflet map overrides ---------- */
 .leaflet-bottom,
 .leaflet-control,

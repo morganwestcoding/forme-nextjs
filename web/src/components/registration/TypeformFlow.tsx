@@ -95,6 +95,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
   const [step, setStep] = useState<STEPS>(isEditMode ? STEPS.INTERESTS : STEPS.ACCOUNT);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
   const [editingServiceIndex, setEditingServiceIndex] = useState<number | null>(null);
   const [isExiting, setIsExiting] = useState(false);
@@ -105,6 +106,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
       lastName: initialData?.name?.split(' ').slice(1).join(' ') || '',
       email: initialData?.email || '',
       password: '',
+      confirmPassword: '',
       interests: initialData?.interests || [],
       location: initialData?.location || '',
       bio: initialData?.bio || '',
@@ -220,7 +222,13 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
     switch (step) {
       case STEPS.ACCOUNT:
         const p = validatePassword(data.password || '');
-        return Boolean(data.email?.trim() && data.firstName?.trim() && data.lastName?.trim() && Object.values(p).every(Boolean));
+        return Boolean(
+          data.email?.trim() &&
+          data.firstName?.trim() &&
+          data.lastName?.trim() &&
+          Object.values(p).every(Boolean) &&
+          data.confirmPassword === data.password
+        );
       case STEPS.INTERESTS:
         return true; // Optional
       case STEPS.USER_TYPE:
@@ -260,7 +268,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
     // Validation for ACCOUNT step
     if (step === STEPS.ACCOUNT) {
       // Trigger react-hook-form validation to show inline errors
-      const valid = await methods.trigger(['firstName', 'lastName', 'email', 'password']);
+      const valid = await methods.trigger(['firstName', 'lastName', 'email', 'password', 'confirmPassword']);
       if (!valid) return;
 
       const p = validatePassword(data.password || '');
@@ -270,18 +278,22 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
       }
       try {
         setIsLoading(true);
+        setIsCheckingEmail(true);
         const response = await axios.get(`/api/check-email?email=${encodeURIComponent(data.email)}`);
         if (response.data?.exists) {
           toast.error('Email already exists');
           setIsLoading(false);
+          setIsCheckingEmail(false);
           return;
         }
       } catch (e) {
         safeToastError(e, "Could not validate email uniqueness.");
         setIsLoading(false);
+        setIsCheckingEmail(false);
         return;
       }
       setIsLoading(false);
+      setIsCheckingEmail(false);
     }
 
     const next = getNextStep();
@@ -451,7 +463,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
   const renderStep = () => {
     switch (step) {
       case STEPS.ACCOUNT:
-        return <AccountStep />;
+        return <AccountStep isCheckingEmail={isCheckingEmail} />;
       case STEPS.INTERESTS:
         return (
           <InterestsStep

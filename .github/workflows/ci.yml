@@ -48,4 +48,4 @@ jobs:
           NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: fake
           NEXT_PUBLIC_APP_URL: http://localhost:3000
           DATABASE_URL: mongodb://localhost:27017/ci
-          SENDGRID_API_KEY: SG_fake_for_ci
+          RESEND_API_KEY: re_fake_for_ci

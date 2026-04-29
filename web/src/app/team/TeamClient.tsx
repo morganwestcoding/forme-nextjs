@@ -467,7 +467,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
       <div className="flex items-center gap-3 min-w-0">
         <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 bg-stone-100 dark:bg-stone-800">
           {booking.clientImage ? (
-            <Image src={booking.clientImage} alt="" width={36} height={36} className="object-cover w-full h-full" />
+            <Image src={booking.clientImage} alt={booking.clientName || 'Client avatar'} width={36} height={36} className="object-cover w-full h-full" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-stone-400 dark:text-stone-500 text-[13px] font-medium">
               {booking.clientName?.[0] || '?'}
@@ -712,7 +712,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                       <div className="p-4 flex items-center gap-2.5">
                         <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 bg-stone-100 dark:bg-stone-800">
                           {(member.user.image || member.user.imageSrc) ? (
-                            <Image src={member.user.image || member.user.imageSrc || ''} alt="" width={28} height={28} className="object-cover w-full h-full" />
+                            <Image src={member.user.image || member.user.imageSrc || ''} alt={member.user.name || 'Team member avatar'} width={28} height={28} className="object-cover w-full h-full" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-stone-400 dark:text-stone-500 text-[11px] font-medium">
                               {member.fullName[0]}
@@ -952,7 +952,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 bg-stone-100 dark:bg-stone-800">
                           {client.image ? (
-                            <Image src={client.image} alt="" width={40} height={40} className="object-cover w-full h-full" />
+                            <Image src={client.image} alt={client.name || 'Client avatar'} width={40} height={40} className="object-cover w-full h-full" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-stone-400 dark:text-stone-500 text-[14px] font-medium">
                               {client.name?.[0] || '?'}
@@ -1211,7 +1211,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full overflow-hidden bg-stone-100 dark:bg-stone-800">
                           {(member.user.image || member.user.imageSrc) ? (
-                            <Image src={member.user.image || member.user.imageSrc || ''} alt="" width={40} height={40} className="object-cover w-full h-full" />
+                            <Image src={member.user.image || member.user.imageSrc || ''} alt={member.user.name || 'Team member avatar'} width={40} height={40} className="object-cover w-full h-full" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-stone-500  dark:text-stone-500 text-[14px] font-semibold">{member.fullName[0]}</div>
                           )}

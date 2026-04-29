@@ -368,6 +368,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
               src={BANNERS[activeBanner].src}
               alt={BANNERS[activeBanner].alt}
               fill
+              sizes="100vw"
               className="object-contain group-hover:scale-[1.02] transition-all duration-700 ease-out"
             />
             <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent" />

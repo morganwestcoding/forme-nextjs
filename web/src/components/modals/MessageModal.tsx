@@ -10,6 +10,7 @@ import useMessageModal from '@/app/hooks/useMessageModal';
 import useInboxModal from '@/app/hooks/useInboxModal';
 import { useSSE } from '@/app/hooks/useSSE';
 import Modal from './Modal';
+import Skeleton from '../ui/Skeleton';
 import { ArrowLeft01Icon as ArrowLeft, SentIcon as Send } from 'hugeicons-react';
 
 interface Message {
@@ -166,7 +167,7 @@ const MessageModal: React.FC = () => {
       messagesCache.set(cid, messagesData);
       setMessages(messagesData);
     } catch {
-      if (showSpinner) toast.error('Failed to load messages');
+      if (showSpinner) toast.error('Couldn’t load this conversation.');
     } finally {
       if (showSpinner) setIsLoading(false);
     }
@@ -207,7 +208,7 @@ const MessageModal: React.FC = () => {
       
       setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 0);
     } catch {
-      toast.error('Failed to send message');
+      toast.error('Message didn’t send. Try again in a moment.');
     }
   }, [newMessage, messageModal.conversationId]);
 
@@ -335,7 +336,7 @@ const MessageModal: React.FC = () => {
                   { side: 'start', w: 'w-36' },
                 ].map((m, i) => (
                   <div key={i} className={`w-full flex ${m.side === 'end' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`h-10 max-w-[80%] rounded-xl ${m.w} animate-pulse bg-stone-200/80 dark:bg-stone-800/80`} />
+                    <Skeleton rounded="xl" className={`h-10 max-w-[80%] ${m.w}`} />
                   </div>
                 ))}
               </div>

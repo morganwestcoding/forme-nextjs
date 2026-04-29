@@ -51,7 +51,7 @@ const ResetPasswordModal = () => {
       resetPasswordModal.onClose();
       router.push('/');
     } catch (error) {
-      toast.error('Error resetting password');
+      toast.error('Couldn’t reset your password. The link may have expired.');
     } finally {
       setIsLoading(false);
     }

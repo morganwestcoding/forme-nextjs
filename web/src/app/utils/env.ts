@@ -16,7 +16,7 @@ const requiredForPayments = [
 ] as const;
 
 const requiredForEmail = [
-  'SENDGRID_API_KEY',
+  'RESEND_API_KEY',
 ] as const;
 
 const optional = [

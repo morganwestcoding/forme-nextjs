@@ -34,7 +34,7 @@ const StripeCheckoutModal = () => {
       // Redirect to Stripe Checkout
       const stripe = await stripePromise;
       if (!stripe) {
-        toast.error('Stripe failed to load');
+        toast.error('Couldn’t reach checkout right now. Please try again.');
         return;
       }
 

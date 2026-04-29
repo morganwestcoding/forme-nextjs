@@ -708,7 +708,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
       {/* Sidebar (desktop) / Bottom sheet (mobile) */}
       <div
         className="
-          fixed bottom-0 left-0 right-0 z-10
+          fixed bottom-0 left-0 right-0 z-10 safe-bottom
           flex flex-col bg-white dark:bg-stone-900
           rounded-t-2xl border-t border-stone-200/80 dark:border-stone-800
           shadow-2xl shadow-black/20 overflow-hidden

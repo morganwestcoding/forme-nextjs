@@ -124,7 +124,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
         setOutgoingReservations(res.data.outgoing || []);
         setIncomingReservations(res.data.incoming || []);
       })
-      .catch(() => toast.error('Failed to load reservations'))
+      .catch(() => toast.error('Couldn’t load your bookings. Try refreshing.'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -138,7 +138,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
       await axios.patch(`/api/reservations/${id}`, { action: 'accept' });
       toast.success('Reservation accepted');
       fetchReservations();
-    } catch { toast.error('Something went wrong.'); }
+    } catch { toast.error('Something went wrong. Please try again.'); }
     finally { setProcessingId(''); }
   }, [fetchReservations]);
 
@@ -148,7 +148,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
       await axios.delete(`/api/reservations/${id}`);
       toast.success('Reservation declined');
       fetchReservations();
-    } catch { toast.error('Something went wrong.'); }
+    } catch { toast.error('Something went wrong. Please try again.'); }
     finally { setProcessingId(''); }
   }, [fetchReservations]);
 
@@ -158,7 +158,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
       await axios.delete(`/api/reservations/${id}`);
       toast.success('Booking cancelled');
       fetchReservations();
-    } catch { toast.error('Something went wrong.'); }
+    } catch { toast.error('Something went wrong. Please try again.'); }
     finally { setProcessingId(''); }
   }, [fetchReservations]);
 

@@ -24,31 +24,25 @@ export async function POST(request: Request) {
       where: { email },
     });
 
-    if (!user) {
-      return apiError("No user found with this email", 404);
+    // Always respond the same way to prevent account enumeration.
+    // Only send the email if the user actually exists.
+    if (user) {
+      const resetToken = crypto.randomBytes(32).toString("hex");
+      const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
+
+      await prisma.user.update({
+        where: { email },
+        data: { resetToken, resetTokenExpiry },
+      });
+
+      const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`;
+      const template = passwordResetEmail(resetLink);
+      await sendEmail({ ...template, to: email });
     }
 
-    // Generate reset token
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    const resetTokenExpiry = new Date(Date.now() + 3600000); // Token valid for 1 hour
-
-    // Store token in database
-    await prisma.user.update({
-      where: { email },
-      data: {
-        resetToken: resetToken,
-        resetTokenExpiry: resetTokenExpiry
-      },
+    return NextResponse.json({
+      message: "If an account exists for that email, a reset link has been sent.",
     });
-
-    // Create reset link
-    const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`;
-
-    // Send email via SendGrid
-    const template = passwordResetEmail(resetLink);
-    await sendEmail({ ...template, to: email });
-
-    return NextResponse.json({ message: "Reset email sent successfully" });
   } catch (error) {
     return apiError("Error processing password reset", 500);
   }

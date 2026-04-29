@@ -56,7 +56,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
       setHidden(true);
       toast.success('Post hidden');
     } catch {
-      toast.error('Failed to hide post');
+      toast.error('Couldn’t hide that post.');
     }
   };
 
@@ -73,7 +73,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
       setHidden(true);
       toast.success('Post deleted');
     } catch {
-      toast.error('Failed to delete post');
+      toast.error('Couldn’t delete that post.');
     }
   };
 
@@ -220,20 +220,20 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
               className="absolute inset-0 pointer-events-none transition-opacity duration-400"
               style={{ opacity: hasPlayed ? 0 : 1 }}
             >
-              <Image src={post.thumbnailUrl!} alt="" fill className="object-cover" sizes="300px" priority />
+              <Image src={post.thumbnailUrl!} alt={post.user?.name ? `Post by ${post.user.name}` : 'Post thumbnail'} fill className="object-cover" sizes="300px" priority />
             </div>
           )}
         </>
       ) : hasBeforeAfter ? (
         <>
-          <Image src={post.beforeImageSrc || ''} alt="" fill className="object-cover" sizes="300px" />
+          <Image src={post.beforeImageSrc || ''} alt="Before image" fill className="object-cover" sizes="300px" />
           <div
             className="absolute inset-0 transition-[clip-path] duration-500 ease-out"
             style={{ clipPath: showBefore ? 'inset(0 100% 0 0)' : 'inset(0 0% 0 0)' }}
           >
             <Image
               src={post.mediaUrl || post.imageSrc || ''}
-              alt=""
+              alt="After image"
               fill
               className="object-cover"
               onLoad={() => setImageLoaded(true)}
@@ -254,7 +254,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
       ) : (
         <Image
           src={post.mediaUrl || post.imageSrc || ''}
-          alt=""
+          alt={post.user?.name ? `Post by ${post.user.name}` : 'Post image'}
           fill
           className={`object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={() => setImageLoaded(true)}

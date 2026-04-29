@@ -364,7 +364,7 @@ describe('POST /api/auth/forgot-password', () => {
     POST = mod.POST;
   });
 
-  it('returns 404 when email does not exist (no user found)', async () => {
+  it('returns 200 with generic message when email does not exist (no enumeration)', async () => {
     mockedPrisma.user.findUnique.mockResolvedValueOnce(null);
 
     const req = createRequestWithIP('/api/auth/forgot-password', '10.3.0.1', {
@@ -373,10 +373,13 @@ describe('POST /api/auth/forgot-password', () => {
     });
 
     const res = await POST(req);
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(200);
 
     const json = await res.json();
-    expect(json.error).toBe('No user found with this email');
+    expect(json.message).toMatch(/if an account exists/i);
+
+    // Must not write to the DB or attempt to send an email for unknown addresses
+    expect(mockedPrisma.user.update).not.toHaveBeenCalled();
   });
 
   it('returns 200 when email exists and sends reset email', async () => {
@@ -399,7 +402,7 @@ describe('POST /api/auth/forgot-password', () => {
     expect(res.status).toBe(200);
 
     const json = await res.json();
-    expect(json.message).toBe('Reset email sent successfully');
+    expect(json.message).toMatch(/if an account exists/i);
 
     // Verify the user update was called with reset token data
     expect(mockedPrisma.user.update).toHaveBeenCalledWith(

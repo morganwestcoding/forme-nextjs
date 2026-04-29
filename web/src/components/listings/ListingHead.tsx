@@ -250,7 +250,27 @@ const ListingHead: React.FC<ListingHeadProps> = ({
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill={hasFavorited ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={hasFavorited ? "text-rose-500" : "text-stone-500  dark:text-stone-500"}>
               <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
             </svg>
-            {hasFavorited ? 'Favorited' : 'Favorite'}
+            {hasFavorited ? 'Saved' : 'Save'}
+          </button>
+          <button
+            onClick={() => {
+              setShowDropdown(false);
+              const url = `${window.location.origin}/listings/${listing.id}`;
+              if (navigator.share) {
+                navigator.share({ title, url }).catch(() => {});
+              } else {
+                navigator.clipboard.writeText(url);
+                toast.success('Link copied');
+              }
+            }}
+            className={btnClass}
+            type="button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500 dark:text-stone-500">
+              <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
+              <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
+            </svg>
+            Share
           </button>
           <button
             onClick={() => { setShowDropdown(false); reviewModal.onOpen({ targetType: 'listing', targetListing: listing, currentUser }); }}
@@ -341,6 +361,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               {/* Back button - top left */}
               <button
                 onClick={() => router.back()}
+                aria-label="Go back"
                 className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 rounded-full transition-all z-20"
                 type="button"
               >
@@ -352,6 +373,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               {/* 3-dot menu - top right */}
               <button
                 onClick={handleDropdownToggle}
+                aria-label="More options"
+                aria-haspopup="menu"
+                aria-expanded={showDropdown}
                 className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 rounded-full transition-all z-20"
                 type="button"
               >
@@ -446,48 +470,17 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
             {/* Description — always rendered so the Heart/Share row stays
                 in place even if this listing hasn't filled in a description. */}
-            <div className="px-6 py-5 ">
+            <div className="px-6 py-5">
               <p className={`text-[13px] leading-[1.7] whitespace-pre-wrap ${description && description.trim() ? 'text-stone-700 dark:text-stone-200' : 'text-stone-400 dark:text-stone-500 italic'}`}>
                 {description && description.trim() ? description : 'No description yet.'}
               </p>
-
-                {/* Heart & Share */}
-                <div className="flex items-center justify-center gap-4 mt-6 mb-2">
-                  <button
-                    onClick={(e: any) => { e.stopPropagation(); toggleFavorite(e); }}
-                    className="flex items-center gap-1.5 text-stone-400  hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill={hasFavorited ? '#292524' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z" />
-                    </svg>
-                    <span className="text-[12px]">{hasFavorited ? 'Saved' : 'Save'}</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      const url = `${window.location.origin}/listings/${listing.id}`;
-                      if (navigator.share) {
-                        navigator.share({ title, url });
-                      } else {
-                        navigator.clipboard.writeText(url);
-                        toast.success('Link copied');
-                      }
-                    }}
-                    className="flex items-center gap-1.5 text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
-                      <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
-                    </svg>
-                    <span className="text-[12px]">Share</span>
-                  </button>
-                </div>
-              </div>
+            </div>
 
             {/* Action Buttons */}
             <div className="px-6 py-5 ">
               {!isOwner ? (
                 <div className="flex gap-2.5">
-                  <Button onClick={handleReserveClick} fullWidth size="lg" type="button">
+                  <Button onClick={handleReserveClick} className="flex-1" size="lg" type="button">
                     Reserve
                   </Button>
                   <button
@@ -528,6 +521,9 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               </div>
               <button
                 onClick={handleDropdownToggle}
+                aria-label="More options"
+                aria-haspopup="menu"
+                aria-expanded={showDropdown}
                 className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800"
                 type="button"
               >

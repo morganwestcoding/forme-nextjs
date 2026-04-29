@@ -368,7 +368,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                                     // eslint-disable-next-line @next/next/no-img-element
                                     <img
                                       src={item.image}
-                                      alt=""
+                                      alt={item.title || 'Search result'}
                                       className="w-full h-full object-cover"
                                     />
                                   ) : (

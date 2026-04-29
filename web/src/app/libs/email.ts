@@ -1,4 +1,4 @@
-// Centralized email helper — sends via SendGrid.
+// Centralized email helper — sends via Resend.
 //
 // Usage:
 //   import { sendEmail } from '@/app/libs/email';
@@ -7,13 +7,13 @@
 // All emails are fire-and-forget at the call site — failures are logged but
 // never block the main request. Wrap calls in try/catch or .catch(() => {}).
 
-import sgMail from '@sendgrid/mail';
+import { Resend } from 'resend';
 
-if (process.env.SENDGRID_API_KEY) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-}
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 
-const DEFAULT_FROM = process.env.EMAIL_FROM || 'ForMe <noreply@forme.app>';
+const DEFAULT_FROM = process.env.EMAIL_FROM || 'ForMe <onboarding@resend.dev>';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 interface SendEmailOptions {
@@ -25,18 +25,23 @@ interface SendEmailOptions {
 }
 
 export async function sendEmail({ to, subject, html, text }: SendEmailOptions): Promise<void> {
-  if (!process.env.SENDGRID_API_KEY) {
-    console.warn('[email] SENDGRID_API_KEY not set — skipping email to', to);
+  if (!resend) {
+    console.warn('[email] RESEND_API_KEY not set — skipping email to', to);
     return;
   }
 
-  await sgMail.send({
+  const { error } = await resend.emails.send({
     to,
     from: DEFAULT_FROM,
     subject,
     html,
     text: text || html.replace(/<[^>]*>/g, ''),
   });
+
+  if (error) {
+    console.error('[email] Resend send failed:', error);
+    throw new Error(error.message || 'Email send failed');
+  }
 }
 
 /**

@@ -35,18 +35,18 @@ export default async function AdminVerificationsPage() {
     <Container>
       <div className="mt-8 mb-12">
         <div className="mb-2">
-          <Link href="/admin" className="text-[12px] text-stone-400 hover:text-stone-600 transition-colors">
+          <Link href="/admin" className="text-[12px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 transition-colors">
             ← Back to Admin
           </Link>
         </div>
         <div className="mb-8">
-          <p className="text-[12px] text-stone-400 mb-1">Master admin</p>
-          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Verification Queue</h1>
-          <p className="text-[14px] text-stone-400 mt-1">{safe.length} pending submissions</p>
+          <p className="text-[12px] text-stone-400 dark:text-stone-500 mb-1">Master admin</p>
+          <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Verification Queue</h1>
+          <p className="text-[14px] text-stone-400 dark:text-stone-500 mt-1">{safe.length} pending submissions</p>
         </div>
 
         {safe.length === 0 ? (
-          <div className="text-[13px] text-stone-400 py-12 text-center">
+          <div className="text-[13px] text-stone-400 dark:text-stone-500 py-12 text-center">
             No pending verifications.
           </div>
         ) : (

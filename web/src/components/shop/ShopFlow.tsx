@@ -271,7 +271,7 @@ export default function ShopFlow({ mode = 'create', shopId, initialData }: ShopF
           : data?.error || data?.message || 'Something went wrong';
         toast.error(message);
       } else {
-        toast.error('Something went wrong.');
+        toast.error('Couldn’t save your shop. Please try again.');
       }
     } finally {
       setIsLoading(false);

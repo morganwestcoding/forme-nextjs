@@ -59,7 +59,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, currentUser }) => {
       // Revert on error
       setHasVoted(wasVoted);
       setHelpfulCount(prev => wasVoted ? prev + 1 : prev - 1);
-      toast.error('Something went wrong');
+      toast.error('Couldn’t register your vote. Try again.');
     } finally {
       setIsVoting(false);
     }

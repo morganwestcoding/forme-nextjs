@@ -150,7 +150,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
       setFollowersCount(res.data?.followers?.length ?? followersCount + (isFollowing ? -1 : 1));
       toast.success(isFollowing ? 'Unfollowed' : 'Followed');
     } catch {
-      toast.error('Something went wrong');
+      toast.error('Couldn’t update follow status. Try again.');
     }
   };
 
@@ -243,6 +243,26 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
             </svg>
             Add Review
           </button>
+          <button
+            onClick={() => {
+              setShowDropdown(false);
+              const url = `${window.location.origin}/profile/${id}`;
+              if (navigator.share) {
+                navigator.share({ title: name ?? 'Profile', url }).catch(() => {});
+              } else {
+                navigator.clipboard.writeText(url);
+                toast.success('Link copied');
+              }
+            }}
+            className={btnClass}
+            type="button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500 dark:text-stone-500">
+              <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
+              <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
+            </svg>
+            Share
+          </button>
           <hr className="my-1 border-stone-200 dark:border-stone-800" />
           <button onClick={() => setShowDropdown(false)} className={btnClass} type="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500  dark:text-stone-500">
@@ -302,6 +322,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               {/* Back button - top left */}
               <button
                 onClick={() => router.back()}
+                aria-label="Go back"
                 className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 rounded-full transition-all z-20"
                 type="button"
               >
@@ -312,6 +333,9 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               {/* 3-dot menu - top right */}
               <button
                 onClick={handleDropdownToggle}
+                aria-label="More options"
+                aria-haspopup="menu"
+                aria-expanded={showDropdown}
                 className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 rounded-full transition-all z-20"
                 type="button"
               >
@@ -423,28 +447,6 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   ? bio
                   : `${firstName} hasn't added a bio yet.`}
               </p>
-
-              {/* Share */}
-              <div className="flex items-center justify-center gap-4 mt-6 mb-2">
-                <button
-                  onClick={() => {
-                    const url = `${window.location.origin}/profile/${id}`;
-                    if (navigator.share) {
-                      navigator.share({ title: name ?? 'Profile', url });
-                    } else {
-                      navigator.clipboard.writeText(url);
-                      toast.success('Link copied');
-                    }
-                  }}
-                  className="flex items-center gap-1.5 text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
-                    <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
-                  </svg>
-                  <span className="text-[12px]">Share</span>
-                </button>
-              </div>
             </div>
 
             {/* Action Buttons */}
@@ -461,9 +463,9 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                         .then(res => {
                           messageModal.onOpen(res.data.id, id);
                         })
-                        .catch(() => toast.error('Failed to start conversation'));
+                        .catch(() => toast.error('Couldn’t start that conversation. Try again.'));
                     }}
-                    fullWidth
+                    className="flex-1"
                     size="lg"
                     type="button"
                   >
@@ -510,6 +512,9 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               </div>
               <button
                 onClick={handleDropdownToggle}
+                aria-label="More options"
+                aria-haspopup="menu"
+                aria-expanded={showDropdown}
                 className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800"
                 type="button"
               >
@@ -533,7 +538,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 <button className="text-xs font-medium text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
               </div>
               {posts.length > 0 ? (
-                <div className="grid grid-cols-6 gap-0.5 overflow-hidden rounded-xl">
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-0.5 overflow-hidden rounded-xl">
                   {posts.slice(0, 12).map((post, idx) => {
                     // Calculate which corners to round (outside corners only)
                     const cols = 6;
@@ -588,7 +593,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 </div>
               </div>
               {services.length > 0 ? (
-                <div className="grid grid-cols-4 gap-4 -mx-1 px-1 py-1 mb-10">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 -mx-1 px-1 py-1 mb-10">
                   {services.map((svc, idx) => {
                     const stubListing = {
                       id: svc.listingId,
@@ -648,7 +653,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   <button className="text-xs font-medium text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
                 </div>
                 {visibleListings.length > 0 ? (
-                  <div className="grid grid-cols-4 gap-4 -mx-1 px-1 py-1">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 -mx-1 px-1 py-1">
                     {visibleListings.slice(0, 8).map((listing, idx) => (
                       <div
                         key={listing.id}
@@ -686,7 +691,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 <button className="text-xs font-medium text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
               </div>
               {galleryImages.length > 0 ? (
-                <div className="grid grid-cols-4 gap-4 -mx-1 px-1 py-1">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 -mx-1 px-1 py-1">
                   {galleryImages.map((img, idx) => (
                     <div
                       key={idx}
@@ -722,7 +727,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 <button className="text-xs font-medium text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
               </div>
               {reviews.length > 0 ? (
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {reviews.slice(0, 6).map((review, idx) => (
                     <div
                       key={review.id}

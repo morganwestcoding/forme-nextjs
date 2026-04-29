@@ -10,6 +10,7 @@ import { SafeConversation } from "@/app/types";
 import useMessageModal from "@/app/hooks/useMessageModal";
 import Modal from './Modal';
 import BouncingDots from '../ui/BouncingDots';
+import Skeleton from '../ui/Skeleton';
 import useInboxModal from '@/app/hooks/useInboxModal';
 import useUnreadCounts from '@/app/hooks/useUnreadCounts';
 import { useSSE } from '@/app/hooks/useSSE';
@@ -239,7 +240,7 @@ const InboxModal = () => {
       // Keep the previously-rendered conversations in place rather than
       // clobbering with an empty list; only toast if we had nothing to show.
       if (!conversationsCache || conversationsCache.length === 0) {
-        toast.error('Failed to load conversations');
+        toast.error('Couldn’t load your inbox. Check your connection and try again.');
       }
     } finally {
       setConversationsLoading(false);
@@ -276,7 +277,7 @@ const InboxModal = () => {
       const newConversation = response.data;
       openConversation(newConversation.id, userId);
     } catch (error) {
-      toast.error('Failed to start new conversation');
+      toast.error('Couldn’t start that conversation. Try again.');
     }
   };
 
@@ -418,25 +419,25 @@ const InboxModal = () => {
       <div className="mx-auto w-full max-w-[520px] flex flex-col flex-1 min-h-0">
         {/* Header skeleton */}
         <div className="text-center mb-6">
-          <div className="h-9 w-40 mx-auto rounded-md animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
-          <div className="h-3 w-56 mx-auto mt-3 rounded-md animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+          <Skeleton className="h-9 w-40 mx-auto" />
+          <Skeleton className="h-3 w-56 mx-auto mt-3" />
         </div>
         {/* Search skeleton */}
         <div className="mb-6">
-          <div className="h-11 w-full rounded-2xl animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+          <Skeleton rounded="2xl" className="h-11 w-full" />
         </div>
         {/* Conversation row skeletons */}
         <div className="flex-1 overflow-hidden -mx-2 px-2">
           <div className="space-y-2 py-1">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="flex items-center gap-3 p-3">
-                <div className="h-12 w-12 rounded-full shrink-0 animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+                <Skeleton rounded="full" className="h-12 w-12 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-3 mb-1.5">
-                    <div className="h-4 w-28 rounded-md animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
-                    <div className="h-3 w-8 rounded-md animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+                    <Skeleton className="h-4 w-28" />
+                    <Skeleton className="h-3 w-8" />
                   </div>
-                  <div className="h-3 w-40 rounded-md animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+                  <Skeleton className="h-3 w-40" />
                 </div>
               </div>
             ))}
@@ -444,7 +445,7 @@ const InboxModal = () => {
         </div>
         {/* Footer link skeleton */}
         <div className="pt-4 mt-auto">
-          <div className="h-10 w-full rounded-xl animate-pulse bg-stone-200/80 dark:bg-stone-800/80" />
+          <Skeleton rounded="xl" className="h-10 w-full" />
         </div>
       </div>
     </div>

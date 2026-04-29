@@ -8,6 +8,7 @@ import { SafeUser, SafeConversation, SafeMessage } from '@/app/types';
 import Container from '@/components/Container';
 import PageHeader from '@/components/PageHeader';
 import Button from '@/components/ui/Button';
+import Skeleton from '@/components/ui/Skeleton';
 
 const initials = (name?: string | null) => {
   if (!name) return 'U';
@@ -73,7 +74,7 @@ export default function MessagesClient({ currentUser }: Props) {
   useEffect(() => {
     axios.get('/api/conversations')
       .then(res => setConversations(res.data))
-      .catch(() => toast.error('Failed to load conversations'))
+      .catch(() => toast.error('Couldn’t load your inbox. Check your connection and try again.'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -82,7 +83,7 @@ export default function MessagesClient({ currentUser }: Props) {
     if (!activeConvoId) return;
     axios.get(`/api/messages/${activeConvoId}`)
       .then(res => setMessages(res.data))
-      .catch(() => toast.error('Failed to load messages'));
+      .catch(() => toast.error('Couldn’t load this conversation.'));
 
     // Mark as read
     axios.post('/api/messages/read', { conversationId: activeConvoId }).catch(() => {});
@@ -107,7 +108,7 @@ export default function MessagesClient({ currentUser }: Props) {
           : c
       ));
     } catch {
-      toast.error('Failed to send message');
+      toast.error('Message didn’t send. Try again in a moment.');
     } finally {
       setSendingMessage(false);
     }
@@ -135,7 +136,7 @@ export default function MessagesClient({ currentUser }: Props) {
       <div className="mt-8">
         <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight mb-6">Messages</h1>
 
-        <div className="flex border border-stone-200  dark:border-stone-700 rounded-2xl overflow-hidden bg-white dark:bg-stone-900 " style={{ height: 'calc(100vh - 220px)' }}>
+        <div className="flex border border-stone-200  dark:border-stone-700 rounded-2xl overflow-hidden bg-white dark:bg-stone-900 " style={{ height: 'calc(100dvh - 220px)' }}>
           {/* Sidebar — conversation list */}
           <div className={`${activeConvoId ? 'hidden md:flex' : 'flex'} flex-col w-full md:w-[340px] border-r border-stone-200 dark:border-stone-800 dark:border-stone-700`}>
             {/* Search */}
@@ -155,13 +156,13 @@ export default function MessagesClient({ currentUser }: Props) {
                 <div>
                   {Array.from({ length: 8 }).map((_, i) => (
                     <div key={i} className="flex items-center gap-3 p-4">
-                      <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-full h-11 w-11 shrink-0" />
+                      <Skeleton rounded="full" className="h-11 w-11 shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2 mb-1">
-                          <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-4 w-28" />
-                          <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-3 w-8 shrink-0" />
+                          <Skeleton className="h-4 w-28" />
+                          <Skeleton className="h-3 w-8 shrink-0" />
                         </div>
-                        <div className="animate-pulse bg-stone-200/60 dark:bg-stone-800/60 rounded-md h-3 w-40" />
+                        <Skeleton className="h-3 w-40" />
                       </div>
                     </div>
                   ))}

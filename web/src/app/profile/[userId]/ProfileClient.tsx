@@ -109,7 +109,7 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
                   </div>
                   <div className="h-3 w-14 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
                 </div>
-                <div className="grid grid-cols-6 gap-0.5 overflow-hidden rounded-xl">
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-0.5 overflow-hidden rounded-xl">
                   {Array.from({ length: 12 }).map((_, i) => (
                     <div
                       key={i}
@@ -128,7 +128,7 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
                     <div className="h-5 w-8 rounded-full animate-pulse bg-stone-100 dark:bg-stone-800" />
                   </div>
                 </div>
-                <div className="grid grid-cols-4 gap-4 -mx-1 px-1 py-1 mb-10">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 -mx-1 px-1 py-1 mb-10">
                   {Array.from({ length: 8 }).map((_, i) => (
                     <div key={i} className="relative group rounded-2xl overflow-visible">
                       <div className="absolute inset-0 bg-gradient-to-br from-white to-stone-50/80 dark:from-stone-900 dark:to-stone-950 rounded-2xl" />
@@ -163,7 +163,7 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
                   </div>
                   <div className="h-3 w-14 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
                 </div>
-                <div className="grid grid-cols-4 gap-4 -mx-1 px-1 py-1">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 -mx-1 px-1 py-1">
                   {Array.from({ length: 4 }).map((_, i) => (
                     <div key={i} className="relative group rounded-2xl overflow-visible">
                       <div className="absolute inset-0 bg-gradient-to-br from-white to-stone-50/80 dark:from-stone-900 dark:to-stone-950 rounded-2xl" />
@@ -202,7 +202,7 @@ const ProfileClient: React.FC<ProfileClientProps> = ({
                   </div>
                   <div className="h-3 w-14 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
                 </div>
-                <div className="grid grid-cols-4 gap-4 -mx-1 px-1 py-1">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 -mx-1 px-1 py-1">
                   {Array.from({ length: 8 }).map((_, i) => (
                     <div key={i} className="relative rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 aspect-square animate-pulse" />
                   ))}

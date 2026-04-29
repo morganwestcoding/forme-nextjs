@@ -32,7 +32,7 @@ const CreateChatButton: React.FC<CreateChatButtonProps> = ({
       messageModal.onOpen(conversationId, otherUserId);  
       toast.success('Chat started successfully');
     } catch (error) {
-      toast.error('Failed to start conversation');
+      toast.error('Couldn’t start that conversation. Try again.');
     }
   }, [messageModal, otherUserId, currentUser]);
 

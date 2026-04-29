@@ -348,7 +348,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     try {
       await navigator.clipboard.writeText(`${window.location.origin}/post/${currentPost.id}`);
       toast.success('Link copied');
-    } catch { toast.error('Failed to copy'); }
+    } catch { toast.error('Couldn’t copy the link.'); }
   };
 
   const handleHidePost = async () => {
@@ -357,7 +357,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
       await axios.post(`/api/postActions/${currentPost.id}/hide`);
       toast.success('Post hidden');
       router.push('/newsfeed');
-    } catch { toast.error('Failed to hide post'); }
+    } catch { toast.error('Couldn’t hide that post.'); }
   };
 
   const handleReportPost = () => {
@@ -373,7 +373,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
       setPosts((prev) => prev.filter((item) => item.post.id !== deletedId));
       toast.success('Post deleted');
       router.push('/newsfeed');
-    } catch { toast.error('Failed to delete post'); }
+    } catch { toast.error('Couldn’t delete that post.'); }
   };
 
   const handleCommentSubmit = async () => {
@@ -572,7 +572,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                 <div className="flex-1 h-full flex items-center justify-center">
                   <div
                     className="relative overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-900 animate-pulse"
-                    style={{ aspectRatio: '9 / 16', height: 'calc(100vh - 48px)', maxHeight: 'calc(100vh - 48px)', width: 'auto' }}
+                    style={{ aspectRatio: '9 / 16', height: 'calc(100dvh - 48px)', maxHeight: 'calc(100dvh - 48px)', width: 'auto' }}
                   />
                 </div>
 
@@ -703,8 +703,8 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                         className="relative overflow-hidden rounded-2xl bg-stone-100  dark:bg-stone-900"
                         style={{
                           aspectRatio: '9 / 16',
-                          height: 'calc(100vh - 48px)',
-                          maxHeight: 'calc(100vh - 48px)',
+                          height: 'calc(100dvh - 48px)',
+                          maxHeight: 'calc(100dvh - 48px)',
                           width: 'auto',
                           opacity: (isSettled && !isLeaving) ? 1 : 0,
                           transition: 'opacity 0.4s ease-out',
@@ -787,7 +787,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                           </>
                         ) : (
                           <>
-                            <Image src={post.mediaUrl || post.imageSrc || ''} alt="" fill className="object-cover" priority={Math.abs(index - currentIndex) <= 1} sizes="460px" />
+                            <Image src={post.mediaUrl || post.imageSrc || ''} alt={post.user?.name ? `Post by ${post.user.name}` : 'Post image'} fill className="object-cover" priority={Math.abs(index - currentIndex) <= 1} sizes="460px" />
                             {post.mediaOverlay && (post.mediaOverlay as MediaOverlay).text && (
                               <div className="pointer-events-none absolute inset-0 flex p-6 z-10" style={{
                                 justifyContent: (post.mediaOverlay as MediaOverlay).pos.endsWith('left') ? 'flex-start' : (post.mediaOverlay as MediaOverlay).pos.endsWith('right') ? 'flex-end' : 'center',
@@ -812,7 +812,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                           className="relative w-12 h-12 rounded-full overflow-hidden hover:scale-105 transition-transform shrink-0"
                           style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)' }}
                         >
-                          <Image src={post.user.image || placeholderDataUri(post.user.name || 'User')} alt="" fill className="object-cover" />
+                          <Image src={post.user.image || placeholderDataUri(post.user.name || 'User')} alt={post.user.name || 'User avatar'} fill className="object-cover" sizes="48px" />
                         </button>
                         <div className="flex-1 min-w-0">
                           <button
@@ -946,7 +946,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                             ) : comments.map((c) => (
                               <div key={c.id} className="flex gap-2.5">
                                 <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 relative ring-1 ring-stone-100 dark:ring-stone-800">
-                                  <Image src={c.user.image || placeholderDataUri(c.user.name || 'User')} alt="" fill className="object-cover" />
+                                  <Image src={c.user.image || placeholderDataUri(c.user.name || 'User')} alt={c.user.name || 'User avatar'} fill className="object-cover" sizes="28px" />
                                 </div>
                                 <div className="min-w-0 flex-1">
                                   <div className="flex items-baseline gap-2">

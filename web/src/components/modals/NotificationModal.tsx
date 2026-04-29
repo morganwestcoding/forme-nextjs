@@ -255,7 +255,7 @@ const NotificationsModal = () => {
       const unread = items.filter((n: Notification) => !n.isRead).length;
       setUnreadNotifications(unread);
     } catch (error) {
-      toast.error('Failed to load notifications');
+      toast.error('Couldn’t load your notifications.');
     } finally {
       setLoading(false);
     }
@@ -284,7 +284,7 @@ const NotificationsModal = () => {
             : notification
         )
       );
-      toast.error('Failed to mark as read');
+      toast.error('Couldn’t mark this as read.');
     }
   };
   
@@ -301,7 +301,7 @@ const NotificationsModal = () => {
     } catch (error) {
       // Revert optimistic update
       fetchNotifications();
-      toast.error('Failed to mark all as read');
+      toast.error('Couldn’t mark everything as read.');
     }
   };
 

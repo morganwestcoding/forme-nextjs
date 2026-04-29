@@ -57,12 +57,12 @@ const LoginModal = () => {
         return;
       }
       if (res?.error) {
-        toast.error(res.error || "Login failed");
+        toast.error(res.error || "Incorrect email or password.");
       } else {
-        toast.error("Login failed");
+        toast.error("Incorrect email or password.");
       }
     } catch {
-      toast.error("Login failed. Please try again.");
+      toast.error("Couldn’t sign you in. Please try again.");
     } finally {
       setIsLoading(false);
     }

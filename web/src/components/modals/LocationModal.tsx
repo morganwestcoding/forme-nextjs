@@ -161,9 +161,13 @@ const LocationModal = () => {
         ))}
 
         {!isSearching && hasQuery && displayList.length === 0 && (
-          <p className="px-6 py-8 text-center text-[13px] text-stone-400 dark:text-stone-500">
-            No cities found
-          </p>
+          <div className="px-6 py-8 text-center">
+            <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center">
+              <Location01Icon size={18} className="text-stone-400 dark:text-stone-500" />
+            </div>
+            <p className="text-[13px] text-stone-500 dark:text-stone-400">No cities found</p>
+            <p className="mt-1 text-[12px] text-stone-400 dark:text-stone-500">Try a different city or country.</p>
+          </div>
         )}
       </div>
 

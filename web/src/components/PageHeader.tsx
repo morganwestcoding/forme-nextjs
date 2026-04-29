@@ -94,6 +94,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
               <button
                 id="wt-create"
                 onClick={() => createModal.onOpen()}
+                aria-label="Create new"
                 className="shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
               >
                 <PlusSignIcon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
@@ -101,6 +102,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
               <button
                 id="wt-notifications"
                 onClick={() => notificationsModal.onOpen()}
+                aria-label={unreadNotifications > 0 ? `Notifications (${unreadNotifications} unread)` : 'Notifications'}
                 className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
               >
                 <Notification03Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
@@ -119,6 +121,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
               <button
                 id="wt-messages"
                 onClick={() => inboxModal.onOpen(currentUser)}
+                aria-label={unreadMessages > 0 ? `Messages (${unreadMessages} unread)` : 'Messages'}
                 className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
               >
                 <MessageMultiple01Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
@@ -137,6 +140,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
               <button
                 id="wt-profile"
                 onClick={() => currentUser ? userMenuModal.onOpen() : loginModal.onOpen()}
+                aria-label={currentUser ? 'Open user menu' : 'Sign in'}
                 className="outline-none ml-1"
               >
                 <div className="shrink-0 w-12 h-12 rounded-full overflow-hidden cursor-pointer" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)' }}>

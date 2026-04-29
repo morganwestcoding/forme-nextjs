@@ -285,8 +285,16 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
 
           {/* Empty */}
           {!loading && debouncedQ.length >= 2 && flatItems.length === 0 && (
-            <div className="px-4 py-4 text-sm text-stone-400 text-center">
-              No results found for &ldquo;{debouncedQ}&rdquo;
+            <div className="px-4 py-8 text-center">
+              <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center">
+                <Search size={18} className="text-stone-400 dark:text-stone-500" />
+              </div>
+              <p className="text-sm text-stone-500 dark:text-stone-400">
+                No results for <span className="font-medium text-stone-700 dark:text-stone-200">&ldquo;{debouncedQ}&rdquo;</span>
+              </p>
+              <p className="mt-1 text-[12px] text-stone-400 dark:text-stone-500">
+                Try a different keyword or check the spelling.
+              </p>
             </div>
           )}
 
@@ -334,7 +342,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
                                   // eslint-disable-next-line @next/next/no-img-element
                                   <img
                                     src={item.image}
-                                    alt=""
+                                    alt={item.title || 'Search result'}
                                     className="w-full h-full object-cover"
                                   />
                                 ) : (

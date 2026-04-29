@@ -2,7 +2,7 @@
 
 import { useFormContext } from 'react-hook-form';
 import { useState, useEffect } from 'react';
-import { ViewIcon as FiEye, ViewOffIcon as FiEyeOff, Tick02Icon as FiCheck } from 'hugeicons-react';
+import { ViewIcon as FiEye, ViewOffIcon as FiEyeOff, Tick02Icon as FiCheck, Loading03Icon } from 'hugeicons-react';
 import TypeformHeading from '../TypeformHeading';
 
 interface PasswordValidation {
@@ -14,10 +14,16 @@ interface PasswordValidation {
   hasSpecialChar: boolean;
 }
 
-export default function AccountStep() {
+interface AccountStepProps {
+  isCheckingEmail?: boolean;
+}
+
+export default function AccountStep({ isCheckingEmail = false }: AccountStepProps) {
   const { register, watch, formState: { errors } } = useFormContext();
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const password = watch('password') || '';
+  const confirmPassword = watch('confirmPassword') || '';
 
   const [validation, setValidation] = useState<PasswordValidation>({
     hasMinLength: false,
@@ -71,6 +77,12 @@ export default function AccountStep() {
           />
           {errors.email && (
             <p className="mt-2 text-sm text-red-500">{errors.email.message as string}</p>
+          )}
+          {isCheckingEmail && !errors.email && (
+            <p className="mt-2 flex items-center gap-1.5 text-sm text-stone-500 dark:text-stone-400">
+              <Loading03Icon size={14} className="animate-spin" />
+              Checking email…
+            </p>
           )}
         </div>
 
@@ -155,6 +167,42 @@ export default function AccountStep() {
               <RequirementItem met={validation.hasNumber} text="Number" />
               <RequirementItem met={validation.hasSpecialChar} text="Special character" />
             </div>
+          )}
+        </div>
+
+        {/* Confirm Password */}
+        <div>
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
+            Confirm password
+          </label>
+          <div className="relative">
+            <input
+              id="confirmPassword"
+              type={showConfirmPassword ? 'text' : 'password'}
+              autoComplete="new-password"
+              {...register('confirmPassword', {
+                required: 'Please confirm your password',
+                validate: (value) => value === password || 'Passwords do not match',
+              })}
+              className={`w-full px-4 py-3.5 pr-12 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${errors.confirmPassword ? 'border-red-400 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
+              placeholder="Re-enter your password"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:text-stone-300 transition-colors"
+            >
+              {showConfirmPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+            </button>
+          </div>
+          {errors.confirmPassword && (
+            <p className="mt-2 text-sm text-red-500">{errors.confirmPassword.message as string}</p>
+          )}
+          {!errors.confirmPassword && confirmPassword.length > 0 && confirmPassword === password && (
+            <p className="mt-2 flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400">
+              <FiCheck size={14} />
+              Passwords match
+            </p>
           )}
         </div>
       </div>

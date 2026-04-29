@@ -69,12 +69,12 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
             />
           ) : hasBeforeAfter ? (
             <>
-              <Image src={beforeImageSrc} alt="" fill className="object-cover" sizes="280px" />
+              <Image src={beforeImageSrc} alt="Before image preview" fill className="object-cover" sizes="280px" />
               <div
                 className="absolute inset-0 transition-[clip-path] duration-500 ease-out"
                 style={{ clipPath: showBefore ? 'inset(0 100% 0 0)' : 'inset(0 0% 0 0)' }}
               >
-                <Image src={mediaSrc} alt="" fill className="object-cover" sizes="280px" />
+                <Image src={mediaSrc} alt="After image preview" fill className="object-cover" sizes="280px" />
               </div>
               <div
                 className="absolute top-0 bottom-0 w-0.5 bg-white dark:bg-stone-900 shadow-[0_0_12px_rgba(255,255,255,0.8)] transition-all duration-500 ease-out z-10"
