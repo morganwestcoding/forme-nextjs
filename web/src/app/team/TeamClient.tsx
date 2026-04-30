@@ -109,6 +109,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
   const selectedListing = listings.find((l: any) => l.id === selectedListingId);
   const isOwnerOfSelected = ownedListingIds.includes(selectedListingId);
   const myEmployee = members.find((m: any) => m.userId === currentUser.id);
+  const canSeeRevenue = isOwnerOfSelected || myEmployee?.teamRole === 'manager';
 
   // Pay request state for employees
   const [payoutAmount, setPayoutAmount] = useState('');
@@ -567,7 +568,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                 { label: 'Team Members', value: stats.totalMembers },
                 { label: 'Active Now', value: stats.activeMembers },
                 { label: "Today's Bookings", value: stats.todayBookingCount },
-                { label: 'This Month', value: `$${stats.monthRevenue.toLocaleString()}` },
+                ...(canSeeRevenue ? [{ label: 'This Month', value: `$${stats.monthRevenue.toLocaleString()}` }] : []),
               ].map((stat, i) => (
                 <div
                   key={i}
@@ -609,11 +610,11 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                   <p className="text-stone-400 dark:text-stone-500 text-[14px]">No team members yet. Add employees to your listing to get started.</p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {members.map((member, idx) => (
                     <div
                       key={member.id}
-                      className="flex items-center gap-4 p-4 rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
+                      className="flex items-center gap-3 p-3 rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
                       style={{ opacity: 0, animation: 'fadeInUp 520ms ease-out both', animationDelay: `${60 + idx * 40}ms` }}
                     >
                       <div className="w-11 h-11 rounded-full overflow-hidden shrink-0 bg-stone-100 dark:bg-stone-800" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
@@ -626,19 +627,18 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="text-[14px] font-semibold text-stone-900 dark:text-stone-100">{member.fullName}</p>
-                          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-500  dark:text-stone-500 capitalize">{member.teamRole}</span>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <p className="text-[14px] font-semibold text-stone-900 dark:text-stone-100 truncate">{member.fullName}</p>
+                          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-500  dark:text-stone-500 capitalize shrink-0">{member.teamRole}</span>
                         </div>
-                        <p className="text-[12px] text-stone-400 dark:text-stone-500">{member.jobTitle || 'Team Member'}</p>
+                        <p className="text-[12px] text-stone-400 dark:text-stone-500 truncate">{member.jobTitle || 'Team Member'}</p>
                       </div>
-                      <div className="flex items-center gap-4 text-right">
-                        <div>
+                      {canSeeRevenue && (
+                        <div className="text-right shrink-0">
                           <p className="text-[14px] font-bold text-stone-900 dark:text-stone-100 tabular-nums">${member.monthlyRevenue.toLocaleString()}</p>
                           <p className="text-[11px] text-stone-400 dark:text-stone-500">this month</p>
                         </div>
-                        <div className={`w-2 h-2 rounded-full shrink-0 ${member.isActive ? 'bg-emerald-500' : 'bg-stone-300'}`} />
-                      </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -864,7 +864,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                   <p className="text-stone-400 dark:text-stone-500 text-[14px]">No bookings today</p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {todayBookings.map((booking, idx) => (
                     <div key={booking.id} style={{ opacity: 0, animation: 'fadeInUp 520ms ease-out both', animationDelay: `${60 + idx * 40}ms` }}>
                       <BookingCard booking={booking} showActions />
@@ -885,14 +885,14 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                   <p className="text-stone-400 dark:text-stone-500 text-[14px]">No upcoming bookings this week</p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {upcomingBookings.map((booking, idx) => {
                     const date = new Date(booking.date);
                     return (
                       <div key={booking.id} style={{ opacity: 0, animation: 'fadeInUp 520ms ease-out both', animationDelay: `${60 + idx * 40}ms` }}>
-                        <div className="flex items-center justify-between p-4 rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 transition-all">
+                        <div className="flex items-center justify-between gap-2 p-3 rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 transition-all">
                           <div className="flex items-center gap-3 min-w-0">
-                            <div className="text-center shrink-0 w-12">
+                            <div className="text-center shrink-0 w-10">
                               <p className="text-[11px] text-stone-400 dark:text-stone-500">{date.toLocaleDateString('en-US', { weekday: 'short' })}</p>
                               <p className="text-[18px] font-bold text-stone-900 dark:text-stone-100 tabular-nums">{date.getDate()}</p>
                             </div>
@@ -901,7 +901,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                               <p className="text-[12px] text-stone-400 dark:text-stone-500 truncate">{booking.serviceName} · {booking.time} · {booking.employeeName}</p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 shrink-0">
+                          <div className="flex items-center gap-1.5 shrink-0">
                             <span className="text-[13px] font-bold text-stone-900 dark:text-stone-100 tabular-nums">${booking.totalPrice}</span>
                             <StatusBadge status={booking.status} />
                           </div>

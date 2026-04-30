@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
@@ -35,69 +35,47 @@ const ProductIcon = ({ className, strokeWidth }: { className?: string; strokeWid
   </svg>
 );
 import Modal from './Modal';
-import Button from '../ui/Button';
 import useCreateModal from '@/app/hooks/useCreateModal';
 
 const CreateModal = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const createModal = useCreateModal();
-  const [showNoShop, setShowNoShop] = useState(false);
-  const [showNoListing, setShowNoListing] = useState(false);
-  const [checkingShop, setCheckingShop] = useState(false);
-  const [checkingListing, setCheckingListing] = useState(false);
+  const [shopId, setShopId] = useState<string | null>(null);
+  const [listingId, setListingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!createModal.isOpen || !session?.user?.id) return;
+    const userId = session.user.id;
+    let cancelled = false;
+    (async () => {
+      try {
+        const [shopRes, listingRes] = await Promise.all([
+          axios.get(`/api/shops?userId=${userId}&limit=1`),
+          axios.get(`/api/listings?userId=${userId}&limit=1`),
+        ]);
+        if (cancelled) return;
+        const shops = shopRes.data;
+        const listings = listingRes.data?.listings || listingRes.data;
+        setShopId(shops?.[0]?.id ?? null);
+        setListingId(listings?.[0]?.id ?? null);
+      } catch {
+        if (cancelled) return;
+        setShopId(null);
+        setListingId(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [createModal.isOpen, session?.user?.id]);
 
   const handleNavigate = (path: string) => {
-    setShowNoShop(false);
-    setShowNoListing(false);
     createModal.onClose();
     router.push(path);
   };
 
-  const handleProductClick = async () => {
-    if (!session?.user?.id) return;
-    setCheckingShop(true);
-    try {
-      const res = await axios.get(`/api/shops?userId=${session.user.id}&limit=1`);
-      const shops = res.data;
-      if (shops && shops.length > 0) {
-        // User has a shop — navigate to shop edit with products step or add product directly
-        setShowNoShop(false);
-        createModal.onClose();
-        router.push(`/shops/${shops[0].id}/edit`);
-      } else {
-        setShowNoShop(true);
-      }
-    } catch {
-      setShowNoShop(true);
-    } finally {
-      setCheckingShop(false);
-    }
-  };
-
-  const handleWorkerClick = async () => {
-    if (!session?.user?.id) return;
-    setCheckingListing(true);
-    try {
-      const res = await axios.get(`/api/listings?userId=${session.user.id}&limit=1`);
-      const listings = res.data?.listings || res.data;
-      if (listings && listings.length > 0) {
-        setShowNoListing(false);
-        createModal.onClose();
-        router.push(`/listing/${listings[0].id}/edit`);
-      } else {
-        setShowNoListing(true);
-      }
-    } catch {
-      setShowNoListing(true);
-    } finally {
-      setCheckingListing(false);
-    }
-  };
-
   const handleClose = () => {
-    setShowNoShop(false);
-    setShowNoListing(false);
     createModal.onClose();
   };
 
@@ -120,20 +98,26 @@ const CreateModal = () => {
       description: 'Open a storefront',
       onClick: () => handleNavigate('/shop/new'),
     },
-    {
-      icon: ProductIcon,
-      label: 'Product',
-      description: 'Add to your shop',
-      onClick: handleProductClick,
-      loading: checkingShop,
-    },
-    {
-      icon: UserAdd01Icon,
-      label: 'Worker',
-      description: 'Add a team member',
-      onClick: handleWorkerClick,
-      loading: checkingListing,
-    },
+    ...(shopId
+      ? [
+          {
+            icon: ProductIcon,
+            label: 'Product',
+            description: 'Add to your shop',
+            onClick: () => handleNavigate(`/shops/${shopId}/edit`),
+          },
+        ]
+      : []),
+    ...(listingId
+      ? [
+          {
+            icon: UserAdd01Icon,
+            label: 'Worker',
+            description: 'Add a team member',
+            onClick: () => handleNavigate(`/listing/${listingId}/edit`),
+          },
+        ]
+      : []),
   ];
 
   const body = (
@@ -145,58 +129,21 @@ const CreateModal = () => {
       </div>
 
       <div className="px-5 pb-5">
-        {showNoShop ? (
-          <div className="text-center py-6">
-            <p className="text-sm font-medium text-stone-900 dark:text-stone-100 mb-1">You don&apos;t have a shop yet</p>
-            <p className="text-xs text-stone-500  dark:text-stone-500 mb-5">Create a shop first to start adding products</p>
-            <Button type="button" onClick={() => handleNavigate('/shop/new')}>
-              Create a shop
-            </Button>
+        <div className="grid grid-cols-3 gap-2.5">
+          {items.map((item) => (
             <button
-              type="button"
-              onClick={() => setShowNoShop(false)}
-              className="block mx-auto mt-3 text-xs text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
+              key={item.label}
+              onClick={item.onClick}
+              className="flex flex-col items-center gap-2 py-5 px-2 rounded-2xl bg-stone-50  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-100 dark:border-stone-800 hover:border-stone-200  transition-all disabled:opacity-50"
             >
-              Go back
+              <item.icon className="w-[22px] h-[22px] text-stone-500  dark:text-stone-500" strokeWidth={1.5} />
+              <div className="text-center">
+                <span className="text-[12px] font-medium text-stone-600 dark:text-stone-300 block">{item.label}</span>
+                <span className="text-[10px] text-stone-400 dark:text-stone-500 block mt-0.5">{item.description}</span>
+              </div>
             </button>
-          </div>
-        ) : showNoListing ? (
-          <div className="text-center py-6">
-            <p className="text-sm font-medium text-stone-900 dark:text-stone-100 mb-1">You don&apos;t have a listing yet</p>
-            <p className="text-xs text-stone-500  dark:text-stone-500 mb-5">Create a listing first to start adding team members</p>
-            <Button type="button" onClick={() => handleNavigate('/listing/new')}>
-              Create a listing
-            </Button>
-            <button
-              type="button"
-              onClick={() => setShowNoListing(false)}
-              className="block mx-auto mt-3 text-xs text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
-            >
-              Go back
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-3 gap-2.5">
-            {items.map((item) => (
-              <button
-                key={item.label}
-                onClick={item.onClick}
-                disabled={'loading' in item && item.loading}
-                className="flex flex-col items-center gap-2 py-5 px-2 rounded-2xl bg-stone-50  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-100 dark:border-stone-800 hover:border-stone-200  transition-all disabled:opacity-50"
-              >
-                {'loading' in item && item.loading ? (
-                  <div className="w-[22px] h-[22px] border-2 border-stone-200 dark:border-stone-800 border-t-stone-600 rounded-full animate-spin" />
-                ) : (
-                  <item.icon className="w-[22px] h-[22px] text-stone-500  dark:text-stone-500" strokeWidth={1.5} />
-                )}
-                <div className="text-center">
-                  <span className="text-[12px] font-medium text-stone-600 dark:text-stone-300 block">{item.label}</span>
-                  <span className="text-[10px] text-stone-400 dark:text-stone-500 block mt-0.5">{item.description}</span>
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
+          ))}
+        </div>
       </div>
     </div>
   );

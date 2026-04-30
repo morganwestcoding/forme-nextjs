@@ -156,7 +156,6 @@ export default async function getAnalyticsData(
       totalReservations,
       totalPosts,
       userWithCounts,
-      totalRevenueResult,
       recentReservations,
       recentPosts,
       monthlyReservations,
@@ -199,24 +198,6 @@ export default async function getAnalyticsData(
           followers: true,
           following: true
         }
-      }),
-
-      // Total revenue — same dual scope as Total Reservations. Counts every
-      // non-declined, non-refunded reservation as revenue. The strict
-      // paymentStatus='completed' filter was dropped so the tile matches
-      // the count tile for any path that creates reservations (Stripe
-      // webhook, legacy POST, manual). If a reservation gets refunded later
-      // it falls back out via the refundStatus filter.
-      prisma.reservation.findMany({
-        where: {
-          OR: [
-            { listing: { userId } },
-            { employee: { userId } },
-          ],
-          status: { not: 'declined' },
-          refundStatus: { notIn: ['completed', 'approved'] },
-        },
-        select: { totalPrice: true }
       }),
 
       // Recent reservations — same dual scope: owners see all listing
@@ -378,11 +359,14 @@ export default async function getAnalyticsData(
       r.refundStatus !== 'completed' &&
       r.refundStatus !== 'approved';
 
-    // Calculate totals
-    const totalRevenue = totalRevenueResult.reduce(
-      (sum: number, r: any) => sum + (r.totalPrice || 0),
-      0
-    );
+    // Calculate totals — derived from the same all-time, OR-scoped result
+    // set used by Top Services so the tile, chart, table, and services
+    // breakdown are guaranteed to agree. Filtering happens in JS via
+    // isPaidReservation (rather than at the DB layer) to dodge Prisma+
+    // MongoDB quirks around NOT/notIn on optional fields.
+    const totalRevenue = topServiceReservations
+      .filter(isPaidReservation)
+      .reduce((sum: number, r: any) => sum + (r.totalPrice || 0), 0);
     const totalFollowers = userWithCounts?.followers.length || 0;
     const totalFollowing = userWithCounts?.following.length || 0;
 

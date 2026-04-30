@@ -366,7 +366,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 rounded-full transition-all z-20"
                 type="button"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M19 12H5M5 12l7-7M5 12l7 7"/>
                 </svg>
               </button>
@@ -382,8 +382,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
+                  width="20"
+                  height="20"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                   className={`absolute transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${showDropdown ? 'opacity-0 scale-75 rotate-90' : 'opacity-100 scale-100 rotate-0'}`}
@@ -391,7 +391,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
                 </svg>
                 <Cancel01Icon
-                  className={`absolute w-4 h-4 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${showDropdown ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-75 -rotate-90'}`}
+                  className={`absolute w-5 h-5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${showDropdown ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-75 -rotate-90'}`}
                   strokeWidth={2}
                 />
               </button>
@@ -541,8 +541,8 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
+                  width="20"
+                  height="20"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                   className={`absolute transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${showDropdown ? 'opacity-0 scale-75 rotate-90' : 'opacity-100 scale-100 rotate-0'}`}
@@ -550,7 +550,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
                 </svg>
                 <Cancel01Icon
-                  className={`absolute w-4 h-4 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${showDropdown ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-75 -rotate-90'}`}
+                  className={`absolute w-5 h-5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${showDropdown ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-75 -rotate-90'}`}
                   strokeWidth={2}
                 />
               </button>

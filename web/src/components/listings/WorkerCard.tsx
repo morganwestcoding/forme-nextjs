@@ -135,7 +135,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
 
         {/* 3-dot menu — top right, visible on hover */}
         <div
-          className={`absolute top-3 right-[18px] z-30 transition-opacity duration-200 ${menuOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+          className={`absolute top-6 right-4 z-30 transition-opacity duration-200 ${menuOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
           onClick={(e) => e.stopPropagation()}
         >
           <CardActionMenu

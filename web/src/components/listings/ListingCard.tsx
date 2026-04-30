@@ -122,7 +122,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
 
               {/* 3-dot menu — top right, visible on hover */}
               <div
-                className={`absolute top-3 right-[18px] z-30 transition-opacity duration-200 ${menuOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+                className={`absolute top-6 right-4 z-30 transition-opacity duration-200 ${menuOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
                 onClick={(e) => e.stopPropagation()}
               >
                 <CardActionMenu
@@ -150,8 +150,18 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
                   </div>
                 </div>
 
-                {/* Title */}
-                <h3 className="text-[17px] font-black text-stone-900 dark:text-stone-100 leading-[1.15] line-clamp-2 tracking-tight pr-8">
+                {/* Title — auto-shrinks for longer names so it stays on one
+                    line. Length thresholds approximate the 48px-image-offset
+                    content width (~178px) at the bold-weight character widths. */}
+                <h3
+                  className={`font-black text-stone-900 dark:text-stone-100 leading-[1.15] truncate tracking-tight pr-8 ${
+                    (data.title?.length ?? 0) <= 14
+                      ? 'text-[17px]'
+                      : (data.title?.length ?? 0) <= 22
+                      ? 'text-[14px]'
+                      : 'text-[12px]'
+                  }`}
+                >
                   {data.title}
                 </h3>
 
@@ -228,7 +238,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
           <div className="relative h-[280px]">
             {/* 3-dot menu */}
             <div
-              className="absolute top-4 right-4 z-20"
+              className="absolute top-6 right-4 z-20"
               onClick={(e) => e.stopPropagation()}
             >
               <CardActionMenu
