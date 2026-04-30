@@ -56,7 +56,7 @@ export default function TypeformNavigation({
         className="fixed top-6 right-6 z-50 rounded-full"
       />
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-stone-900 border-t border-stone-100 dark:border-stone-800 px-6 py-4 safe-bottom">
+      <div className="fixed bottom-6 left-0 right-0 bg-white dark:bg-stone-900 border-t border-stone-100 dark:border-stone-800 px-6 py-4 safe-bottom">
         {termsNotice && isLastStep && (
           <p className="text-center text-[11px] text-stone-400 dark:text-stone-500 mb-2 max-w-xl mx-auto">
             By continuing, you agree to the ForMe{' '}

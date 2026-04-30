@@ -164,17 +164,26 @@ export default async function getAnalyticsData(
       userListings,
       userReviews,
       userPosts,
+      topServiceReservations,
     ] = await Promise.all([
       // Total listings
       prisma.listing.count({
         where: { userId }
       }),
 
-      // Total reservations — exclude declined since those weren't actually received
+      // Total reservations — match either side of the booking:
+      //   - listing owner sees every booking across their listings
+      //     (i.e. the sum of all their employees' bookings)
+      //   - a worker who doesn't own the listing sees only the bookings
+      //     assigned to them as the employee
+      // Excludes declined since those weren't actually received.
       prisma.reservation.count({
         where: {
-          listing: { userId },
-          NOT: { status: 'declined' }
+          OR: [
+            { listing: { userId } },
+            { employee: { userId } },
+          ],
+          NOT: { status: 'declined' },
         }
       }),
 
@@ -192,22 +201,29 @@ export default async function getAnalyticsData(
         }
       }),
 
-      // Total revenue — only count payments that actually settled and weren't refunded
+      // Total revenue — same dual scope as Total Reservations: owners see
+      // listing-wide revenue, workers see revenue from bookings they
+      // personally performed. Only counts payments that settled and weren't refunded.
       prisma.reservation.findMany({
         where: {
-          listing: { userId },
+          OR: [
+            { listing: { userId } },
+            { employee: { userId } },
+          ],
           paymentStatus: 'completed',
           NOT: { refundStatus: { in: ['completed', 'approved'] } },
         },
         select: { totalPrice: true }
       }),
 
-      // Recent reservations
+      // Recent reservations — same dual scope: owners see all listing
+      // bookings, workers see their own assignments.
       prisma.reservation.findMany({
         where: {
-          listing: {
-            userId
-          }
+          OR: [
+            { listing: { userId } },
+            { employee: { userId } },
+          ],
         },
         include: {
           user: {
@@ -243,9 +259,13 @@ export default async function getAnalyticsData(
       // Reservations within the active window [windowStart, windowEnd).
       // Pull status fields so the chart's revenue line only includes
       // payments that actually settled, matching the revenue tile.
+      // Same dual scope as the overview tiles.
       prisma.reservation.findMany({
         where: {
-          listing: { userId },
+          OR: [
+            { listing: { userId } },
+            { employee: { userId } },
+          ],
           createdAt: { gte: windowStart, lt: windowEnd },
         },
         select: {
@@ -266,25 +286,13 @@ export default async function getAnalyticsData(
         select: { createdAt: true },
       }),
 
-      // User listings with services for top services calculation.
-      // Fetch the full reservation status fields so we can compute "real
-      // reservations" (status != declined) and "real revenue" (payment
-      // completed and not refunded) accurately on the JS side.
+      // User listings — drives the Listings tab and listing-level review/
+      // follower counts. Reservations are pulled with status fields so the
+      // per-listing row can compute real bookings (not declined) and real
+      // revenue (paid, not refunded) on the JS side.
       prisma.listing.findMany({
         where: { userId },
         include: {
-          services: {
-            include: {
-              reservations: {
-                select: {
-                  totalPrice: true,
-                  status: true,
-                  paymentStatus: true,
-                  refundStatus: true,
-                }
-              }
-            }
-          },
           reservations: {
             select: {
               totalPrice: true,
@@ -317,6 +325,24 @@ export default async function getAnalyticsData(
           likes: true,
           viewedBy: true,
           comments: { select: { id: true } },
+        }
+      }),
+
+      // Reservations the user is involved in — owner-side or worker-side.
+      // Drives the Top Services aggregation across both modes uniformly.
+      prisma.reservation.findMany({
+        where: {
+          OR: [
+            { listing: { userId } },
+            { employee: { userId } },
+          ],
+        },
+        select: {
+          totalPrice: true,
+          status: true,
+          paymentStatus: true,
+          refundStatus: true,
+          service: { select: { serviceName: true, category: true } },
         }
       }),
     ]);
@@ -443,30 +469,9 @@ export default async function getAnalyticsData(
       ? windowStart.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
       : `${windowStart.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })} – ${inclusiveEnd.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}`;
 
-    // Calculate top services from all services across all listings
-    const allServices: Array<{
-      serviceName: string;
-      category: string;
-      bookings: number;
-      revenue: number;
-    }> = [];
-
-    userListings.forEach((listing: any) => {
-      listing.services.forEach((service: any) => {
-        // Bookings = real (non-declined) reservations against the service.
-        // Revenue = subset of those that actually paid and weren't refunded.
-        const realRes = service.reservations.filter(isRealReservation);
-        const paidRes = service.reservations.filter(isPaidReservation);
-        allServices.push({
-          serviceName: service.serviceName,
-          category: service.category,
-          bookings: realRes.length,
-          revenue: paidRes.reduce((sum: number, r: any) => sum + r.totalPrice, 0)
-        });
-      });
-    });
-
-    // Group and sort services
+    // Top services — aggregated from the user's involved reservations
+    // (owner-side or worker-side). Bookings = real (non-declined),
+    // revenue = subset that paid and wasn't refunded.
     const serviceMap = new Map<string, {
       serviceName: string;
       category: string;
@@ -474,15 +479,18 @@ export default async function getAnalyticsData(
       revenue: number;
     }>();
 
-    allServices.forEach(service => {
-      const key = `${service.serviceName}-${service.category}`;
-      if (serviceMap.has(key)) {
-        const existing = serviceMap.get(key)!;
-        existing.bookings += service.bookings;
-        existing.revenue += service.revenue;
-      } else {
-        serviceMap.set(key, { ...service });
-      }
+    topServiceReservations.forEach((r: any) => {
+      if (!r.service) return;
+      const key = `${r.service.serviceName}-${r.service.category}`;
+      const entry = serviceMap.get(key) ?? {
+        serviceName: r.service.serviceName,
+        category: r.service.category,
+        bookings: 0,
+        revenue: 0,
+      };
+      if (isRealReservation(r)) entry.bookings += 1;
+      if (isPaidReservation(r)) entry.revenue += r.totalPrice;
+      serviceMap.set(key, entry);
     });
 
     const topServices = Array.from(serviceMap.values())
