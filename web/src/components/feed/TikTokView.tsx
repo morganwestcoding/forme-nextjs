@@ -420,6 +420,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                 src={item.data.mediaUrl || item.data.imageSrc}
                 alt="Reel"
                 fill
+                sizes="(max-width: 1024px) 100vw, 460px"
                 className="object-cover"
                 priority={Math.abs(index - currentIndex) <= 1}
               />
@@ -593,7 +594,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                   </>
                 ) : (
                   <div className="relative flex-1">
-                    <Image src={item.data.mediaUrl || item.data.imageSrc} alt="Post media" fill className="object-cover" />
+                    <Image src={item.data.mediaUrl || item.data.imageSrc} alt="Post media" fill sizes="(max-width: 1024px) 100vw, 460px" className="object-cover" />
 
                     <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
                       <div className="video-controls rounded-2xl p-6 text-white shadow-2xl">
@@ -606,6 +607,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                               src={item.data.user.image || placeholderDataUri(item.data.user.name || 'User')}
                               alt={item.data.user.name || 'User'}
                               fill
+                              sizes="40px"
                               className="rounded-full object-cover border-2 border-white/20"
                             />
                           </button>
@@ -647,6 +649,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                             src={item.data.user.image || placeholderDataUri(item.data.user.name || 'User')}
                             alt={item.data.user.name || 'User'}
                             fill
+                            sizes="40px"
                             className="rounded-full object-cover border-2 border-white/20"
                           />
                         </button>
@@ -684,6 +687,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                     src={item.data.imageSrc}
                     alt="Listing"
                     fill
+                    sizes="(max-width: 1024px) 100vw, 460px"
                     className="object-cover"
                     priority
                   />
@@ -706,6 +710,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                     src={item.data.image}
                     alt="Shop"
                     fill
+                    sizes="(max-width: 1024px) 100vw, 460px"
                     className="object-cover"
                     priority
                   />
@@ -728,6 +733,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                     src={item.listingContext.imageSrc}
                     alt="Professional"
                     fill
+                    sizes="(max-width: 1024px) 100vw, 460px"
                     className="object-cover"
                     priority
                   />
@@ -826,6 +832,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                   src={currentItem.data.user.image || placeholderDataUri(currentItem.data.user.name || 'User')}
                   alt={currentItem.data.user.name || 'User'}
                   fill
+                  sizes="48px"
                   className="rounded-full object-cover"
                 />
               </div>

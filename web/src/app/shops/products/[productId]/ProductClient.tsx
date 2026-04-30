@@ -10,6 +10,7 @@ import HeartButton from '@/components/HeartButton';
 import Button from '@/components/ui/Button';
 import ProductCard from '@/components/shop/ProductCard';
 import { placeholderDataUri } from '@/lib/placeholders';
+import { Cancel01Icon } from 'hugeicons-react';
 
 interface ProductClientProps {
   product: SafeProduct & {
@@ -302,12 +303,24 @@ const ProductClient: React.FC<ProductClientProps> = ({
               </div>
               <button
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800"
+                aria-label={showDropdown ? 'Close menu' : 'More options'}
+                className="relative w-8 h-8 rounded-full flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800"
                 type="button"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className={`absolute transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${showDropdown ? 'opacity-0 scale-75 rotate-90' : 'opacity-100 scale-100 rotate-0'}`}
+                >
                   <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
                 </svg>
+                <Cancel01Icon
+                  className={`absolute w-4 h-4 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${showDropdown ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-75 -rotate-90'}`}
+                  strokeWidth={2}
+                />
               </button>
             </div>
           </div>

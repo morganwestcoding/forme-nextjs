@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { toast } from 'react-hot-toast';
+import { Cancel01Icon } from 'hugeicons-react';
 
 const menuBtnClass = "w-full text-left px-4 py-2 text-sm text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 flex items-center gap-4 transition-colors duration-150";
 const MENU_WIDTH = 176;
@@ -14,6 +15,7 @@ interface CardActionMenuProps {
   onToggleFavorite: (e: React.MouseEvent) => void;
   triggerClassName?: string;
   iconColorClass?: string;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const CardActionMenu: React.FC<CardActionMenuProps> = ({
@@ -23,6 +25,7 @@ const CardActionMenu: React.FC<CardActionMenuProps> = ({
   onToggleFavorite,
   triggerClassName = '',
   iconColorClass = 'text-stone-500 dark:text-stone-300',
+  onOpenChange,
 }) => {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
@@ -30,6 +33,10 @@ const CardActionMenu: React.FC<CardActionMenuProps> = ({
   const btnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    onOpenChange?.(open);
+  }, [open, onOpenChange]);
 
   useEffect(() => {
     if (!open) return;
@@ -42,7 +49,7 @@ const CardActionMenu: React.FC<CardActionMenuProps> = ({
     e.stopPropagation();
     if (!open) {
       const rect = e.currentTarget.getBoundingClientRect();
-      const top = rect.bottom + 4;
+      const top = rect.bottom + 10;
       const left = Math.max(8, Math.min(rect.right - MENU_WIDTH, window.innerWidth - MENU_WIDTH - 8));
       setPos({ top, left });
     }
@@ -97,15 +104,26 @@ const CardActionMenu: React.FC<CardActionMenuProps> = ({
       <button
         ref={btnRef}
         onClick={handleToggle}
-        aria-label="More options"
+        aria-label={open ? 'Close menu' : 'More options'}
         type="button"
-        className={`transition-colors duration-200 ${iconColorClass} ${triggerClassName}`}
+        className={`relative w-5 h-5 inline-flex items-center justify-center transition-colors duration-200 ${iconColorClass} ${triggerClassName}`}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          className={`absolute transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${open ? 'opacity-0 scale-75 rotate-90' : 'opacity-100 scale-100 rotate-0'}`}
+        >
           <circle cx="12" cy="5" r="2" />
           <circle cx="12" cy="12" r="2" />
           <circle cx="12" cy="19" r="2" />
         </svg>
+        <Cancel01Icon
+          className={`absolute w-5 h-5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${open ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-75 -rotate-90'}`}
+          strokeWidth={2}
+        />
       </button>
       {mounted && menu ? createPortal(menu, document.body) : null}
     </>

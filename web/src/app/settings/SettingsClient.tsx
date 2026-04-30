@@ -325,6 +325,7 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                 <a
                   href="/terms"
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center justify-between py-2.5 px-1 border-b border-stone-100 dark:border-stone-800 text-[13px] text-stone-600  hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
                 >
                   Terms of Service
@@ -333,6 +334,7 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                 <a
                   href="/privacy"
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center justify-between py-2.5 px-1 text-[13px] text-stone-600  hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
                 >
                   Privacy Policy
@@ -359,7 +361,7 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                     <p className="text-[13px] text-stone-400 dark:text-stone-500 mb-4 leading-relaxed">
                       Connect your bank account to receive payments. ForMe takes a 10% platform fee on each transaction.
                       By connecting, you agree to the{' '}
-                      <a href="/terms" target="_blank" className="underline hover:text-stone-600 dark:text-stone-300">Terms of Service</a>.
+                      <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-stone-600 dark:text-stone-300">Terms of Service</a>.
                     </p>
                     <Button
                       onClick={handleOnboard}

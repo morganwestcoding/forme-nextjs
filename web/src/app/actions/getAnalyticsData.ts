@@ -37,6 +37,12 @@ export interface AnalyticsData {
     averageRating: number;
     ratingDistribution: { rating: number; count: number }[];
   };
+  engagement: {
+    totalPostViews: number;
+    totalPostLikes: number;
+    totalPostComments: number;
+    totalListingFollowers: number;
+  };
   recentActivity: {
     reservations: Array<{
       id: string;
@@ -78,6 +84,9 @@ export interface AnalyticsData {
     category: string;
     reservations: number;
     revenue: number;
+    followers: number;
+    reviews: number;
+    averageRating: number;
     createdAt: string; // This is a string (ISO format)
   }>;
 }
@@ -154,18 +163,18 @@ export default async function getAnalyticsData(
       monthlyPosts,
       userListings,
       userReviews,
+      userPosts,
     ] = await Promise.all([
       // Total listings
       prisma.listing.count({
         where: { userId }
       }),
 
-      // Total reservations
+      // Total reservations — exclude declined since those weren't actually received
       prisma.reservation.count({
         where: {
-          listing: {
-            userId
-          }
+          listing: { userId },
+          NOT: { status: 'declined' }
         }
       }),
 
@@ -183,17 +192,14 @@ export default async function getAnalyticsData(
         }
       }),
 
-      // Total revenue
-      prisma.reservation.aggregate({
+      // Total revenue — only count payments that actually settled and weren't refunded
+      prisma.reservation.findMany({
         where: {
-          listing: {
-            userId
-          },
-          paymentStatus: 'completed'
+          listing: { userId },
+          paymentStatus: 'completed',
+          NOT: { refundStatus: { in: ['completed', 'approved'] } },
         },
-        _sum: {
-          totalPrice: true
-        }
+        select: { totalPrice: true }
       }),
 
       // Recent reservations
@@ -234,13 +240,21 @@ export default async function getAnalyticsData(
         take: 10
       }),
 
-      // Reservations within the active window [windowStart, windowEnd)
+      // Reservations within the active window [windowStart, windowEnd).
+      // Pull status fields so the chart's revenue line only includes
+      // payments that actually settled, matching the revenue tile.
       prisma.reservation.findMany({
         where: {
           listing: { userId },
           createdAt: { gte: windowStart, lt: windowEnd },
         },
-        select: { createdAt: true, totalPrice: true },
+        select: {
+          createdAt: true,
+          totalPrice: true,
+          status: true,
+          paymentStatus: true,
+          refundStatus: true,
+        },
       }),
 
       // Posts within the active window
@@ -252,7 +266,10 @@ export default async function getAnalyticsData(
         select: { createdAt: true },
       }),
 
-      // User listings with services for top services calculation
+      // User listings with services for top services calculation.
+      // Fetch the full reservation status fields so we can compute "real
+      // reservations" (status != declined) and "real revenue" (payment
+      // completed and not refunded) accurately on the JS side.
       prisma.listing.findMany({
         where: { userId },
         include: {
@@ -260,14 +277,20 @@ export default async function getAnalyticsData(
             include: {
               reservations: {
                 select: {
-                  totalPrice: true
+                  totalPrice: true,
+                  status: true,
+                  paymentStatus: true,
+                  refundStatus: true,
                 }
               }
             }
           },
           reservations: {
             select: {
-              totalPrice: true
+              totalPrice: true,
+              status: true,
+              paymentStatus: true,
+              refundStatus: true,
             }
           }
         },
@@ -285,13 +308,69 @@ export default async function getAnalyticsData(
         select: {
           rating: true
         }
-      })
+      }),
+
+      // All of the user's posts — for engagement totals (views, likes, comments)
+      prisma.post.findMany({
+        where: { userId },
+        select: {
+          likes: true,
+          viewedBy: true,
+          comments: { select: { id: true } },
+        }
+      }),
     ]);
 
+    // Reviews scoped to each of the user's listings — fetched after the
+    // listings query so we can scope by the actual listing IDs (Review has
+    // no relation to Listing in the schema, only a targetListingId string).
+    const listingIds = userListings.map((l: any) => l.id);
+    const listingReviews = listingIds.length
+      ? await prisma.review.findMany({
+          where: {
+            targetType: 'listing',
+            targetListingId: { in: listingIds },
+          },
+          select: { rating: true, targetListingId: true }
+        })
+      : [];
+
+    // Predicates used everywhere we surface money or "actual" reservation
+    // counts — kept in one place so the listings table, services table,
+    // and overview tile can never disagree on what counts as real.
+    const isRealReservation = (r: any) => r.status !== 'declined';
+    const isPaidReservation = (r: any) =>
+      r.paymentStatus === 'completed' &&
+      r.refundStatus !== 'completed' &&
+      r.refundStatus !== 'approved';
+
     // Calculate totals
-    const totalRevenue = totalRevenueResult._sum.totalPrice || 0;
+    const totalRevenue = totalRevenueResult.reduce(
+      (sum: number, r: any) => sum + (r.totalPrice || 0),
+      0
+    );
     const totalFollowers = userWithCounts?.followers.length || 0;
     const totalFollowing = userWithCounts?.following.length || 0;
+
+    // Engagement aggregates — pulled from the user's own posts (views,
+    // likes, comments) and the cumulative follower count across all of
+    // their listings. These power the Engagement tab's stat cards.
+    const totalPostViews = userPosts.reduce(
+      (sum: number, p: any) => sum + (p.viewedBy?.length || 0),
+      0
+    );
+    const totalPostLikes = userPosts.reduce(
+      (sum: number, p: any) => sum + (p.likes?.length || 0),
+      0
+    );
+    const totalPostComments = userPosts.reduce(
+      (sum: number, p: any) => sum + (p.comments?.length || 0),
+      0
+    );
+    const totalListingFollowers = userListings.reduce(
+      (sum: number, l: any) => sum + (l.followers?.length || 0),
+      0
+    );
 
     // Calculate review statistics
     const totalReviews = userReviews.length;
@@ -343,10 +422,15 @@ export default async function getAnalyticsData(
         granularity === 'month'
           ? cursor.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
           : cursor.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      // Reservations count uses the same "real" filter as the overview
+      // tile, and revenue uses the same "paid" filter as the revenue
+      // tile, so the chart and the headline numbers stay consistent.
       monthlyData.push({
         month: label,
-        reservations: bucketRes.length,
-        revenue: bucketRes.reduce((sum: number, r: any) => sum + r.totalPrice, 0),
+        reservations: bucketRes.filter(isRealReservation).length,
+        revenue: bucketRes
+          .filter(isPaidReservation)
+          .reduce((sum: number, r: any) => sum + r.totalPrice, 0),
         posts: bucketPosts.length,
       });
       cursor = next;
@@ -369,11 +453,15 @@ export default async function getAnalyticsData(
 
     userListings.forEach((listing: any) => {
       listing.services.forEach((service: any) => {
+        // Bookings = real (non-declined) reservations against the service.
+        // Revenue = subset of those that actually paid and weren't refunded.
+        const realRes = service.reservations.filter(isRealReservation);
+        const paidRes = service.reservations.filter(isPaidReservation);
         allServices.push({
           serviceName: service.serviceName,
           category: service.category,
-          bookings: service.reservations.length,
-          revenue: service.reservations.reduce((sum: number, r: any) => sum + r.totalPrice, 0)
+          bookings: realRes.length,
+          revenue: paidRes.reduce((sum: number, r: any) => sum + r.totalPrice, 0)
         });
       });
     });
@@ -401,15 +489,37 @@ export default async function getAnalyticsData(
       .sort((a, b) => b.bookings - a.bookings)
       .slice(0, 10);
 
+    // Index listing reviews by listing ID so each listing row can carry
+    // its own review count + average rating without an N+1 lookup.
+    const reviewsByListing = new Map<string, { count: number; sum: number }>();
+    listingReviews.forEach((r: any) => {
+      const key = r.targetListingId;
+      if (!key) return;
+      const entry = reviewsByListing.get(key) ?? { count: 0, sum: 0 };
+      entry.count += 1;
+      entry.sum += r.rating;
+      reviewsByListing.set(key, entry);
+    });
+
     // Process listings with performance data
-    const listingsWithStats = userListings.map((listing: any) => ({
-      id: listing.id,
-      title: listing.title,
-      category: listing.category,
-      reservations: listing.reservations.length,
-      revenue: listing.reservations.reduce((sum: number, r: any) => sum + r.totalPrice, 0),
-      createdAt: listing.createdAt.toISOString()
-    }));
+    const listingsWithStats = userListings.map((listing: any) => {
+      const realRes = listing.reservations.filter(isRealReservation);
+      const paidRes = listing.reservations.filter(isPaidReservation);
+      const reviewEntry = reviewsByListing.get(listing.id);
+      return {
+        id: listing.id,
+        title: listing.title,
+        category: listing.category,
+        reservations: realRes.length,
+        revenue: paidRes.reduce((sum: number, r: any) => sum + r.totalPrice, 0),
+        followers: listing.followers?.length ?? 0,
+        reviews: reviewEntry?.count ?? 0,
+        averageRating: reviewEntry && reviewEntry.count > 0
+          ? Math.round((reviewEntry.sum / reviewEntry.count) * 10) / 10
+          : 0,
+        createdAt: listing.createdAt.toISOString()
+      };
+    });
 
     // Transform data to safe format
     const safeAnalyticsData: AnalyticsData = {
@@ -434,6 +544,12 @@ export default async function getAnalyticsData(
         totalReviews,
         averageRating,
         ratingDistribution
+      },
+      engagement: {
+        totalPostViews,
+        totalPostLikes,
+        totalPostComments,
+        totalListingFollowers,
       },
       recentActivity: {
         reservations: recentReservations.map((reservation: any) => ({

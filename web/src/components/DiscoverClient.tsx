@@ -39,7 +39,7 @@ const FADE_OUT_DURATION = 200;
 
 const BANNERS = [
   {
-    src: '/assets/people/v-drip.jpg',
+    src: '/assets/people/v-drip.png',
     alt: 'V-Drip',
     tag: 'Featured',
     title: 'V-Drip',
@@ -632,7 +632,8 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       src={banner.src}
                       alt={banner.alt}
                       fill
-                      className="object-contain"
+                      sizes="100vw"
+                      className="object-cover"
                       priority={i === 0}
                     />
                   </div>

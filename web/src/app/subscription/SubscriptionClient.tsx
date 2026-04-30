@@ -410,9 +410,9 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
 
         <p className="text-center text-[11px] text-stone-400 dark:text-stone-500 pb-6">
           By selecting a plan, you agree to the ForMe{' '}
-          <a href="/terms" target="_blank" className="underline hover:text-stone-600 dark:text-stone-300">Terms of Service</a>
+          <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-stone-600 dark:text-stone-300">Terms of Service</a>
           {' '}and{' '}
-          <a href="/privacy" target="_blank" className="underline hover:text-stone-600 dark:text-stone-300">Privacy Policy</a>.
+          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-stone-600 dark:text-stone-300">Privacy Policy</a>.
         </p>
         <div className="pt-8 border-t border-stone-100 dark:border-stone-800">
           <FeatureComparison />

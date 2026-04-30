@@ -86,6 +86,7 @@ export default function VerificationQueue({ users }: { users: PendingUser[] }) {
                   src={user.licensingImage}
                   alt="Licensing document"
                   fill
+                  sizes="(max-width: 768px) 100vw, 28rem"
                   className="object-contain"
                 />
               </div>

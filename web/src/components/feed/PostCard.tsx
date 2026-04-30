@@ -1,14 +1,15 @@
 // components/feed/PostCard.tsx
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { MoreVerticalIcon } from 'hugeicons-react';
+import { Cancel01Icon } from 'hugeicons-react';
 import { SafePost, SafeUser } from '@/app/types';
-import HeartButton from '../HeartButton';
+import useFavorite from '@/app/hooks/useFavorite';
 
 interface PostCardProps {
   post: SafePost;
@@ -19,7 +20,7 @@ interface PostCardProps {
   isHero?: boolean;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isHero = false }) => {
+const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isHero = false, hideUserInfo = false }) => {
   const router = useRouter();
   const post = initialPost;
 
@@ -30,15 +31,34 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
   const [showDropdown, setShowDropdown] = useState(false);
   const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number } | null>(null);
   const [hidden, setHidden] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    if (!showDropdown) return;
+    const close = () => setShowDropdown(false);
+    window.addEventListener('scroll', close, true);
+    window.addEventListener('resize', close);
+    return () => {
+      window.removeEventListener('scroll', close, true);
+      window.removeEventListener('resize', close);
+    };
+  }, [showDropdown]);
+
   const isOwner = Boolean(currentUser && post.user?.id === currentUser.id);
+  const { hasFavorited, toggleFavorite } = useFavorite({ listingId: post.id, currentUser });
 
   const handleDropdownToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
+    e.preventDefault();
     if (!showDropdown) {
       const rect = e.currentTarget.getBoundingClientRect();
-      setDropdownPos({ top: rect.bottom + 4, left: rect.right });
+      const MENU_WIDTH = 192;
+      const top = rect.bottom + 10;
+      const left = Math.max(8, Math.min(rect.right - MENU_WIDTH, window.innerWidth - MENU_WIDTH - 8));
+      setDropdownPos({ top, left });
     }
     setShowDropdown(!showDropdown);
   };
@@ -47,6 +67,23 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
     setShowDropdown(false);
     navigator.clipboard.writeText(`${window.location.origin}/posts/${post.id}`);
     toast.success('Link copied');
+  };
+
+  const handleFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleFavorite(e as unknown as React.MouseEvent<HTMLDivElement>);
+  };
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowDropdown(false);
+    const url = `${window.location.origin}/posts/${post.id}`;
+    if (navigator.share) {
+      navigator.share({ title: post.content?.slice(0, 50) ?? '', url }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url);
+      toast.success('Link copied');
+    }
   };
 
   const handleHide = async () => {
@@ -125,12 +162,25 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
 
   const dropdownMenu = showDropdown && dropdownPos ? (
     <div
-      className="fixed w-48 bg-white dark:bg-stone-900 rounded-xl shadow-xl border border-stone-200 dark:border-stone-800 py-2 z-50"
-      style={{ top: dropdownPos.top, left: dropdownPos.left - 192 }}
+      className="fixed w-48 bg-white dark:bg-stone-900 rounded-xl shadow-xl border border-stone-200 dark:border-stone-800 py-2 z-[61]"
+      style={{ top: dropdownPos.top, left: dropdownPos.left }}
       onClick={(e) => e.stopPropagation()}
     >
+      <button onClick={handleFavorite} className={btnClass} type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill={hasFavorited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={hasFavorited ? 'text-stone-900 dark:text-stone-100' : 'text-stone-500 dark:text-stone-500'}>
+          <path d="M10.4107 19.9677C7.58942 17.858 2 13.0348 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 13.0348 16.4106 17.858 13.5893 19.9677C12.6399 20.6776 11.3601 20.6776 10.4107 19.9677Z" />
+        </svg>
+        {hasFavorited ? 'Favorited' : 'Favorite'}
+      </button>
+      <button onClick={handleShare} className={btnClass} type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500 dark:text-stone-500">
+          <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
+          <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
+        </svg>
+        Share
+      </button>
       <button onClick={handleCopyLink} className={btnClass} type="button">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500  dark:text-stone-500">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500  dark:text-stone-500">
           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
           <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
         </svg>
@@ -140,14 +190,14 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
         <>
           <hr className="my-1 border-stone-200 dark:border-stone-800" />
           <button onClick={handleHide} className={btnClass} type="button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500  dark:text-stone-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500  dark:text-stone-500">
               <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
               <line x1="1" y1="1" x2="23" y2="23" />
             </svg>
             Hide Post
           </button>
           <button onClick={handleReport} className={btnClass} type="button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500  dark:text-stone-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-500  dark:text-stone-500">
               <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
               <line x1="4" x2="4" y1="22" y2="15" />
             </svg>
@@ -159,7 +209,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
         <>
           <hr className="my-1 border-stone-200 dark:border-stone-800" />
           <button onClick={handleDelete} className={`${btnClass} text-red-600 hover:bg-red-50`} type="button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="3 6 5 6 21 6" />
               <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
               <path d="M10 11v6M14 11v6" />
@@ -172,12 +222,16 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
     </div>
   ) : null;
 
+  const portalLayer = showDropdown ? (
+    <>
+      <div className="fixed inset-0 z-[60]" onClick={(e) => { e.stopPropagation(); setShowDropdown(false); }} />
+      {dropdownMenu}
+    </>
+  ) : null;
+
   return (
     <>
-      {showDropdown && (
-        <div className="fixed inset-0 z-40" onClick={(e) => { e.stopPropagation(); setShowDropdown(false); }} />
-      )}
-      {dropdownMenu}
+      {mounted && portalLayer ? createPortal(portalLayer, document.body) : null}
     <div
       onClick={handleCardClick}
       onMouseEnter={handleMouseEnter}
@@ -262,44 +316,41 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
         />
       )}
 
-        {/* Heart + share — top right */}
+        {/* More options — top right, reveals on card hover; backdrop on button hover */}
         <div
-          className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center gap-3"
+          className={`absolute top-2 right-2 z-20 p-2 transition-opacity duration-300 ${showDropdown ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="-ml-0.5"><HeartButton listingId={post.id} currentUser={currentUser} /></div>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (navigator.share) {
-                navigator.share({ title: post.content?.slice(0, 50) ?? '', url: `${window.location.origin}/posts/${post.id}` });
-              } else {
-                navigator.clipboard.writeText(`${window.location.origin}/posts/${post.id}`);
-              }
-            }}
-            aria-label="Share"
-            className="text-white/80 hover:text-white transition-colors duration-200 drop-shadow-sm"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963" />
-              <path d="M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13" />
-            </svg>
-          </button>
           <button
             onClick={handleDropdownToggle}
-            aria-label="More options"
-            className="text-white/80 hover:text-white transition-colors duration-200 drop-shadow-sm"
+            aria-label={showDropdown ? 'Close menu' : 'More options'}
+            className={`relative w-8 h-8 flex items-center justify-center rounded-full backdrop-blur-0 hover:backdrop-blur-md text-white/90 hover:text-white transition-[background-color,backdrop-filter,color] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] drop-shadow-sm ${showDropdown ? 'bg-black/20 backdrop-blur-md' : 'bg-transparent hover:bg-black/20'}`}
           >
-            <MoreVerticalIcon className="w-5 h-5" strokeWidth={1.5} />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className={`absolute transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${showDropdown ? 'opacity-0 scale-75 rotate-90' : 'opacity-100 scale-100 rotate-0'}`}
+            >
+              <circle cx="12" cy="5" r="2" />
+              <circle cx="12" cy="12" r="2" />
+              <circle cx="12" cy="19" r="2" />
+            </svg>
+            <Cancel01Icon
+              className={`absolute w-5 h-5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${showDropdown ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-75 -rotate-90'}`}
+              strokeWidth={2}
+            />
           </button>
         </div>
 
         {/* Bottom gradient overlay — reveal on hover */}
-        <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/60 via-black/25 to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-600" />
+        <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/35 via-black/10 to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-600" />
 
         {/* Info overlay — reveal on hover */}
         <div className="absolute bottom-6 left-6 right-6 z-20 flex items-center gap-2 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-600 ease-[cubic-bezier(0.23,1,0.32,1)]">
-          {post.user?.image && (
+          {!hideUserInfo && post.user?.image && (
             <div className="relative w-6 h-6 rounded-full overflow-hidden ring-[1.5px] ring-white/80 shrink-0">
               <Image
                 src={post.user.image}
@@ -311,7 +362,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
             </div>
           )}
           <div className="flex-1 min-w-0">
-            {post.user && (
+            {!hideUserInfo && post.user && (
               <span className="text-white text-[12px] font-semibold truncate block drop-shadow-sm leading-none">
                 {post.user.name}
               </span>

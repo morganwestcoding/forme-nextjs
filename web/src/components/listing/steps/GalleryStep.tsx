@@ -81,6 +81,7 @@ export default function GalleryStep({
               src={imgUrl}
               alt={`Gallery ${i + 1}`}
               fill
+              sizes="175px"
               className="object-cover"
             />
             <button

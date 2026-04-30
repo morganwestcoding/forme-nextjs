@@ -11,7 +11,7 @@ import PostCard from '@/components/feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
 import ServiceCard from '@/components/listings/ServiceCard';
 import QRModal from '@/components/modals/QRModal';
-import { ShieldUserIcon } from 'hugeicons-react';
+import { ShieldUserIcon, Cancel01Icon } from 'hugeicons-react';
 import { categories } from '@/components/Categories';
 import { placeholderDataUri } from '@/lib/placeholders';
 import useReviewModal from '@/app/hooks/useReviewModal';
@@ -172,7 +172,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
   const handleDropdownToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!showDropdown) {
       const rect = e.currentTarget.getBoundingClientRect();
-      setDropdownPos({ top: rect.bottom + 4, left: rect.right });
+      setDropdownPos({ top: rect.bottom + 10, left: rect.right });
     }
     setShowDropdown(!showDropdown);
   };
@@ -333,15 +333,26 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               {/* 3-dot menu - top right */}
               <button
                 onClick={handleDropdownToggle}
-                aria-label="More options"
+                aria-label={showDropdown ? 'Close menu' : 'More options'}
                 aria-haspopup="menu"
                 aria-expanded={showDropdown}
                 className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 rounded-full transition-all z-20"
                 type="button"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className={`absolute transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${showDropdown ? 'opacity-0 scale-75 rotate-90' : 'opacity-100 scale-100 rotate-0'}`}
+                >
                   <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
                 </svg>
+                <Cancel01Icon
+                  className={`absolute w-4 h-4 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${showDropdown ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-75 -rotate-90'}`}
+                  strokeWidth={2}
+                />
               </button>
               <div className="relative w-24 h-24 mx-auto">
                 <div className="w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)' }}>
@@ -512,15 +523,26 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               </div>
               <button
                 onClick={handleDropdownToggle}
-                aria-label="More options"
+                aria-label={showDropdown ? 'Close menu' : 'More options'}
                 aria-haspopup="menu"
                 aria-expanded={showDropdown}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800"
+                className="relative w-8 h-8 rounded-full flex items-center justify-center text-stone-400  hover:text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800"
                 type="button"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className={`absolute transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${showDropdown ? 'opacity-0 scale-75 rotate-90' : 'opacity-100 scale-100 rotate-0'}`}
+                >
                   <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
                 </svg>
+                <Cancel01Icon
+                  className={`absolute w-4 h-4 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${showDropdown ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-75 -rotate-90'}`}
+                  strokeWidth={2}
+                />
               </button>
             </div>
           </div>

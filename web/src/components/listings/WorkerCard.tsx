@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { SafeListing, SafeUser, SafeEmployee, SafeStoreHours } from '@/app/types';
@@ -70,6 +71,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   solidBackground = false,
 }) => {
   const [imageError, setImageError] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
   const { hasFavorited, toggleFavorite } = useFavorite({ listingId: listing.id, currentUser });
   const workerShareUrl = typeof window !== 'undefined'
@@ -133,7 +135,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
 
         {/* 3-dot menu — top right, visible on hover */}
         <div
-          className="absolute top-3 right-[18px] z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          className={`absolute top-3 right-[18px] z-30 transition-opacity duration-200 ${menuOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
           onClick={(e) => e.stopPropagation()}
         >
           <CardActionMenu
@@ -142,6 +144,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
             hasFavorited={hasFavorited}
             onToggleFavorite={(e) => toggleFavorite(e as any)}
             iconColorClass="text-stone-400 hover:text-stone-700 dark:text-stone-300 dark:hover:text-stone-100"
+            onOpenChange={setMenuOpen}
           />
         </div>
 
@@ -312,7 +315,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
 
       {/* Right actions — 3-dot menu, hover only */}
       <div
-        className="flex items-center justify-center flex-shrink-0 mr-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        className={`flex items-center justify-center flex-shrink-0 mr-1 transition-opacity duration-200 ${menuOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
         onClick={(e) => e.stopPropagation()}
       >
         <CardActionMenu
@@ -321,6 +324,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
           hasFavorited={hasFavorited}
           onToggleFavorite={(e) => toggleFavorite(e as any)}
           iconColorClass="text-stone-500 hover:text-stone-700 dark:text-stone-300 dark:hover:text-stone-100"
+          onOpenChange={setMenuOpen}
         />
       </div>
     </div>

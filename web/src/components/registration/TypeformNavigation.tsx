@@ -60,9 +60,9 @@ export default function TypeformNavigation({
         {termsNotice && isLastStep && (
           <p className="text-center text-[11px] text-stone-400 dark:text-stone-500 mb-2 max-w-xl mx-auto">
             By continuing, you agree to the ForMe{' '}
-            <a href="/terms" target="_blank" className="underline hover:text-stone-600 dark:text-stone-300">Terms of Service</a>
+            <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-stone-600 dark:text-stone-300">Terms of Service</a>
             {' '}and{' '}
-            <a href="/privacy" target="_blank" className="underline hover:text-stone-600 dark:text-stone-300">Privacy Policy</a>.
+            <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-stone-600 dark:text-stone-300">Privacy Policy</a>.
           </p>
         )}
         <div className="max-w-xl mx-auto flex items-center justify-between">

@@ -199,7 +199,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
     );
   }
 
-  const { overview, recentActivity, monthlyData, topServices, listings, reviews, period } = analyticsData;
+  const { overview, recentActivity, monthlyData, topServices, listings, reviews, engagement, period } = analyticsData;
 
   // Calculate how many 5-star reviews needed to reach a target rating
   const calculateReviewsNeeded = (targetRating: number) => {
@@ -537,6 +537,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                     <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500  dark:text-stone-500 tracking-tight">Category</th>
                     <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500  dark:text-stone-500 tracking-tight">Reservations</th>
                     <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500  dark:text-stone-500 tracking-tight">Revenue</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500  dark:text-stone-500 tracking-tight">Followers</th>
+                    <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500  dark:text-stone-500 tracking-tight">Reviews</th>
                     <th className="px-8 py-4 text-left text-xs font-semibold text-stone-500  dark:text-stone-500 tracking-tight">Created</th>
                   </tr>
                 </thead>
@@ -556,6 +558,20 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                       </td>
                       <td className="px-8 py-4">
                         <div className="text-sm font-semibold text-stone-900 dark:text-stone-100">{formatCurrency(listing.revenue)}</div>
+                      </td>
+                      <td className="px-8 py-4">
+                        <div className="text-sm text-stone-900 dark:text-stone-100">{listing.followers}</div>
+                      </td>
+                      <td className="px-8 py-4">
+                        <div className="text-sm text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
+                          {listing.reviews}
+                          {listing.reviews > 0 && (
+                            <span className="text-xs text-stone-500 dark:text-stone-500 inline-flex items-center gap-0.5">
+                              · {listing.averageRating.toFixed(1)}
+                              <Star size={11} className="text-yellow-400 fill-yellow-400" />
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-8 py-4">
                         <div className="text-sm text-stone-500  dark:text-stone-500">{formatDate(listing.createdAt)}</div>
@@ -648,7 +664,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
         {/* Engagement Tab */}
         {activeTab === 'engagement' && (
           <div className="space-y-12">
-            {/* Engagement Stats */}
+            {/* Engagement Stats — first row: account-level reach */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               <StatCard
                 title="Total Posts"
@@ -661,6 +677,29 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
               <StatCard
                 title="Following"
                 value={overview.totalFollowing}
+              />
+            </div>
+
+            {/* Second row: post-level engagement totals (views, likes,
+                comments) plus the cumulative follower count across the
+                user's listings — the actual engagement each listing/post
+                has earned. */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+              <StatCard
+                title="Post Views"
+                value={engagement.totalPostViews.toLocaleString()}
+              />
+              <StatCard
+                title="Post Likes"
+                value={engagement.totalPostLikes.toLocaleString()}
+              />
+              <StatCard
+                title="Post Comments"
+                value={engagement.totalPostComments.toLocaleString()}
+              />
+              <StatCard
+                title="Listing Followers"
+                value={engagement.totalListingFollowers.toLocaleString()}
               />
             </div>
 

@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import axios from 'axios';
 import { signOut } from 'next-auth/react';
-import { PlusSignIcon, Notification03Icon, MessageMultiple01Icon, MoreVerticalIcon, Share08Icon, Link01Icon, ViewOffIcon, Flag03Icon, Delete02Icon } from 'hugeicons-react';
+import { PlusSignIcon, Notification03Icon, MessageMultiple01Icon, MoreVerticalIcon, Share08Icon, Link01Icon, ViewOffIcon, Flag03Icon, Delete02Icon, Cancel01Icon } from 'hugeicons-react';
 import { toast } from 'react-hot-toast';
 import { placeholderDataUri } from '@/lib/placeholders';
 import {
@@ -169,6 +169,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showShareSuccess, setShowShareSuccess] = useState(false);
   const [showFullCaption, setShowFullCaption] = useState(false);
+  const [postMenuOpen, setPostMenuOpen] = useState(false);
 
   // TikTok scroll
   const [isDragging, setIsDragging] = useState(false);
@@ -824,16 +825,27 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                           <p className="text-[12px] text-stone-400   dark:text-stone-400  mt-0.5">{format(new Date(post.createdAt), 'PPP')}</p>
                         </div>
                         {isCurrent && (
-                          <DropdownMenu>
+                          <DropdownMenu open={postMenuOpen} onOpenChange={setPostMenuOpen}>
                             <DropdownMenuTrigger
-                              className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-stone-400  hover:text-stone-600  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800   dark:text-stone-400  dark:hover:text-stone-200 transition-all outline-none"
-                              aria-label="More options"
+                              className="relative shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-stone-400  hover:text-stone-600  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800   dark:text-stone-400  dark:hover:text-stone-200 transition-all outline-none"
+                              aria-label={postMenuOpen ? 'Close menu' : 'More options'}
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                className={`absolute transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${postMenuOpen ? 'opacity-0 scale-75 rotate-90' : 'opacity-100 scale-100 rotate-0'}`}
+                              >
                                 <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>
                               </svg>
+                              <Cancel01Icon
+                                className={`absolute w-5 h-5 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${postMenuOpen ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-75 -rotate-90'}`}
+                                strokeWidth={2}
+                              />
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuContent align="end" sideOffset={10} className="w-48">
                               <DropdownMenuItem onClick={handleShare} className="gap-4">
                                 <Share08Icon className="w-4 h-4 text-stone-500  dark:text-stone-500" strokeWidth={1.5} />
                                 Share

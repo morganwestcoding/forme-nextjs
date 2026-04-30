@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { SafeListing, SafeUser } from '@/app/types';
@@ -85,6 +85,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
   const router = useRouter();
 
   const { hasFavorited, toggleFavorite } = useFavorite({ listingId: data.id, currentUser });
+  const [menuOpen, setMenuOpen] = useState(false);
   const [city, state] = data.location?.split(',').map((s) => s.trim()) || [];
   const cardImage = data.imageSrc || data.galleryImages?.[0] || placeholderDataUri(data.title || 'Listing');
 
@@ -121,7 +122,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
 
               {/* 3-dot menu — top right, visible on hover */}
               <div
-                className="absolute top-3 right-[18px] z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                className={`absolute top-3 right-[18px] z-30 transition-opacity duration-200 ${menuOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
                 onClick={(e) => e.stopPropagation()}
               >
                 <CardActionMenu
@@ -130,6 +131,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
                   hasFavorited={hasFavorited}
                   onToggleFavorite={(e) => toggleFavorite(e as any)}
                   iconColorClass="text-stone-400 hover:text-stone-700 dark:text-stone-300 dark:hover:text-stone-100"
+                  onOpenChange={setMenuOpen}
                 />
               </div>
 
@@ -332,7 +334,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
       {/* Right actions */}
       {customActions ? customActions : !hideActions && (
         <div
-          className="flex items-center justify-center flex-shrink-0 mr-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          className={`flex items-center justify-center flex-shrink-0 mr-1 transition-opacity duration-200 ${menuOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
           onClick={(e) => e.stopPropagation()}
         >
           <CardActionMenu
@@ -341,6 +343,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
             hasFavorited={hasFavorited}
             onToggleFavorite={(e) => toggleFavorite(e as any)}
             iconColorClass="text-stone-500 hover:text-stone-700 dark:text-stone-300 dark:hover:text-stone-100"
+            onOpenChange={setMenuOpen}
           />
         </div>
       )}
