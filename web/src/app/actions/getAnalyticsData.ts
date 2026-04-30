@@ -201,17 +201,20 @@ export default async function getAnalyticsData(
         }
       }),
 
-      // Total revenue — same dual scope as Total Reservations: owners see
-      // listing-wide revenue, workers see revenue from bookings they
-      // personally performed. Only counts payments that settled and weren't refunded.
+      // Total revenue — same dual scope as Total Reservations. Counts every
+      // non-declined, non-refunded reservation as revenue. The strict
+      // paymentStatus='completed' filter was dropped so the tile matches
+      // the count tile for any path that creates reservations (Stripe
+      // webhook, legacy POST, manual). If a reservation gets refunded later
+      // it falls back out via the refundStatus filter.
       prisma.reservation.findMany({
         where: {
           OR: [
             { listing: { userId } },
             { employee: { userId } },
           ],
-          paymentStatus: 'completed',
-          NOT: { refundStatus: { in: ['completed', 'approved'] } },
+          status: { not: 'declined' },
+          refundStatus: { notIn: ['completed', 'approved'] },
         },
         select: { totalPrice: true }
       }),
@@ -365,8 +368,13 @@ export default async function getAnalyticsData(
     // counts — kept in one place so the listings table, services table,
     // and overview tile can never disagree on what counts as real.
     const isRealReservation = (r: any) => r.status !== 'declined';
+    // Loosened from `paymentStatus === 'completed'` to "any non-declined,
+    // non-refunded reservation". Keeps the chart's revenue line, the
+    // listings table, and the overview Total Revenue tile in lockstep —
+    // none of them require the Stripe webhook to have fired in order to
+    // surface revenue.
     const isPaidReservation = (r: any) =>
-      r.paymentStatus === 'completed' &&
+      r.status !== 'declined' &&
       r.refundStatus !== 'completed' &&
       r.refundStatus !== 'approved';
 
