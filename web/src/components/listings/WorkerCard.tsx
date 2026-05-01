@@ -281,20 +281,20 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
       {/* Info */}
       <div className="flex flex-col justify-center min-w-0 flex-1">
         {/* Category — editorial cursive */}
-        {(employee.jobTitle || employee.user?.jobTitle || (!employee.isIndependent && listing.category)) && (
+        {(employee.jobTitle || employee.user?.jobTitle || listing.category) && (
           <p className="text-[11px] text-stone-400 dark:text-stone-500 leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
             {employee.jobTitle || employee.user?.jobTitle || listing.category}
           </p>
         )}
 
         {/* Name */}
-        <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.01em] leading-tight line-clamp-2 mt-0.5">
+        <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.01em] leading-tight line-clamp-2 mt-1.5">
           {employee.fullName}
         </h2>
 
         {/* Storefront slot — listing title, or "Independent" badge for solo providers */}
         {employee.isIndependent ? (
-          <p className="text-[11px] text-stone-500 dark:text-stone-400 font-medium leading-none mt-1.5 tracking-wide uppercase">
+          <p className="text-[11px] text-stone-400 dark:text-stone-500 leading-none mt-1.5">
             Independent
           </p>
         ) : (
@@ -304,7 +304,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         )}
 
         {/* Rating | Price */}
-        <div className="flex items-center text-[11px] text-stone-400 dark:text-stone-500 leading-none mt-2 tabular-nums">
+        <div className="flex items-center text-[11px] text-stone-400 dark:text-stone-500 leading-none mt-2.5 tabular-nums">
           <svg width="11" height="11" viewBox="0 0 24 24" className="text-stone-400 dark:text-stone-500 mr-1 -mt-px flex-shrink-0">
             <defs>
               <linearGradient id="workerStarGold" x1="0%" y1="0%" x2="100%" y2="100%">

@@ -15,7 +15,7 @@ async function requireMaster() {
     where: { email: session.user.email as string },
     select: { id: true, role: true },
   });
-  if (!user || user.role !== "master") {
+  if (!user || (user.role !== "master" && user.role !== "admin")) {
     return { error: apiErrorCode("FORBIDDEN") };
   }
   return { user };

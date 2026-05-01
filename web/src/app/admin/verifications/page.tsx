@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminVerificationsPage() {
   const currentUser = await getCurrentUser();
-  if (!currentUser || currentUser.role !== "master") redirect("/");
+  if (!currentUser || (currentUser.role !== "master" && currentUser.role !== "admin")) redirect("/");
 
   const pendingUsers = await prisma.user.findMany({
     where: { verificationStatus: "pending" },

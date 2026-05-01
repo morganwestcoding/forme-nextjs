@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminDisputesPage() {
   const currentUser = await getCurrentUser();
-  if (!currentUser || currentUser.role !== "master") redirect("/");
+  if (!currentUser || (currentUser.role !== "master" && currentUser.role !== "admin")) redirect("/");
 
   const disputes = await prisma.dispute.findMany({
     orderBy: { createdAt: "desc" },

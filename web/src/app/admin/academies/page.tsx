@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminAcademiesPage() {
   const currentUser = await getCurrentUser();
 
-  if (!currentUser || currentUser.role !== "master") {
+  if (!currentUser || (currentUser.role !== "master" && currentUser.role !== "admin")) {
     redirect("/");
   }
 

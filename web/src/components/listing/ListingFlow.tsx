@@ -486,20 +486,19 @@ export default function ListingFlow({ mode = 'create', listingId, initialData }:
           </div>
         </div>
 
-        {/* Navigation */}
-        {!isFormStep && (
-          <TypeformNavigation
-            canProceed={canProceed()}
-            showBack={showBack}
-            isLastStep={isLastStep}
-            isLoading={isLoading}
-            onNext={isLastStep ? handleSubmit(onSubmit) : handleNext}
-            onBack={handleBack}
-            submitLabel={isEditMode ? "Save changes" : "Create listing"}
-            isEditMode={isEditMode}
-            onSave={handleSubmit(onSubmit)}
-          />
-        )}
+        {/* Navigation — X stays visible on every step; bottom bar hides on form sub-steps */}
+        <TypeformNavigation
+          canProceed={canProceed()}
+          showBack={showBack}
+          isLastStep={isLastStep}
+          isLoading={isLoading}
+          onNext={isLastStep ? handleSubmit(onSubmit) : handleNext}
+          onBack={handleBack}
+          submitLabel={isEditMode ? "Save changes" : "Create listing"}
+          isEditMode={isEditMode}
+          onSave={handleSubmit(onSubmit)}
+          hideBottomBar={isFormStep}
+        />
       </div>
     </FormProvider>
   );

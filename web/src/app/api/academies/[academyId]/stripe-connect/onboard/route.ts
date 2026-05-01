@@ -16,9 +16,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 // Creates (or reuses) a Stripe Connect Express account for an Academy and
 // returns an onboarding link the master admin can hand to the academy.
 //
-// Auth: master role only. v1 has no academy admin accounts (Phase 7), so the
-// platform owner initiates onboarding on the academy's behalf — the academy
-// completes KYC themselves via the returned URL.
+// Auth: platform admins only (master or admin). v1 has no academy admin
+// accounts (Phase 7), so the platform owner initiates onboarding on the
+// academy's behalf — the academy completes KYC themselves via the returned URL.
 export async function POST(
   request: Request,
   { params }: { params: { academyId: string } }
@@ -33,7 +33,7 @@ export async function POST(
     select: { id: true, role: true },
   });
 
-  if (!currentUser || currentUser.role !== "master") {
+  if (!currentUser || (currentUser.role !== "master" && currentUser.role !== "admin")) {
     return apiError("Only platform admins can onboard academies", 403);
   }
 

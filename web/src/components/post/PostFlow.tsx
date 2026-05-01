@@ -222,6 +222,7 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
           <TextContentStep
             content={textContent}
             onContentChange={setTextContent}
+            currentUser={currentUser}
           />
         );
       case STEPS.CAPTION:

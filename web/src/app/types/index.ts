@@ -79,7 +79,7 @@ export type SafeReservation = Omit<
 
 export type SafeUser = Omit<
   User,
-  'favoriteIds'|'hashedPassword'|"createdAt" | "updatedAt" | "emailVerified" | "userType" | "academyId"
+  'favoriteIds'|'hashedPassword'|"createdAt" | "updatedAt" | "emailVerified" | "userType" | "academyId" | "hideWelcomeModal"
 > & {
   id: string; 
   createdAt: string;
@@ -144,6 +144,9 @@ export type SafeUser = Omit<
   // Email preferences
   emailNotifications?: boolean;
   emailMarketing?: boolean;
+
+  // UI preferences
+  hideWelcomeModal?: boolean;
 
   // User type + student fields
   userType?: string | null; // "customer" | "individual" | "team" | "student"

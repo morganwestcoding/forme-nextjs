@@ -58,11 +58,14 @@ export default function UserTypeStep({ userType, onUserTypeChange }: UserTypeSte
               onClick={() => onUserTypeChange(option.value)}
               variants={itemVariants}
               whileTap={{ scale: 0.98 }}
+              style={{ WebkitTapHighlightColor: 'transparent' }}
               className={`
-                flex flex-col items-center text-center gap-3 p-5 rounded-xl border transition-colors duration-200
+                flex flex-col items-center text-center gap-3 p-5 rounded-xl border
+                transition-[background-color,border-color,box-shadow,color] duration-200 ease-out
+                focus:outline-none
                 ${isSelected
                   ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
-                  : 'border-stone-200 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 '
+                  : 'border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 shadow-[inset_0_0_0_rgba(0,0,0,0)] hover:border-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
                 }
               `}
             >

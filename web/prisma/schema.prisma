@@ -80,6 +80,9 @@ model User {
   emailNotifications Boolean    @default(true)
   emailMarketing     Boolean    @default(true)
 
+  // UI preferences
+  hideWelcomeModal   Boolean    @default(false)
+
   // Role field for access control
   role            String        @default("user") // "user" | "admin" | "master"
 

@@ -65,6 +65,7 @@ export async function PUT(
       imageSrc,
       backgroundImage,
       jobTitle,
+      hideWelcomeModal,
     } = body || {};
 
     const sanitizedName = typeof name === "string" ? sanitizeText(name) : undefined;
@@ -81,6 +82,7 @@ export async function PUT(
         ...(typeof imageSrc === "string" ? { imageSrc } : {}),
         ...(typeof backgroundImage === "string" ? { backgroundImage } : {}),
         ...(sanitizedJobTitle !== undefined ? { jobTitle: sanitizedJobTitle } : {}),
+        ...(typeof hideWelcomeModal === "boolean" ? { hideWelcomeModal } : {}),
       },
     });
 

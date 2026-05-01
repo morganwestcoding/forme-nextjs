@@ -2,7 +2,8 @@
 
 import { useFormContext } from 'react-hook-form';
 import { useState, useEffect } from 'react';
-import { ViewIcon as FiEye, ViewOffIcon as FiEyeOff, Tick02Icon as FiCheck, Loading03Icon } from 'hugeicons-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ViewIcon as FiEye, ViewOffIcon as FiEyeOff, Tick02Icon as FiCheck } from 'hugeicons-react';
 import TypeformHeading from '../TypeformHeading';
 
 interface PasswordValidation {
@@ -14,11 +15,7 @@ interface PasswordValidation {
   hasSpecialChar: boolean;
 }
 
-interface AccountStepProps {
-  isCheckingEmail?: boolean;
-}
-
-export default function AccountStep({ isCheckingEmail = false }: AccountStepProps) {
+export default function AccountStep() {
   const { register, watch, formState: { errors } } = useFormContext();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -45,8 +42,6 @@ export default function AccountStep({ isCheckingEmail = false }: AccountStepProp
     });
   }, [password]);
 
-  const allValid = Object.values(validation).every(Boolean);
-
   return (
     <div>
       <TypeformHeading
@@ -72,66 +67,61 @@ export default function AccountStep({ isCheckingEmail = false }: AccountStepProp
                 message: 'Please enter a valid email'
               }
             })}
-            className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
+            className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-[box-shadow,border-color] duration-150"
             placeholder="you@example.com"
           />
           {errors.email && (
             <p className="mt-2 text-sm text-red-500">{errors.email.message as string}</p>
           )}
-          {isCheckingEmail && !errors.email && (
-            <p className="mt-2 flex items-center gap-1.5 text-sm text-stone-500 dark:text-stone-400">
-              <Loading03Icon size={14} className="animate-spin" />
-              Checking email…
-            </p>
-          )}
         </div>
 
-        {/* First Name */}
-        <div>
-          <label htmlFor="firstName" className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
-            First name
-          </label>
-          <input
-            id="firstName"
-            type="text"
-            autoComplete="given-name"
-            {...register('firstName', {
-              required: 'First name is required',
-              pattern: {
-                value: /^[a-zA-Z\s'.-]+$/,
-                message: 'First name can only contain letters and common punctuation'
-              }
-            })}
-            className={`w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${errors.firstName ? 'border-red-400 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
-            placeholder="John"
-          />
-          {errors.firstName && (
-            <p className="mt-2 text-sm text-red-500">{errors.firstName.message as string}</p>
-          )}
-        </div>
+        {/* First / Last Name — side by side */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="firstName" className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
+              First name
+            </label>
+            <input
+              id="firstName"
+              type="text"
+              autoComplete="given-name"
+              {...register('firstName', {
+                required: 'First name is required',
+                pattern: {
+                  value: /^[a-zA-Z\s'.-]+$/,
+                  message: 'First name can only contain letters and common punctuation'
+                }
+              })}
+              className={`w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-[box-shadow,border-color] duration-150 ${errors.firstName ? 'border-red-400 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
+              placeholder="John"
+            />
+            {errors.firstName && (
+              <p className="mt-2 text-sm text-red-500">{errors.firstName.message as string}</p>
+            )}
+          </div>
 
-        {/* Last Name */}
-        <div>
-          <label htmlFor="lastName" className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
-            Last name
-          </label>
-          <input
-            id="lastName"
-            type="text"
-            autoComplete="family-name"
-            {...register('lastName', {
-              required: 'Last name is required',
-              pattern: {
-                value: /^[a-zA-Z\s'.-]+$/,
-                message: 'Last name can only contain letters and common punctuation'
-              }
-            })}
-            className={`w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${errors.lastName ? 'border-red-400 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
-            placeholder="Doe"
-          />
-          {errors.lastName && (
-            <p className="mt-2 text-sm text-red-500">{errors.lastName.message as string}</p>
-          )}
+          <div>
+            <label htmlFor="lastName" className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
+              Last name
+            </label>
+            <input
+              id="lastName"
+              type="text"
+              autoComplete="family-name"
+              {...register('lastName', {
+                required: 'Last name is required',
+                pattern: {
+                  value: /^[a-zA-Z\s'.-]+$/,
+                  message: 'Last name can only contain letters and common punctuation'
+                }
+              })}
+              className={`w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-[box-shadow,border-color] duration-150 ${errors.lastName ? 'border-red-400 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
+              placeholder="Doe"
+            />
+            {errors.lastName && (
+              <p className="mt-2 text-sm text-red-500">{errors.lastName.message as string}</p>
+            )}
+          </div>
         </div>
 
         {/* Password */}
@@ -145,7 +135,7 @@ export default function AccountStep({ isCheckingEmail = false }: AccountStepProp
               type={showPassword ? 'text' : 'password'}
               autoComplete="new-password"
               {...register('password', { required: 'Password is required' })}
-              className="w-full px-4 py-3.5 pr-12 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
+              className="w-full px-4 py-3.5 pr-12 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-[box-shadow,border-color] duration-150"
               placeholder="Create a password"
             />
             <button
@@ -158,16 +148,26 @@ export default function AccountStep({ isCheckingEmail = false }: AccountStepProp
           </div>
 
           {/* Password requirements */}
-          {password.length > 0 && (
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              <RequirementItem met={validation.hasMinLength} text="6+ characters" />
-              <RequirementItem met={validation.hasMaxLength} text="Max 18 characters" />
-              <RequirementItem met={validation.hasUpperCase} text="Uppercase letter" />
-              <RequirementItem met={validation.hasLowerCase} text="Lowercase letter" />
-              <RequirementItem met={validation.hasNumber} text="Number" />
-              <RequirementItem met={validation.hasSpecialChar} text="Special character" />
-            </div>
-          )}
+          <AnimatePresence initial={false}>
+            {password.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                className="overflow-hidden"
+              >
+                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+                  <RequirementItem met={validation.hasMinLength} text="6+ characters" />
+                  <RequirementItem met={validation.hasMaxLength} text="Max 18 characters" />
+                  <RequirementItem met={validation.hasUpperCase} text="Uppercase letter" />
+                  <RequirementItem met={validation.hasLowerCase} text="Lowercase letter" />
+                  <RequirementItem met={validation.hasNumber} text="Number" />
+                  <RequirementItem met={validation.hasSpecialChar} text="Special character" />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Confirm Password */}
@@ -184,7 +184,7 @@ export default function AccountStep({ isCheckingEmail = false }: AccountStepProp
                 required: 'Please confirm your password',
                 validate: (value) => value === password || 'Passwords do not match',
               })}
-              className={`w-full px-4 py-3.5 pr-12 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${errors.confirmPassword ? 'border-red-400 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
+              className={`w-full px-4 py-3.5 pr-12 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-[box-shadow,border-color] duration-150 ${errors.confirmPassword ? 'border-red-400 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
               placeholder="Re-enter your password"
             />
             <button

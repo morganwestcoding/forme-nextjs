@@ -29,7 +29,7 @@ export async function GET(
     select: { id: true, role: true },
   });
 
-  if (!currentUser || currentUser.role !== "master") {
+  if (!currentUser || (currentUser.role !== "master" && currentUser.role !== "admin")) {
     return apiError("Only platform admins can view academy payment status", 403);
   }
 

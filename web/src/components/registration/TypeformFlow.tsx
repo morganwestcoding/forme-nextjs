@@ -95,7 +95,6 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
   const [step, setStep] = useState<STEPS>(isEditMode ? STEPS.INTERESTS : STEPS.ACCOUNT);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
   const [editingServiceIndex, setEditingServiceIndex] = useState<number | null>(null);
   const [isExiting, setIsExiting] = useState(false);
@@ -280,22 +279,18 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
       }
       try {
         setIsLoading(true);
-        setIsCheckingEmail(true);
         const response = await axios.get(`/api/check-email?email=${encodeURIComponent(data.email)}`);
         if (response.data?.exists) {
           toast.error('Email already exists');
           setIsLoading(false);
-          setIsCheckingEmail(false);
           return;
         }
       } catch (e) {
         safeToastError(e, "Could not validate email uniqueness.");
         setIsLoading(false);
-        setIsCheckingEmail(false);
         return;
       }
       setIsLoading(false);
-      setIsCheckingEmail(false);
     }
 
     const next = getNextStep();
@@ -472,7 +467,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
   const renderStep = () => {
     switch (step) {
       case STEPS.ACCOUNT:
-        return <AccountStep isCheckingEmail={isCheckingEmail} />;
+        return <AccountStep />;
       case STEPS.INTERESTS:
         return (
           <InterestsStep
@@ -606,7 +601,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
         )}
 
         {/* Main content */}
-        <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className={`flex-1 flex justify-center px-6 ${step === STEPS.ACCOUNT ? 'items-start pt-16 pb-12' : 'items-center py-12'}`}>
           <div className="w-full max-w-xl">
             <AnimatePresence mode="wait" custom={direction}>
               <TypeformStep key={step} direction={direction}>
@@ -616,21 +611,20 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
           </div>
         </div>
 
-        {/* Navigation */}
-        {step !== STEPS.SERVICES_FORM && (
-          <TypeformNavigation
-            canProceed={canProceed()}
-            showBack={showBack}
-            isLastStep={isLastStep}
-            isLoading={isLoading}
-            onNext={isLastStep ? handleSubmit(onSubmit) : handleNext}
-            onBack={handleBack}
-            submitLabel={isEditMode ? 'Save changes' : 'Create account'}
-            termsNotice={!isEditMode}
-            isEditMode={isEditMode}
-            onSave={handleSubmit(onSubmit)}
-          />
-        )}
+        {/* Navigation — X stays visible on every step; bottom bar hides on form sub-steps */}
+        <TypeformNavigation
+          canProceed={canProceed()}
+          showBack={showBack}
+          isLastStep={isLastStep}
+          isLoading={isLoading}
+          onNext={isLastStep ? handleSubmit(onSubmit) : handleNext}
+          onBack={handleBack}
+          submitLabel={isEditMode ? 'Save changes' : 'Create account'}
+          termsNotice={!isEditMode}
+          isEditMode={isEditMode}
+          onSave={handleSubmit(onSubmit)}
+          hideBottomBar={step === STEPS.SERVICES_FORM}
+        />
       </motion.div>
     </FormProvider>
   );

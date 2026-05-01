@@ -9,6 +9,7 @@ import {
   ArrowRight01Icon,
   AlertCircleIcon,
   Delete02Icon,
+  BulbIcon,
 } from "hugeicons-react";
 import { signOut } from "next-auth/react";
 import { SafeUser } from "@/app/types";
@@ -37,6 +38,8 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
   const { isDarkMode, setIsDarkMode, resetTheme } = useTheme();
 
   const [pendingDarkMode, setPendingDarkMode] = useState(isDarkMode);
+  const [showWelcome, setShowWelcome] = useState(!currentUser.hideWelcomeModal);
+  const [pendingShowWelcome, setPendingShowWelcome] = useState(!currentUser.hideWelcomeModal);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -63,8 +66,8 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
   const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
-    setHasUnsavedChanges(pendingDarkMode !== isDarkMode);
-  }, [pendingDarkMode, isDarkMode]);
+    setHasUnsavedChanges(pendingDarkMode !== isDarkMode || pendingShowWelcome !== showWelcome);
+  }, [pendingDarkMode, isDarkMode, pendingShowWelcome, showWelcome]);
 
   // Fetch Stripe Connect status
   useEffect(() => {
@@ -115,8 +118,19 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsDarkMode(pendingDarkMode);
+    if (pendingShowWelcome !== showWelcome) {
+      try {
+        await axios.put(`/api/users/${currentUser.id}`, {
+          hideWelcomeModal: !pendingShowWelcome,
+        });
+        setShowWelcome(pendingShowWelcome);
+      } catch (error: any) {
+        toast.error(error.response?.data?.error || 'Failed to save welcome preference');
+        return;
+      }
+    }
     toast.success('Settings saved');
   };
 
@@ -140,49 +154,60 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
   const [activeTab, setActiveTab] = useState<'appearance' | 'payments' | 'legal'>('appearance');
 
   if (settingsLoading) {
+    const SettingRowSkeleton = ({ subtitleWidth }: { subtitleWidth: string }) => (
+      <div className="rounded-2xl border border-stone-200/60 dark:border-stone-800 bg-white dark:bg-stone-900 p-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-[18px] w-[18px]" rounded="md" />
+            <div>
+              <Skeleton className="h-4 w-24 mb-1.5" />
+              <Skeleton className={`h-3 ${subtitleWidth}`} />
+            </div>
+          </div>
+          <Skeleton rounded="full" className="h-6 w-11" />
+        </div>
+      </div>
+    );
+
     return (
       <>
         <PageHeaderSkeleton />
         <ContainerSkeleton>
-          <div className="max-w-2xl mx-auto">
-            <div className="mt-8 mb-8">
-              <Skeleton className="h-8 w-32 mb-2" />
-              <Skeleton className="h-4 w-56" />
+          <div className="mt-8 pb-16">
+            {/* Title */}
+            <div className="mb-8">
+              <Skeleton className="h-8 w-28 mb-2" />
+              <Skeleton className="h-4 w-44" />
             </div>
-            <div className="flex flex-col gap-4">
-              {/* Appearance card */}
-              <div className="p-5 rounded-2xl border border-stone-200/60 dark:border-stone-800">
-                <div className="flex items-center gap-3 mb-4">
-                  <Skeleton rounded="full" className="h-10 w-10" />
-                  <div>
-                    <Skeleton className="h-5 w-28 mb-1" />
-                    <Skeleton className="h-3 w-40" />
+
+            {/* Tabs */}
+            <div className="flex items-center gap-2 mb-8">
+              <Skeleton rounded="full" className="h-8 w-24" />
+              <Skeleton rounded="full" className="h-8 w-20" />
+            </div>
+
+            {/* Tab content */}
+            <div className="min-h-[400px]">
+              <div className="space-y-6 max-w-xl">
+                <SettingRowSkeleton subtitleWidth="w-52" />
+                <SettingRowSkeleton subtitleWidth="w-48" />
+
+                {/* Save button */}
+                <Skeleton rounded="xl" className="h-10 w-32" />
+
+                {/* Delete Account row */}
+                <div className="rounded-2xl border border-stone-200/60 dark:border-stone-800 bg-white dark:bg-stone-900 p-5">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="h-[18px] w-[18px]" rounded="md" />
+                      <div>
+                        <Skeleton className="h-4 w-28 mb-1.5" />
+                        <Skeleton className="h-3 w-56" />
+                      </div>
+                    </div>
+                    <Skeleton rounded="xl" className="h-9 w-28" />
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <Skeleton className="h-4 w-20" />
-                  <Skeleton rounded="full" className="h-6 w-11" />
-                </div>
-              </div>
-              {/* Payments card */}
-              <div className="p-5 rounded-2xl border border-stone-200/60 dark:border-stone-800">
-                <div className="flex items-center gap-3 mb-4">
-                  <Skeleton rounded="full" className="h-10 w-10" />
-                  <div>
-                    <Skeleton className="h-5 w-36 mb-1" />
-                    <Skeleton className="h-3 w-48" />
-                  </div>
-                </div>
-                <Skeleton rounded="full" className="h-11 w-40" />
-              </div>
-              {/* Account card */}
-              <div className="p-5 rounded-2xl border border-stone-200/60 dark:border-stone-800">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="flex items-center justify-between py-3 border-b last:border-0 border-stone-200/60 dark:border-stone-800/60">
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton rounded="full" className="h-4 w-4" />
-                  </div>
-                ))}
               </div>
             </div>
           </div>
@@ -248,6 +273,26 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${pendingDarkMode ? 'bg-stone-900 dark:bg-stone-100' : 'bg-stone-200 dark:bg-stone-700'}`}
                 >
                   <span className={`inline-block h-4 w-4 transform rounded-full shadow-sm transition-transform duration-200 ${pendingDarkMode ? 'translate-x-6 bg-white dark:bg-stone-900' : 'translate-x-1 bg-white dark:bg-stone-300'}`} />
+                </button>
+              </div>
+            </Card>
+
+            {/* Welcome Guide */}
+            <Card padding="md">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <BulbIcon size={18} className="text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
+                  <div>
+                    <h3 className="text-[14px] font-semibold text-stone-900 dark:text-stone-100">Welcome Guide</h3>
+                    <p className="text-[12px] text-stone-400 dark:text-stone-500 mt-0.5">Show the welcome modal on each visit</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPendingShowWelcome(!pendingShowWelcome)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${pendingShowWelcome ? 'bg-stone-900 dark:bg-stone-100' : 'bg-stone-200 dark:bg-stone-700'}`}
+                >
+                  <span className={`inline-block h-4 w-4 transform rounded-full shadow-sm transition-transform duration-200 ${pendingShowWelcome ? 'translate-x-6 bg-white dark:bg-stone-900' : 'translate-x-1 bg-white dark:bg-stone-300'}`} />
                 </button>
               </div>
             </Card>

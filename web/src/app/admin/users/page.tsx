@@ -13,7 +13,7 @@ export default async function AdminUsersPage({
   searchParams: { q?: string; role?: string; tier?: string; page?: string };
 }) {
   const currentUser = await getCurrentUser();
-  if (!currentUser || currentUser.role !== "master") redirect("/");
+  if (!currentUser || (currentUser.role !== "master" && currentUser.role !== "admin")) redirect("/");
 
   const page = Math.max(1, parseInt(searchParams.page || "1", 10));
   const pageSize = 50;

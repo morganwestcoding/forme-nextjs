@@ -89,6 +89,14 @@ export async function POST(request: Request) {
       }
     }
 
+    // Independent providers must supply a job title — it's the only role
+    // signal we have for them since they don't attach to a storefront listing,
+    // and it's read by /api/employees/services when the Employee record is
+    // lazy-created on first service add.
+    if (userType === 'individual' && !jobTitle?.trim()) {
+      return apiError('Job title required for independent providers', 400);
+    }
+
     // Validate team member data
     if (userType === 'team') {
       // Job title required unless owner/manager (business selection is now optional)
@@ -145,6 +153,7 @@ export async function POST(request: Request) {
         subscriptionTier: isStudent ? 'student' : (subscription ?? 'bronze (customer)'),
         isSubscribed: isStudent ? false : isSubscribed,
         managedListings: [], // Initialize as empty array
+        jobTitle: jobTitle?.trim() || null,
         // Student fields
         userType: userType ?? null,
         academyId: isStudent ? studentAcademy!.id : null,

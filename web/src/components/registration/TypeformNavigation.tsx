@@ -20,6 +20,9 @@ interface TypeformNavigationProps {
   // handled by the EditStepJumper pill bar at the top instead.
   isEditMode?: boolean;
   onSave?: () => void;
+  // Hide just the bottom bar (e.g. on form sub-steps). The X stays so the
+  // user can always exit the flow.
+  hideBottomBar?: boolean;
 }
 
 export default function TypeformNavigation({
@@ -34,6 +37,7 @@ export default function TypeformNavigation({
   termsNotice,
   isEditMode,
   onSave,
+  hideBottomBar,
 }: TypeformNavigationProps) {
   const router = useRouter();
 
@@ -53,9 +57,11 @@ export default function TypeformNavigation({
         onClick={handleExit}
         size="lg"
         icon={<Cancel01Icon className="w-5 h-5" strokeWidth={1.5} />}
-        className="fixed top-6 right-6 z-50 rounded-full"
+        className="fixed top-12 z-50 rounded-full"
+        style={{ right: '4.125rem' }}
       />
 
+      {!hideBottomBar && (
       <div className="fixed bottom-6 left-0 right-0 bg-white dark:bg-stone-900 border-t border-stone-100 dark:border-stone-800 px-6 py-4 safe-bottom">
         {termsNotice && isLastStep && (
           <p className="text-center text-[11px] text-stone-400 dark:text-stone-500 mb-2 max-w-xl mx-auto">
@@ -99,6 +105,7 @@ export default function TypeformNavigation({
           </div>
         </div>
       </div>
+      )}
     </>
   );
 }

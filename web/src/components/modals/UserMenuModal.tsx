@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import {
-  UserIcon,
+  UserCircleIcon,
   GridViewIcon,
   AnalyticsUpIcon,
   FavouriteIcon,
@@ -14,15 +14,13 @@ import {
   Logout01Icon,
   Login01Icon,
   UserAdd01Icon,
-  Delete02Icon,
-  School01Icon,
+  ShieldUserIcon,
 } from 'hugeicons-react';
 import Modal from './Modal';
 import Button from '../ui/Button';
 import useUserMenuModal from '@/app/hooks/useUserMenuModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import useUpgradeModal from '@/app/hooks/useUpgradeModal';
-import { clearEarlyAccess } from '@/app/utils/earlyAccess';
 import { hasFeature } from '@/app/utils/subscription';
 import { SafeUser } from '@/app/types';
 
@@ -44,7 +42,7 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
   const menuItems = currentUser
     ? [
         {
-          icon: UserIcon,
+          icon: UserCircleIcon,
           label: 'Profile',
           onClick: () => handleNavigate(`/profile/${currentUser.id}`),
         },
@@ -83,7 +81,7 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
         ...(currentUser.role === 'master' || currentUser.role === 'admin'
           ? [
               {
-                icon: School01Icon,
+                icon: ShieldUserIcon,
                 label: 'Admin',
                 onClick: () => handleNavigate('/admin'),
               },
@@ -110,7 +108,7 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
                 className="object-cover w-full h-full"
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-stone-200 to-stone-300 flex items-center justify-center text-stone-600 dark:text-stone-300 text-base font-medium">
+              <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white text-base font-semibold">
                 {currentUser.name?.[0] || 'U'}
               </div>
             )}
@@ -141,18 +139,6 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
                   <span className="text-[12px] font-medium text-stone-600 dark:text-stone-300">{item.label}</span>
                 </button>
               ))}
-              <button
-                onClick={() => {
-                  if (confirm('Clear early access?')) {
-                    clearEarlyAccess();
-                    userMenuModal.onClose();
-                  }
-                }}
-                className="flex flex-col items-center gap-2.5 py-5 px-2 rounded-2xl bg-red-50 hover:bg-red-100 border border-red-200/60 dark:bg-red-500/10 dark:hover:bg-red-500/20 dark:border-red-500/20 transition-all"
-              >
-                <Delete02Icon className="w-[22px] h-[22px] text-red-500 dark:text-red-400" strokeWidth={1.5} />
-                <span className="text-[12px] font-medium text-red-600 dark:text-red-400">Clear Data</span>
-              </button>
             </div>
           </div>
 

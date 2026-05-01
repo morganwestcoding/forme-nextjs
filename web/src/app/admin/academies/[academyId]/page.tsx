@@ -15,7 +15,7 @@ interface PageProps {
 export default async function AdminAcademyDetailPage({ params, searchParams }: PageProps) {
   const currentUser = await getCurrentUser();
 
-  if (!currentUser || currentUser.role !== "master") {
+  if (!currentUser || (currentUser.role !== "master" && currentUser.role !== "admin")) {
     redirect("/");
   }
 

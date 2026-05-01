@@ -1,77 +1,185 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import {
+  UserMultipleIcon,
+  GridViewIcon,
+  Calendar01Icon,
+  DollarCircleIcon,
+  CheckmarkCircle02Icon,
+  ShieldUserIcon,
+  AlertCircleIcon,
+  Mortarboard01Icon,
+  ArrowUpRight01Icon,
+  Flag03Icon,
+} from "hugeicons-react";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import getAdminStats from "@/app/actions/getAdminStats";
 import Container from "@/components/Container";
 
 export const dynamic = "force-dynamic";
 
+const PILL_STYLE = {
+  background: "linear-gradient(135deg, #2a2a2a 0%, #000 100%)",
+  boxShadow: "0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
+};
+
 export default async function AdminPage() {
   const currentUser = await getCurrentUser();
 
-  if (!currentUser || currentUser.role !== "master") {
+  if (!currentUser || (currentUser.role !== "master" && currentUser.role !== "admin")) {
     redirect("/");
   }
 
   const stats = await getAdminStats();
+  const isMaster = currentUser.role === "master";
 
-  const cards = [
-    { label: "Total Users", value: stats.totalUsers.toLocaleString() },
-    { label: "Active Listings", value: stats.activeListings.toLocaleString() },
-    { label: "Reservations (Month)", value: stats.reservationsThisMonth.toLocaleString() },
-    { label: "Revenue (Month)", value: `$${stats.revenueThisMonth.toLocaleString(undefined, { minimumFractionDigits: 2 })}` },
-    { label: "Active Subscribers", value: stats.activeSubscribers.toLocaleString() },
-    { label: "Pending Verifications", value: stats.pendingVerifications.toLocaleString(), alert: stats.pendingVerifications > 0 },
-    { label: "Active Disputes", value: stats.activeDisputes.toLocaleString(), alert: stats.activeDisputes > 0 },
+  const formatCurrency = (n: number) =>
+    `$${n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+
+  const kpis = [
+    { label: "Total users", value: stats.totalUsers.toLocaleString(), icon: UserMultipleIcon },
+    { label: "Active listings", value: stats.activeListings.toLocaleString(), icon: GridViewIcon },
+    { label: "Reservations · MTD", value: stats.reservationsThisMonth.toLocaleString(), icon: Calendar01Icon },
+    { label: "Revenue · MTD", value: formatCurrency(stats.revenueThisMonth), icon: DollarCircleIcon },
+    { label: "Active subscribers", value: stats.activeSubscribers.toLocaleString(), icon: CheckmarkCircle02Icon },
+    {
+      label: "Pending verifications",
+      value: stats.pendingVerifications.toLocaleString(),
+      icon: ShieldUserIcon,
+      alert: stats.pendingVerifications > 0,
+    },
+    {
+      label: "Active disputes",
+      value: stats.activeDisputes.toLocaleString(),
+      icon: AlertCircleIcon,
+      alert: stats.activeDisputes > 0,
+    },
   ];
 
   const nav = [
-    { label: "Users", description: "Manage accounts, suspend users", href: "/admin/users" },
-    { label: "Verifications", description: "Approve or reject licensing submissions", href: "/admin/verifications" },
-    { label: "Disputes", description: "View payment disputes and resolutions", href: "/admin/disputes" },
-    { label: "Academies", description: "Manage academy partners and payouts", href: "/admin/academies" },
+    {
+      label: "Users",
+      description: "Accounts, roles, suspensions",
+      href: "/admin/users",
+      icon: UserMultipleIcon,
+    },
+    {
+      label: "Verifications",
+      description: "Approve licensing submissions",
+      href: "/admin/verifications",
+      icon: ShieldUserIcon,
+      badge: stats.pendingVerifications,
+    },
+    {
+      label: "Disputes",
+      description: "Payment disputes & resolutions",
+      href: "/admin/disputes",
+      icon: Flag03Icon,
+      badge: stats.activeDisputes,
+    },
+    {
+      label: "Academies",
+      description: "Partner programs & payouts",
+      href: "/admin/academies",
+      icon: Mortarboard01Icon,
+    },
   ];
 
   return (
     <Container>
       <div className="mt-8 mb-12">
         <div className="mb-2">
-          <Link href="/" className="text-[12px] text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors">
+          <Link href="/" className="text-[12px] text-stone-400 hover:text-stone-600 dark:text-stone-300 transition-colors">
             ← Back to ForMe
           </Link>
         </div>
         <div className="mb-8">
-          <p className="text-[12px] text-stone-400 dark:text-stone-500 mb-1">Master admin</p>
+          <p className="text-[12px] text-stone-400 dark:text-stone-500 mb-1">{isMaster ? "Master admin" : "Admin"}</p>
           <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Dashboard</h1>
         </div>
 
         {/* Stats grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
-          {cards.map((card) => (
-            <div
-              key={card.label}
-              className={`rounded-2xl border p-5 ${card.alert ? 'border-amber-200 bg-amber-50/50' : 'border-stone-200/60 bg-white dark:bg-stone-900'}`}
-            >
-              <p className="text-[11px] font-medium text-stone-400 dark:text-stone-500 uppercase tracking-wide mb-1">{card.label}</p>
-              <p className={`text-2xl font-bold tracking-tight ${card.alert ? 'text-amber-700' : 'text-stone-900 dark:text-stone-100'}`}>
-                {card.value}
-              </p>
-            </div>
-          ))}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-10">
+          {kpis.map((kpi) => {
+            const Icon = kpi.icon;
+            return (
+              <div
+                key={kpi.label}
+                className={`rounded-2xl border p-5 ${
+                  kpi.alert
+                    ? "border-amber-200 bg-amber-50/60 dark:border-amber-900/40 dark:bg-amber-950/20"
+                    : "border-stone-200/60 dark:border-stone-800 bg-white dark:bg-stone-900"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div
+                    className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                      kpi.alert
+                        ? "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                        : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300"
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" strokeWidth={1.75} />
+                  </div>
+                </div>
+                <p className="text-[11px] font-medium text-stone-400 dark:text-stone-500 mb-1">
+                  {kpi.label}
+                </p>
+                <p
+                  className={`text-2xl font-semibold tracking-tight tabular-nums ${
+                    kpi.alert
+                      ? "text-amber-700 dark:text-amber-300"
+                      : "text-stone-900 dark:text-stone-100"
+                  }`}
+                >
+                  {kpi.value}
+                </p>
+              </div>
+            );
+          })}
         </div>
 
-        {/* Navigation */}
-        <div className="grid md:grid-cols-2 gap-3">
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 p-5 hover:border-stone-300 dark:border-stone-700 hover:shadow-sm transition-all"
-            >
-              <h3 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100">{item.label}</h3>
-              <p className="text-[13px] text-stone-500  dark:text-stone-500 mt-1">{item.description}</p>
-            </Link>
-          ))}
+        {/* Operations grid */}
+        <div className="grid sm:grid-cols-2 gap-3">
+          {nav.map((item) => {
+            const Icon = item.icon;
+            const hasBadge = typeof item.badge === "number" && item.badge > 0;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="group relative rounded-2xl border border-stone-200/60 dark:border-stone-800 bg-white dark:bg-stone-900 p-5 hover:border-stone-300 dark:hover:border-stone-700 hover:shadow-sm transition-all"
+              >
+                <div className="flex items-start gap-4">
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-white transition-transform group-hover:scale-105"
+                    style={PILL_STYLE}
+                  >
+                    <Icon className="w-5 h-5" strokeWidth={1.75} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100">
+                        {item.label}
+                      </h3>
+                      {hasBadge && (
+                        <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-semibold text-white bg-amber-500 tabular-nums">
+                          {item.badge! > 99 ? "99+" : item.badge}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[13px] text-stone-500 dark:text-stone-400 mt-1">
+                      {item.description}
+                    </p>
+                  </div>
+                  <ArrowUpRight01Icon
+                    className="w-4 h-4 text-stone-300 dark:text-stone-600 shrink-0 transition-all group-hover:text-stone-700 dark:group-hover:text-stone-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                    strokeWidth={2}
+                  />
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </Container>

@@ -49,6 +49,86 @@ const BANNERS = [
   },
 ];
 
+// Layout-comparison samples — rendered as the first card in the Local
+// Businesses and Trending Professionals rails so the standard
+// listing/worker layouts can be compared against real data (especially
+// independent-worker cards, which display "Independent" instead of a
+// listing title). Click is suppressed at the wrapper level. Remove once
+// the comparison work is done.
+const SAMPLE_LISTING = {
+  id: 'sample-listing',
+  title: 'Lumière Studio',
+  description: 'Sample',
+  imageSrc: '/assets/people/salon.png',
+  galleryImages: [],
+  category: 'Salon',
+  location: 'Brooklyn, NY',
+  city: 'Brooklyn',
+  state: 'NY',
+  zipCode: null,
+  userId: 'sample-user',
+  createdAt: new Date().toISOString(),
+  services: [
+    { id: 's1', serviceName: 'Cut', price: 45, category: 'Salon' },
+    { id: 's2', serviceName: 'Color', price: 180, category: 'Salon' },
+  ],
+  employees: [],
+  storeHours: [
+    { dayOfWeek: 'Sunday', openTime: '10:00', closeTime: '18:00', isClosed: false },
+    { dayOfWeek: 'Monday', openTime: '10:00', closeTime: '20:00', isClosed: false },
+    { dayOfWeek: 'Tuesday', openTime: '10:00', closeTime: '20:00', isClosed: false },
+    { dayOfWeek: 'Wednesday', openTime: '10:00', closeTime: '20:00', isClosed: false },
+    { dayOfWeek: 'Thursday', openTime: '10:00', closeTime: '20:00', isClosed: false },
+    { dayOfWeek: 'Friday', openTime: '10:00', closeTime: '21:00', isClosed: false },
+    { dayOfWeek: 'Saturday', openTime: '10:00', closeTime: '21:00', isClosed: false },
+  ],
+  favoriteIds: [],
+  rating: 4.9,
+  ratingCount: 142,
+} as unknown as SafeListing;
+
+const SAMPLE_EMPLOYEE = {
+  id: 'sample-employee',
+  fullName: 'Jordan Riley',
+  jobTitle: 'Senior Stylist',
+  listingId: SAMPLE_LISTING.id,
+  userId: 'sample-user-emp',
+  serviceIds: [],
+  isActive: true,
+  isIndependent: false,
+  createdAt: new Date().toISOString(),
+  listingTitle: SAMPLE_LISTING.title,
+  listingCategory: SAMPLE_LISTING.category,
+  rating: 4.9,
+  user: {
+    id: 'sample-user-emp',
+    name: 'Jordan Riley',
+    image: null,
+    imageSrc: null,
+    backgroundImage: null,
+    userType: 'individual',
+    jobTitle: 'Senior Stylist',
+    academyName: null,
+  },
+} as unknown as SafeEmployee;
+
+// Renders a card with a "Sample" badge and swallows clicks so the
+// fake IDs never trigger navigation or favorite mutations.
+const SampleCardWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div
+    className="relative"
+    onClickCapture={(e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    }}
+  >
+    <span className="absolute -top-1 left-1 z-30 px-1.5 py-0.5 rounded text-[9px] font-semibold uppercase tracking-wider bg-amber-400/90 text-stone-900 pointer-events-none shadow-sm">
+      Sample
+    </span>
+    {children}
+  </div>
+);
+
 // Shuffle array using Fisher-Yates algorithm (seeded for stability during session)
 function shuffleArray<T>(array: T[], seed?: number): T[] {
   const shuffled = [...array];
@@ -794,21 +874,26 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                             onViewAll={handleViewAllPosts}
                           />
                           <div className="grid grid-cols-7 grid-rows-2 gap-0.5 rounded-xl overflow-hidden transition-all duration-300">
-                            {currentPosts.slice(0, 14).map((post, idx) => (
-                              <div
-                                key={`${post.id}-${postsIndex}`}
-                                style={{
-                                  opacity: postsVisible ? 0 : 0,
-                                  animation: postsVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                                  animationDelay: postsVisible ? `${140 + idx * 30}ms` : '0ms',
-                                  willChange: 'transform, opacity',
-                                  transition: !postsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
-                                }}
-                                className={!postsVisible ? 'opacity-0' : ''}
-                              >
-                                <PostCard post={post} currentUser={currentUser} categories={categories} />
-                              </div>
-                            ))}
+                            {currentPosts.slice(0, 14).map((post, idx) => {
+                              const total = Math.min(currentPosts.length, 14);
+                              const singleRow = total <= 7;
+                              const roundBL = singleRow && idx === 0;
+                              return (
+                                <div
+                                  key={`${post.id}-${postsIndex}`}
+                                  style={{
+                                    opacity: postsVisible ? 0 : 0,
+                                    animation: postsVisible ? `fadeInUp 520ms ease-out both` : 'none',
+                                    animationDelay: postsVisible ? `${140 + idx * 30}ms` : '0ms',
+                                    willChange: 'transform, opacity',
+                                    transition: !postsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
+                                  }}
+                                  className={`${!postsVisible ? 'opacity-0' : ''} ${roundBL ? 'rounded-bl-xl overflow-hidden' : ''}`}
+                                >
+                                  <PostCard post={post} currentUser={currentUser} categories={categories} />
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       ) : (
@@ -846,7 +931,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                     )}
 
                     {/* ===== Trending Listings Section ===== */}
-                    {!filterInfo.isFiltered && currentListings.length > 0 && (
+                    {!filterInfo.isFiltered && (
                       <>
                         <div id="listings-rail">
                           <SectionHeader
@@ -856,13 +941,27 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                             onViewAll={handleViewAllListings}
                           />
                           <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 transition-all duration-300`}>
-                            {currentListings.slice(0, 9).map((listing, idx) => (
+                            <div
+                              style={{
+                                opacity: listingsVisible ? 0 : 0,
+                                animation: listingsVisible ? `fadeInUp 520ms ease-out both` : 'none',
+                                animationDelay: listingsVisible ? `140ms` : '0ms',
+                                willChange: 'transform, opacity',
+                                transition: !listingsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
+                              }}
+                              className={!listingsVisible ? 'opacity-0' : ''}
+                            >
+                              <SampleCardWrapper>
+                                <ListingCard currentUser={currentUser} data={SAMPLE_LISTING} />
+                              </SampleCardWrapper>
+                            </div>
+                            {currentListings.slice(0, 8).map((listing, idx) => (
                               <div
                                 key={`${listing.id}-${listingsIndex}`}
                                 style={{
                                   opacity: listingsVisible ? 0 : 0,
                                   animation: listingsVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                                  animationDelay: listingsVisible ? `${140 + idx * 30}ms` : '0ms',
+                                  animationDelay: listingsVisible ? `${140 + (idx + 1) * 30}ms` : '0ms',
                                   willChange: 'transform, opacity',
                                   transition: !listingsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
                                 }}
@@ -877,7 +976,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                     )}
 
                     {/* ===== Trending Professionals Section ===== */}
-                    {!filterInfo.isFiltered && currentEmployees.length > 0 && (
+                    {!filterInfo.isFiltered && (
                       <>
                         <div id="employees-rail">
                           <SectionHeader
@@ -887,7 +986,31 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                             onViewAll={handleViewAllProfessionals}
                           />
                           <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 transition-all duration-300`}>
-                            {currentEmployees.slice(0, 9).map((employee, idx) => {
+                            <div
+                              style={{
+                                opacity: employeesVisible ? 0 : 0,
+                                animation: employeesVisible ? `fadeInUp 520ms ease-out both` : 'none',
+                                animationDelay: employeesVisible ? `160ms` : '0ms',
+                                willChange: 'transform, opacity',
+                                transition: !employeesVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
+                              }}
+                              className={!employeesVisible ? 'opacity-0' : ''}
+                            >
+                              <SampleCardWrapper>
+                                <WorkerCard
+                                  employee={SAMPLE_EMPLOYEE}
+                                  listingTitle={SAMPLE_LISTING.title}
+                                  data={{
+                                    title: SAMPLE_LISTING.title,
+                                    imageSrc: SAMPLE_LISTING.imageSrc,
+                                    category: SAMPLE_LISTING.category,
+                                  }}
+                                  listing={SAMPLE_LISTING}
+                                  currentUser={currentUser ?? undefined}
+                                />
+                              </SampleCardWrapper>
+                            </div>
+                            {currentEmployees.slice(0, 8).map((employee, idx) => {
                               const listing = listingsForLookup.find(l => l.id === employee.listingId) || listingsForLookup[0];
                               const imageSrc = listing?.imageSrc || (Array.isArray(listing?.galleryImages) ? listing.galleryImages[0] : undefined) || placeholderDataUri(listing?.title || 'Listing');
 
@@ -897,7 +1020,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                                   style={{
                                     opacity: employeesVisible ? 0 : 0,
                                     animation: employeesVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                                    animationDelay: employeesVisible ? `${160 + idx * 30}ms` : '0ms',
+                                    animationDelay: employeesVisible ? `${160 + (idx + 1) * 30}ms` : '0ms',
                                     willChange: 'transform, opacity',
                                     transition: !employeesVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
                                   }}

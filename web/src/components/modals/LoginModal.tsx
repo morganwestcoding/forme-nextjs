@@ -69,11 +69,8 @@ const LoginModal = () => {
   };
 
   const onToggleToRegister = useCallback(() => {
-    modalRef.current?.close?.();
-    setTimeout(() => {
-      loginModal.onClose();
-      router.push('/register');
-    }, ANIM_MS);
+    loginModal.onClose();
+    router.push('/register');
   }, [loginModal, router]);
 
   const onForgotPassword = useCallback(() => {
@@ -110,7 +107,7 @@ const LoginModal = () => {
             autoFocus
             disabled={isLoading}
             {...register('email', { required: 'Email is required' })}
-            className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-[box-shadow,border-color] duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
             placeholder="you@example.com"
           />
           {errors.email && (
@@ -130,7 +127,7 @@ const LoginModal = () => {
               autoComplete="current-password"
               disabled={isLoading}
               {...register('password', { required: 'Password is required' })}
-              className="w-full px-4 py-3.5 pr-12 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-3.5 pr-12 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-[box-shadow,border-color] duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
               placeholder="Enter your password"
             />
             <button

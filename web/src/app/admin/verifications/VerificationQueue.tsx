@@ -80,7 +80,7 @@ export default function VerificationQueue({ users }: { users: PendingUser[] }) {
           {/* Licensing image */}
           {user.licensingImage && (
             <div className="mt-4">
-              <p className="text-[11px] font-medium text-stone-400 dark:text-stone-500 uppercase tracking-wide mb-2">Licensing Document</p>
+              <p className="text-[11px] font-medium text-stone-400 dark:text-stone-500 tracking-wide mb-2">Licensing document</p>
               <div className="relative w-full max-w-md aspect-[4/3] rounded-xl overflow-hidden border border-stone-200 dark:border-stone-800">
                 <Image
                   src={user.licensingImage}

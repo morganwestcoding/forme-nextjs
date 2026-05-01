@@ -16,7 +16,7 @@ export async function POST(
   const admin = await prisma.user.findUnique({
     where: { email: session.user.email as string },
   });
-  if (!admin || admin.role !== "master") return apiErrorCode("FORBIDDEN");
+  if (!admin || (admin.role !== "master" && admin.role !== "admin")) return apiErrorCode("FORBIDDEN");
 
   const { action } = (await request.json()) as { action: "suspend" | "unsuspend" };
 
