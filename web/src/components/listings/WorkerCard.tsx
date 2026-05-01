@@ -127,7 +127,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
     return (
       <div
         onClick={handleCardClick}
-        className="group cursor-pointer rounded-2xl overflow-visible relative transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+        className="group cursor-pointer rounded-2xl overflow-visible relative shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-white to-stone-50/80 dark:from-stone-900 dark:to-stone-950 rounded-2xl" />
         {/* Border overlay — renders on top of watermark */}
@@ -281,7 +281,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
       {/* Info */}
       <div className="flex flex-col justify-center min-w-0 flex-1">
         {/* Category — editorial cursive */}
-        {(employee.jobTitle || employee.user?.jobTitle || listing.category) && (
+        {(employee.jobTitle || employee.user?.jobTitle || (!employee.isIndependent && listing.category)) && (
           <p className="text-[11px] text-stone-400 dark:text-stone-500 leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
             {employee.jobTitle || employee.user?.jobTitle || listing.category}
           </p>
@@ -292,10 +292,16 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
           {employee.fullName}
         </h2>
 
-        {/* Location — listing title */}
-        <p className="text-[11px] text-stone-400 dark:text-stone-500 leading-none mt-1.5">
-          {listingTitle}
-        </p>
+        {/* Storefront slot — listing title, or "Independent" badge for solo providers */}
+        {employee.isIndependent ? (
+          <p className="text-[11px] text-stone-500 dark:text-stone-400 font-medium leading-none mt-1.5 tracking-wide uppercase">
+            Independent
+          </p>
+        ) : (
+          <p className="text-[11px] text-stone-400 dark:text-stone-500 leading-none mt-1.5">
+            {listingTitle}
+          </p>
+        )}
 
         {/* Rating | Price */}
         <div className="flex items-center text-[11px] text-stone-400 dark:text-stone-500 leading-none mt-2 tabular-nums">

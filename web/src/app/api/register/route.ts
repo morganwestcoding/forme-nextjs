@@ -56,12 +56,6 @@ export async function POST(request: Request) {
       jobTitle,
       isOwnerManager,
       selectedServices,
-      individualServices,
-      // Individual provider listing fields
-      listingCategory,
-      listingTitle,
-      listingDescription,
-      listingImage,
       // Student fields
       academyId,
     } = validation.data;
@@ -266,65 +260,9 @@ export async function POST(request: Request) {
       }
     }
 
-    // For individual providers - create their listing with services and worker card
-    if (userType === 'individual') {
-      try {
-        // Create the individual's listing (visible in Listings tab)
-        const listing = await prisma.listing.create({
-          data: {
-            title: listingTitle || `${name}'s Services`,
-            description: listingDescription || bio || 'Professional services',
-            imageSrc: listingImage || image || '',
-            category: listingCategory || 'Beauty', // Use selected category, default to Beauty
-            location: location || '',
-            userId: user.id,
-          }
-        });
-
-        // Grant management permissions for their own listing
-        await prisma.user.update({
-          where: { id: user.id },
-          data: {
-            managedListings: [listing.id]
-          }
-        });
-
-        // Create services if provided during registration
-        const serviceIds: string[] = [];
-        if (individualServices && Array.isArray(individualServices) && individualServices.length > 0) {
-          for (const svc of individualServices) {
-            if (svc.serviceName?.trim() && svc.category?.trim() && Number(svc.price) > 0) {
-              const createdService = await prisma.service.create({
-                data: {
-                  serviceName: svc.serviceName.trim(),
-                  price: Number(svc.price),
-                  category: svc.category.trim(),
-                  listingId: listing.id,
-                }
-              });
-              serviceIds.push(createdService.id);
-            }
-          }
-        }
-
-        // Create worker card (Employee record) with isIndependent flag
-        await prisma.employee.create({
-          data: {
-            fullName: name,
-            jobTitle: jobTitle || null,
-            listingId: listing.id,
-            userId: user.id,
-            serviceIds: serviceIds,
-            isActive: true,
-            isIndependent: true,
-            teamRole: 'owner',
-          }
-        });
-
-      } catch (listingError) {
-        // Don't fail registration if this fails
-      }
-    }
+    // Independent providers no longer get a listing/employee record on
+    // registration. Those are lazy-created by /api/employees/services the
+    // first time the worker adds a service (during onboarding or later).
 
     const token = await signMobileToken(user.id, user.email!);
 

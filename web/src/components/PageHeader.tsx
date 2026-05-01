@@ -91,52 +91,56 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
               />
             </div>
             <div className="flex items-center gap-2 ml-auto">
-              <button
-                id="wt-create"
-                onClick={() => createModal.onOpen()}
-                aria-label="Create new"
-                className="shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
-              >
-                <PlusSignIcon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
-              </button>
-              <button
-                id="wt-notifications"
-                onClick={() => notificationsModal.onOpen()}
-                aria-label={unreadNotifications > 0 ? `Notifications (${unreadNotifications} unread)` : 'Notifications'}
-                className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
-              >
-                <Notification03Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
-                {unreadNotifications > 0 && (
-                  <span
-                    className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-white text-[10px] font-semibold leading-none ring-2 ring-white dark:ring-stone-950"
-                    style={{
-                      background: 'linear-gradient(135deg, #2a2a2a 0%, #000 100%)',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)',
-                    }}
+              {currentUser && (
+                <>
+                  <button
+                    id="wt-create"
+                    onClick={() => createModal.onOpen()}
+                    aria-label="Create new"
+                    className="shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
                   >
-                    {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                  </span>
-                )}
-              </button>
-              <button
-                id="wt-messages"
-                onClick={() => inboxModal.onOpen(currentUser)}
-                aria-label={unreadMessages > 0 ? `Messages (${unreadMessages} unread)` : 'Messages'}
-                className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
-              >
-                <MessageMultiple01Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
-                {unreadMessages > 0 && (
-                  <span
-                    className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-white text-[10px] font-semibold leading-none ring-2 ring-white dark:ring-stone-950"
-                    style={{
-                      background: 'linear-gradient(135deg, #2a2a2a 0%, #000 100%)',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)',
-                    }}
+                    <PlusSignIcon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
+                  </button>
+                  <button
+                    id="wt-notifications"
+                    onClick={() => notificationsModal.onOpen()}
+                    aria-label={unreadNotifications > 0 ? `Notifications (${unreadNotifications} unread)` : 'Notifications'}
+                    className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
                   >
-                    {unreadMessages > 9 ? '9+' : unreadMessages}
-                  </span>
-                )}
-              </button>
+                    <Notification03Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
+                    {unreadNotifications > 0 && (
+                      <span
+                        className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-white text-[10px] font-semibold leading-none ring-2 ring-white dark:ring-stone-950"
+                        style={{
+                          background: 'linear-gradient(135deg, #2a2a2a 0%, #000 100%)',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)',
+                        }}
+                      >
+                        {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                      </span>
+                    )}
+                  </button>
+                  <button
+                    id="wt-messages"
+                    onClick={() => inboxModal.onOpen(currentUser)}
+                    aria-label={unreadMessages > 0 ? `Messages (${unreadMessages} unread)` : 'Messages'}
+                    className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+                  >
+                    <MessageMultiple01Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
+                    {unreadMessages > 0 && (
+                      <span
+                        className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-white text-[10px] font-semibold leading-none ring-2 ring-white dark:ring-stone-950"
+                        style={{
+                          background: 'linear-gradient(135deg, #2a2a2a 0%, #000 100%)',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)',
+                        }}
+                      >
+                        {unreadMessages > 9 ? '9+' : unreadMessages}
+                      </span>
+                    )}
+                  </button>
+                </>
+              )}
               <button
                 id="wt-profile"
                 onClick={() => currentUser ? userMenuModal.onOpen() : loginModal.onOpen()}

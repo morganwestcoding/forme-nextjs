@@ -167,12 +167,14 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
     }
 
     if (userType === 'individual') {
+      // Independents don't get a storefront listing — no LISTING_CATEGORY /
+      // LISTING_INFO step. Services entered in SERVICES_LIST are submitted
+      // post-registration via /api/employees/services, which lazy-creates the
+      // hidden listing + employee record on first call.
       return [
         ...basePath,
         STEPS.JOB_TITLE,
         STEPS.SERVICES_LIST,
-        STEPS.LISTING_CATEGORY,
-        STEPS.LISTING_INFO,
         STEPS.LOCATION,
         STEPS.IMAGES,
       ];
@@ -389,11 +391,6 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
         jobTitle: data.jobTitle,
         isOwnerManager: data.isOwnerManager,
         selectedServices: data.selectedListing === 'SKIP' ? [] : data.selectedServices,
-        individualServices: data.userType === 'individual' ? validServices : undefined,
-        listingCategory: data.userType === 'individual' ? data.listingCategory : undefined,
-        listingTitle: data.userType === 'individual' ? data.listingTitle : undefined,
-        listingDescription: data.userType === 'individual' ? data.listingDescription : undefined,
-        listingImage: data.userType === 'individual' ? data.listingImage : undefined,
         academyId: data.userType === 'student' ? data.academyId : undefined,
       });
 
@@ -405,6 +402,18 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
 
       if (signInRes?.ok || signInRes?.status === 200) {
         await update();
+
+        // Independents who entered services in SERVICES_LIST get their hidden
+        // listing + employee + services lazy-created here. Failure is non-fatal
+        // — they can re-add via the services management UI.
+        if (data.userType === 'individual' && validServices.length > 0) {
+          try {
+            await axios.post('/api/employees/services', { services: validServices });
+          } catch {
+            // ignore — registration already succeeded
+          }
+        }
+
         router.refresh();
 
         // Smooth fade-out before navigating.

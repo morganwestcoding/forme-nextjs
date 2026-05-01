@@ -21,23 +21,12 @@ export const registerSchema = z.object({
   jobTitle: z.string().optional(),
   isOwnerManager: z.boolean().optional(),
   selectedServices: z.array(z.string()).optional(),
-  individualServices: z.array(z.object({
-    serviceName: z.string(),
-    price: z.number().or(z.string()),
-    category: z.string(),
-    imageSrc: z.string().optional(),
-  })).optional(),
-  // Individual provider listing fields
-  listingCategory: z.string().optional(),
-  listingTitle: z.string().optional(),
-  listingDescription: z.string().optional(),
-  listingImage: z.string().optional(),
 });
 
 // Listing creation schema
 export const createListingSchema = z.object({
   title: z.string().min(1, 'Title is required'),
-  description: z.string().min(1, 'Description is required'),
+  description: z.string().min(1, 'Description is required').max(350, 'Description must be 350 characters or fewer'),
   imageSrc: z.string().min(1, 'Image is required'),
   category: z.string().min(1, 'Category is required'),
   location: z.string().min(1, 'Location is required'),
@@ -110,7 +99,7 @@ export const createReviewSchema = z.object({
 // Shop creation schema
 export const createShopSchema = z.object({
   name: z.string().min(1, 'Shop name is required'),
-  description: z.string().nullish(),
+  description: z.string().max(350, 'Description must be 350 characters or fewer').nullish(),
   logo: z.string().nullish(),
   coverImage: z.string().nullish(),
   location: z.string().nullish(),
@@ -153,7 +142,7 @@ export const createMessageSchema = z.object({
 // Profile update schema
 export const updateProfileSchema = z.object({
   name: z.string().min(1).optional(),
-  bio: z.string().max(500).optional(),
+  bio: z.string().max(350, 'Bio must be 350 characters or fewer').optional(),
   location: z.string().optional(),
   image: z.string().optional(),
   imageSrc: z.string().optional(),

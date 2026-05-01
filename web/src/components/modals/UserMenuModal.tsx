@@ -80,8 +80,7 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
           label: 'Subscription',
           onClick: () => handleNavigate('/subscription'),
         },
-        // Master-only: admin panel.
-        ...(currentUser.role === 'master'
+        ...(currentUser.role === 'master' || currentUser.role === 'admin'
           ? [
               {
                 icon: School01Icon,

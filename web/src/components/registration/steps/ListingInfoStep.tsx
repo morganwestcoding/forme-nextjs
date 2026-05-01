@@ -17,6 +17,7 @@ export default function ListingInfoStep() {
   const [uploading, setUploading] = useState(false);
 
   const listingImage = watch('listingImage');
+  const listingDescription = watch('listingDescription') as string | undefined;
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -126,9 +127,13 @@ export default function ListingInfoStep() {
               id="listingDescription"
               {...register('listingDescription', { required: 'Description is required' })}
               rows={3}
+              maxLength={350}
               className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all resize-none"
               placeholder="Briefly describe your services"
             />
+            <p className="text-xs text-stone-400 dark:text-stone-500 text-right mt-1">
+              {(listingDescription?.length || 0)}/350
+            </p>
             {errors.listingDescription && (
               <p className="mt-2 text-sm text-red-500">{errors.listingDescription.message as string}</p>
             )}

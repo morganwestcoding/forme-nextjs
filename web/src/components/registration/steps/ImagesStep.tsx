@@ -109,12 +109,12 @@ export default function ImagesStep({ userType }: ImagesStepProps) {
             id="bio"
             {...register('bio')}
             rows={2}
-            maxLength={150}
+            maxLength={350}
             className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all resize-none"
             placeholder="Tell clients a bit about yourself..."
           />
           <p className="text-xs text-stone-400 dark:text-stone-500 text-right mt-1">
-            {(bio?.length || 0)}/150
+            {(bio?.length || 0)}/350
           </p>
         </div>
       </div>

@@ -17,7 +17,8 @@ interface ShopDetailsStepProps {
 const LISTING_CARD_ASPECT = 250 / 280;
 
 export default function ShopDetailsStep({ logo, onLogoChange }: ShopDetailsStepProps) {
-  const { register, formState: { errors } } = useFormContext();
+  const { register, watch, formState: { errors } } = useFormContext();
+  const description = watch('description') as string | undefined;
   const inputRef = useRef<HTMLInputElement>(null);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -131,9 +132,13 @@ export default function ShopDetailsStep({ logo, onLogoChange }: ShopDetailsStepP
               id="description"
               {...register('description', { required: 'Description is required' })}
               rows={3}
+              maxLength={350}
               className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all resize-none"
               placeholder="Briefly describe your shop"
             />
+            <p className="text-xs text-stone-400 dark:text-stone-500 text-right mt-1">
+              {(description?.length || 0)}/350
+            </p>
             {errors.description && (
               <p className="mt-2 text-sm text-red-500">{errors.description.message as string}</p>
             )}

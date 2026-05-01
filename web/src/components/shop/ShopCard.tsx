@@ -25,7 +25,7 @@ const ShopCard: React.FC<ShopCardProps> = ({ data }) => {
       {/* Top row: image + info side by side */}
       <div className="flex flex-row gap-3">
         {/* Square image */}
-        <div className="relative overflow-hidden rounded-xl flex-shrink-0 w-[120px] h-[120px]">
+        <div className="relative overflow-hidden rounded-xl flex-shrink-0 w-[120px] h-[120px] shadow-sm">
           <Image
             src={cardImage}
             alt={data.name}
@@ -61,7 +61,7 @@ const ShopCard: React.FC<ShopCardProps> = ({ data }) => {
       {/* 4 product circles below — same height as category buttons (h-9 = 36px) */}
       <div className="flex items-center gap-1.5 mt-2.5">
         {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="relative w-9 h-9 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800   flex-shrink-0">
+          <div key={i} className="relative w-9 h-9 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-800 flex-shrink-0">
             {products[i] ? (
               <Image
                 src={products[i].image || placeholderDataUri(products[i].name || 'Product')}

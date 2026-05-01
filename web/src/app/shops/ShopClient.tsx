@@ -10,9 +10,12 @@ import PageSearch from '@/components/search/PageSearch';
 import CategoryNav from '@/app/market/CategoryNav';
 import SectionHeader from '@/app/market/SectionHeader';
 import PageHeader from '@/components/PageHeader';
+import EditorialBanner from '@/components/EditorialBanner';
 import { categories } from '@/components/Categories';
 import { useSidebarState } from '@/app/hooks/useSidebarState';
 import useLocationModal from '@/app/hooks/useLocationModal';
+import useLoginModal from '@/app/hooks/useLoginModal';
+import { Store01Icon } from 'hugeicons-react';
 
 // Shuffle array using Fisher-Yates algorithm (seeded for stability during session)
 function shuffleArray<T>(array: T[], seed: number): T[] {
@@ -40,28 +43,12 @@ const FADE_OUT_DURATION = 200;
 
 const BANNERS = [
   {
-    src: '/assets/people/banner-7.png',
-    alt: 'Most Popular',
-    tag: 'Trending',
-    title: 'Most Popular',
-    subtitle: 'What everyone is booking',
-    href: '/shops?category=Barber',
-  },
-  {
-    src: '/assets/people/banner-6.png',
-    alt: 'New on ForMe',
-    tag: 'Curated',
-    title: 'New on ForMe',
-    subtitle: 'Fresh brands joining our community',
+    src: '/assets/people/v-drip.png',
+    alt: 'V Drip Hair Studio',
+    tag: 'Featured',
+    title: 'V Drip Hair Studio',
+    subtitle: 'Where the next look begins',
     href: '/shops?category=Wellness',
-  },
-  {
-    src: '/assets/people/banner-5.png',
-    alt: 'Near You',
-    tag: 'Local',
-    title: 'Near You',
-    subtitle: 'Top-rated in your area',
-    href: '/maps',
   },
 ];
 
@@ -74,6 +61,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
 }) => {
   const params = useSearchParams();
   const router = useRouter();
+  const loginModal = useLoginModal();
   const isSidebarCollapsed = useSidebarState();
 
   // Client-side fetch when no server data
@@ -100,9 +88,6 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
   // Dynamic items per page: 12 when sidebar collapsed, 10 when expanded
   const ITEMS_PER_PAGE = isSidebarCollapsed ? 12 : 10;
-
-  // Banner state
-  const [activeBanner, setActiveBanner] = useState(0);
 
   // Pagination state
   const [shopsIndex, setShopsIndex] = useState(0);
@@ -357,50 +342,7 @@ const ShopClient: React.FC<ShopClientProps> = ({
       {/* Real content — hidden while loading */}
       {!isLoadingData && <>
       {/* Editorial Banner */}
-      <div className="mt-8">
-        <div
-          className="relative group overflow-hidden rounded-2xl cursor-pointer"
-          onClick={() => router.push(BANNERS[activeBanner].href)}
-        >
-          <div className="aspect-[4/1] bg-stone-900 relative">
-            <Image
-              key={activeBanner}
-              src={BANNERS[activeBanner].src}
-              alt={BANNERS[activeBanner].alt}
-              fill
-              sizes="100vw"
-              className="object-contain group-hover:scale-[1.02] transition-all duration-700 ease-out"
-            />
-            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent" />
-            {/* Forme wordmark icon — top right */}
-            <div className="absolute top-4 right-4 text-white/75">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" color="currentColor" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5.50586 16.9916L8.03146 10.0288C8.49073 9.06222 9.19305 8.26286 9.99777 10.18C10.7406 11.9497 11.8489 15.1903 12.5031 16.9954M6.65339 14.002H11.3215" />
-                <path d="M3.46447 5.31802C2 6.63604 2 8.75736 2 13C2 17.2426 2 19.364 3.46447 20.682C4.92893 22 7.28596 22 12 22C16.714 22 19.0711 22 20.5355 20.682C22 19.364 22 17.2426 22 13C22 8.75736 22 6.63604 20.5355 5.31802C19.0711 4 16.714 4 12 4C7.28596 4 4.92893 4 3.46447 5.31802Z" />
-                <path d="M18.4843 9.98682V12.9815M18.4843 12.9815V16.9252M18.4843 12.9815H16.466C16.2263 12.9815 15.9885 13.0261 15.7645 13.113C14.0707 13.7702 14.0707 16.2124 15.7645 16.8696C15.9885 16.9565 16.2263 17.0011 16.466 17.0011H18.4843" />
-              </svg>
-            </div>
-            <div className="absolute bottom-0 left-0 p-5">
-              <p className="text-xs tracking-wide text-white/80 mb-0.5" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>{BANNERS[activeBanner].tag}</p>
-              <h3 className="text-xl font-bold text-white leading-snug">{BANNERS[activeBanner].title}</h3>
-              <p className="text-sm text-white/70 mt-0.5">{BANNERS[activeBanner].subtitle}</p>
-            </div>
-          </div>
-        </div>
-        <div className="flex gap-1.5 mt-3 justify-center items-center">
-          {BANNERS.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setActiveBanner(i)}
-              className={`rounded-full transition-all duration-300 ${
-                activeBanner === i
-                  ? 'w-4 h-1.5 bg-stone-900 dark:bg-white dark:bg-stone-900'
-                  : 'w-1.5 h-1.5 bg-stone-300 dark:bg-stone-600 hover:bg-stone-400 dark:hover:bg-stone-500'
-              }`}
-            />
-          ))}
-        </div>
-      </div>
+      <EditorialBanner banners={BANNERS} />
 
       {/* Shop By Category */}
       <div>
@@ -640,22 +582,34 @@ const ShopClient: React.FC<ShopClientProps> = ({
               )}
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center mb-5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-stone-400 dark:text-stone-500">
-                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <path d="M16 10a4 4 0 01-8 0" />
-                </svg>
+            <div className="flex items-center justify-center px-6 min-h-[60vh] pb-24">
+              <div className="text-center max-w-[360px]">
+                <div className="w-14 h-14 mx-auto rounded-2xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center shadow-sm">
+                  <Store01Icon
+                    className="w-6 h-6 text-stone-400 dark:text-stone-500"
+                    strokeWidth={1.25}
+                  />
+                </div>
+                <h3 className="mt-5 text-[20px] font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
+                  {filterInfo.isFiltered ? 'No matches found' : 'No shops yet'}
+                </h3>
+                <p className="mt-2 text-[13.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
+                  {filterInfo.isFiltered
+                    ? 'Try adjusting your search or filters to find what you\'re looking for.'
+                    : 'Be the first brand here — open your shop and start selling to the community.'}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => currentUser ? router.push('/shop/new') : loginModal.onOpen()}
+                  className="group mt-6 inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 text-[13px] font-medium tracking-tight shadow-sm hover:bg-stone-800 dark:hover:bg-stone-200 active:scale-[0.97] transition-all duration-200"
+                >
+                  <Store01Icon
+                    className="w-3.5 h-3.5 transition-transform duration-200 group-hover:scale-110"
+                    strokeWidth={2}
+                  />
+                  {currentUser ? 'Open a shop' : 'Sign in to create a shop'}
+                </button>
               </div>
-              <p className="text-[15px] font-medium text-stone-700 dark:text-stone-200 mb-1">
-                {filterInfo.isFiltered ? 'No results found' : 'No shops yet'}
-              </p>
-              <p className="text-[13px] text-stone-400 dark:text-stone-500 max-w-xs">
-                {filterInfo.isFiltered
-                  ? 'Try adjusting your search or filters to find what you\'re looking for.'
-                  : 'Shops and products will appear here as businesses join the platform.'}
-              </p>
             </div>
           )}
         </div>

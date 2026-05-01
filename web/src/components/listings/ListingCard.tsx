@@ -104,7 +104,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
     return (
       <div
         onClick={() => router.push(`/listings/${data.id}`)}
-        className="group cursor-pointer rounded-2xl overflow-visible relative transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+        className="group cursor-pointer rounded-2xl overflow-visible relative shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
       >
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-white to-stone-50/80 dark:from-stone-900 dark:to-stone-950 rounded-2xl" />
@@ -139,7 +139,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
               <div className="relative flex flex-col h-full p-5">
                 {/* Listing image */}
                 <div className="mb-3">
-                  <div className="w-12 h-12 rounded-xl overflow-hidden relative bg-stone-100 dark:bg-stone-800">
+                  <div className="w-12 h-12 rounded-xl overflow-hidden relative bg-stone-100 dark:bg-stone-800 shadow-sm">
                     <Image
                       src={cardImage}
                       alt={data.title}
@@ -204,7 +204,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
     return (
       <div
         onClick={() => router.push(`/listings/${data.id}`)}
-        className="group cursor-pointer overflow-hidden relative rounded-xl bg-stone-900 transition-[transform,box-shadow,opacity] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.15),0_8px_16px_rgba(0,0,0,0.1)] active:scale-[0.98] active:opacity-90 max-w-[250px]"
+        className="group cursor-pointer overflow-hidden relative rounded-xl bg-stone-900 shadow-sm transition-[transform,box-shadow,opacity] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.15),0_8px_16px_rgba(0,0,0,0.1)] active:scale-[0.98] active:opacity-90 max-w-[250px]"
       >
         {/* Background image */}
         <div className="absolute inset-0 z-0">
@@ -295,7 +295,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
       className="group cursor-pointer rounded-2xl p-3 -mx-3 flex flex-row gap-4 relative transition-colors duration-200 hover:bg-stone-50/80 dark:hover:bg-stone-900/40"
     >
       {/* Image */}
-      <div className="relative overflow-hidden rounded-xl flex-shrink-0 w-[120px] h-[120px]">
+      <div className="relative overflow-hidden rounded-xl flex-shrink-0 w-[120px] h-[120px] shadow-sm">
         <Image
           src={cardImage}
           alt={data.title}

@@ -400,7 +400,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
   const isMorphed = morphPhase >= 1;
   const isSettled = morphPhase >= 2;
 
-  if (!isLoadingPosts && !currentPost) return null;
+  const isEmpty = !isLoadingPosts && initialPosts.length === 0;
 
   const navItems = [
     { label: 'Home', href: '/', icon: 'Ho' },
@@ -479,11 +479,11 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
               transition: 'opacity 0.4s ease-out',
             }}
           >
-            {[
+            {(currentUser ? [
               { onClick: () => router.push('/listing/new'), icon: <PlusSignIcon className="w-5 h-5" strokeWidth={1.5} />, label: 'Create' },
               { onClick: () => notificationsModal.onOpen(), icon: <Notification03Icon className="w-5 h-5" strokeWidth={1.5} />, label: 'Notifications' },
               { onClick: () => inboxModal.onOpen(currentUser), icon: <MessageMultiple01Icon className="w-5 h-5" strokeWidth={1.5} />, label: 'Messages' },
-            ].map((btn, i) => (
+            ] : []).map((btn, i) => (
               <button
                 key={btn.label}
                 onClick={btn.onClick}
@@ -1013,35 +1013,83 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
             })}
           </div>}
 
+          {/* ===== EMPTY STATE — when there are no posts to show ===== */}
+          {isEmpty && (
+            <div
+              className="absolute inset-0 flex items-center justify-center px-6"
+              style={{
+                opacity: (isSettled && !isLeaving) ? 1 : 0,
+                transition: 'opacity 0.6s ease-out',
+              }}
+            >
+              <div className="text-center max-w-[340px]">
+                <div className="w-14 h-14 mx-auto rounded-2xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center shadow-sm">
+                  <Notification03Icon
+                    className="w-6 h-6 text-stone-400 dark:text-stone-500"
+                    strokeWidth={1.25}
+                  />
+                </div>
+                <h2 className="mt-5 text-[20px] font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
+                  Your feed is quiet
+                </h2>
+                <p className="mt-2 text-[13.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
+                  Posts from brands and pros you follow will show up here. Head back to Discover to find some.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => handleNavAway('/')}
+                  className="group mt-6 inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 text-[13px] font-medium tracking-tight shadow-sm hover:bg-stone-800 dark:hover:bg-stone-200 active:scale-[0.97] transition-all duration-200"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="transition-transform duration-200 group-hover:-translate-x-0.5"
+                  >
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                  </svg>
+                  Back to Discover
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* ===== NAV ARROWS — minimal, right edge ===== */}
-          <div
-            className="hidden sm:flex fixed right-6 top-1/2 -translate-y-1/2 z-30 flex-col items-center gap-2 select-none"
-            style={{
-              opacity: (isSettled && !isLeaving) ? 1 : 0,
-              transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1)',
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => navigatePost(-1)}
-              aria-label="Previous post"
-              className="group w-10 h-10 rounded-full flex items-center justify-center text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 active:scale-[0.92] transition-all duration-200   dark:hover:text-white "
+          {!isEmpty && (
+            <div
+              className="hidden sm:flex fixed right-6 top-1/2 -translate-y-1/2 z-30 flex-col items-center gap-2 select-none"
+              style={{
+                opacity: (isSettled && !isLeaving) ? 1 : 0,
+                transition: 'opacity 600ms cubic-bezier(0.16, 1, 0.3, 1)',
+              }}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 15l-6-6-6 6" />
-              </svg>
-            </button>
-            <button
-              type="button"
-              onClick={() => navigatePost(1)}
-              aria-label="Next post"
-              className="group w-10 h-10 rounded-full flex items-center justify-center text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 active:scale-[0.92] transition-all duration-200   dark:hover:text-white "
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 9l6 6 6-6" />
-              </svg>
-            </button>
-          </div>
+              <button
+                type="button"
+                onClick={() => navigatePost(-1)}
+                aria-label="Previous post"
+                className="group w-10 h-10 rounded-full flex items-center justify-center text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 active:scale-[0.92] transition-all duration-200   dark:hover:text-white "
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 15l-6-6-6 6" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={() => navigatePost(1)}
+                aria-label="Next post"
+                className="group w-10 h-10 rounded-full flex items-center justify-center text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 active:scale-[0.92] transition-all duration-200   dark:hover:text-white "
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+            </div>
+          )}
 
 
         </div>

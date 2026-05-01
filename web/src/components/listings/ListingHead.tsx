@@ -399,7 +399,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               {/* Content over banner */}
               <div className="relative z-10 pt-8 pb-5 px-6 text-center">
                 {/* Avatar */}
-                <div className="w-24 h-24 rounded-2xl mx-auto overflow-hidden border-[3px] border-white" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)' }}>
+                <div className="w-24 h-24 rounded-2xl mx-auto overflow-hidden border-[3px] border-white shadow-sm">
                   <img src={mainImage} alt={title} className="w-full h-full object-cover" />
                 </div>
               <div className="mt-3">
@@ -518,7 +518,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           {/* Mobile Header (hidden on desktop) */}
           <div className="md:hidden mb-6">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-xl bg-stone-100 dark:bg-stone-800 border-2 border-white shadow-lg overflow-hidden flex-shrink-0">
+              <div className="w-16 h-16 rounded-xl bg-stone-100 dark:bg-stone-800 border-2 border-white shadow-sm overflow-hidden flex-shrink-0">
                 <img
                   src={mainImage}
                   alt={title}
