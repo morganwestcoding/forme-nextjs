@@ -18,8 +18,10 @@ export async function POST(request: Request) {
       return apiError('Services array required', 400);
     }
 
-    // Find the user's employee record (should be independent worker)
-    const employee = await prisma.employee.findFirst({
+    // Find the user's employee record (should be independent worker).
+    // Independents have no listing/employee at registration — both are
+    // lazy-created here on first call so services have somewhere to attach.
+    let employee = await prisma.employee.findFirst({
       where: {
         userId: currentUser.id,
         isIndependent: true,
@@ -30,7 +32,39 @@ export async function POST(request: Request) {
     });
 
     if (!employee) {
-      return apiError('Employee record not found', 404);
+      if (currentUser.userType !== 'individual') {
+        return apiError('Employee record not found', 404);
+      }
+
+      const listing = await prisma.listing.create({
+        data: {
+          title: `${currentUser.name || 'Independent'}'s Services`,
+          description: currentUser.bio || '',
+          imageSrc: currentUser.image || '',
+          category: 'Beauty',
+          location: currentUser.location || '',
+          userId: currentUser.id,
+        },
+      });
+
+      await prisma.user.update({
+        where: { id: currentUser.id },
+        data: { managedListings: { set: [listing.id] } },
+      });
+
+      employee = await prisma.employee.create({
+        data: {
+          fullName: currentUser.name || 'Independent',
+          jobTitle: currentUser.jobTitle || null,
+          listingId: listing.id,
+          userId: currentUser.id,
+          serviceIds: [],
+          isActive: true,
+          isIndependent: true,
+          teamRole: 'owner',
+        },
+        include: { listing: true },
+      });
     }
 
     // Filter valid services
