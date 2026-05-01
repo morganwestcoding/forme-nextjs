@@ -8,8 +8,7 @@ import { SafeUser } from '@/app/types';
 import Button from '@/components/ui/Button';
 import { TeamData, TeamMember, TeamBooking } from '@/app/actions/getTeamData';
 import Container from '@/components/Container';
-import PageHeader from '@/components/PageHeader';
-import Skeleton, { PageHeaderSkeleton, ContainerSkeleton } from '@/components/ui/Skeleton';
+import Skeleton, { ContainerSkeleton } from '@/components/ui/Skeleton';
 import toast from 'react-hot-toast';
 import useInboxModal from '@/app/hooks/useInboxModal';
 
@@ -371,7 +370,6 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
   if (teamLoading || !teamData) {
     return (
       <ContainerSkeleton>
-        <PageHeaderSkeleton />
         <div className="mt-8 pb-16">
           <div className="mb-8">
             <div className="flex items-center justify-between">
@@ -506,8 +504,6 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
 
   return (
     <Container>
-      <PageHeader currentUser={currentUser} currentPage="Teammate Central" />
-
       <div className="mt-8 pb-16">
         <div className="mb-8">
           <div className="flex items-center justify-between">

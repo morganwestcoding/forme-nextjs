@@ -9,13 +9,11 @@ import ProductCard from '@/components/shop/ProductCard';
 import PageSearch from '@/components/search/PageSearch';
 import CategoryNav from '@/app/market/CategoryNav';
 import SectionHeader from '@/app/market/SectionHeader';
-import PageHeader from '@/components/PageHeader';
 import EditorialBanner from '@/components/EditorialBanner';
 import { categories } from '@/components/Categories';
 import { useSidebarState } from '@/app/hooks/useSidebarState';
 import useLocationModal from '@/app/hooks/useLocationModal';
 import useLoginModal from '@/app/hooks/useLoginModal';
-import { Store01Icon } from 'hugeicons-react';
 
 // Shuffle array using Fisher-Yates algorithm (seeded for stability during session)
 function shuffleArray<T>(array: T[], seed: number): T[] {
@@ -278,8 +276,6 @@ const ShopClient: React.FC<ShopClientProps> = ({
 
   return (
     <>
-      <PageHeader currentUser={currentUser} />
-
       {/* Inline skeleton while fetching */}
       {isLoadingData && (
         <div>
@@ -582,34 +578,34 @@ const ShopClient: React.FC<ShopClientProps> = ({
               )}
             </>
           ) : (
-            <div className="flex items-center justify-center px-6 min-h-[60vh] pb-24">
-              <div className="text-center max-w-[360px]">
-                <div className="w-14 h-14 mx-auto rounded-2xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center shadow-sm">
-                  <Store01Icon
-                    className="w-6 h-6 text-stone-400 dark:text-stone-500"
-                    strokeWidth={1.25}
-                  />
+            <div className="px-6 pb-24">
+              {filterInfo.isFiltered ? (
+                <div className="flex items-center justify-center min-h-[60vh]">
+                  <div className="text-center max-w-[360px]">
+                    <h3 className="text-[20px] font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
+                      No matches found
+                    </h3>
+                    <p className="mt-2 text-[13.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
+                      Try adjusting your search or filters to find what you&apos;re looking for.
+                    </p>
+                  </div>
                 </div>
-                <h3 className="mt-5 text-[20px] font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
-                  {filterInfo.isFiltered ? 'No matches found' : 'No shops yet'}
-                </h3>
-                <p className="mt-2 text-[13.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
-                  {filterInfo.isFiltered
-                    ? 'Try adjusting your search or filters to find what you\'re looking for.'
-                    : 'Be the first brand here — open your shop and start selling to the community.'}
-                </p>
+              ) : (
                 <button
                   type="button"
                   onClick={() => currentUser ? router.push('/shop/new') : loginModal.onOpen()}
-                  className="group mt-6 inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 text-[13px] font-medium tracking-tight shadow-sm hover:bg-stone-800 dark:hover:bg-stone-200 active:scale-[0.97] transition-all duration-200"
+                  className="w-full flex items-center justify-center min-h-[60vh] rounded-2xl border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/40 hover:border-stone-900 dark:hover:border-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
                 >
-                  <Store01Icon
-                    className="w-3.5 h-3.5 transition-transform duration-200 group-hover:scale-110"
-                    strokeWidth={2}
-                  />
-                  {currentUser ? 'Open a shop' : 'Sign in to create a shop'}
+                  <div className="text-center max-w-[360px]">
+                    <h3 className="text-[20px] font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
+                      No shops yet
+                    </h3>
+                    <p className="mt-2 text-[13.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
+                      {currentUser ? 'Be the first brand here — open your shop and start selling to the community.' : 'Sign in to open your shop and start selling to the community.'}
+                    </p>
+                  </div>
                 </button>
-              </div>
+              )}
             </div>
           )}
         </div>

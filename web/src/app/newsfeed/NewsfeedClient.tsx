@@ -1038,21 +1038,8 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                 <button
                   type="button"
                   onClick={() => handleNavAway('/')}
-                  className="group mt-6 inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 text-[13px] font-medium tracking-tight shadow-sm hover:bg-stone-800 dark:hover:bg-stone-200 active:scale-[0.97] transition-all duration-200"
+                  className="mt-6 inline-flex items-center px-4 py-2.5 rounded-xl bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 text-[13px] font-medium tracking-tight shadow-sm hover:bg-stone-800 dark:hover:bg-stone-200 active:scale-[0.97] transition-all duration-200"
                 >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="transition-transform duration-200 group-hover:-translate-x-0.5"
-                  >
-                    <path d="M19 12H5M12 19l-7-7 7-7" />
-                  </svg>
                   Back to Discover
                 </button>
               </div>

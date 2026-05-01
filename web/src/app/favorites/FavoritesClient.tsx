@@ -8,7 +8,6 @@ import ShopCard from '@/components/shop/ShopCard';
 import PostCard from '@/components/feed/PostCard';
 import { categories } from '@/components/Categories';
 import { SafeListing, SafeUser, SafeEmployee, SafeShop, SafePost } from '@/app/types';
-import PageHeader from '@/components/PageHeader';
 import { useSidebarState } from '@/app/hooks/useSidebarState';
 
 type FavoriteTab = 'all' | 'businesses' | 'professionals' | 'shops' | 'posts';
@@ -98,8 +97,6 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
   if (isLoading) {
     return (
       <Container>
-        <PageHeader currentUser={currentUser} currentPage="Favorites" />
-
         <div className="mt-8">
           {/* Page title */}
           <div className="mb-8">
@@ -153,8 +150,6 @@ const FavoritesClient: React.FC<FavoritesClientProps> = ({
 
   return (
     <Container>
-      <PageHeader currentUser={currentUser} currentPage="Favorites" />
-
       <div className="mt-8">
         {/* Page header */}
         <div className="mb-8">

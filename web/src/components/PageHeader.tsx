@@ -19,11 +19,10 @@ import PageSearch from '@/components/search/PageSearch';
 interface PageHeaderProps {
   currentUser?: SafeUser | null;
   embedded?: boolean;
-  currentCategories?: string[];
   currentPage?: string;
 }
 
-const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, currentCategories = [], currentPage }) => {
+const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, currentPage }) => {
   const router = useRouter();
   const pathname = usePathname();
   const inboxModal = useInboxModal();
@@ -184,7 +183,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
 
           {/* Navigation */}
           <nav id="wt-nav" className="flex items-center gap-3 mt-4" style={{ paddingLeft: 'calc(72px + 1rem + 1.25rem)' }}>
-            {(currentPage || currentCategories.length > 0) ? (
+            {currentPage && !navItems.some(item => item.active) ? (
               <>
                 <Link
                   href="/"
@@ -194,11 +193,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                 </Link>
                 <span className="text-stone-300 dark:text-stone-600 text-[13px]">/</span>
                 <span className="text-[14px] text-stone-900 dark:text-white font-medium">
-                  {currentPage
-                    ? currentPage
-                    : currentCategories.length === 1
-                    ? currentCategories[0]
-                    : `${currentCategories.length} Categories`}
+                  {currentPage}
                 </span>
               </>
             ) : (

@@ -17,14 +17,13 @@ import ListingCard from '@/components/listings/ListingCard';
 import WorkerCard from '@/components/listings/WorkerCard';
 import ShopCard from '@/components/shop/ShopCard';
 import SectionHeader from '@/app/market/SectionHeader';
-import { PlusSignIcon, Notification03Icon, MessageMultiple01Icon, ImageAdd01Icon } from 'hugeicons-react';
+import { PlusSignIcon, Notification03Icon, MessageMultiple01Icon } from 'hugeicons-react';
 import Image from 'next/image';
 import useLoginModal from '@/app/hooks/useLoginModal';
 import { placeholderDataUri } from '@/lib/placeholders';
 import useInboxModal from '@/app/hooks/useInboxModal';
 import useNotificationsModal from '@/app/hooks/useNotificationsModal';
 import useLocationModal from '@/app/hooks/useLocationModal';
-import PageHeader from '@/components/PageHeader';
 
 interface DiscoverClientProps {
   initialPosts?: SafePost[];
@@ -151,44 +150,102 @@ const SAMPLE_LISTING_WELLNESS = {
   ratingCount: 64,
 } as unknown as SafeListing;
 
-const SAMPLE_EMPLOYEE = {
-  id: 'sample-employee',
-  fullName: 'Jordan Riley',
-  jobTitle: 'Senior Stylist',
-  listingId: SAMPLE_LISTING.id,
-  userId: 'sample-user-emp',
-  serviceIds: [],
-  isActive: true,
-  isIndependent: false,
-  createdAt: new Date().toISOString(),
-  listingTitle: SAMPLE_LISTING.title,
-  listingCategory: SAMPLE_LISTING.category,
-  rating: 4.9,
-  user: {
-    id: 'sample-user-emp',
-    name: 'Jordan Riley',
-    image: null,
-    imageSrc: null,
-    backgroundImage: null,
-    userType: 'individual',
-    jobTitle: 'Senior Stylist',
-    academyName: null,
+const SAMPLE_EMPLOYEES: Array<{ employee: SafeEmployee; listing: SafeListing }> = [
+  {
+    listing: SAMPLE_LISTING,
+    employee: {
+      id: 'sample-employee-1',
+      fullName: 'Jordan Riley',
+      jobTitle: 'Senior Stylist',
+      listingId: SAMPLE_LISTING.id,
+      userId: 'sample-user-emp-1',
+      serviceIds: [],
+      isActive: true,
+      isIndependent: false,
+      createdAt: new Date().toISOString(),
+      listingTitle: SAMPLE_LISTING.title,
+      listingCategory: SAMPLE_LISTING.category,
+      rating: 4.9,
+      user: {
+        id: 'sample-user-emp-1',
+        name: 'Jordan Riley',
+        image: '/assets/people/worker 1.png',
+        imageSrc: '/assets/people/worker 1.png',
+        backgroundImage: null,
+        userType: 'individual',
+        jobTitle: 'Senior Stylist',
+        academyName: null,
+      },
+    } as unknown as SafeEmployee,
   },
-} as unknown as SafeEmployee;
+  {
+    listing: SAMPLE_LISTING_GYM,
+    employee: {
+      id: 'sample-employee-2',
+      fullName: 'Maya Vega',
+      jobTitle: 'Personal Trainer',
+      listingId: SAMPLE_LISTING_GYM.id,
+      userId: 'sample-user-emp-2',
+      serviceIds: [],
+      isActive: true,
+      isIndependent: false,
+      createdAt: new Date().toISOString(),
+      listingTitle: SAMPLE_LISTING_GYM.title,
+      listingCategory: SAMPLE_LISTING_GYM.category,
+      rating: 4.8,
+      user: {
+        id: 'sample-user-emp-2',
+        name: 'Maya Vega',
+        image: '/assets/people/worker 2.png',
+        imageSrc: '/assets/people/worker 2.png',
+        backgroundImage: null,
+        userType: 'individual',
+        jobTitle: 'Personal Trainer',
+        academyName: null,
+      },
+    } as unknown as SafeEmployee,
+  },
+  {
+    listing: SAMPLE_LISTING_WELLNESS,
+    employee: {
+      id: 'sample-employee-3',
+      fullName: 'Kai Chen',
+      jobTitle: 'Massage Therapist',
+      listingId: SAMPLE_LISTING_WELLNESS.id,
+      userId: 'sample-user-emp-3',
+      serviceIds: [],
+      isActive: true,
+      isIndependent: false,
+      createdAt: new Date().toISOString(),
+      listingTitle: SAMPLE_LISTING_WELLNESS.title,
+      listingCategory: SAMPLE_LISTING_WELLNESS.category,
+      rating: 4.95,
+      user: {
+        id: 'sample-user-emp-3',
+        name: 'Kai Chen',
+        image: '/assets/people/worker 3.png',
+        imageSrc: '/assets/people/worker 3.png',
+        backgroundImage: null,
+        userType: 'individual',
+        jobTitle: 'Massage Therapist',
+        academyName: null,
+      },
+    } as unknown as SafeEmployee,
+  },
+];
 
 // Renders a card with a "Sample" badge and swallows clicks so the
 // fake IDs never trigger navigation or favorite mutations.
+// The sample indicator is rendered inside the cards via the isSample prop —
+// this wrapper exists only to swallow clicks so the fake IDs never trigger
+// navigation or favorite mutations.
 const SampleCardWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div
-    className="relative"
     onClickCapture={(e) => {
       e.preventDefault();
       e.stopPropagation();
     }}
   >
-    <span className="absolute -top-1 left-1 z-30 px-1.5 py-0.5 rounded text-[9px] font-semibold uppercase tracking-wider bg-amber-400/90 text-stone-900 pointer-events-none shadow-sm">
-      Sample
-    </span>
     {children}
   </div>
 );
@@ -529,14 +586,17 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Check all content types
+  // Check all content types. The Local Businesses and Trending Professionals
+  // rails always include sample cards, so on the unfiltered home view we have
+  // content to show even when the DB is bare — skip the empty-state fallback.
   const hasContent = useMemo(() => {
+    if (!filterInfo.isFiltered) return true;
     const hasPosts = (initialPosts?.length || 0) > 0;
     const hasListings = listings.length > 0;
     const hasEmployees = employees.length > 0;
     const hasShops = shops.length > 0;
     return hasPosts || hasListings || hasEmployees || hasShops;
-  }, [initialPosts, listings, employees, shops]);
+  }, [initialPosts, listings, employees, shops, filterInfo.isFiltered]);
 
   const allContentItems = useMemo(() => {
     let items: Array<{type: 'post' | 'listing' | 'employee' | 'shop', data: any, listingContext?: any}> = [];
@@ -579,8 +639,6 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     <ClientProviders>
       <div className="min-h-screen">
         <Container>
-          <PageHeader currentUser={currentUser} currentCategories={currentCategories} />
-
           {/* Inline skeleton — renders in same Container as real content */}
           {isLoadingData && (
             <div>
@@ -966,33 +1024,20 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       ) : (
                         <div id="posts-rail">
                           <SectionHeader title="Posts We Think You'll Love" />
-                          <div className="flex items-center justify-center py-16 px-6 bg-stone-50/60 dark:bg-stone-900/40 rounded-2xl">
+                          <button
+                            type="button"
+                            onClick={() => currentUser ? router.push('/post/new') : loginModal.onOpen()}
+                            className="w-full flex items-center justify-center py-16 px-6 rounded-2xl border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/40 hover:border-stone-900 dark:hover:border-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+                          >
                             <div className="text-center max-w-[340px]">
-                              <div className="w-14 h-14 mx-auto rounded-2xl bg-white dark:bg-stone-800 flex items-center justify-center shadow-sm">
-                                <ImageAdd01Icon
-                                  className="w-6 h-6 text-stone-400 dark:text-stone-500"
-                                  strokeWidth={1.25}
-                                />
-                              </div>
-                              <h3 className="mt-5 text-[20px] font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
+                              <h3 className="text-[20px] font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
                                 No posts yet
                               </h3>
                               <p className="mt-2 text-[13.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
-                                Be the first to share a look, a moment, or a behind-the-scenes peek with the community.
+                                {currentUser ? 'Be the first to share a look, a moment, or a behind-the-scenes peek with the community.' : 'Sign in to share a look, a moment, or a behind-the-scenes peek with the community.'}
                               </p>
-                              <button
-                                type="button"
-                                onClick={() => currentUser ? router.push('/post/new') : loginModal.onOpen()}
-                                className="group mt-6 inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 text-[13px] font-medium tracking-tight shadow-sm hover:bg-stone-800 dark:hover:bg-stone-200 active:scale-[0.97] transition-all duration-200"
-                              >
-                                <ImageAdd01Icon
-                                  className="w-3.5 h-3.5 transition-transform duration-200 group-hover:scale-110"
-                                  strokeWidth={2}
-                                />
-                                {currentUser ? 'Create a post' : 'Sign in to post'}
-                              </button>
                             </div>
-                          </div>
+                          </button>
                         </div>
                       )
                     )}
@@ -1019,7 +1064,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                               className={!listingsVisible ? 'opacity-0' : ''}
                             >
                               <SampleCardWrapper>
-                                <ListingCard currentUser={currentUser} data={SAMPLE_LISTING} />
+                                <ListingCard currentUser={currentUser} data={SAMPLE_LISTING} isSample />
                               </SampleCardWrapper>
                             </div>
                             <div
@@ -1033,7 +1078,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                               className={!listingsVisible ? 'opacity-0' : ''}
                             >
                               <SampleCardWrapper>
-                                <ListingCard currentUser={currentUser} data={SAMPLE_LISTING_GYM} />
+                                <ListingCard currentUser={currentUser} data={SAMPLE_LISTING_GYM} isSample />
                               </SampleCardWrapper>
                             </div>
                             <div
@@ -1047,7 +1092,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                               className={!listingsVisible ? 'opacity-0' : ''}
                             >
                               <SampleCardWrapper>
-                                <ListingCard currentUser={currentUser} data={SAMPLE_LISTING_WELLNESS} />
+                                <ListingCard currentUser={currentUser} data={SAMPLE_LISTING_WELLNESS} isSample />
                               </SampleCardWrapper>
                             </div>
                             {currentListings.slice(0, 6).map((listing, idx) => (
@@ -1081,30 +1126,34 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                             onViewAll={handleViewAllProfessionals}
                           />
                           <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 transition-all duration-300`}>
-                            <div
-                              style={{
-                                opacity: employeesVisible ? 0 : 0,
-                                animation: employeesVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                                animationDelay: employeesVisible ? `160ms` : '0ms',
-                                willChange: 'transform, opacity',
-                                transition: !employeesVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
-                              }}
-                              className={!employeesVisible ? 'opacity-0' : ''}
-                            >
-                              <SampleCardWrapper>
-                                <WorkerCard
-                                  employee={SAMPLE_EMPLOYEE}
-                                  listingTitle={SAMPLE_LISTING.title}
-                                  data={{
-                                    title: SAMPLE_LISTING.title,
-                                    imageSrc: SAMPLE_LISTING.imageSrc,
-                                    category: SAMPLE_LISTING.category,
-                                  }}
-                                  listing={SAMPLE_LISTING}
-                                  currentUser={currentUser ?? undefined}
-                                />
-                              </SampleCardWrapper>
-                            </div>
+                            {SAMPLE_EMPLOYEES.map((sample, idx) => (
+                              <div
+                                key={sample.employee.id}
+                                style={{
+                                  opacity: employeesVisible ? 0 : 0,
+                                  animation: employeesVisible ? `fadeInUp 520ms ease-out both` : 'none',
+                                  animationDelay: employeesVisible ? `${160 + idx * 30}ms` : '0ms',
+                                  willChange: 'transform, opacity',
+                                  transition: !employeesVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
+                                }}
+                                className={!employeesVisible ? 'opacity-0' : ''}
+                              >
+                                <SampleCardWrapper>
+                                  <WorkerCard
+                                    employee={sample.employee}
+                                    listingTitle={sample.listing.title}
+                                    data={{
+                                      title: sample.listing.title,
+                                      imageSrc: sample.listing.imageSrc,
+                                      category: sample.listing.category,
+                                    }}
+                                    listing={sample.listing}
+                                    currentUser={currentUser ?? undefined}
+                                    isSample
+                                  />
+                                </SampleCardWrapper>
+                              </div>
+                            ))}
                             {currentEmployees.slice(0, 8).map((employee, idx) => {
                               const listing = listingsForLookup.find(l => l.id === employee.listingId) || listingsForLookup[0];
                               const imageSrc = listing?.imageSrc || (Array.isArray(listing?.galleryImages) ? listing.galleryImages[0] : undefined) || placeholderDataUri(listing?.title || 'Listing');
@@ -1115,7 +1164,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                                   style={{
                                     opacity: employeesVisible ? 0 : 0,
                                     animation: employeesVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                                    animationDelay: employeesVisible ? `${160 + (idx + 1) * 30}ms` : '0ms',
+                                    animationDelay: employeesVisible ? `${160 + (idx + SAMPLE_EMPLOYEES.length) * 30}ms` : '0ms',
                                     willChange: 'transform, opacity',
                                     transition: !employeesVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
                                   }}
@@ -1230,34 +1279,34 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                 )}
               </>
             ) : (
-              <div className="flex items-center justify-center px-6 min-h-[60vh] pb-24">
-                <div className="text-center max-w-[360px]">
-                  <div className="w-14 h-14 mx-auto rounded-2xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center shadow-sm">
-                    <ImageAdd01Icon
-                      className="w-6 h-6 text-stone-400 dark:text-stone-500"
-                      strokeWidth={1.25}
-                    />
+              <div className="px-6 pb-24">
+                {filterInfo.isFiltered ? (
+                  <div className="flex items-center justify-center min-h-[60vh]">
+                    <div className="text-center max-w-[360px]">
+                      <h3 className="text-[20px] font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
+                        No matches found
+                      </h3>
+                      <p className="mt-2 text-[13.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
+                        Try adjusting your filters or clearing them to see everything we have.
+                      </p>
+                    </div>
                   </div>
-                  <h3 className="mt-5 text-[20px] font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
-                    {filterInfo.isFiltered ? 'No matches found' : 'Nothing here yet'}
-                  </h3>
-                  <p className="mt-2 text-[13.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
-                    {filterInfo.isFiltered
-                      ? 'Try adjusting your filters or clearing them to see everything we have.'
-                      : 'Be the first to share a look, a moment, or a behind-the-scenes peek with the community.'}
-                  </p>
+                ) : (
                   <button
                     type="button"
                     onClick={() => currentUser ? router.push('/post/new') : loginModal.onOpen()}
-                    className="group mt-6 inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 text-[13px] font-medium tracking-tight shadow-sm hover:bg-stone-800 dark:hover:bg-stone-200 active:scale-[0.97] transition-all duration-200"
+                    className="w-full flex items-center justify-center min-h-[60vh] rounded-2xl border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/40 hover:border-stone-900 dark:hover:border-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
                   >
-                    <ImageAdd01Icon
-                      className="w-3.5 h-3.5 transition-transform duration-200 group-hover:scale-110"
-                      strokeWidth={2}
-                    />
-                    {currentUser ? 'Create a post' : 'Sign in to post'}
+                    <div className="text-center max-w-[360px]">
+                      <h3 className="text-[20px] font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
+                        Nothing here yet
+                      </h3>
+                      <p className="mt-2 text-[13.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
+                        {currentUser ? 'Be the first to share a look, a moment, or a behind-the-scenes peek with the community.' : 'Sign in to share a look, a moment, or a behind-the-scenes peek with the community.'}
+                      </p>
+                    </div>
                   </button>
-                </div>
+                )}
               </div>
             )}
           </div>

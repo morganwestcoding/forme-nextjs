@@ -20,6 +20,7 @@ interface ListingCardProps {
   solidBackground?: boolean;
   hideActions?: boolean;
   customActions?: React.ReactNode;
+  isSample?: boolean;
 }
 
 // Inline status indicator for the image
@@ -81,7 +82,7 @@ const StatusIndicator = ({ storeHours }: { storeHours?: { dayOfWeek: string; ope
   );
 };
 
-const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = false, variant = 'horizontal', solidBackground = false, hideActions = false, customActions }) => {
+const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = false, variant = 'horizontal', solidBackground = false, hideActions = false, customActions, isSample = false }) => {
   const router = useRouter();
 
   const { hasFavorited, toggleFavorite } = useFavorite({ listingId: data.id, currentUser });
@@ -312,6 +313,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
         {data.category && (
           <p className="text-[11px] text-stone-400   dark:text-stone-400  leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
             {data.category}
+            {isSample && <span className="text-amber-600 dark:text-amber-500"> · sample</span>}
           </p>
         )}
 

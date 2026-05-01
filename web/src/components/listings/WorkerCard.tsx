@@ -30,7 +30,9 @@ interface WorkerCardProps {
   onCardClick?: () => void;
   compact?: boolean;
   solidBackground?: boolean;
+  isSample?: boolean;
 }
+
 
 /** ---------- Helpers ---------- */
 const getInitials = (fullName?: string) => {
@@ -69,6 +71,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   onCardClick,
   compact = false,
   solidBackground = false,
+  isSample = false,
 }) => {
   const [imageError, setImageError] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -285,6 +288,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         {(employee.jobTitle || employee.user?.jobTitle || listing.category) && (
           <p className="text-[11px] text-stone-400 dark:text-stone-500 leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
             {employee.jobTitle || employee.user?.jobTitle || listing.category}
+            {isSample && <span className="text-amber-600 dark:text-amber-500"> · sample</span>}
           </p>
         )}
 

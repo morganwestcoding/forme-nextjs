@@ -1,89 +1,61 @@
 // components/LayoutContent.tsx
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import React from 'react';
+import { usePathname } from 'next/navigation';
+import PageHeader from '@/components/PageHeader';
+import Container from '@/components/Container';
+import { SafeUser } from '@/app/types';
 
 interface LayoutContentProps {
   children: React.ReactNode;
+  currentUser?: SafeUser | null;
 }
 
-export default function LayoutContent({ children }: LayoutContentProps) {
+// Routes that should have the shared PageHeader rendered above their content.
+// Defined here (rather than inside each page) so the header stays mounted
+// across navigations within this set — clicking between Home / Settings /
+// Bookings / etc. no longer unmounts and re-mounts the header.
+const HEADER_ROUTES: Array<{ match: (p: string) => boolean; label?: string }> = [
+  { match: (p) => p === '/' },
+  { match: (p) => p === '/shops' },
+  { match: (p) => p.startsWith('/bookings') },
+  { match: (p) => p.startsWith('/settings'), label: 'Settings' },
+  { match: (p) => p.startsWith('/messages'), label: 'Messages' },
+  { match: (p) => p.startsWith('/favorites'), label: 'Favorites' },
+  { match: (p) => p.startsWith('/subscription'), label: 'Subscription' },
+  { match: (p) => p.startsWith('/properties'), label: 'My Listings' },
+  { match: (p) => p.startsWith('/team'), label: 'Teammate Central' },
+  { match: (p) => p.startsWith('/licensing'), label: 'Licensing' },
+  { match: (p) => p.startsWith('/analytics'), label: 'Analytics' },
+];
+
+export default function LayoutContent({ children, currentUser = null }: LayoutContentProps) {
   const pathname = usePathname();
-  const router = useRouter();
 
-  // Skip animation for full-screen pages (they have their own layouts)
-  const isFullScreenPage = pathname?.startsWith('/register') || pathname?.startsWith('/listing/new') || pathname?.startsWith('/reserve') || pathname?.startsWith('/post/new') || pathname?.startsWith('/maps') || pathname?.startsWith('/newsfeed');
+  // Skip the wrapper for full-screen pages (they have their own layouts)
+  const isFullScreenPage =
+    pathname?.startsWith('/register') ||
+    pathname?.startsWith('/listing/new') ||
+    pathname?.startsWith('/reserve') ||
+    pathname?.startsWith('/post/new') ||
+    pathname?.startsWith('/maps') ||
+    pathname?.startsWith('/newsfeed');
 
-
-  const [fadeKey, setFadeKey] = useState(0);
-  const [visible, setVisible] = useState(false);
-  const isFadingOut = useRef(false);
-
-  // Fade in on every non-fullscreen navigation
-  useEffect(() => {
-    if (isFullScreenPage) {
-      // Reset so next non-fullscreen page starts invisible
-      setVisible(false);
-      return;
-    }
-    isFadingOut.current = false;
-    setVisible(false);
-    setFadeKey((k) => k + 1);
-    // Double rAF to guarantee browser paints at opacity 0 before transitioning
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setVisible(true);
-      });
-    });
-  }, [pathname, isFullScreenPage]);
-
-  // Intercept internal link clicks to fade out before navigating
-  useEffect(() => {
-    if (isFullScreenPage) return;
-
-    const handleClick = (e: MouseEvent) => {
-      // Find the closest <a> tag
-      const anchor = (e.target as HTMLElement).closest('a');
-      if (!anchor) return;
-
-      const href = anchor.getAttribute('href');
-      if (!href || href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto:')) return;
-
-      // Don't intercept if already fading out or same page
-      if (isFadingOut.current || href === pathname) return;
-
-      e.preventDefault();
-      isFadingOut.current = true;
-      setVisible(false);
-
-      // Shorter fade for full-screen destinations since they handle their own entrance
-      const isFullScreenDest = href.startsWith('/register') || href.startsWith('/listing/new') || href.startsWith('/reserve') || href.startsWith('/post/new') || href.startsWith('/maps') || href.startsWith('/newsfeed');
-
-      setTimeout(() => {
-        router.push(href);
-      }, 400);
-    };
-
-    document.addEventListener('click', handleClick, true);
-    return () => document.removeEventListener('click', handleClick, true);
-  }, [isFullScreenPage, pathname, router]);
-
-  // For full-screen pages, render children directly without animation wrapper
   if (isFullScreenPage) {
     return <>{children}</>;
   }
 
+  const matched = pathname ? HEADER_ROUTES.find((r) => r.match(pathname)) : undefined;
+
   return (
     <div className="flex-1 relative">
-      <main
-        key={fadeKey}
-        className="pt-3 pb-8"
-        style={{
-          opacity: visible ? 1 : 0,
-          transition: 'opacity 0.4s ease-out',
-        }}
-      >
+      <main className="pt-3 pb-8">
+        {matched && (
+          <Container>
+            <PageHeader currentUser={currentUser} currentPage={matched.label} />
+          </Container>
+        )}
         {children}
       </main>
     </div>

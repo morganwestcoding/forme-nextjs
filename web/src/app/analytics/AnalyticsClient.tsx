@@ -5,8 +5,7 @@ import { AnalyticsData } from '@/app/actions/getAnalyticsData';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 import Container from '@/components/Container';
-import PageHeader from '@/components/PageHeader';
-import Skeleton, { PageHeaderSkeleton, ContainerSkeleton } from '@/components/ui/Skeleton';
+import Skeleton, { ContainerSkeleton } from '@/components/ui/Skeleton';
 import { useTheme } from '@/app/context/ThemeContext';
 import DateRangePicker, { AnalyticsPreset, presetRange, matchingPreset } from './DateRangePicker';
 
@@ -114,7 +113,6 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
   if (!analyticsData) {
     return (
       <ContainerSkeleton>
-        <PageHeaderSkeleton />
         <div className="mt-8">
           <div className="mb-8">
             <Skeleton className="h-8 w-32 mb-2" />
@@ -328,7 +326,6 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
 
   return (
     <Container>
-      <PageHeader currentUser={currentUser} currentPage="Analytics" />
       <div>
         <div className="mt-8">
           <div className="mb-8">

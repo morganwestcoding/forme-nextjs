@@ -109,7 +109,7 @@ export default async function RootLayout({
                 </a>
                 <NavigationProgress />
                 <main id="main-content" className="min-h-screen">
-                  <LayoutContent>
+                  <LayoutContent currentUser={currentUser}>
                     {children}
                   </LayoutContent>
                 </main>

@@ -14,10 +14,9 @@ import {
 import { signOut } from "next-auth/react";
 import { SafeUser } from "@/app/types";
 import { useTheme } from "@/app/context/ThemeContext";
-import PageHeader from "@/components/PageHeader";
 import Container from "@/components/Container";
 import Button from "@/components/ui/Button";
-import Skeleton, { PageHeaderSkeleton, ContainerSkeleton } from "@/components/ui/Skeleton";
+import Skeleton from "@/components/ui/Skeleton";
 import Card from "@/components/ui/Card";
 import axios from "axios";
 import { toast } from "react-hot-toast";
@@ -170,49 +169,46 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
     );
 
     return (
-      <>
-        <PageHeaderSkeleton />
-        <ContainerSkeleton>
+      <Container>
           <div className="mt-8 pb-16">
-            {/* Title */}
-            <div className="mb-8">
-              <Skeleton className="h-8 w-28 mb-2" />
-              <Skeleton className="h-4 w-44" />
-            </div>
+          {/* Title */}
+          <div className="mb-8">
+            <Skeleton className="h-8 w-28 mb-2" />
+            <Skeleton className="h-4 w-44" />
+          </div>
 
-            {/* Tabs */}
-            <div className="flex items-center gap-2 mb-8">
-              <Skeleton rounded="full" className="h-8 w-24" />
-              <Skeleton rounded="full" className="h-8 w-20" />
-            </div>
+          {/* Tabs */}
+          <div className="flex items-center gap-2 mb-8">
+            <Skeleton rounded="full" className="h-8 w-24" />
+            <Skeleton rounded="full" className="h-8 w-20" />
+          </div>
 
-            {/* Tab content */}
-            <div className="min-h-[400px]">
-              <div className="space-y-6 max-w-xl">
-                <SettingRowSkeleton subtitleWidth="w-52" />
-                <SettingRowSkeleton subtitleWidth="w-48" />
+          {/* Tab content */}
+          <div className="min-h-[400px]">
+            <div className="space-y-6 max-w-xl">
+              <SettingRowSkeleton subtitleWidth="w-52" />
+              <SettingRowSkeleton subtitleWidth="w-48" />
 
-                {/* Save button */}
-                <Skeleton rounded="xl" className="h-10 w-32" />
+              {/* Save button */}
+              <Skeleton rounded="xl" className="h-10 w-32" />
 
-                {/* Delete Account row */}
-                <div className="rounded-2xl border border-stone-200/60 dark:border-stone-800 bg-white dark:bg-stone-900 p-5">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <Skeleton className="h-[18px] w-[18px]" rounded="md" />
-                      <div>
-                        <Skeleton className="h-4 w-28 mb-1.5" />
-                        <Skeleton className="h-3 w-56" />
-                      </div>
+              {/* Delete Account row */}
+              <div className="rounded-2xl border border-stone-200/60 dark:border-stone-800 bg-white dark:bg-stone-900 p-5">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-[18px] w-[18px]" rounded="md" />
+                    <div>
+                      <Skeleton className="h-4 w-28 mb-1.5" />
+                      <Skeleton className="h-3 w-56" />
                     </div>
-                    <Skeleton rounded="xl" className="h-9 w-28" />
                   </div>
+                  <Skeleton rounded="xl" className="h-9 w-28" />
                 </div>
               </div>
             </div>
           </div>
-        </ContainerSkeleton>
-      </>
+        </div>
+      </Container>
     );
   }
 
@@ -224,7 +220,6 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
 
   return (
     <Container>
-      <PageHeader currentUser={currentUser} currentPage="Settings" />
 
       <div className="mt-8 pb-16">
         <div className="mb-8">

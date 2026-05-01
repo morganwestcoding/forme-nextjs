@@ -4,9 +4,8 @@ import { useRouter } from "next/navigation";
 
 import { SafeUser } from "@/app/types";
 import Container from "@/components/Container";
-import PageHeader from "@/components/PageHeader";
 import Button from "@/components/ui/Button";
-import Skeleton, { PageHeaderSkeleton, ContainerSkeleton } from "@/components/ui/Skeleton";
+import Skeleton, { ContainerSkeleton } from "@/components/ui/Skeleton";
 import { useAcademies } from "@/app/hooks/useAcademies";
 import { Clock01Icon, CheckmarkCircle02Icon, ArrowRight01Icon, Link01Icon, StarIcon, ShieldUserIcon, Certificate01Icon, PlusSignIcon as Plus } from 'hugeicons-react';
 
@@ -53,7 +52,6 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
   if (!mounted) {
     return (
       <ContainerSkeleton>
-        <PageHeaderSkeleton />
         <div className="mt-8">
           <div className="mb-8">
             <div className="flex items-start justify-between">
@@ -122,8 +120,6 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
 
   return (
     <Container>
-      <PageHeader currentUser={currentUser} currentPage="Licensing" />
-
       <div className="mt-8">
         {/* Header */}
         <div className="mb-8">

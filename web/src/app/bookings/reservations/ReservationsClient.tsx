@@ -20,7 +20,6 @@ import {
 import { SafeReservation, SafeUser } from '@/app/types';
 import Button from '@/components/ui/Button';
 import Container from '@/components/Container';
-import PageHeader from '@/components/PageHeader';
 import { placeholderDataUri } from '@/lib/placeholders';
 import { Navigation03Icon, Call02Icon, CalendarAdd02Icon, Tick02Icon, Cancel01Icon, UserAccountIcon, InboxIcon as Inbox, ArrowUpRight01Icon as ArrowUpRight, Clock01Icon as Clock, Location01Icon as MapPin, UserIcon, Cancel01Icon as X, Search01Icon as Search, Navigation03Icon as Navigation, Call02Icon as Phone, CalendarAdd02Icon as CalendarPlus, Share08Icon as Share2, StarIcon as Star, RefreshIcon as RotateCw, ArrowRight01Icon as ChevronRight, SparklesIcon as Sparkles, Tick02Icon as Check, RotateLeft03Icon as Undo2, ArrowLeftRightIcon as ArrowLeftRight } from 'hugeicons-react';
 
@@ -262,15 +261,13 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
   if (loading) {
     return (
       <Container>
-        <PageHeader currentUser={currentUser} />
-        <ReservationsSkeleton />
+          <ReservationsSkeleton />
       </Container>
     );
   }
 
   return (
     <Container>
-      <PageHeader currentUser={currentUser} />
 
       <div className="mt-8 pb-20">
         <div className="mb-8">

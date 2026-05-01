@@ -10,8 +10,7 @@ import ClientProviders from "@/components/ClientProviders";
 import ListingCard from "@/components/listings/ListingCard";
 import Button from "@/components/ui/Button";
 import Container from "@/components/Container";
-import PageHeader from "@/components/PageHeader";
-import Skeleton, { PageHeaderSkeleton, ContainerSkeleton, ListingCardSkeleton } from "@/components/ui/Skeleton";
+import Skeleton, { ContainerSkeleton, ListingCardSkeleton } from "@/components/ui/Skeleton";
 import { PencilEdit01Icon, Delete02Icon } from 'hugeicons-react';
 
 interface PropertiesClientProps {
@@ -67,7 +66,6 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
   if (isLoading) {
     return (
       <ContainerSkeleton>
-        <PageHeaderSkeleton />
         <div className="mt-8">
           <div className="mb-8">
             <Skeleton className="h-8 w-36 mb-2" />
@@ -86,8 +84,6 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
   return (
     <Container>
       <ClientProviders>
-        <PageHeader currentUser={currentUser} currentPage="My Listings" />
-
         <div className="mt-8">
           {/* Page title */}
           <div className="mb-8">

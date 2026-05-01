@@ -6,7 +6,6 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { SafeUser, SafeConversation, SafeMessage } from '@/app/types';
 import Container from '@/components/Container';
-import PageHeader from '@/components/PageHeader';
 import Button from '@/components/ui/Button';
 import Skeleton from '@/components/ui/Skeleton';
 
@@ -132,7 +131,6 @@ export default function MessagesClient({ currentUser }: Props) {
 
   return (
     <Container>
-      <PageHeader currentUser={currentUser} currentPage="Messages" />
       <div className="mt-8">
         <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight mb-6">Messages</h1>
 

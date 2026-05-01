@@ -9,8 +9,7 @@ import { CheckmarkCircle02Icon, ArrowRight01Icon, Cancel01Icon } from "hugeicons
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Container from "@/components/Container";
-import PageHeader from "@/components/PageHeader";
-import Skeleton, { PageHeaderSkeleton, ContainerSkeleton } from "@/components/ui/Skeleton";
+import Skeleton, { ContainerSkeleton } from "@/components/ui/Skeleton";
 import Button from "@/components/ui/Button";
 import Celebration from "@/components/Celebration";
 
@@ -234,7 +233,6 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
   if (!mounted) {
     return (
       <ContainerSkeleton>
-        <PageHeaderSkeleton />
         <div className="mt-8">
           <div className="mb-8">
             <Skeleton className="h-8 w-40 mb-2" />
@@ -285,7 +283,6 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
 
   return (
     <Container>
-      <PageHeader currentUser={currentUser} currentPage="Subscription" />
       <div className="mt-8">
         <div className="mb-8">
           {isOnboarding && <p className="text-[12px] text-stone-400 dark:text-stone-500 mb-2">Step 2 of 2</p>}
