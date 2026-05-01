@@ -7,6 +7,7 @@ import { canModifyResource } from "@/app/libs/authorization";
 import { getUserFromRequest } from "@/app/utils/mobileAuth";
 import { apiError, apiErrorCode } from "@/app/utils/api";
 import { sanitizeText } from "@/app/utils/sanitize";
+import { deleteUserCascade } from "@/app/libs/deleteUserCascade";
 
 export async function GET(
   request: Request,
@@ -105,6 +106,44 @@ export async function PUT(
 
     return NextResponse.json(updated);
   } catch (err) {
+    return apiErrorCode('INTERNAL_ERROR');
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { userId: string } }
+) {
+  try {
+    const sessionUser = await getCurrentUser();
+    const currentUser = sessionUser ?? (await getUserFromRequest(request));
+    if (!currentUser) return apiErrorCode('UNAUTHORIZED');
+
+    const targetUserId = params.userId;
+    if (!targetUserId) return apiError("Missing userId", 400);
+
+    if (!canModifyResource(currentUser, targetUserId)) {
+      return apiErrorCode('FORBIDDEN');
+    }
+
+    const target = await prisma.user.findUnique({
+      where: { id: targetUserId },
+      select: { id: true, role: true },
+    });
+    if (!target) return apiErrorCode('USER_NOT_FOUND');
+    if (target.role === "master") {
+      return apiError("Master accounts cannot be deleted", 403);
+    }
+
+    const result = await deleteUserCascade(targetUserId);
+
+    revalidatePath('/');
+    revalidatePath(`/profile/${targetUserId}`);
+    revalidatePath('/newsfeed');
+
+    return NextResponse.json({ success: true, ...result });
+  } catch (err) {
+    console.error('[DELETE /api/users/:userId]', err);
     return apiErrorCode('INTERNAL_ERROR');
   }
 }

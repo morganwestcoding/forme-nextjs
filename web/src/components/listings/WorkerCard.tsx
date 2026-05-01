@@ -241,7 +241,8 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
       onClick={handleCardClick}
       className="group cursor-pointer rounded-2xl p-3 -mx-3 flex flex-row gap-4 relative transition-colors duration-200 hover:bg-stone-50/80 dark:hover:bg-stone-900/40"
     >
-      {/* Avatar — 100px circle centered in 120px to align with ListingCard */}
+      {/* Avatar — 100px circle centered in a 120px column so its center
+          aligns with the ListingCard image's center above. */}
       <div className="flex-shrink-0 w-[120px] h-[120px] flex items-center justify-center">
         <div className="relative w-[100px] h-[100px]">
           <div className="relative overflow-hidden rounded-full w-[100px] h-[100px] shadow-sm">

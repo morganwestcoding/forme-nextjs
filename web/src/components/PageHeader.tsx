@@ -141,28 +141,44 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                   </button>
                 </>
               )}
-              <button
-                id="wt-profile"
-                onClick={() => currentUser ? userMenuModal.onOpen() : loginModal.onOpen()}
-                aria-label={currentUser ? 'Open user menu' : 'Sign in'}
-                className="outline-none ml-1"
-              >
-                <div className="shrink-0 w-12 h-12 rounded-full overflow-hidden cursor-pointer" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)' }}>
-                  {currentUser?.image ? (
-                    <Image
-                      src={currentUser.image}
-                      alt="Profile"
-                      width={48}
-                      height={48}
-                      className="object-cover w-full h-full"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-stone-200 to-stone-300 dark:from-stone-600 dark:to-stone-700 flex items-center justify-center text-stone-600 dark:text-stone-300 text-sm font-medium">
-                      G
-                    </div>
-                  )}
-                </div>
-              </button>
+              {currentUser ? (
+                <button
+                  id="wt-profile"
+                  onClick={() => userMenuModal.onOpen()}
+                  aria-label="Open user menu"
+                  className="outline-none ml-1"
+                >
+                  <div className="shrink-0 w-12 h-12 rounded-full overflow-hidden cursor-pointer" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)' }}>
+                    {currentUser.image ? (
+                      <Image
+                        src={currentUser.image}
+                        alt="Profile"
+                        width={48}
+                        height={48}
+                        className="object-cover w-full h-full"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-stone-200 to-stone-300 dark:from-stone-600 dark:to-stone-700 flex items-center justify-center text-stone-600 dark:text-stone-300 text-sm font-medium">
+                        {(currentUser.name?.[0] || currentUser.email?.[0] || 'U').toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              ) : (
+                <button
+                  id="wt-profile"
+                  onClick={() => loginModal.onOpen()}
+                  aria-label="Sign in or create an account"
+                  className="outline-none ml-1"
+                >
+                  <div
+                    className="shrink-0 h-12 px-5 rounded-xl flex items-center justify-center cursor-pointer bg-[#F7F7F6] dark:bg-[#222225] hover:bg-[#EFEFEE] dark:hover:bg-[#2A2A2D] border border-stone-300/90 dark:border-stone-600/60 text-stone-900 dark:text-white text-[14px] font-medium whitespace-nowrap transition-colors"
+                    style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)' }}
+                  >
+                    Get Started
+                  </div>
+                </button>
+              )}
             </div>
           </div>
 

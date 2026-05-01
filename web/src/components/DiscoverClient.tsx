@@ -59,7 +59,7 @@ const SAMPLE_LISTING = {
   id: 'sample-listing',
   title: 'Lumière Studio',
   description: 'Sample',
-  imageSrc: '/assets/people/salon.png',
+  imageSrc: '/assets/people/listing 1.png',
   galleryImages: [],
   category: 'Salon',
   location: 'Brooklyn, NY',
@@ -85,6 +85,70 @@ const SAMPLE_LISTING = {
   favoriteIds: [],
   rating: 4.9,
   ratingCount: 142,
+} as unknown as SafeListing;
+
+const SAMPLE_LISTING_GYM = {
+  id: 'sample-listing-gym',
+  title: 'Ironworks Gym',
+  description: 'Sample',
+  imageSrc: '/assets/people/listing 2.png',
+  galleryImages: [],
+  category: 'Training',
+  location: 'Brooklyn, NY',
+  city: 'Brooklyn',
+  state: 'NY',
+  zipCode: null,
+  userId: 'sample-user-gym',
+  createdAt: new Date().toISOString(),
+  services: [
+    { id: 'g1', serviceName: 'Personal Training', price: 75, category: 'Training' },
+    { id: 'g2', serviceName: 'Group Class', price: 25, category: 'Training' },
+  ],
+  employees: [],
+  storeHours: [
+    { dayOfWeek: 'Sunday', openTime: '08:00', closeTime: '18:00', isClosed: false },
+    { dayOfWeek: 'Monday', openTime: '06:00', closeTime: '22:00', isClosed: false },
+    { dayOfWeek: 'Tuesday', openTime: '06:00', closeTime: '22:00', isClosed: false },
+    { dayOfWeek: 'Wednesday', openTime: '06:00', closeTime: '22:00', isClosed: false },
+    { dayOfWeek: 'Thursday', openTime: '06:00', closeTime: '22:00', isClosed: false },
+    { dayOfWeek: 'Friday', openTime: '06:00', closeTime: '22:00', isClosed: false },
+    { dayOfWeek: 'Saturday', openTime: '08:00', closeTime: '20:00', isClosed: false },
+  ],
+  favoriteIds: [],
+  rating: 4.8,
+  ratingCount: 87,
+} as unknown as SafeListing;
+
+const SAMPLE_LISTING_WELLNESS = {
+  id: 'sample-listing-wellness',
+  title: 'Stillwater Wellness',
+  description: 'Sample',
+  imageSrc: '/assets/people/listing 3.png',
+  galleryImages: [],
+  category: 'Wellness',
+  location: 'Brooklyn, NY',
+  city: 'Brooklyn',
+  state: 'NY',
+  zipCode: null,
+  userId: 'sample-user-wellness',
+  createdAt: new Date().toISOString(),
+  services: [
+    { id: 'w1', serviceName: 'Massage', price: 110, category: 'Wellness' },
+    { id: 'w2', serviceName: 'Acupuncture', price: 95, category: 'Wellness' },
+  ],
+  employees: [],
+  storeHours: [
+    { dayOfWeek: 'Sunday', openTime: '09:00', closeTime: '17:00', isClosed: false },
+    { dayOfWeek: 'Monday', openTime: '09:00', closeTime: '19:00', isClosed: false },
+    { dayOfWeek: 'Tuesday', openTime: '09:00', closeTime: '19:00', isClosed: false },
+    { dayOfWeek: 'Wednesday', openTime: '09:00', closeTime: '19:00', isClosed: false },
+    { dayOfWeek: 'Thursday', openTime: '09:00', closeTime: '19:00', isClosed: false },
+    { dayOfWeek: 'Friday', openTime: '09:00', closeTime: '19:00', isClosed: false },
+    { dayOfWeek: 'Saturday', openTime: '09:00', closeTime: '18:00', isClosed: false },
+  ],
+  favoriteIds: [],
+  rating: 4.95,
+  ratingCount: 64,
 } as unknown as SafeListing;
 
 const SAMPLE_EMPLOYEE = {
@@ -262,20 +326,23 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
 
   const shuffledEmployees = useMemo(() => {
     let filtered = employees;
+    // Look up each employee's listing in the *unfiltered* set so independent
+    // workers (whose hidden listings are filtered out of `listings`) still
+    // pass the category/location filter.
     if (currentCategories.length > 0) {
       filtered = filtered.filter(emp => {
-        const empListing = listings.find(l => l.employees?.some(e => e.id === emp.id));
+        const empListing = listingsForLookup.find(l => l.id === emp.listingId);
         return empListing && currentCategories.includes(empListing.category);
       });
     }
     if (selectedLocation) {
       filtered = filtered.filter(emp => {
-        const empListing = listings.find(l => l.employees?.some(e => e.id === emp.id));
+        const empListing = listingsForLookup.find(l => l.id === emp.listingId);
         return empListing && matchesLocation(empListing.location);
       });
     }
     return shuffleArray(filtered, shuffleSeed + 2);
-  }, [employees, listings, shuffleSeed, currentCategories, selectedLocation]);
+  }, [employees, listingsForLookup, shuffleSeed, currentCategories, selectedLocation]);
 
   const shuffledShops = useMemo(() => {
     let filtered = shops;
@@ -955,13 +1022,41 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                                 <ListingCard currentUser={currentUser} data={SAMPLE_LISTING} />
                               </SampleCardWrapper>
                             </div>
-                            {currentListings.slice(0, 8).map((listing, idx) => (
+                            <div
+                              style={{
+                                opacity: listingsVisible ? 0 : 0,
+                                animation: listingsVisible ? `fadeInUp 520ms ease-out both` : 'none',
+                                animationDelay: listingsVisible ? `170ms` : '0ms',
+                                willChange: 'transform, opacity',
+                                transition: !listingsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
+                              }}
+                              className={!listingsVisible ? 'opacity-0' : ''}
+                            >
+                              <SampleCardWrapper>
+                                <ListingCard currentUser={currentUser} data={SAMPLE_LISTING_GYM} />
+                              </SampleCardWrapper>
+                            </div>
+                            <div
+                              style={{
+                                opacity: listingsVisible ? 0 : 0,
+                                animation: listingsVisible ? `fadeInUp 520ms ease-out both` : 'none',
+                                animationDelay: listingsVisible ? `200ms` : '0ms',
+                                willChange: 'transform, opacity',
+                                transition: !listingsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
+                              }}
+                              className={!listingsVisible ? 'opacity-0' : ''}
+                            >
+                              <SampleCardWrapper>
+                                <ListingCard currentUser={currentUser} data={SAMPLE_LISTING_WELLNESS} />
+                              </SampleCardWrapper>
+                            </div>
+                            {currentListings.slice(0, 6).map((listing, idx) => (
                               <div
                                 key={`${listing.id}-${listingsIndex}`}
                                 style={{
                                   opacity: listingsVisible ? 0 : 0,
                                   animation: listingsVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                                  animationDelay: listingsVisible ? `${140 + (idx + 1) * 30}ms` : '0ms',
+                                  animationDelay: listingsVisible ? `${140 + (idx + 3) * 30}ms` : '0ms',
                                   willChange: 'transform, opacity',
                                   transition: !listingsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
                                 }}
