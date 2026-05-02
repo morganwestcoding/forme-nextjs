@@ -15,6 +15,7 @@ import { placeholderDataUri } from '@/lib/placeholders';
 import useFavorite from '@/app/hooks/useFavorite';
 import ReviewCard from '@/components/reviews/ReviewCard';
 import VerificationBadge from '@/components/VerificationBadge';
+import InlineEmptyState from '@/components/InlineEmptyState';
 import { useTheme } from '@/app/context/ThemeContext';
 import { Cancel01Icon } from 'hugeicons-react';
 
@@ -594,9 +595,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-10 bg-stone-50 dark:bg-stone-900 rounded-xl">
-                  <p className="text-sm text-stone-400 dark:text-stone-500">No services yet</p>
-                </div>
+                <InlineEmptyState
+                  title="No services yet"
+                  subtitle={(isOwner || isMasterUser) ? 'Add services so clients know what you offer.' : 'Services offered here will show up.'}
+                  onClick={(isOwner || isMasterUser) ? handleEditListing : undefined}
+                />
               )}
             </section>
 
@@ -685,9 +688,11 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-10 bg-stone-50 dark:bg-stone-900 rounded-xl">
-                  <p className="text-sm text-stone-400 dark:text-stone-500">No gallery images yet</p>
-                </div>
+                <InlineEmptyState
+                  title="No gallery images yet"
+                  subtitle={(isOwner || isMasterUser) ? 'Add photos to showcase your space.' : 'Photos of this space will show up here.'}
+                  onClick={(isOwner || isMasterUser) ? handleEditListing : undefined}
+                />
               )}
             </section>
 
@@ -718,9 +723,10 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-10 bg-stone-50 dark:bg-stone-900 rounded-xl">
-                  <p className="text-sm text-stone-400 dark:text-stone-500">No reviews yet</p>
-                </div>
+                <InlineEmptyState
+                  title="No reviews yet"
+                  subtitle="Reviews from clients will show up here."
+                />
               )}
             </section>
 

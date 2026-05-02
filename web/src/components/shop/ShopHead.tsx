@@ -11,6 +11,7 @@ import PostCard from '../feed/PostCard';
 import { SafePost, SafeUser, SafeShop, SafeProduct } from '@/app/types';
 import useFavorite from '@/app/hooks/useFavorite';
 import VerificationBadge from '@/components/VerificationBadge';
+import InlineEmptyState from '@/components/InlineEmptyState';
 import { placeholderDataUri } from '@/lib/placeholders';
 import { Cancel01Icon } from 'hugeicons-react';
 
@@ -530,9 +531,11 @@ const ShopHead: React.FC<ShopHeadProps> = ({
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-10 bg-stone-50 dark:bg-stone-900  rounded-xl">
-                  <p className="text-sm text-stone-400   dark:text-stone-400 ">No products yet</p>
-                </div>
+                <InlineEmptyState
+                  title="No products yet"
+                  subtitle={isOwner ? 'Add products to start selling.' : 'Products will show up here.'}
+                  onClick={isOwner ? handleEditShop : undefined}
+                />
               )}
             </section>
 
@@ -660,9 +663,11 @@ const ShopHead: React.FC<ShopHeadProps> = ({
                   )}
                 </div>
               ) : (
-                <div className="text-center py-10 bg-stone-50 dark:bg-stone-900  rounded-xl">
-                  <p className="text-sm text-stone-400   dark:text-stone-400 ">No gallery images yet</p>
-                </div>
+                <InlineEmptyState
+                  title="No gallery images yet"
+                  subtitle={isOwner ? 'Add photos to bring your shop to life.' : 'Photos of this shop will show up here.'}
+                  onClick={isOwner ? handleEditShop : undefined}
+                />
               )}
             </section>
 

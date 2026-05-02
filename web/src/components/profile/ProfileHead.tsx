@@ -18,6 +18,7 @@ import useReviewModal from '@/app/hooks/useReviewModal';
 import useMessageModal from '@/app/hooks/useMessageModal';
 import ReviewCard from '@/components/reviews/ReviewCard';
 import VerificationBadge from '@/components/VerificationBadge';
+import InlineEmptyState from '@/components/InlineEmptyState';
 import { useTheme } from '@/app/context/ThemeContext';
 
 interface ProfileHeadProps {
@@ -597,9 +598,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   })}
                 </div>
               ) : (
-                <div className="text-center py-10 bg-stone-50 dark:bg-stone-900 rounded-xl">
-                  <p className="text-sm text-stone-400 dark:text-stone-500">No posts yet</p>
-                </div>
+                <InlineEmptyState
+                  title="No posts yet"
+                  subtitle={canEdit ? 'Share a look, a moment, or a behind-the-scenes peek.' : 'Posts they share will show up here.'}
+                  onClick={canEdit ? () => router.push('/post/new') : undefined}
+                />
               )}
             </section>
 
@@ -655,8 +658,12 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   })}
                 </div>
               ) : (
-                <div className="text-center py-10 bg-stone-50 dark:bg-stone-900 rounded-xl mb-10">
-                  <p className="text-sm text-stone-400 dark:text-stone-500">No services yet</p>
+                <div className="mb-10">
+                  <InlineEmptyState
+                    title="No services yet"
+                    subtitle={canEdit ? 'Add a listing and the services you offer there will appear here.' : 'Services they offer will show up here.'}
+                    onClick={canEdit ? openEditProfile : undefined}
+                  />
                 </div>
               )}
             </section>
@@ -696,9 +703,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-10 bg-stone-50 dark:bg-stone-900 rounded-xl">
-                    <p className="text-sm text-stone-400 dark:text-stone-500">No listings yet</p>
-                  </div>
+                  <InlineEmptyState
+                    title="No businesses yet"
+                    subtitle={canEdit ? 'Open your first listing to start your storefront.' : 'Businesses they own will show up here.'}
+                    onClick={canEdit ? () => router.push('/listing/new') : undefined}
+                  />
                 )}
               </section>
             )}
@@ -733,9 +742,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-10 bg-stone-50 dark:bg-stone-900 rounded-xl">
-                  <p className="text-sm text-stone-400 dark:text-stone-500">No images yet</p>
-                </div>
+                <InlineEmptyState
+                  title="No images yet"
+                  subtitle={canEdit ? 'Add photos to bring your profile to life.' : 'Photos they share will show up here.'}
+                  onClick={canEdit ? openEditProfile : undefined}
+                />
               )}
             </section>
 
@@ -764,9 +775,10 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-10 bg-stone-50 dark:bg-stone-900 rounded-xl">
-                  <p className="text-sm text-stone-400 dark:text-stone-500">No reviews yet</p>
-                </div>
+                <InlineEmptyState
+                  title="No reviews yet"
+                  subtitle="Reviews from clients will show up here."
+                />
               )}
             </section>
 
