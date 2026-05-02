@@ -8,7 +8,9 @@
       "Bash(awk 'NR>=805 && /hasContent/ {flag=1} flag {print NR\": \"$0; if \\(/^            \\\\\\) :/ || /^            \\\\\\)$/\\) exit}' /Users/greg/Desktop/forme/web/src/components/DiscoverClient.tsx)",
       "Bash(echo \"---exit:$?\")",
       "Bash(grep -r \"push.*reserve\\\\|push.*\\\\`/reserve\" /Users/greg/Desktop/forme/web/src --include=\"*.tsx\" --include=\"*.ts\" -n)",
-      "Bash(tee /tmp/tsc.log)"
+      "Bash(tee /tmp/tsc.log)",
+      "Bash(ps -p 866 -o command=)",
+      "Bash(ps -p 72003 -o command=)"
     ]
   }
 }

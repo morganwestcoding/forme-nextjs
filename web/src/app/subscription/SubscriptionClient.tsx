@@ -30,12 +30,9 @@ const plans = [
     price: { monthly: 0, yearly: 0 },
     badge: null,
     features: [
-      "Full platform access",
-      "Professional profile & storefront",
-      "Marketing tools",
-      "Video content posting",
-      "Online booking",
-      "Stripe payment processing",
+      "Launch a professional storefront in minutes",
+      "Accept online bookings & payments instantly",
+      "Reach clients with built-in marketing tools",
     ],
     fees: "Tiered transaction fees (7% / 5% / 3%)",
     cta: "Get Started",
@@ -47,8 +44,8 @@ const plans = [
     badge: "Most Popular",
     features: [
       "Everything in Freemium",
-      "SEO tools",
-      "Business analytics dashboard",
+      "Rank higher in search with SEO tools",
+      "Real-time analytics on your business",
     ],
     fees: "$0 transaction fees",
     cta: "Upgrade to Gold",
@@ -60,8 +57,8 @@ const plans = [
     badge: null,
     features: [
       "Everything in Gold",
-      "$200 ForMe marketing credits",
-      "Run promotions inside marketplace",
+      "$200 in ForMe marketing credits",
+      "Run paid promotions across the marketplace",
     ],
     fees: "$0 transaction fees",
     cta: "Upgrade to Platinum",
@@ -73,6 +70,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
   const { update } = useSession();
   const [billing, setBilling] = useState("monthly" as "monthly" | "yearly");
   const [saving, setSaving] = useState(false);
+  const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -126,11 +124,11 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
   const handleSelect = async (planId: string) => {
     try {
       setSaving(true);
+      setProcessingPlanId(planId);
 
       // If user has an active paid subscription and is switching plans
       if (isActiveSubscriber && planId !== "bronze" && planId !== currentPlan) {
         setShowChangeConfirm({ planId, interval: billing });
-        setSaving(false);
         return;
       }
 
@@ -138,7 +136,6 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
         if (isActiveSubscriber) {
           // Show cancel confirmation instead of immediate downgrade
           setShowCancelConfirm(true);
-          setSaving(false);
           return;
         }
         await axios.post("/api/subscription/select", { plan: "Bronze", interval: billing });
@@ -168,6 +165,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
       toast.error((err as any)?.response?.data?.error || "Something went wrong");
     } finally {
       setSaving(false);
+      setProcessingPlanId(null);
     }
   };
 
@@ -350,7 +348,8 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
           {plans.map((plan) => {
             const price = billing === "monthly" ? plan.price.monthly : plan.price.yearly;
             const isCurrent = currentPlan === plan.id;
-            const isPopular = plan.badge === "Most Popular";
+            const isGold = plan.id === "gold";
+            const isPremium = plan.id === "platinum";
 
             // Determine CTA label
             let ctaLabel = plan.cta;
@@ -362,32 +361,56 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
               ctaLabel = "Downgrade";
             }
 
+            const checkColor = isPremium ? "#d6d3d1" : "#a8a29e";
+
             return (
-              <div key={plan.id} className={`group relative rounded-2xl border p-6 transition-all duration-300 ${isPopular ? "bg-stone-900 border-stone-800 dark:bg-white dark:border-white shadow-elevation-3" : isCurrent ? "bg-white dark:bg-stone-900 border-stone-200/60 dark:border-stone-800 shadow-elevation-1" : "bg-white dark:bg-stone-900 border-stone-200/60 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2"}`}>
-                {plan.badge && (
+              <div key={plan.id} className={`group relative rounded-2xl border-2 p-6 transition-all duration-300 ${
+                isPremium
+                  ? "bg-gradient-to-br from-stone-900 to-stone-950 dark:from-white dark:to-stone-50 shadow-elevation-3 hover:-translate-y-0.5 hover:shadow-elevation-4"
+                  : isGold
+                  ? "bg-white dark:bg-stone-900 shadow-elevation-2 hover:-translate-y-0.5 hover:shadow-elevation-3"
+                  : "bg-white dark:bg-stone-900 hover:-translate-y-0.5 hover:shadow-elevation-2"
+              } ${
+                isCurrent
+                  ? "border-emerald-500 dark:border-emerald-400"
+                  : isPremium
+                  ? "border-stone-800 dark:border-white"
+                  : isGold
+                  ? "border-stone-300 dark:border-stone-700"
+                  : "border-stone-200/60 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700"
+              }`}>
+                {(isCurrent || plan.badge) && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-stone-700 text-white px-4 py-1 rounded-full text-[10px] font-medium tracking-wide">{plan.badge}</span>
+                    {isCurrent ? (
+                      <span className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-4 py-1 rounded-full text-[10px] font-medium tracking-wide shadow-elevation-1 inline-flex items-center gap-1.5">
+                        <CheckmarkCircle02Icon size={11} strokeWidth={2.5} /> Your Plan
+                      </span>
+                    ) : (
+                      <span className="bg-stone-900 dark:bg-white text-white dark:text-stone-900 px-4 py-1 rounded-full text-[10px] font-medium tracking-wide shadow-elevation-1">{plan.badge}</span>
+                    )}
                   </div>
                 )}
                 <div className="mb-6">
-                  <h3 className="text-[12px] text-stone-400 dark:text-stone-500 mb-3">{plan.name}</h3>
+                  <h3 className={`text-[12px] mb-3 font-medium tracking-wide uppercase ${
+                    isPremium ? 'text-stone-400 dark:text-stone-500' : 'text-stone-400 dark:text-stone-500'
+                  }`}>{plan.name}</h3>
                   <div className="mb-1">
-                    <span className={`text-[32px] font-bold tracking-tight tabular-nums ${isPopular ? 'text-white dark:text-stone-900' : 'text-stone-900 dark:text-stone-100'}`}>
+                    <span className={`text-[32px] font-bold tracking-tight tabular-nums ${isPremium ? 'text-white dark:text-stone-900' : 'text-stone-900 dark:text-stone-100'}`}>
                       {price === 0 ? "Free" : `$${price}`}
                     </span>
                     {price > 0 && <span className="text-[13px] ml-1.5 text-stone-400 dark:text-stone-500">/{billing === "yearly" ? "yr" : "mo"}</span>}
                   </div>
                   {billing === "yearly" && price > 0 && (
-                    <p className={`text-[11px] font-medium ${isPopular ? 'text-emerald-400 dark:text-emerald-600' : 'text-emerald-600'}`}>Save ${(plan.price.monthly * 12) - plan.price.yearly}/yr</p>
+                    <p className={`text-[11px] font-medium ${isPremium ? 'text-emerald-400 dark:text-emerald-600' : 'text-emerald-600'}`}>Save ${(plan.price.monthly * 12) - plan.price.yearly}/yr</p>
                   )}
-                  <p className={`text-[11px] mt-2 ${isPopular ? 'text-stone-400 dark:text-stone-500' : 'text-stone-500 dark:text-stone-400'}`}>
+                  <p className={`text-[11px] mt-2 ${isPremium ? 'text-stone-400 dark:text-stone-500' : 'text-stone-500 dark:text-stone-400'}`}>
                     {plan.fees}
                   </p>
                 </div>
                 <ul className="space-y-2.5 mb-6">
                   {plan.features.map((feature, idx) => (
-                    <li key={idx} className={`flex items-start text-[13px] ${isPopular ? 'text-stone-300 dark:text-stone-600' : 'text-stone-500 dark:text-stone-400'}`}>
-                      <CheckmarkCircle02Icon size={14} color="#a8a29e" className="mr-2.5 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+                    <li key={idx} className={`flex items-start text-[13px] ${isPremium ? 'text-stone-300 dark:text-stone-600' : 'text-stone-600 dark:text-stone-300'}`}>
+                      <CheckmarkCircle02Icon size={14} color={checkColor} className="mr-2.5 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
                       {feature}
                     </li>
                   ))}
@@ -395,10 +418,16 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
                 <button
                   onClick={() => handleSelect(plan.id)}
                   disabled={saving || isCurrent}
-                  className={`w-full py-3 px-5 rounded-xl font-medium text-[13px] transition-all duration-200 flex items-center justify-center gap-2 ${isPopular ? "bg-white text-stone-900 hover:bg-stone-50 dark:bg-stone-900 dark:text-white dark:hover:bg-stone-800" : isCurrent ? "bg-stone-50 dark:bg-stone-900 text-stone-400 dark:text-stone-500 cursor-default border border-stone-200/60 dark:border-stone-800" : "bg-stone-900 text-white hover:bg-stone-800 dark:bg-white dark:text-stone-900 dark:hover:bg-stone-100"}`}
+                  className={`w-full py-3 px-5 rounded-xl font-medium text-[13px] transition-all duration-200 flex items-center justify-center gap-2 ${
+                    isCurrent
+                      ? "bg-stone-50 dark:bg-stone-900 text-stone-400 dark:text-stone-500 cursor-default border border-stone-200/60 dark:border-stone-800"
+                      : isPremium
+                      ? "bg-white text-stone-900 hover:bg-stone-50 dark:bg-stone-900 dark:text-white dark:hover:bg-stone-800"
+                      : "bg-stone-900 text-white hover:bg-stone-800 dark:bg-white dark:text-stone-900 dark:hover:bg-stone-100"
+                  }`}
                   style={!isCurrent ? { boxShadow: '0 2px 8px rgba(0,0,0,0.12)' } : undefined}
                 >
-                  {saving ? "Processing..." : isCurrent ? (<><CheckmarkCircle02Icon size={14} strokeWidth={1.5} /> {ctaLabel}</>) : (<>{ctaLabel} <ArrowRight01Icon size={14} strokeWidth={1.5} /></>)}
+                  {processingPlanId === plan.id ? "Processing..." : isCurrent ? (<><CheckmarkCircle02Icon size={14} strokeWidth={1.5} /> {ctaLabel}</>) : (<>{ctaLabel} <ArrowRight01Icon size={14} strokeWidth={1.5} /></>)}
                 </button>
               </div>
             );

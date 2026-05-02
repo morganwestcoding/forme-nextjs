@@ -610,7 +610,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                   {members.map((member, idx) => (
                     <div
                       key={member.id}
-                      className="flex items-center gap-3 p-3 rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2 transition-all duration-300"
+                      className="flex items-center gap-3 px-4 py-3 rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2 transition-all duration-300"
                       style={{ opacity: 0, animation: 'fadeInUp 520ms ease-out both', animationDelay: `${60 + idx * 40}ms` }}
                     >
                       <div className="w-11 h-11 rounded-full overflow-hidden shrink-0 bg-stone-100 dark:bg-stone-800" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
