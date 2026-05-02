@@ -128,7 +128,7 @@ export default function DateRangePicker({ start, end, preset, onApply }: Props) 
         <div
           role="dialog"
           aria-label="Select date range"
-          className="absolute right-0 z-50 mt-2 w-[360px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-xl dark:border-stone-800 dark:bg-stone-900"
+          className="absolute right-0 z-50 mt-2 w-[360px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-elevation-3 dark:border-stone-800 dark:bg-stone-900"
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-stone-200/70 px-4 py-3 dark:border-stone-800">

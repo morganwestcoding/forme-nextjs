@@ -54,7 +54,7 @@ const EditorialBanner: React.FC<EditorialBannerProps> = ({
         transition: 'all 900ms ease-in-out',
       }}
     >
-      <div className="relative group overflow-hidden rounded-2xl">
+      <div className="relative group overflow-hidden rounded-2xl shadow-elevation-2">
         <div className="aspect-[4/1] bg-stone-900 relative">
           {banners.map((banner, i) => (
             <div

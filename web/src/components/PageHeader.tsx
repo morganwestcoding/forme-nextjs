@@ -147,7 +147,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                   aria-label="Open user menu"
                   className="outline-none ml-1"
                 >
-                  <div className="shrink-0 w-12 h-12 rounded-full overflow-hidden cursor-pointer" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)' }}>
+                  <div className="shrink-0 w-12 h-12 rounded-full overflow-hidden cursor-pointer shadow-elevation-2">
                     {currentUser.image ? (
                       <Image
                         src={currentUser.image}

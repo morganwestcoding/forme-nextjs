@@ -301,8 +301,8 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                   }}
                   className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
                     active
-                      ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)] dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-[0_1px_3px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.8)]'
-                      : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
+                      ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-pill-active dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-pill-active-dark'
+                      : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-inset-outline'
                   }`}
                 >
                   {tab.label}
@@ -461,7 +461,7 @@ function NextTripHero({
   return (
     <section
       style={{ animation: 'fadeInUp 600ms ease-out both' }}
-      className="relative overflow-hidden rounded-[28px] bg-stone-900 text-white shadow-[0_30px_60px_-30px_rgba(0,0,0,0.45)]"
+      className="relative overflow-hidden rounded-[28px] bg-stone-900 text-white shadow-elevation-3"
     >
       <Image
         src={image}
@@ -1155,9 +1155,9 @@ function TripRow({
     >
       <div
         onClick={onOpen}
-        className={`relative cursor-pointer rounded-3xl bg-white dark:bg-stone-900 border transition-all overflow-hidden hover:-translate-y-0.5 hover:shadow-[0_24px_48px_-28px_rgba(0,0,0,0.25)] ${
+        className={`relative cursor-pointer rounded-3xl bg-white dark:bg-stone-900 border transition-all overflow-hidden hover:-translate-y-0.5 hover:shadow-elevation-2 ${
           isNext
-            ? 'border-stone-900/15 shadow-[0_12px_32px_-20px_rgba(0,0,0,0.22)]'
+            ? 'border-stone-900/15 shadow-elevation-1'
             : 'border-stone-200/70 hover:border-stone-300 dark:border-stone-700'
         }`}
       >

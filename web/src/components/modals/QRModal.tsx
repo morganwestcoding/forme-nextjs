@@ -65,7 +65,7 @@ const QRModal: React.FC<QRModalProps> = ({
       </div>
 
       {/* QR Code Container */}
-      <div className="bg-white dark:bg-stone-900 p-6 rounded-2xl border-2 border-stone-100 dark:border-stone-800 shadow-sm">
+      <div className="bg-white dark:bg-stone-900 p-6 rounded-2xl border-2 border-stone-100 dark:border-stone-800 shadow-elevation-1">
         <div className="w-48 h-48 mx-auto bg-white dark:bg-stone-900 rounded-xl flex items-center justify-center">
           {listingUrl ? (
             <img

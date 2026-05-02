@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 import TypeformHeading from '../TypeformHeading';
 import { itemVariants } from '../TypeformStep';
-import { Search01Icon as Search, Building02Icon as Building2, ArrowRight01Icon as ArrowRight } from 'hugeicons-react';
+import { Search01Icon as Search, Building02Icon as Building2 } from 'hugeicons-react';
 
 interface BusinessSelectStepProps {
   selectedListing: string;
@@ -90,6 +90,15 @@ export default function BusinessSelectStep({ selectedListing, onListingChange, o
           )}
         </div>
 
+        <motion.button
+          type="button"
+          variants={itemVariants}
+          onClick={onSkip}
+          className="w-full text-center text-sm text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
+        >
+          Optional — skip if your business is new to the platform
+        </motion.button>
+
         {/* Results */}
         {listings.length > 0 && (
           <div className="space-y-2 max-h-[300px] overflow-y-auto">
@@ -135,16 +144,6 @@ export default function BusinessSelectStep({ selectedListing, onListingChange, o
           </div>
         )}
 
-        {/* Skip option */}
-        <motion.button
-          type="button"
-          variants={itemVariants}
-          onClick={onSkip}
-          className="w-full flex items-center justify-center gap-2 py-3 text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
-        >
-          <span className="text-sm">Skip for now</span>
-          <ArrowRight className="w-4 h-4" />
-        </motion.button>
       </div>
     </div>
   );

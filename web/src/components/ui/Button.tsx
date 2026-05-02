@@ -18,7 +18,7 @@ interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>
 
 const VARIANT_CLASSES: Record<Variant, string> = {
   primary:
-    'bg-stone-900 text-white hover:bg-stone-800 dark:bg-white dark:text-stone-900 dark:hover:bg-stone-100 shadow-[0_2px_8px_rgba(0,0,0,0.12)]',
+    'bg-stone-900 text-white hover:bg-stone-800 dark:bg-white dark:text-stone-900 dark:hover:bg-stone-100 shadow-elevation-1',
   secondary:
     'bg-stone-100 text-stone-900 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700',
   outline:
@@ -26,7 +26,7 @@ const VARIANT_CLASSES: Record<Variant, string> = {
   ghost:
     'bg-transparent text-stone-700 hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-800',
   destructive:
-    'bg-rose-500 text-white hover:bg-rose-600 shadow-[0_2px_8px_rgba(244,63,94,0.25)]',
+    'bg-rose-500 text-white hover:bg-rose-600 shadow-glow-danger',
 };
 
 const SIZE_CLASSES: Record<Size, string> = {

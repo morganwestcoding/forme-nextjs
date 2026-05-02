@@ -198,7 +198,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                         onClick={() => setLicensingImage('mock-image-url')}
                         className="group w-full h-full flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/30 text-center hover:border-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-all duration-200"
                       >
-                        <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200  flex items-center justify-center mb-2 shadow-sm group-hover:border-stone-300 dark:border-stone-700 transition-all">
+                        <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200  flex items-center justify-center mb-2 shadow-elevation-1 group-hover:border-stone-300 dark:border-stone-700 transition-all">
                           <Plus className="w-5 h-5 text-stone-400  group-hover:text-stone-600 dark:text-stone-300 transition-colors" />
                         </div>
                         <span className="text-[13px] font-medium text-stone-600 dark:text-stone-300">Add file</span>
@@ -300,8 +300,8 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                     onClick={() => setSelectedAcademy(isSelected ? '' : academy.id)}
                     className={`group relative rounded-2xl border p-6 transition-all duration-300 cursor-pointer ${
                       isSelected
-                        ? 'bg-stone-900 border-stone-800 shadow-xl'
-                        : 'bg-white dark:bg-stone-900 border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg'
+                        ? 'bg-stone-900 border-stone-800 shadow-elevation-3'
+                        : 'bg-white dark:bg-stone-900 border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2'
                     }`}
                   >
                     {isSelected && (

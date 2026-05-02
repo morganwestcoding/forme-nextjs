@@ -97,7 +97,7 @@ function ProductImageUpload({
           </>
         ) : (
           <div className="h-full flex flex-col items-center justify-center">
-            <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center shadow-sm">
+            <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center shadow-elevation-1">
               <Plus className="w-5 h-5 text-stone-400 dark:text-stone-500" />
             </div>
           </div>

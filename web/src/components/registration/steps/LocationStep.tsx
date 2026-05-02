@@ -24,6 +24,7 @@ const US_STATES = [
 
 export default function LocationStep({ location, onLocationChange }: LocationStepProps) {
   const [selectedState, setSelectedState] = useState('');
+  const [stateInput, setStateInput] = useState('');
   const [city, setCity] = useState('');
   const [cityInput, setCityInput] = useState('');
   const [isStateOpen, setIsStateOpen] = useState(false);
@@ -40,6 +41,7 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
         setCity(parts[0]);
         setCityInput(parts[0]);
         setSelectedState(parts[1]);
+        setStateInput(parts[1]);
       }
     }
   }, []);
@@ -92,6 +94,7 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
 
   const handleStateSelect = (state: string) => {
     setSelectedState(state);
+    setStateInput(state);
     setCity('');
     setCityInput('');
     setIsStateOpen(false);
@@ -102,6 +105,10 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
     setCityInput(selectedCity);
     setIsCityOpen(false);
   };
+
+  const filteredStates = stateInput && stateInput !== selectedState
+    ? US_STATES.filter((s) => s.toLowerCase().includes(stateInput.toLowerCase()))
+    : US_STATES;
 
   const filteredCities = cityInput
     ? cities.filter((c) => c.toLowerCase().includes(cityInput.toLowerCase()))
@@ -115,37 +122,52 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
       />
 
       <div className="space-y-5">
-        {/* State select */}
+        {/* State input with autocomplete dropdown */}
         <div ref={stateDropdownRef} className="relative">
           <label className="block text-sm font-medium text-stone-700 dark:text-stone-200 mb-2">
             State
           </label>
-          <button
-            type="button"
-            onClick={() => { setIsStateOpen(!isStateOpen); setIsCityOpen(false); }}
-            className={`w-full flex items-center gap-3 px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-left transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent ${
-              isStateOpen ? 'ring-2 ring-stone-900 border-transparent' : ''
-            }`}
-          >
-            <span className={selectedState ? 'text-stone-900 dark:text-stone-100' : 'text-stone-400 dark:text-stone-500'}>
-              {selectedState || 'Select a state'}
-            </span>
-            <ChevronDown
-              className={`ml-auto w-5 h-5 text-stone-400 dark:text-stone-500 transition-transform duration-200 ${isStateOpen ? 'rotate-180' : ''}`}
+          <div className="relative">
+            <input
+              type="text"
+              value={stateInput}
+              onChange={(e) => {
+                setStateInput(e.target.value);
+                if (e.target.value !== selectedState) {
+                  setSelectedState('');
+                  setCity('');
+                  setCityInput('');
+                }
+                setIsStateOpen(true);
+                setIsCityOpen(false);
+              }}
+              onFocus={() => { setIsStateOpen(true); setIsCityOpen(false); }}
+              className="w-full px-4 py-3.5 pr-12 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-[box-shadow,border-color] duration-150"
+              placeholder="Type to search states..."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && filteredStates.length > 0) {
+                  handleStateSelect(filteredStates[0]);
+                  e.preventDefault();
+                }
+                e.stopPropagation();
+              }}
             />
-          </button>
+            <ChevronDown
+              className={`absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 dark:text-stone-500 transition-transform duration-200 pointer-events-none ${isStateOpen ? 'rotate-180' : ''}`}
+            />
+          </div>
 
           <AnimatePresence>
-            {isStateOpen && (
+            {isStateOpen && filteredStates.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.15 }}
-                className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-lg overflow-hidden"
+                className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-elevation-3 overflow-hidden"
               >
                 <div className="max-h-[240px] overflow-y-auto overscroll-contain">
-                  {US_STATES.map((state) => (
+                  {filteredStates.map((state) => (
                     <button
                       key={state}
                       type="button"
@@ -194,7 +216,7 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
                   }}
                   onFocus={() => { setIsCityOpen(true); setIsStateOpen(false); }}
                   autoFocus
-                  className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-[box-shadow,border-color] duration-150"
                   placeholder={isLoadingCities ? 'Loading cities...' : 'Type to search cities...'}
                   disabled={isLoadingCities}
                   onKeyDown={(e) => {
@@ -217,7 +239,7 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-lg overflow-hidden"
+                    className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-elevation-3 overflow-hidden"
                   >
                     <div className="max-h-[240px] overflow-y-auto overscroll-contain">
                       {filteredCities.map((c) => (
@@ -246,12 +268,12 @@ export default function LocationStep({ location, onLocationChange }: LocationSte
         </AnimatePresence>
 
         {/* Preview */}
-        <AnimatePresence>
+        <AnimatePresence initial={false}>
           {city && selectedState && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, transition: { duration: 0 } }}
               transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
               className="flex items-center gap-3 p-4 bg-stone-50 dark:bg-stone-900 rounded-xl"
             >

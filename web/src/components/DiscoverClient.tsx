@@ -48,207 +48,10 @@ const BANNERS = [
   },
 ];
 
-// Layout-comparison samples — rendered as the first card in the Local
-// Businesses and Trending Professionals rails so the standard
-// listing/worker layouts can be compared against real data (especially
-// independent-worker cards, which display "Independent" instead of a
-// listing title). Click is suppressed at the wrapper level. Remove once
-// the comparison work is done.
-const SAMPLE_LISTING = {
-  id: 'sample-listing',
-  title: 'Lumière Studio',
-  description: 'Sample',
-  imageSrc: '/assets/people/listing 1.png',
-  galleryImages: [],
-  category: 'Salon',
-  location: 'Brooklyn, NY',
-  city: 'Brooklyn',
-  state: 'NY',
-  zipCode: null,
-  userId: 'sample-user',
-  createdAt: new Date().toISOString(),
-  services: [
-    { id: 's1', serviceName: 'Cut', price: 45, category: 'Salon' },
-    { id: 's2', serviceName: 'Color', price: 180, category: 'Salon' },
-  ],
-  employees: [],
-  storeHours: [
-    { dayOfWeek: 'Sunday', openTime: '10:00', closeTime: '18:00', isClosed: false },
-    { dayOfWeek: 'Monday', openTime: '10:00', closeTime: '20:00', isClosed: false },
-    { dayOfWeek: 'Tuesday', openTime: '10:00', closeTime: '20:00', isClosed: false },
-    { dayOfWeek: 'Wednesday', openTime: '10:00', closeTime: '20:00', isClosed: false },
-    { dayOfWeek: 'Thursday', openTime: '10:00', closeTime: '20:00', isClosed: false },
-    { dayOfWeek: 'Friday', openTime: '10:00', closeTime: '21:00', isClosed: false },
-    { dayOfWeek: 'Saturday', openTime: '10:00', closeTime: '21:00', isClosed: false },
-  ],
-  favoriteIds: [],
-  rating: 4.9,
-  ratingCount: 142,
-} as unknown as SafeListing;
-
-const SAMPLE_LISTING_GYM = {
-  id: 'sample-listing-gym',
-  title: 'Ironworks Gym',
-  description: 'Sample',
-  imageSrc: '/assets/people/listing 2.png',
-  galleryImages: [],
-  category: 'Training',
-  location: 'Brooklyn, NY',
-  city: 'Brooklyn',
-  state: 'NY',
-  zipCode: null,
-  userId: 'sample-user-gym',
-  createdAt: new Date().toISOString(),
-  services: [
-    { id: 'g1', serviceName: 'Personal Training', price: 75, category: 'Training' },
-    { id: 'g2', serviceName: 'Group Class', price: 25, category: 'Training' },
-  ],
-  employees: [],
-  storeHours: [
-    { dayOfWeek: 'Sunday', openTime: '08:00', closeTime: '18:00', isClosed: false },
-    { dayOfWeek: 'Monday', openTime: '06:00', closeTime: '22:00', isClosed: false },
-    { dayOfWeek: 'Tuesday', openTime: '06:00', closeTime: '22:00', isClosed: false },
-    { dayOfWeek: 'Wednesday', openTime: '06:00', closeTime: '22:00', isClosed: false },
-    { dayOfWeek: 'Thursday', openTime: '06:00', closeTime: '22:00', isClosed: false },
-    { dayOfWeek: 'Friday', openTime: '06:00', closeTime: '22:00', isClosed: false },
-    { dayOfWeek: 'Saturday', openTime: '08:00', closeTime: '20:00', isClosed: false },
-  ],
-  favoriteIds: [],
-  rating: 4.8,
-  ratingCount: 87,
-} as unknown as SafeListing;
-
-const SAMPLE_LISTING_WELLNESS = {
-  id: 'sample-listing-wellness',
-  title: 'Stillwater Wellness',
-  description: 'Sample',
-  imageSrc: '/assets/people/listing 3.png',
-  galleryImages: [],
-  category: 'Wellness',
-  location: 'Brooklyn, NY',
-  city: 'Brooklyn',
-  state: 'NY',
-  zipCode: null,
-  userId: 'sample-user-wellness',
-  createdAt: new Date().toISOString(),
-  services: [
-    { id: 'w1', serviceName: 'Massage', price: 110, category: 'Wellness' },
-    { id: 'w2', serviceName: 'Acupuncture', price: 95, category: 'Wellness' },
-  ],
-  employees: [],
-  storeHours: [
-    { dayOfWeek: 'Sunday', openTime: '09:00', closeTime: '17:00', isClosed: false },
-    { dayOfWeek: 'Monday', openTime: '09:00', closeTime: '19:00', isClosed: false },
-    { dayOfWeek: 'Tuesday', openTime: '09:00', closeTime: '19:00', isClosed: false },
-    { dayOfWeek: 'Wednesday', openTime: '09:00', closeTime: '19:00', isClosed: false },
-    { dayOfWeek: 'Thursday', openTime: '09:00', closeTime: '19:00', isClosed: false },
-    { dayOfWeek: 'Friday', openTime: '09:00', closeTime: '19:00', isClosed: false },
-    { dayOfWeek: 'Saturday', openTime: '09:00', closeTime: '18:00', isClosed: false },
-  ],
-  favoriteIds: [],
-  rating: 4.95,
-  ratingCount: 64,
-} as unknown as SafeListing;
-
-const SAMPLE_EMPLOYEES: Array<{ employee: SafeEmployee; listing: SafeListing }> = [
-  {
-    listing: SAMPLE_LISTING,
-    employee: {
-      id: 'sample-employee-1',
-      fullName: 'Jordan Riley',
-      jobTitle: 'Senior Stylist',
-      listingId: SAMPLE_LISTING.id,
-      userId: 'sample-user-emp-1',
-      serviceIds: [],
-      isActive: true,
-      isIndependent: false,
-      createdAt: new Date().toISOString(),
-      listingTitle: SAMPLE_LISTING.title,
-      listingCategory: SAMPLE_LISTING.category,
-      rating: 4.9,
-      user: {
-        id: 'sample-user-emp-1',
-        name: 'Jordan Riley',
-        image: '/assets/people/worker 1.png',
-        imageSrc: '/assets/people/worker 1.png',
-        backgroundImage: null,
-        userType: 'individual',
-        jobTitle: 'Senior Stylist',
-        academyName: null,
-      },
-    } as unknown as SafeEmployee,
-  },
-  {
-    listing: SAMPLE_LISTING_GYM,
-    employee: {
-      id: 'sample-employee-2',
-      fullName: 'Maya Vega',
-      jobTitle: 'Personal Trainer',
-      listingId: SAMPLE_LISTING_GYM.id,
-      userId: 'sample-user-emp-2',
-      serviceIds: [],
-      isActive: true,
-      isIndependent: false,
-      createdAt: new Date().toISOString(),
-      listingTitle: SAMPLE_LISTING_GYM.title,
-      listingCategory: SAMPLE_LISTING_GYM.category,
-      rating: 4.8,
-      user: {
-        id: 'sample-user-emp-2',
-        name: 'Maya Vega',
-        image: '/assets/people/worker 2.png',
-        imageSrc: '/assets/people/worker 2.png',
-        backgroundImage: null,
-        userType: 'individual',
-        jobTitle: 'Personal Trainer',
-        academyName: null,
-      },
-    } as unknown as SafeEmployee,
-  },
-  {
-    listing: SAMPLE_LISTING_WELLNESS,
-    employee: {
-      id: 'sample-employee-3',
-      fullName: 'Kai Chen',
-      jobTitle: 'Massage Therapist',
-      listingId: SAMPLE_LISTING_WELLNESS.id,
-      userId: 'sample-user-emp-3',
-      serviceIds: [],
-      isActive: true,
-      isIndependent: false,
-      createdAt: new Date().toISOString(),
-      listingTitle: SAMPLE_LISTING_WELLNESS.title,
-      listingCategory: SAMPLE_LISTING_WELLNESS.category,
-      rating: 4.95,
-      user: {
-        id: 'sample-user-emp-3',
-        name: 'Kai Chen',
-        image: '/assets/people/worker 3.png',
-        imageSrc: '/assets/people/worker 3.png',
-        backgroundImage: null,
-        userType: 'individual',
-        jobTitle: 'Massage Therapist',
-        academyName: null,
-      },
-    } as unknown as SafeEmployee,
-  },
-];
-
-// Renders a card with a "Sample" badge and swallows clicks so the
-// fake IDs never trigger navigation or favorite mutations.
-// The sample indicator is rendered inside the cards via the isSample prop —
-// this wrapper exists only to swallow clicks so the fake IDs never trigger
-// navigation or favorite mutations.
-const SampleCardWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div
-    onClickCapture={(e) => {
-      e.preventDefault();
-      e.stopPropagation();
-    }}
-  >
-    {children}
-  </div>
-);
+// Real seeded demo records (see scripts/seed-sample-workers.ts) get a "sample"
+// badge in the rails — matched by listing title and worker fullName.
+const SAMPLE_LISTING_TITLES = new Set(['Lumière Studio', 'Ironworks Gym', 'Stillwater Wellness']);
+const SAMPLE_WORKER_NAMES = new Set(['Jordan Riley', 'Maya Vega', 'Kai Chen']);
 
 // Shuffle array using Fisher-Yates algorithm (seeded for stability during session)
 function shuffleArray<T>(array: T[], seed?: number): T[] {
@@ -644,7 +447,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
             <div>
               {/* ── Banner skeleton (matches aspect-[4/1] rounded-2xl + 3 dots) ── */}
               <div className="mt-8">
-                <div className="rounded-2xl animate-pulse bg-stone-200/60 dark:bg-stone-800/60 w-full aspect-[4/1]" />
+                <div className="rounded-2xl shadow-elevation-2 animate-pulse bg-stone-200/60 dark:bg-stone-800/60 w-full aspect-[4/1]" />
                 <div className="flex gap-1.5 mt-3 justify-center items-center">
                   <div className="h-1.5 w-4 rounded-full animate-pulse bg-stone-300/60 dark:bg-stone-700/60" />
                   <div className="h-1.5 w-1.5 rounded-full animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
@@ -676,7 +479,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-7 grid-rows-2 gap-0.5 rounded-xl overflow-hidden">
+              <div className="grid grid-cols-7 grid-rows-2 gap-0.5 rounded-xl overflow-hidden shadow-elevation-1">
                 {Array.from({ length: 14 }).map((_, i) => (
                   <div
                     key={i}
@@ -829,10 +632,10 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       className="flex flex-col items-center gap-2 shrink-0 group"
                     >
                       <div
-                        className={`w-[100px] h-[100px] rounded-full overflow-hidden flex items-center justify-center bg-black transition-all duration-500 ease-out border-2 ${
+                        className={`w-[100px] h-[100px] rounded-full overflow-hidden flex items-center justify-center bg-black transition-all duration-500 ease-out border-2 shadow-elevation-2 ${
                           isSelected
-                            ? 'border-stone-900 dark:border-white shadow-lg'
-                            : 'border-stone-200  dark:border-stone-700 group-hover:border-stone-400 dark:group-hover:border-stone-500 group-hover:shadow-md'
+                            ? 'border-stone-900 dark:border-white shadow-elevation-2'
+                            : 'border-stone-200  dark:border-stone-700 group-hover:border-stone-400 dark:group-hover:border-stone-500'
                         }`}
                       >
                         {imageSrc && (
@@ -871,7 +674,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                       onViewAll={handleBackToMain}
                       viewAllLabel="← Back to Discover"
                     />
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-0.5 rounded-xl overflow-hidden transition-all duration-300">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-0.5 rounded-xl overflow-hidden shadow-elevation-1 transition-all duration-300">
                       {(initialPosts || []).map((post, idx) => (
                         <div
                           key={post.id}
@@ -998,7 +801,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                             onNext={() => scrollPosts('right')}
                             onViewAll={handleViewAllPosts}
                           />
-                          <div className="grid grid-cols-7 grid-rows-2 gap-0.5 rounded-xl overflow-hidden transition-all duration-300">
+                          <div className="grid grid-cols-7 gap-0.5 rounded-xl overflow-hidden shadow-elevation-1 transition-all duration-300">
                             {currentPosts.slice(0, 14).map((post, idx) => {
                               const total = Math.min(currentPosts.length, 14);
                               const singleRow = total <= 7;
@@ -1053,61 +856,23 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                             onViewAll={handleViewAllListings}
                           />
                           <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 transition-all duration-300`}>
-                            <div
-                              style={{
-                                opacity: listingsVisible ? 0 : 0,
-                                animation: listingsVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                                animationDelay: listingsVisible ? `140ms` : '0ms',
-                                willChange: 'transform, opacity',
-                                transition: !listingsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
-                              }}
-                              className={!listingsVisible ? 'opacity-0' : ''}
-                            >
-                              <SampleCardWrapper>
-                                <ListingCard currentUser={currentUser} data={SAMPLE_LISTING} isSample />
-                              </SampleCardWrapper>
-                            </div>
-                            <div
-                              style={{
-                                opacity: listingsVisible ? 0 : 0,
-                                animation: listingsVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                                animationDelay: listingsVisible ? `170ms` : '0ms',
-                                willChange: 'transform, opacity',
-                                transition: !listingsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
-                              }}
-                              className={!listingsVisible ? 'opacity-0' : ''}
-                            >
-                              <SampleCardWrapper>
-                                <ListingCard currentUser={currentUser} data={SAMPLE_LISTING_GYM} isSample />
-                              </SampleCardWrapper>
-                            </div>
-                            <div
-                              style={{
-                                opacity: listingsVisible ? 0 : 0,
-                                animation: listingsVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                                animationDelay: listingsVisible ? `200ms` : '0ms',
-                                willChange: 'transform, opacity',
-                                transition: !listingsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
-                              }}
-                              className={!listingsVisible ? 'opacity-0' : ''}
-                            >
-                              <SampleCardWrapper>
-                                <ListingCard currentUser={currentUser} data={SAMPLE_LISTING_WELLNESS} isSample />
-                              </SampleCardWrapper>
-                            </div>
-                            {currentListings.slice(0, 6).map((listing, idx) => (
+                            {currentListings.slice(0, 9).map((listing, idx) => (
                               <div
                                 key={`${listing.id}-${listingsIndex}`}
                                 style={{
                                   opacity: listingsVisible ? 0 : 0,
                                   animation: listingsVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                                  animationDelay: listingsVisible ? `${140 + (idx + 3) * 30}ms` : '0ms',
+                                  animationDelay: listingsVisible ? `${140 + idx * 30}ms` : '0ms',
                                   willChange: 'transform, opacity',
                                   transition: !listingsVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
                                 }}
                                 className={!listingsVisible ? 'opacity-0' : ''}
                               >
-                                <ListingCard currentUser={currentUser} data={listing} />
+                                <ListingCard
+                                  currentUser={currentUser}
+                                  data={listing}
+                                  isSample={SAMPLE_LISTING_TITLES.has(listing.title)}
+                                />
                               </div>
                             ))}
                           </div>
@@ -1126,35 +891,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                             onViewAll={handleViewAllProfessionals}
                           />
                           <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 transition-all duration-300`}>
-                            {SAMPLE_EMPLOYEES.map((sample, idx) => (
-                              <div
-                                key={sample.employee.id}
-                                style={{
-                                  opacity: employeesVisible ? 0 : 0,
-                                  animation: employeesVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                                  animationDelay: employeesVisible ? `${160 + idx * 30}ms` : '0ms',
-                                  willChange: 'transform, opacity',
-                                  transition: !employeesVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
-                                }}
-                                className={!employeesVisible ? 'opacity-0' : ''}
-                              >
-                                <SampleCardWrapper>
-                                  <WorkerCard
-                                    employee={sample.employee}
-                                    listingTitle={sample.listing.title}
-                                    data={{
-                                      title: sample.listing.title,
-                                      imageSrc: sample.listing.imageSrc,
-                                      category: sample.listing.category,
-                                    }}
-                                    listing={sample.listing}
-                                    currentUser={currentUser ?? undefined}
-                                    isSample
-                                  />
-                                </SampleCardWrapper>
-                              </div>
-                            ))}
-                            {currentEmployees.slice(0, 8).map((employee, idx) => {
+                            {currentEmployees.slice(0, 11).map((employee, idx) => {
                               const listing = listingsForLookup.find(l => l.id === employee.listingId) || listingsForLookup[0];
                               const imageSrc = listing?.imageSrc || (Array.isArray(listing?.galleryImages) ? listing.galleryImages[0] : undefined) || placeholderDataUri(listing?.title || 'Listing');
 
@@ -1164,7 +901,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                                   style={{
                                     opacity: employeesVisible ? 0 : 0,
                                     animation: employeesVisible ? `fadeInUp 520ms ease-out both` : 'none',
-                                    animationDelay: employeesVisible ? `${160 + (idx + SAMPLE_EMPLOYEES.length) * 30}ms` : '0ms',
+                                    animationDelay: employeesVisible ? `${160 + idx * 30}ms` : '0ms',
                                     willChange: 'transform, opacity',
                                     transition: !employeesVisible ? `opacity ${FADE_OUT_DURATION}ms ease-out` : 'none',
                                   }}
@@ -1180,6 +917,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                                     }}
                                     listing={listing}
                                     currentUser={currentUser ?? undefined}
+                                    isSample={SAMPLE_WORKER_NAMES.has(employee.fullName)}
                                   />
                                 </div>
                               );

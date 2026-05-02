@@ -196,7 +196,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
 
   const dropdownMenu = showDropdown && dropdownPos ? (
     <div
-      className="fixed w-48 bg-white dark:bg-stone-900 rounded-xl shadow-xl border border-stone-200 dark:border-stone-800 py-2 z-50"
+      className="fixed w-48 bg-white dark:bg-stone-900 rounded-xl shadow-elevation-3 border border-stone-200 dark:border-stone-800 py-2 z-50"
       style={{ top: dropdownPos.top, left: dropdownPos.left - 192, maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}
     >
       <button onClick={() => { setShowDropdown(false); setShowQRModal(true); }} className={btnClass} type="button">
@@ -309,7 +309,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         {/* ===== LEFT COLUMN - Profile Card ===== */}
         <div ref={leftColumnRef} className="w-[320px] flex-shrink-0 hidden md:flex flex-col gap-4 py-10 md:sticky md:top-4 md:self-start md:max-h-[calc(100vh-2rem)] md:overflow-y-auto scrollbar-hide">
           <div
-            className="rounded-2xl overflow-hidden border border-stone-200/40 dark:border-stone-800 shadow-sm transition-colors duration-700"
+            className="rounded-2xl overflow-hidden border border-stone-200/40 dark:border-stone-800 shadow-elevation-1 transition-colors duration-700"
             style={{
               background: dominantColor
                 ? isDarkMode
@@ -356,7 +356,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 />
               </button>
               <div className="relative w-24 h-24 mx-auto">
-                <div className="w-24 h-24 rounded-full overflow-hidden" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)' }}>
+                <div className="w-24 h-24 rounded-full overflow-hidden shadow-elevation-2">
                   <img
                     src={profileImage}
                     alt={name ?? 'User'}
@@ -366,7 +366,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 {isStudent && (
                   <div
                     title={studentAcademyName ? `Student at ${studentAcademyName}` : 'Student'}
-                    className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 ring-[1.5px] ring-white flex items-center justify-center shadow-[0_2px_8px_rgba(49,46,129,0.4)]"
+                    className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 ring-[1.5px] ring-white flex items-center justify-center shadow-glow-info"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
@@ -376,7 +376,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 {isAdminProfile && !isStudent && (
                   <div
                     title={(user as any).role === 'master' ? 'Master Admin' : 'Admin'}
-                    className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-700 ring-[1.5px] ring-white flex items-center justify-center shadow-[0_2px_8px_rgba(180,83,9,0.4)]"
+                    className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-700 ring-[1.5px] ring-white flex items-center justify-center shadow-glow-warning"
                   >
                     <ShieldUserIcon className="w-[18px] h-[18px] text-white" strokeWidth={2} />
                   </div>
@@ -507,7 +507,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
           {/* Mobile Profile Header (hidden on desktop) */}
           <div className="md:hidden mb-6">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-xl bg-stone-100 dark:bg-stone-800 border-2 border-white shadow-lg overflow-hidden flex-shrink-0">
+              <div className="w-16 h-16 rounded-xl bg-stone-100 dark:bg-stone-800 border-2 border-white shadow-elevation-2 overflow-hidden flex-shrink-0">
                 <img
                   src={image || imageSrc || placeholderDataUri(name || 'User')}
                   alt={name ?? 'User'}

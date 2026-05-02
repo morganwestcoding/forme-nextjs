@@ -162,7 +162,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
 
   const dropdownMenu = showDropdown && dropdownPos ? (
     <div
-      className="fixed w-48 bg-white dark:bg-stone-900 rounded-xl shadow-xl border border-stone-200 dark:border-stone-800 py-2 z-[61]"
+      className="fixed w-48 bg-white dark:bg-stone-900 rounded-xl shadow-elevation-3 border border-stone-200 dark:border-stone-800 py-2 z-[61]"
       style={{ top: dropdownPos.top, left: dropdownPos.left }}
       onClick={(e) => e.stopPropagation()}
     >
@@ -240,7 +240,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
     >
       {/* Media container */}
       <div
-        className="relative overflow-hidden bg-stone-100 dark:bg-stone-800  transition-all duration-700 ease-out group-hover:scale-105"
+        className="relative overflow-hidden bg-stone-100 dark:bg-stone-800"
         style={{ aspectRatio: isHero ? undefined : '5 / 6', height: isHero ? '100%' : undefined, boxShadow: 'inset 0 0 30px rgba(0,0,0,0.08), inset 0 0 6px rgba(0,0,0,0.04)' }}
       >
       {/* Text post */}
@@ -349,7 +349,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/35 via-black/10 to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-600" />
 
         {/* Info overlay — reveal on hover */}
-        <div className="absolute bottom-6 left-6 right-6 z-20 flex items-center gap-2 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-600 ease-[cubic-bezier(0.23,1,0.32,1)]">
+        <div className="absolute bottom-6 left-6 right-6 z-20 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-600 ease-[cubic-bezier(0.23,1,0.32,1)]">
           {!hideUserInfo && post.user?.image && (
             <div className="relative w-6 h-6 rounded-full overflow-hidden ring-[1.5px] ring-white/80 shrink-0">
               <Image
@@ -441,7 +441,7 @@ export const PostCardPreview: React.FC = () => {
       {/* Expanded state preview */}
       <div className="mt-12">
         <h3 className="text-lg font-semibold mb-4 text-stone-900 dark:text-stone-100 dark:text-white">Expanded View (on tap)</h3>
-        <div className="max-w-[400px] bg-white dark:bg-stone-900  rounded-2xl overflow-hidden shadow-2xl">
+        <div className="max-w-[400px] bg-white dark:bg-stone-900  rounded-2xl overflow-hidden shadow-elevation-4">
           {/* Image */}
           <div className="relative aspect-square">
             <img

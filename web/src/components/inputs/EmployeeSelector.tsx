@@ -138,7 +138,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
 
           {/* Search Results */}
           {searchQuery.length >= 2 && (
-            <div className="absolute z-50 w-full mt-1 bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute z-50 w-full mt-1 bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl shadow-elevation-3 max-h-60 overflow-y-auto">
               {isSearching ? (
                 <div className="p-4 text-center text-stone-500  dark:text-stone-500">Searching...</div>
               ) : searchResults.length > 0 ? (

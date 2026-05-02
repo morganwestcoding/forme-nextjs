@@ -294,7 +294,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
         <FloatingPortal>
           <div
             ref={refs.setFloating}
-            className="z-[50] max-h-80 overflow-auto rounded-xl bg-white dark:bg-stone-800 border border-stone-100 dark:border-stone-700/50 shadow-lg shadow-stone-900/10 dark:shadow-xl dark:shadow-black/20"
+            className="z-[50] max-h-80 overflow-auto rounded-xl bg-white dark:bg-stone-800 border border-stone-100 dark:border-stone-700/50 shadow-elevation-2"
             style={{
               ...floatingStyles,
               visibility: isPositioned ? 'visible' : 'hidden',

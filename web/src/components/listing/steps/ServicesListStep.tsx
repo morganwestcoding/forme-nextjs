@@ -65,7 +65,7 @@ export default function ServicesListStep({
           className="group p-4 rounded-xl border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 text-left transition-all duration-200 hover:border-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800"
         >
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-white dark:bg-stone-900 border border-stone-200  flex items-center justify-center shadow-sm group-hover:border-stone-300 dark:border-stone-700 transition-all flex-shrink-0">
+            <div className="w-9 h-9 rounded-full bg-white dark:bg-stone-900 border border-stone-200  flex items-center justify-center shadow-elevation-1 group-hover:border-stone-300 dark:border-stone-700 transition-all flex-shrink-0">
               <Plus className="w-4 h-4 text-stone-400  group-hover:text-stone-600 dark:text-stone-300 transition-colors" />
             </div>
             <div>

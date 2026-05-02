@@ -539,8 +539,8 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
               onClick={() => setActiveTab(tab.key)}
               className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap flex items-center gap-1.5 ${
                 activeTab === tab.key
-                  ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)] dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-[0_1px_3px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.8)]'
-                  : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
+                  ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-pill-active dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-pill-active-dark'
+                  : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-inset-outline'
               }`}
             >
               {tab.label}
@@ -568,7 +568,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
               ].map((stat, i) => (
                 <div
                   key={i}
-                  className="rounded-2xl border border-stone-200/60 p-5 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
+                  className="rounded-2xl border border-stone-200/60 p-5 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2 transition-all duration-300"
                 >
                   <p className="text-[12px] text-stone-400 dark:text-stone-500">{stat.label}</p>
                   <p className="text-[24px] font-bold text-stone-900 dark:text-stone-100 tabular-nums mt-1">{stat.value}</p>
@@ -610,7 +610,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                   {members.map((member, idx) => (
                     <div
                       key={member.id}
-                      className="flex items-center gap-3 p-3 rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300"
+                      className="flex items-center gap-3 p-3 rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2 transition-all duration-300"
                       style={{ opacity: 0, animation: 'fadeInUp 520ms ease-out both', animationDelay: `${60 + idx * 40}ms` }}
                     >
                       <div className="w-11 h-11 rounded-full overflow-hidden shrink-0 bg-stone-100 dark:bg-stone-800" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>

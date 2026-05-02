@@ -73,7 +73,7 @@ export default function ImagesStep({ userType }: ImagesStepProps) {
             type="button"
             onClick={() => inputRef.current?.click()}
             disabled={uploading}
-            className="w-20 h-20 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-700 shadow-md transition-colors relative overflow-hidden group flex-shrink-0 disabled:opacity-60"
+            className="w-20 h-20 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-700 shadow-elevation-2 transition-colors relative overflow-hidden group flex-shrink-0 disabled:opacity-60"
           >
             {uploading ? (
               <div className="flex items-center justify-center h-full">

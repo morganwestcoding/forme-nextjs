@@ -50,7 +50,7 @@ export default async function AdminAcademiesPage() {
                 <Link
                   key={a.id}
                   href={`/admin/academies/${a.id}`}
-                  className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 p-5 hover:border-stone-300 dark:border-stone-700 hover:shadow-sm transition-all"
+                  className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 p-5 hover:border-stone-300 dark:border-stone-700 hover:shadow-elevation-1 transition-all"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">

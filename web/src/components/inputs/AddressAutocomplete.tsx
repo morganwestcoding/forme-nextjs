@@ -271,7 +271,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           id={`${id}-listbox`}
           role="listbox"
           ref={listRef}
-          className="absolute w-full bg-white dark:bg-stone-900 shadow-xl rounded-xl mt-2 z-[9999] max-h-[220px] overflow-y-auto border border-stone-200/60 p-1.5"
+          className="absolute w-full bg-white dark:bg-stone-900 shadow-elevation-3 rounded-xl mt-2 z-[9999] max-h-[220px] overflow-y-auto border border-stone-200/60 p-1.5"
         >
           {suggestions.map((sugg, index) => (
             <div

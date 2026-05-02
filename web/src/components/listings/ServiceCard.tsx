@@ -116,10 +116,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className={`group cursor-pointer rounded-2xl relative transition-all duration-300 ${
+      className={`group cursor-pointer rounded-2xl relative shadow-elevation-1 transition-all duration-300 ${
         solidBackground
-          ? 'hover:-translate-y-1 hover:shadow-lg overflow-visible'
-          : 'hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md overflow-hidden'
+          ? 'hover:-translate-y-1 hover:shadow-elevation-2 overflow-visible'
+          : 'hover:-translate-y-1 hover:scale-[1.01] hover:shadow-elevation-2 overflow-hidden'
       } ${compact ? '' : 'max-w-[250px]'}`}
     >
       {/* Background with image or empty state */}
@@ -175,7 +175,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               {isOwner ? (
                 /* Owner sees upload CTA */
                 <div className="text-center px-6">
-                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center border-2 border-stone-200 dark:border-stone-800">
+                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/90 backdrop-blur-sm shadow-elevation-2 flex items-center justify-center border-2 border-stone-200 dark:border-stone-800">
                     <svg
                       className="w-9 h-9 text-stone-400 dark:text-stone-500"
                       fill="none"
@@ -194,7 +194,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 </div>
               ) : (
                 /* Non-owners see minimal placeholder */
-                <div className="w-20 h-20 rounded-full bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center border-2 border-stone-200 dark:border-stone-800">
+                <div className="w-20 h-20 rounded-full bg-white/90 backdrop-blur-sm shadow-elevation-2 flex items-center justify-center border-2 border-stone-200 dark:border-stone-800">
                   <svg
                     className="w-9 h-9 text-stone-400 dark:text-stone-500"
                     fill="none"

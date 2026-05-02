@@ -19,6 +19,7 @@ interface LayoutContentProps {
 const HEADER_ROUTES: Array<{ match: (p: string) => boolean; label?: string }> = [
   { match: (p) => p === '/' },
   { match: (p) => p === '/shops' },
+  { match: (p) => p.startsWith('/maps') },
   { match: (p) => p.startsWith('/bookings') },
   { match: (p) => p.startsWith('/settings'), label: 'Settings' },
   { match: (p) => p.startsWith('/messages'), label: 'Messages' },
@@ -39,7 +40,6 @@ export default function LayoutContent({ children, currentUser = null }: LayoutCo
     pathname?.startsWith('/listing/new') ||
     pathname?.startsWith('/reserve') ||
     pathname?.startsWith('/post/new') ||
-    pathname?.startsWith('/maps') ||
     pathname?.startsWith('/newsfeed');
 
   if (isFullScreenPage) {

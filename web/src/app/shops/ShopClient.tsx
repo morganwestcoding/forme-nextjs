@@ -378,8 +378,8 @@ const ShopClient: React.FC<ShopClientProps> = ({
                   <div
                     className={`w-[100px] h-[100px] rounded-full overflow-hidden flex items-center justify-center bg-black transition-all duration-500 ease-out border-2 ${
                       isSelected
-                        ? 'border-stone-900 dark:border-white scale-105 shadow-lg'
-                        : 'border-stone-200  dark:border-stone-700 group-hover:border-stone-400 dark:group-hover:border-stone-500 group-hover:scale-105 group-hover:shadow-md'
+                        ? 'border-stone-900 dark:border-white scale-105 shadow-elevation-2'
+                        : 'border-stone-200  dark:border-stone-700 group-hover:border-stone-400 dark:group-hover:border-stone-500 group-hover:scale-105 group-hover:shadow-elevation-2'
                     }`}
                   >
                     {imageSrc && (

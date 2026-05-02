@@ -1,9 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
-
 import TypeformHeading from '../TypeformHeading';
-import { itemVariants } from '../TypeformStep';
 import { ShoppingBag02Icon, UserIcon as User, UserMultipleIcon as Users, Mortarboard01Icon } from 'hugeicons-react';
 
 interface UserTypeStepProps {
@@ -52,20 +49,18 @@ export default function UserTypeStep({ userType, onUserTypeChange }: UserTypeSte
           const isSelected = userType === option.value;
 
           return (
-            <motion.button
+            <button
               key={option.value}
               type="button"
               onClick={() => onUserTypeChange(option.value)}
-              variants={itemVariants}
-              whileTap={{ scale: 0.98 }}
-              style={{ WebkitTapHighlightColor: 'transparent' }}
+              style={{ WebkitTapHighlightColor: 'transparent', willChange: 'box-shadow, background-color, border-color' }}
               className={`
                 flex flex-col items-center text-center gap-3 p-5 rounded-xl border
-                transition-[background-color,border-color,box-shadow,color] duration-200 ease-out
+                transition-[background-color,border-color,box-shadow] duration-200 ease-out
                 focus:outline-none
                 ${isSelected
-                  ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
-                  : 'border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 shadow-[inset_0_0_0_rgba(0,0,0,0)] hover:border-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
+                  ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-inset-pressed'
+                  : 'border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 shadow-none hover:border-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
                 }
               `}
             >
@@ -79,14 +74,14 @@ export default function UserTypeStep({ userType, onUserTypeChange }: UserTypeSte
                 <h3 className="font-semibold text-stone-900 dark:text-stone-100">{option.title}</h3>
                 <p className="text-xs text-stone-500 dark:text-stone-500 mt-0.5">{option.description}</p>
               </div>
-            </motion.button>
+            </button>
           );
         })}
       </div>
 
-      <motion.p variants={itemVariants} className="text-sm text-stone-400 dark:text-stone-500 text-center mt-6">
+      <p className="text-sm text-stone-400 dark:text-stone-500 text-center mt-6">
         Select an option to continue
-      </motion.p>
+      </p>
     </div>
   );
 }

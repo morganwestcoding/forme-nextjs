@@ -58,12 +58,24 @@ module.exports = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
-      /* ── Elevation system ── */
+      /* ── Elevation system ──
+         Tier 1: resting surfaces (cards, inputs, small avatars)
+         Tier 2: raised/hover (card hover, large avatars, buttons)
+         Tier 3: floating (dropdowns, popovers, tooltips, autocompletes)
+         Tier 4: modal (dialogs, takeovers, video control panels) */
       boxShadow: {
         'elevation-1': '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
         'elevation-2': '0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)',
         'elevation-3': '0 16px 48px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06)',
-        'dark-drop-shadow': '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)',
+        'elevation-4': '0 32px 64px rgba(0,0,0,0.18), 0 8px 24px rgba(0,0,0,0.10)',
+        'inset-pressed': 'inset 0 2px 4px rgba(0,0,0,0.10)',
+        'inset-outline': 'inset 0 0 0 1px rgba(0,0,0,0.06)',
+        'pill-active': '0 1px 3px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.12)',
+        'pill-active-dark': '0 1px 3px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.80)',
+        'glow-success': '0 0 12px rgba(16,185,129,0.40)',
+        'glow-warning': '0 0 12px rgba(245,158,11,0.40)',
+        'glow-info': '0 2px 8px rgba(49,46,129,0.40)',
+        'glow-danger': '0 2px 8px rgba(244,63,94,0.25)',
       },
       /* ── Page-level spacing tokens ── */
       spacing: {

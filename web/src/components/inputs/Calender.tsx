@@ -39,7 +39,7 @@ const Calendar: React.FC<CalendarProps> = ({
           key={index}
           className={`flex justify-center items-center p-2 rounded-xl transition-all duration-200 ${
             isSelected 
-              ? 'bg-stone-500 text-white shadow-md' 
+              ? 'bg-stone-500 text-white shadow-elevation-2' 
               : isClickDisabled
                 ? 'cursor-not-allowed text-stone-300 bg-stone-50 dark:bg-stone-900'
                 : 'cursor-pointer hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 hover:text-stone-600 dark:text-stone-300'
@@ -72,7 +72,7 @@ const Calendar: React.FC<CalendarProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-stone-900 rounded-xl shadow-sm overflow-hidden w-full mx-auto border border-stone-200 dark:border-stone-800">
+    <div className="bg-white dark:bg-stone-900 rounded-xl shadow-elevation-3 overflow-hidden w-full mx-auto border border-stone-200 dark:border-stone-800">
       <div className="flex justify-between items-center p-4 pb-2 bg-stone-50 dark:bg-stone-900 border-b border-stone-100 dark:border-stone-800">
         <button 
           onClick={goToPreviousMonth} 

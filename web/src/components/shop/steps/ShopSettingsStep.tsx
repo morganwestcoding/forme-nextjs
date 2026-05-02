@@ -27,7 +27,7 @@ export default function ShopSettingsStep({
           onClick={() => onShopEnabledChange(!shopEnabled)}
           className={`w-full p-4 rounded-xl border text-left transition-colors duration-200 flex items-center justify-between ${
             shopEnabled
-              ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
+              ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-inset-pressed'
               : 'border-stone-200  bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 '
           }`}
         >

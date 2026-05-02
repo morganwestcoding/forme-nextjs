@@ -182,7 +182,7 @@ export default function ImageCropModal({
           onMouseDown={(e) => e.stopPropagation()}
         >
           <div className="transform transition-all duration-200 ease-out will-change-transform translate-y-0 opacity-100 scale-100">
-            <div className="relative flex flex-col w-full bg-white/95 dark:bg-stone-900/95 backdrop-blur-xl border border-stone-200/60 dark:border-stone-700/60 rounded-2xl shadow-2xl shadow-stone-900/20 overflow-hidden">
+            <div className="relative flex flex-col w-full bg-white/95 dark:bg-stone-900/95 backdrop-blur-xl border border-stone-200/60 dark:border-stone-700/60 rounded-2xl shadow-elevation-4 overflow-hidden">
 
               {/* Crop area */}
               <div className="relative w-full" style={{ height: '400px' }}>
@@ -218,7 +218,7 @@ export default function ImageCropModal({
                     className="flex-1 h-1.5 bg-stone-200 dark:bg-stone-700 rounded-full appearance-none cursor-pointer
                       [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4
                       [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-stone-900 dark:[&::-webkit-slider-thumb]:bg-white
-                      [&::-webkit-slider-thumb]:shadow-sm [&::-webkit-slider-thumb]:cursor-pointer"
+                      [&::-webkit-slider-thumb]:shadow-elevation-1 [&::-webkit-slider-thumb]:cursor-pointer"
                   />
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-stone-400 flex-shrink-0">
                     <circle cx="11" cy="11" r="8" />

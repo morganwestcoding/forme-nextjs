@@ -1023,7 +1023,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
               }}
             >
               <div className="text-center max-w-[340px]">
-                <div className="w-14 h-14 mx-auto rounded-2xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center shadow-sm">
+                <div className="w-14 h-14 mx-auto rounded-2xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center shadow-elevation-1">
                   <Notification03Icon
                     className="w-6 h-6 text-stone-400 dark:text-stone-500"
                     strokeWidth={1.25}
@@ -1038,7 +1038,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                 <button
                   type="button"
                   onClick={() => handleNavAway('/')}
-                  className="mt-6 inline-flex items-center px-4 py-2.5 rounded-xl bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 text-[13px] font-medium tracking-tight shadow-sm hover:bg-stone-800 dark:hover:bg-stone-200 active:scale-[0.97] transition-all duration-200"
+                  className="mt-6 inline-flex items-center px-4 py-2.5 rounded-xl bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 text-[13px] font-medium tracking-tight shadow-elevation-1 hover:bg-stone-800 dark:hover:bg-stone-200 active:scale-[0.97] transition-all duration-200"
                 >
                   Back to Discover
                 </button>

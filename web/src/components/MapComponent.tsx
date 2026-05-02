@@ -115,7 +115,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   return (
     <div
       ref={mapContainer}
-      className="w-full h-[200px] rounded-xl overflow-hidden shadow-sm shadow-stone-300 [&_.mapboxgl-ctrl-logo]:hidden [&_.mapboxgl-ctrl-attrib]:hidden"
+      className="w-full h-[200px] rounded-xl overflow-hidden shadow-elevation-1 [&_.mapboxgl-ctrl-logo]:hidden [&_.mapboxgl-ctrl-attrib]:hidden"
     />
   );
 };

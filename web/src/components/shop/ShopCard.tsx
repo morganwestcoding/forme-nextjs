@@ -25,7 +25,7 @@ const ShopCard: React.FC<ShopCardProps> = ({ data }) => {
       {/* Top row: image + info side by side */}
       <div className="flex flex-row gap-3">
         {/* Square image */}
-        <div className="relative overflow-hidden rounded-xl flex-shrink-0 w-[120px] h-[120px] shadow-sm">
+        <div className="relative overflow-hidden rounded-xl flex-shrink-0 w-[120px] h-[120px] shadow-elevation-1">
           <Image
             src={cardImage}
             alt={data.name}

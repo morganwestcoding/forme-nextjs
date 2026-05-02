@@ -112,9 +112,9 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
   const hasPayment = !!reservation.paymentIntentId;
 
   const statusConfig = {
-    accepted: { label: 'Confirmed', bg: 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-[0_0_12px_rgba(16,185,129,0.4)]' },
+    accepted: { label: 'Confirmed', bg: 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-glow-success' },
     declined: { label: 'Declined', bg: 'bg-black/60 text-white/90 border-white/20' },
-    pending: { label: 'Pending', bg: 'bg-amber-500/90 text-white border-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.4)]' },
+    pending: { label: 'Pending', bg: 'bg-amber-500/90 text-white border-amber-400/50 shadow-glow-warning' },
     cancelled: { label: 'Cancelled', bg: 'bg-stone-500/90 text-white border-stone-400/50' },
   };
 

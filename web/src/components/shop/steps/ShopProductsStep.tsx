@@ -74,7 +74,7 @@ export default function ShopProductsStep({
           className="cursor-pointer rounded-xl overflow-hidden border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 hover:border-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-all duration-300 flex flex-col items-center justify-center"
           style={{ width: '175px', height: '175px' }}
         >
-          <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center shadow-sm">
+          <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center shadow-elevation-1">
             <Plus className="w-5 h-5 text-stone-400 dark:text-stone-500" />
           </div>
         </motion.div>

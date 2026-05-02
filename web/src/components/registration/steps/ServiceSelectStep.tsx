@@ -1,10 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import axios from 'axios';
 import TypeformHeading from '../TypeformHeading';
-import { itemVariants } from '../TypeformStep';
 
 interface ServiceSelectStepProps {
   selectedListingId: string;
@@ -68,23 +66,21 @@ export default function ServiceSelectStep({ selectedListingId, selectedServices,
 
       {services.length > 0 ? (
         <div className="grid grid-cols-2 gap-3">
-          {services.map((service, index) => {
+          {services.map((service) => {
             const isSelected = selectedServices.includes(service.id);
             return (
-              <motion.button
+              <button
                 key={service.id}
                 type="button"
                 onClick={() => toggleService(service.id)}
-                variants={itemVariants}
-                whileTap={{ scale: 0.97 }}
-                style={{ WebkitTapHighlightColor: 'transparent' }}
+                style={{ WebkitTapHighlightColor: 'transparent', willChange: 'box-shadow, background-color, border-color' }}
                 className={`
                   p-4 rounded-xl border text-left
-                  transition-[background-color,border-color,box-shadow,color] duration-200 ease-out
+                  transition-[background-color,border-color,box-shadow] duration-200 ease-out
                   focus:outline-none
                   ${isSelected
-                    ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
-                    : 'border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 shadow-[inset_0_0_0_rgba(0,0,0,0)] hover:border-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
+                    ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-inset-pressed'
+                    : 'border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 shadow-none hover:border-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
                   }
                 `}
               >
@@ -92,7 +88,7 @@ export default function ServiceSelectStep({ selectedListingId, selectedServices,
                 <span className="text-xs mt-1 block text-stone-500  dark:text-stone-500">
                   ${service.price}
                 </span>
-              </motion.button>
+              </button>
             );
           })}
         </div>

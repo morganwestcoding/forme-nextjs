@@ -482,7 +482,7 @@ const InboxModal = () => {
             <div
               ref={listRef}
               className="absolute z-50 mt-2 w-full max-h-72 overflow-auto rounded-2xl
-                         border border-stone-200 dark:border-stone-800 bg-white/95 backdrop-blur-xl shadow-xl shadow-stone-900/5 custom-scrollbar"
+                         border border-stone-200 dark:border-stone-800 bg-white/95 backdrop-blur-xl shadow-elevation-3 custom-scrollbar"
             >
               {loading && (
                 <div className="px-4 py-6 flex flex-col items-center justify-center gap-3">

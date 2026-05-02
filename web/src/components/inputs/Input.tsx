@@ -290,27 +290,27 @@ const Input: React.FC<InputProps> = ({
         <div className="mt-3 -mb-6 p-4 bg-stone-50/80 dark:bg-stone-800/80 backdrop-blur-sm border border-stone-200/60 dark:border-stone-700 rounded-xl">
           <div className="grid grid-cols-2 gap-2.5 text-xs">
             <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasMinLength ? 'text-green-600' : 'text-stone-400 dark:text-stone-500'}`}>
-              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasMinLength ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-stone-300'}`} />
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasMinLength ? 'bg-green-500 shadow-glow-success' : 'bg-stone-300'}`} />
               At least 6 characters
             </div>
             <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasMaxLength ? 'text-green-600' : 'text-stone-400 dark:text-stone-500'}`}>
-              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasMaxLength ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-stone-300'}`} />
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasMaxLength ? 'bg-green-500 shadow-glow-success' : 'bg-stone-300'}`} />
               Max 18 characters
             </div>
             <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasUpperCase ? 'text-green-600' : 'text-stone-400 dark:text-stone-500'}`}>
-              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasUpperCase ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-stone-300'}`} />
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasUpperCase ? 'bg-green-500 shadow-glow-success' : 'bg-stone-300'}`} />
               One uppercase letter
             </div>
             <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasLowerCase ? 'text-green-600' : 'text-stone-400 dark:text-stone-500'}`}>
-              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasLowerCase ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-stone-300'}`} />
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasLowerCase ? 'bg-green-500 shadow-glow-success' : 'bg-stone-300'}`} />
               One lowercase letter
             </div>
             <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasNumber ? 'text-green-600' : 'text-stone-400 dark:text-stone-500'}`}>
-              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasNumber ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-stone-300'}`} />
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasNumber ? 'bg-green-500 shadow-glow-success' : 'bg-stone-300'}`} />
               One number
             </div>
             <div className={`flex items-center gap-2 transition-colors duration-200 ${passwordValidation.hasSpecialChar ? 'text-green-600' : 'text-stone-400 dark:text-stone-500'}`}>
-              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasSpecialChar ? 'bg-green-500 shadow-sm shadow-green-500/50' : 'bg-stone-300'}`} />
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${passwordValidation.hasSpecialChar ? 'bg-green-500 shadow-glow-success' : 'bg-stone-300'}`} />
               One special character
             </div>
           </div>

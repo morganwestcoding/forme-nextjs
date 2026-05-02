@@ -495,7 +495,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                 className="absolute inset-0 bg-black/90 backdrop-blur-sm"
                 onClick={() => setShowPassword(false)}
               />
-              <div className="relative bg-[#09090B] border border-stone-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+              <div className="relative bg-[#09090B] border border-stone-800 rounded-2xl p-6 max-w-sm w-full shadow-elevation-4">
                 <h3 className="text-sm font-medium text-white mb-1">Early Access</h3>
                 <p className="text-xs text-stone-500 mb-5">Enter your access code to preview ForMe.</p>
                 <div className="flex gap-2">

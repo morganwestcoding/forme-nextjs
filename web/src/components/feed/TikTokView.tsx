@@ -525,7 +525,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                     />
 
                     <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
-                      <div className="video-controls rounded-2xl p-6 text-white shadow-2xl">
+                      <div className="video-controls rounded-2xl p-6 text-white shadow-elevation-4">
                         {item.data.content && (
                           <div className="mb-3">
                             <p className="text-white/90 text-sm leading-relaxed line-clamp-2">{item.data.content}</p>
@@ -597,7 +597,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                     <Image src={item.data.mediaUrl || item.data.imageSrc} alt="Post media" fill sizes="(max-width: 1024px) 100vw, 460px" className="object-cover" />
 
                     <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
-                      <div className="video-controls rounded-2xl p-6 text-white shadow-2xl">
+                      <div className="video-controls rounded-2xl p-6 text-white shadow-elevation-4">
                         <div className="flex items-center gap-3 mb-4">
                           <button
                             onClick={() => handleProfileClick(item.data.user.id)}
@@ -639,7 +639,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                   <p className="text-stone-900 dark:text-stone-100 text-lg text-center leading-relaxed">{item.data.content}</p>
 
                   <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
-                    <div className="video-controls rounded-2xl p-6 text-white shadow-2xl">
+                    <div className="video-controls rounded-2xl p-6 text-white shadow-elevation-4">
                       <div className="flex items-center gap-3 mb-4">
                         <button
                           onClick={() => handleProfileClick(item.data.user.id)}
@@ -694,7 +694,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                 </div>
               )}
               <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
-                <div className="bg-black/40 backdrop-blur-md rounded-2xl p-6 text-white shadow-2xl">
+                <div className="bg-black/40 backdrop-blur-md rounded-2xl p-6 text-white shadow-elevation-4">
                   <p className="font-semibold text-lg mb-1">{item.data.title}</p>
                   <p className="text-sm text-white/80">${item.data.price}/day</p>
                 </div>
@@ -717,7 +717,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                 </div>
               )}
               <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
-                <div className="bg-black/40 backdrop-blur-md rounded-2xl p-6 text-white shadow-2xl">
+                <div className="bg-black/40 backdrop-blur-md rounded-2xl p-6 text-white shadow-elevation-4">
                   <p className="font-semibold text-lg mb-1">{item.data.name}</p>
                   <p className="text-sm text-white/80 line-clamp-2">{item.data.description}</p>
                 </div>
@@ -740,7 +740,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                 </div>
               )}
               <div className="absolute bottom-4 left-0 right-0 px-4 z-30">
-                <div className="bg-black/40 backdrop-blur-md rounded-2xl p-6 text-white shadow-2xl">
+                <div className="bg-black/40 backdrop-blur-md rounded-2xl p-6 text-white shadow-elevation-4">
                   <p className="font-semibold text-lg mb-1">{item.data.name}</p>
                   <p className="text-sm text-white/80">{item.data.position}</p>
                 </div>

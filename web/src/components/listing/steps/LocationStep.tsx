@@ -227,7 +227,7 @@ export default function LocationStep({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-lg overflow-hidden"
+                  className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-elevation-3 overflow-hidden"
                 >
                   <div className="max-h-[240px] overflow-y-auto overscroll-contain">
                     {US_STATES.map((state) => (
@@ -293,7 +293,7 @@ export default function LocationStep({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-lg overflow-hidden"
+                  className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-elevation-3 overflow-hidden"
                 >
                   <div className="max-h-[240px] overflow-y-auto overscroll-contain">
                     {filteredCities.map((c) => (
@@ -363,7 +363,7 @@ export default function LocationStep({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-lg overflow-hidden"
+                    className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-elevation-3 overflow-hidden"
                   >
                     <div className="max-h-[200px] overflow-y-auto overscroll-contain">
                       {addressSuggestions.map((s, i) => (

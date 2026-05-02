@@ -96,7 +96,7 @@ const BetaGate = ({ children }: BetaGateProps) => {
                 : 'translate-y-4 opacity-0 scale-[0.98]'
             }`}
           >
-            <div className="relative flex flex-col w-full bg-white/95 dark:bg-stone-900/95 backdrop-blur-xl border border-stone-200/60 dark:border-stone-700/60 rounded-2xl shadow-2xl shadow-stone-900/20 overflow-hidden">
+            <div className="relative flex flex-col w-full bg-white/95 dark:bg-stone-900/95 backdrop-blur-xl border border-stone-200/60 dark:border-stone-700/60 rounded-2xl shadow-elevation-4 overflow-hidden">
               <div className="flex flex-col">
                 <div className="relative px-8 pt-8 pb-6 text-stone-800 dark:text-stone-200 ">
                   <div className="flex flex-col items-center text-center mb-6">

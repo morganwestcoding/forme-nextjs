@@ -75,7 +75,7 @@ export default function ShopDetailsStep({ logo, onLogoChange }: ShopDetailsStepP
             className={`
               group cursor-pointer rounded-xl overflow-hidden relative transition-all duration-300
               ${logo
-                ? 'hover:shadow-lg bg-stone-900 hover:-translate-y-1'
+                ? 'hover:shadow-elevation-2 bg-stone-900 hover:-translate-y-1'
                 : 'border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 hover:border-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'}
               ${uploading ? 'opacity-60 pointer-events-none' : ''}
             `}
@@ -98,7 +98,7 @@ export default function ShopDetailsStep({ logo, onLogoChange }: ShopDetailsStepP
               </>
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-center p-4">
-                <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center shadow-sm">
+                <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center shadow-elevation-1">
                   <Plus className="w-5 h-5 text-stone-400 dark:text-stone-500" />
                 </div>
               </div>

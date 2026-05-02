@@ -235,8 +235,8 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
               onClick={() => setActiveTab(tab.key)}
               className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.key
-                  ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)] dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-[0_1px_3px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.8)]'
-                  : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
+                  ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-pill-active dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-pill-active-dark'
+                  : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-inset-outline'
               }`}
             >
               {tab.label}
@@ -267,7 +267,7 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                   onClick={() => setPendingDarkMode(!pendingDarkMode)}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${pendingDarkMode ? 'bg-stone-900 dark:bg-stone-100' : 'bg-stone-200 dark:bg-stone-700'}`}
                 >
-                  <span className={`inline-block h-4 w-4 transform rounded-full shadow-sm transition-transform duration-200 ${pendingDarkMode ? 'translate-x-6 bg-white dark:bg-stone-900' : 'translate-x-1 bg-white dark:bg-stone-300'}`} />
+                  <span className={`inline-block h-4 w-4 transform rounded-full shadow-elevation-1 transition-transform duration-200 ${pendingDarkMode ? 'translate-x-6 bg-white dark:bg-stone-900' : 'translate-x-1 bg-white dark:bg-stone-300'}`} />
                 </button>
               </div>
             </Card>
@@ -287,7 +287,7 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                   onClick={() => setPendingShowWelcome(!pendingShowWelcome)}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${pendingShowWelcome ? 'bg-stone-900 dark:bg-stone-100' : 'bg-stone-200 dark:bg-stone-700'}`}
                 >
-                  <span className={`inline-block h-4 w-4 transform rounded-full shadow-sm transition-transform duration-200 ${pendingShowWelcome ? 'translate-x-6 bg-white dark:bg-stone-900' : 'translate-x-1 bg-white dark:bg-stone-300'}`} />
+                  <span className={`inline-block h-4 w-4 transform rounded-full shadow-elevation-1 transition-transform duration-200 ${pendingShowWelcome ? 'translate-x-6 bg-white dark:bg-stone-900' : 'translate-x-1 bg-white dark:bg-stone-300'}`} />
                 </button>
               </div>
             </Card>
@@ -324,7 +324,7 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
         {/* Delete Account confirmation */}
         {showDeleteConfirm && (
           <div className="fixed inset-0 z-[9999] backdrop-blur-sm bg-stone-900/60 flex items-center justify-center p-4" onClick={() => setShowDeleteConfirm(false)}>
-            <div className="bg-white dark:bg-stone-900 rounded-2xl p-8 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white dark:bg-stone-900 rounded-2xl p-8 max-w-md w-full shadow-elevation-4" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
                   <Delete02Icon className="w-5 h-5 text-red-500" />

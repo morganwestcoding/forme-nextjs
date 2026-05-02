@@ -115,6 +115,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
       selectedListing: '',
       jobTitle: initialData?.jobTitle || '',
       isOwnerManager: false,
+      ownerPerformsServices: null,
       selectedServices: [],
       listingCategory: '',
       listingTitle: '',
@@ -132,6 +133,7 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
   const interests = watch('interests') || [];
   const jobTitle = watch('jobTitle');
   const isOwnerManager = watch('isOwnerManager');
+  const ownerPerformsServices = watch('ownerPerformsServices');
   const selectedServices = watch('selectedServices') || [];
   const listingCategory = watch('listingCategory');
   const listingTitle = watch('listingTitle');
@@ -239,7 +241,12 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
         // other sections and don't need to fill this in again.
         if (isEditMode) return true;
         if (userType === 'team') {
-          return Boolean(data.isOwnerManager || data.jobTitle?.trim());
+          if (data.isOwnerManager) {
+            if (data.ownerPerformsServices === false) return true;
+            if (data.ownerPerformsServices === true) return Boolean(data.jobTitle?.trim());
+            return false;
+          }
+          return Boolean(data.jobTitle?.trim());
         }
         return Boolean(data.jobTitle?.trim());
       case STEPS.STUDENT_ACADEMY:
@@ -487,9 +494,16 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
           <JobTitleStep
             userType={userType}
             isOwnerManager={isOwnerManager}
+            ownerPerformsServices={ownerPerformsServices}
             onOwnerManagerChange={(value) => {
               setCustomValue('isOwnerManager', value);
-              if (value) setCustomValue('jobTitle', '');
+              if (!value) {
+                setValue('ownerPerformsServices', null, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+              }
+            }}
+            onOwnerPerformsServicesChange={(value) => {
+              setValue('ownerPerformsServices', value, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+              if (value === false) setCustomValue('jobTitle', '');
             }}
           />
         );

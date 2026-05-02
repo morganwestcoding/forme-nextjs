@@ -78,7 +78,7 @@ const CardActionMenu: React.FC<CardActionMenuProps> = ({
         onClick={(e) => { e.stopPropagation(); setOpen(false); }}
       />
       <div
-        className="fixed bg-white dark:bg-stone-900 rounded-xl shadow-xl border border-stone-200 dark:border-stone-800 py-2 z-[61] origin-top-right animate-[fadeInUp_160ms_ease-out]"
+        className="fixed bg-white dark:bg-stone-900 rounded-xl shadow-elevation-3 border border-stone-200 dark:border-stone-800 py-2 z-[61] origin-top-right animate-[fadeInUp_160ms_ease-out]"
         style={{ top: pos.top, left: pos.left, width: MENU_WIDTH }}
         onClick={(e) => e.stopPropagation()}
       >

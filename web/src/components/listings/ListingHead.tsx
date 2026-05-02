@@ -202,7 +202,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
 
   const dropdownMenu = showDropdown && dropdownPos ? (
     <div
-      className="fixed w-48 bg-white dark:bg-stone-900 rounded-xl shadow-xl border border-stone-200 dark:border-stone-800 py-2 z-50"
+      className="fixed w-48 bg-white dark:bg-stone-900 rounded-xl shadow-elevation-3 border border-stone-200 dark:border-stone-800 py-2 z-50"
       style={{ top: dropdownPos.top, left: dropdownPos.left - 192, maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}
     >
       {(isOwner || isEmployee) && (
@@ -348,7 +348,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
         {/* ===== LEFT COLUMN - Business Card ===== */}
         <div ref={leftColumnRef} className="w-[320px] flex-shrink-0 hidden md:flex flex-col gap-4 py-10">
           <div
-            className="rounded-2xl overflow-hidden border border-stone-200/40 dark:border-stone-800 shadow-sm transition-colors duration-700"
+            className="rounded-2xl overflow-hidden border border-stone-200/40 dark:border-stone-800 shadow-elevation-1 transition-colors duration-700"
             style={{
               background: dominantColor
                 ? isDarkMode
@@ -400,7 +400,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
               {/* Content over banner */}
               <div className="relative z-10 pt-8 pb-5 px-6 text-center">
                 {/* Avatar */}
-                <div className="w-24 h-24 rounded-2xl mx-auto overflow-hidden border-[3px] border-white shadow-sm">
+                <div className="w-24 h-24 rounded-2xl mx-auto overflow-hidden border-[3px] border-white shadow-elevation-2">
                   <img src={mainImage} alt={title} className="w-full h-full object-cover" />
                 </div>
               <div className="mt-3">
@@ -519,7 +519,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
           {/* Mobile Header (hidden on desktop) */}
           <div className="md:hidden mb-6">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-xl bg-stone-100 dark:bg-stone-800 border-2 border-white shadow-sm overflow-hidden flex-shrink-0">
+              <div className="w-16 h-16 rounded-xl bg-stone-100 dark:bg-stone-800 border-2 border-white shadow-elevation-1 overflow-hidden flex-shrink-0">
                 <img
                   src={mainImage}
                   alt={title}

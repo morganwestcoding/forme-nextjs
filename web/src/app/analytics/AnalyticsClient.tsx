@@ -40,7 +40,7 @@ function BrandTooltip({
   if (!active || !payload || !payload.length) return null;
   return (
     <div
-      className={`rounded-xl border px-3 py-2 text-[12px] shadow-md ${
+      className={`rounded-xl border px-3 py-2 text-[12px] shadow-elevation-2 ${
         isDarkMode
           ? 'border-stone-700 bg-stone-900 text-stone-100'
           : 'border-stone-200 bg-white text-stone-900'
@@ -257,7 +257,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
     growth?: number;
   }) {
     return (
-      <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg">
+      <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2">
         <div className="flex items-center justify-between mb-2">
           <p className="text-[12px] text-stone-400 dark:text-stone-500">{title}</p>
           {growth !== undefined && (
@@ -280,7 +280,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
   // having to glance back at the capsule picker up top.
   function ChartCard({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
     return (
-      <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+      <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2 transition-all duration-300">
         <div className="mb-6 flex items-start justify-between gap-3">
           <div>
             <h3 className="text-[14px] font-semibold text-stone-900 dark:text-stone-100 tracking-tight">{title}</h3>
@@ -344,8 +344,8 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                   onClick={() => setActiveTab(tab as typeof activeTab)}
                   className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
                     activeTab === tab
-                      ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)] dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-[0_1px_3px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.8)]'
-                      : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'
+                      ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-pill-active dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-pill-active-dark'
+                      : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-inset-outline'
                   }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -449,7 +449,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
               </ChartCard>
 
               {/* Top Services */}
-              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2 transition-all duration-300">
                 <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Top Services</h3>
                 <div className="space-y-3">
                   {topServices.slice(0, 5).map((service) => (
@@ -471,7 +471,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             {/* Recent Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* Recent Reservations */}
-              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2 transition-all duration-300">
                 <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Recent Reservations</h3>
                 <div className="space-y-1">
                   {recentActivity.reservations.slice(0, 5).map((reservation) => (
@@ -498,7 +498,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
               </div>
 
               {/* Recent Posts */}
-              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2 transition-all duration-300">
                 <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Recent Posts</h3>
                 <div className="space-y-1">
                   {recentActivity.posts.slice(0, 5).map((post) => (
@@ -525,7 +525,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
 
         {/* Listings Tab */}
         {activeTab === 'listings' && (
-          <div className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/60 overflow-hidden hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+          <div className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/60 overflow-hidden hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2 transition-all duration-300">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -729,7 +729,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
           <div className="space-y-8">
             {/* Rating Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white dark:bg-stone-900 border-stone-200  hover:border-stone-300 dark:border-stone-700 hover:shadow-md">
+              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white dark:bg-stone-900 border-stone-200  hover:border-stone-300 dark:border-stone-700 hover:shadow-elevation-2">
                 <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500 mb-3">Average Rating</p>
                 <div className="flex items-baseline gap-2">
                   <span className="text-4xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
@@ -747,14 +747,14 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                   ))}
                 </div>
               </div>
-              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white dark:bg-stone-900 border-stone-200  hover:border-stone-300 dark:border-stone-700 hover:shadow-md">
+              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white dark:bg-stone-900 border-stone-200  hover:border-stone-300 dark:border-stone-700 hover:shadow-elevation-2">
                 <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500 mb-3">Total Reviews</p>
                 <div className="text-4xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
                   {reviews.totalReviews}
                 </div>
                 <p className="text-sm text-stone-500  dark:text-stone-500 mt-3">Reviews received</p>
               </div>
-              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white dark:bg-stone-900 border-stone-200  hover:border-stone-300 dark:border-stone-700 hover:shadow-md">
+              <div className="group relative rounded-2xl border p-8 transition-all duration-300 bg-white dark:bg-stone-900 border-stone-200  hover:border-stone-300 dark:border-stone-700 hover:shadow-elevation-2">
                 <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500 mb-3">5-Star Reviews</p>
                 <div className="text-4xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
                   {reviews.ratingDistribution.find(r => r.rating === 5)?.count || 0}
@@ -770,7 +770,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             {/* Rating Distribution & Goal Calculator */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* Rating Distribution */}
-              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2 transition-all duration-300">
                 <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Rating Distribution</h3>
                 <div className="space-y-4">
                   {[5, 4, 3, 2, 1].map((rating) => {
@@ -796,7 +796,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
               </div>
 
               {/* Goal Calculator */}
-              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">
+              <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2 transition-all duration-300">
                 <h3 className="text-xs font-semibold mb-8 uppercase tracking-wider text-stone-400 dark:text-stone-500">Rating Goal Calculator</h3>
 
                 {reviews.totalReviews === 0 ? (

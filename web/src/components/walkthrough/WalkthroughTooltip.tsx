@@ -113,7 +113,7 @@ const WalkthroughTooltip: React.FC<WalkthroughTooltipProps> = ({
       transition={{ duration: 0.3, ease: 'easeInOut' }}
       style={getStyle()}
     >
-      <div className="bg-white dark:bg-stone-900 border border-stone-200/60 dark:border-stone-700/60 rounded-2xl shadow-2xl shadow-stone-900/20 p-5 backdrop-blur-xl">
+      <div className="bg-white dark:bg-stone-900 border border-stone-200/60 dark:border-stone-700/60 rounded-2xl shadow-elevation-4 p-5 backdrop-blur-xl">
         {/* Step counter */}
         <div className="flex items-center justify-between mb-3">
           <span className="text-[11px] font-medium text-stone-400 dark:text-stone-500 uppercase tracking-wider">

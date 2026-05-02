@@ -62,7 +62,7 @@ const ShopClient: React.FC<ShopClientProps> = ({ shopId, currentUser }) => {
         <div className="flex gap-6 -mx-6 md:-mx-24 px-6 md:px-24 -mt-2 md:-mt-8 md:h-[calc(100vh-2rem)] md:overflow-hidden">
           {/* ===== LEFT COLUMN - Shop Card ===== */}
           <div className="w-[320px] flex-shrink-0 hidden md:flex flex-col gap-4 py-10">
-            <div className="rounded-2xl overflow-hidden border border-stone-200/40 dark:border-stone-800 shadow-sm bg-white dark:bg-stone-900">
+            <div className="rounded-2xl overflow-hidden border border-stone-200/40 dark:border-stone-800 shadow-elevation-1 bg-white dark:bg-stone-900">
               {/* Hero */}
               <div className="relative pt-8 pb-5 px-6 text-center">
                 <div className={`absolute top-3 left-3 h-8 w-8 rounded-full ${SK}`} />

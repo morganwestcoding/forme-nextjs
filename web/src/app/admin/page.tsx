@@ -148,7 +148,7 @@ export default async function AdminPage() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="group relative rounded-2xl border border-stone-200/60 dark:border-stone-800 bg-white dark:bg-stone-900 p-5 hover:border-stone-300 dark:hover:border-stone-700 hover:shadow-sm transition-all"
+                className="group relative rounded-2xl border border-stone-200/60 dark:border-stone-800 bg-white dark:bg-stone-900 p-5 hover:border-stone-300 dark:hover:border-stone-700 hover:shadow-elevation-1 transition-all"
               >
                 <div className="flex items-start gap-4">
                   <div

@@ -215,7 +215,7 @@ export default function ShopLocationStep({
           className={`
             w-full flex items-center gap-4 p-4 rounded-xl border text-left transition-all duration-200
             ${isOnlineOnly
-              ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]'
+              ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-inset-pressed'
               : 'border-stone-200  bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 '
             }
           `}
@@ -267,7 +267,7 @@ export default function ShopLocationStep({
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -8 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-lg overflow-hidden"
+                      className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-elevation-3 overflow-hidden"
                     >
                       <div className="max-h-[240px] overflow-y-auto overscroll-contain">
                         {US_STATES.map((state) => (
@@ -333,7 +333,7 @@ export default function ShopLocationStep({
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -8 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-lg overflow-hidden"
+                      className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-elevation-3 overflow-hidden"
                     >
                       <div className="max-h-[240px] overflow-y-auto overscroll-contain">
                         {filteredCities.map((c) => (
@@ -403,7 +403,7 @@ export default function ShopLocationStep({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -8 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-lg overflow-hidden"
+                        className="absolute z-50 mt-2 w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-elevation-3 overflow-hidden"
                       >
                         <div className="max-h-[200px] overflow-y-auto overscroll-contain">
                           {addressSuggestions.map((s, i) => (

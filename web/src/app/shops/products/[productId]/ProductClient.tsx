@@ -137,7 +137,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
         {/* ===== LEFT COLUMN - Product Card ===== */}
         <div ref={leftColumnRef} className="w-[320px] flex-shrink-0 hidden md:flex flex-col gap-4 py-10">
           <div
-            className="rounded-2xl overflow-hidden border border-stone-200/40 shadow-sm transition-colors duration-700"
+            className="rounded-2xl overflow-hidden border border-stone-200/40 shadow-elevation-1 transition-colors duration-700"
             style={{
               background: dominantColor
                 ? `linear-gradient(180deg, rgba(${dominantColor}, 0.06) 0%, rgba(${dominantColor}, 0.02) 40%, white 100%)`
@@ -288,7 +288,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
           {/* Mobile Header */}
           <div className="md:hidden mb-6">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-xl bg-stone-100 dark:bg-stone-800 border-2 border-white shadow-lg overflow-hidden flex-shrink-0">
+              <div className="w-16 h-16 rounded-xl bg-stone-100 dark:bg-stone-800 border-2 border-white shadow-elevation-2 overflow-hidden flex-shrink-0">
                 <Image
                   src={product.mainImage || placeholderDataUri(product.name || 'Product')}
                   alt={product.name}

@@ -339,7 +339,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
         {/* Billing toggle */}
         <div className="flex items-center gap-2 mb-8">
           {(["monthly", "yearly"] as const).map((b) => (
-            <button key={b} onClick={() => setBilling(b)} className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${billing === b ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.12)] dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-[0_1px_3px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.8)]' : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]'}`}>
+            <button key={b} onClick={() => setBilling(b)} className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${billing === b ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-pill-active dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-pill-active-dark' : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-inset-outline'}`}>
               {b === 'monthly' ? 'Monthly' : 'Yearly'}
             </button>
           ))}
@@ -363,7 +363,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
             }
 
             return (
-              <div key={plan.id} className={`group relative rounded-2xl border p-6 transition-all duration-300 ${isPopular ? "bg-stone-900 border-stone-800 dark:bg-white dark:border-white shadow-xl" : isCurrent ? "bg-white dark:bg-stone-900 border-stone-200/60 dark:border-stone-800 shadow-sm" : "bg-white dark:bg-stone-900 border-stone-200/60 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700 hover:-translate-y-0.5 hover:shadow-lg"}`}>
+              <div key={plan.id} className={`group relative rounded-2xl border p-6 transition-all duration-300 ${isPopular ? "bg-stone-900 border-stone-800 dark:bg-white dark:border-white shadow-elevation-3" : isCurrent ? "bg-white dark:bg-stone-900 border-stone-200/60 dark:border-stone-800 shadow-elevation-1" : "bg-white dark:bg-stone-900 border-stone-200/60 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2"}`}>
                 {plan.badge && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                     <span className="bg-stone-700 text-white px-4 py-1 rounded-full text-[10px] font-medium tracking-wide">{plan.badge}</span>
@@ -419,7 +419,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
       {/* Cancel confirmation overlay */}
       {showCancelConfirm && (
         <div className="fixed inset-0 z-[9999] backdrop-blur-sm bg-stone-900/60 flex items-center justify-center p-4" onClick={() => setShowCancelConfirm(false)}>
-          <div className="bg-white dark:bg-stone-900 rounded-2xl p-8 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white dark:bg-stone-900 rounded-2xl p-8 max-w-md w-full shadow-elevation-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
                 <Cancel01Icon className="w-5 h-5 text-red-500" />
@@ -457,7 +457,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
       {/* Change plan confirmation overlay */}
       {showChangeConfirm && (
         <div className="fixed inset-0 z-[9999] backdrop-blur-sm bg-stone-900/60 flex items-center justify-center p-4" onClick={() => setShowChangeConfirm(null)}>
-          <div className="bg-white dark:bg-stone-900 rounded-2xl p-8 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white dark:bg-stone-900 rounded-2xl p-8 max-w-md w-full shadow-elevation-4" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-semibold text-stone-900 dark:text-stone-100 mb-2">Change Plan</h3>
             <p className="text-[13px] text-stone-500  dark:text-stone-500 mb-2">
               Switch from <span className="font-semibold text-stone-900 dark:text-stone-100">{currentPlanData?.name}</span> to{' '}
