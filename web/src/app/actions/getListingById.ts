@@ -27,6 +27,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
             serviceName: true,
             price: true,
             category: true,
+            durationMinutes: true,
           }
         },
         employees: {
@@ -82,6 +83,7 @@ export default async function getListingById(params: IParams): Promise<(SafeList
         serviceName: service.serviceName,
         price: service.price,
         category: service.category,
+        durationMinutes: service.durationMinutes,
       })),
       employees: listing.employees
         .filter((employee: typeof listing.employees[number]) => employee.user)

@@ -67,7 +67,7 @@ const EditorialBanner: React.FC<EditorialBannerProps> = ({
                 alt={banner.alt}
                 fill
                 sizes="100vw"
-                className="object-cover"
+                className="object-cover transition-[transform,filter] duration-700 ease-out group-hover:scale-105 group-hover:brightness-110"
                 priority={i === 0}
               />
             </div>

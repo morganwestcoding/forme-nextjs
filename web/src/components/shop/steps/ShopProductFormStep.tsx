@@ -292,8 +292,8 @@ export default function ShopProductFormStep({
         <Cancel01Icon className="w-5 h-5" strokeWidth={1.5} />
       </button>
 
-      {/* Bottom navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-stone-900 border-t border-stone-100 dark:border-stone-800 px-6 py-4 safe-bottom">
+      {/* Bottom navigation — match TypeformNavigation positioning used by the rest of the flow */}
+      <div className="fixed bottom-6 left-0 right-0 bg-white dark:bg-stone-900 border-t border-stone-100 dark:border-stone-800 px-6 py-4 safe-bottom">
         <div className="max-w-xl mx-auto flex items-center justify-between">
           <button
             type="button"

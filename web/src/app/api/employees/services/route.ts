@@ -86,6 +86,11 @@ export async function POST(request: Request) {
 
     // Process each service
     for (const svc of validServices) {
+      const durRaw = Number(svc.durationMinutes ?? svc.duration);
+      const durationField =
+        Number.isFinite(durRaw) && durRaw > 0
+          ? { durationMinutes: Math.round(durRaw) }
+          : {};
       if (svc.id && existingServiceIds.has(svc.id)) {
         // Update existing service
         await prisma.service.update({
@@ -94,6 +99,7 @@ export async function POST(request: Request) {
             serviceName: svc.serviceName.trim(),
             price: Number(svc.price),
             category: svc.category.trim(),
+            ...durationField,
           }
         });
         newServiceIds.push(svc.id);
@@ -105,6 +111,7 @@ export async function POST(request: Request) {
             price: Number(svc.price),
             category: svc.category.trim(),
             listingId: employee.listingId,
+            ...durationField,
           }
         });
         newServiceIds.push(created.id);

@@ -7,9 +7,12 @@ import Logo from '@/components/ui/Logo';
 import useWelcomeModal from '@/app/hooks/useWelcomeModal';
 import useWalkthrough from '@/app/hooks/useWalkthrough';
 import walkthroughSteps from '@/components/walkthrough/walkthroughSteps';
+import { categories } from '@/components/Categories';
 import { SafeUser } from '@/app/types';
 
 const STORAGE_KEY = 'forme-walkthrough-dismissed';
+
+type Screen = 'interests' | 'welcome';
 
 interface WelcomeModalProps {
   currentUser?: SafeUser | null;
@@ -18,6 +21,8 @@ interface WelcomeModalProps {
 const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser }) => {
   const welcomeModal = useWelcomeModal();
   const walkthrough = useWalkthrough();
+  const [screen, setScreen] = useState<Screen>('interests');
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [neverShow, setNeverShow] = useState(false);
   const [hasCheckedStorage, setHasCheckedStorage] = useState(false);
 
@@ -33,6 +38,19 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser }) => {
       return () => clearTimeout(t);
     }
   }, [currentUser?.id, currentUser?.hideWelcomeModal]);
+
+  const toggleInterest = (label: string) => {
+    setSelectedInterests((prev) =>
+      prev.includes(label) ? prev.filter((i) => i !== label) : [...prev, label]
+    );
+  };
+
+  const persistInterests = useCallback(() => {
+    if (!currentUser || selectedInterests.length === 0) return;
+    axios
+      .put(`/api/users/${currentUser.id}`, { interests: selectedInterests })
+      .catch(() => {});
+  }, [currentUser, selectedInterests]);
 
   const persistDismissal = useCallback(() => {
     if (!neverShow) return;
@@ -60,7 +78,47 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser }) => {
 
   if (!hasCheckedStorage) return null;
 
-  const body = (
+  const interestsBody = (
+    <div className="py-2">
+      <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-1 text-center">
+        What are you interested in?
+      </h2>
+      <p className="text-[13px] text-stone-500 dark:text-stone-500 mb-5 text-center">
+        Select all that apply. This helps us personalize your experience.
+      </p>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {categories.map((category) => {
+          const isSelected = selectedInterests.includes(category.label);
+          return (
+            <button
+              key={category.label}
+              type="button"
+              onClick={() => toggleInterest(category.label)}
+              style={{ WebkitTapHighlightColor: 'transparent', willChange: 'box-shadow, background-color, border-color' }}
+              className={`
+                p-3 rounded-xl border text-left
+                transition-[background-color,border-color,box-shadow] duration-200 ease-out
+                focus:outline-none
+                ${isSelected
+                  ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-inset-pressed'
+                  : 'border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-none hover:border-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
+                }
+              `}
+            >
+              <span className="text-sm font-medium">{category.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <p className="text-xs text-stone-400 dark:text-stone-500 text-center mt-5">
+        Optional — you can skip this step
+      </p>
+    </div>
+  );
+
+  const welcomeBody = (
     <div className="flex flex-col items-center text-center py-4">
       <div className="mb-4 flex justify-center">
         <Logo priority />
@@ -100,6 +158,26 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser }) => {
     </div>
   );
 
+  if (screen === 'interests') {
+    return (
+      <Modal
+        id="welcome-modal"
+        isOpen={welcomeModal.isOpen}
+        onClose={() => welcomeModal.onClose()}
+        onSubmit={() => {
+          persistInterests();
+          setScreen('welcome');
+        }}
+        title="Welcome to ForMe"
+        body={interestsBody}
+        actionLabel={selectedInterests.length > 0 ? 'Continue' : 'Skip'}
+        secondaryAction={() => setScreen('welcome')}
+        secondaryActionLabel={selectedInterests.length > 0 ? 'Skip' : undefined}
+        className="w-full md:w-[520px] lg:w-[520px] xl:w-[520px]"
+      />
+    );
+  }
+
   return (
     <Modal
       id="welcome-modal"
@@ -107,7 +185,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser }) => {
       onClose={handleDismiss}
       onSubmit={handleStartTour}
       title="Welcome to ForMe"
-      body={body}
+      body={welcomeBody}
       actionLabel="Take a Tour"
       secondaryAction={handleDismiss}
       secondaryActionLabel="Skip for now"

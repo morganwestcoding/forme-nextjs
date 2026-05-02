@@ -27,6 +27,7 @@ interface ServiceItem {
   imageSrc?: string | null;
   description?: string;
   popular?: boolean;
+  durationMinutes?: number;
 }
 
 interface ListingHeadProps {

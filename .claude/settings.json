@@ -6,7 +6,9 @@
       "Bash(grep -rn 'updateMany.*pull\\\\|$pull\\\\|pull:\\\\s*{' /Users/greg/Desktop/forme/web/src '--include=*.ts' '--include=*.tsx')",
       "Bash(grep -rn 'runCommandRaw\\\\|$runCommandRaw\\\\|updateManyRaw' /Users/greg/Desktop/forme/web/src '--include=*.ts')",
       "Bash(awk 'NR>=805 && /hasContent/ {flag=1} flag {print NR\": \"$0; if \\(/^            \\\\\\) :/ || /^            \\\\\\)$/\\) exit}' /Users/greg/Desktop/forme/web/src/components/DiscoverClient.tsx)",
-      "Bash(echo \"---exit:$?\")"
+      "Bash(echo \"---exit:$?\")",
+      "Bash(grep -r \"push.*reserve\\\\|push.*\\\\`/reserve\" /Users/greg/Desktop/forme/web/src --include=\"*.tsx\" --include=\"*.ts\" -n)",
+      "Bash(tee /tmp/tsc.log)"
     ]
   }
 }

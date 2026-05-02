@@ -35,6 +35,8 @@ interface NewsfeedClientProps {
   initialPostId?: string;
 }
 
+const SAMPLE_OWNER_NAMES = new Set(['Jordan Riley', 'Maya Vega', 'Kai Chen']);
+
 const shuffle = <T,>(arr: T[]): T[] => {
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
@@ -568,9 +570,9 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
             const hasCaption = captionLines > 0;
 
             return (
-              <div className="flex items-center h-full w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-16">
+              <div className="flex items-center justify-center h-full w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-16">
                 {/* Video frame */}
-                <div className="flex-1 h-full flex items-center justify-center">
+                <div className="h-full flex items-center justify-end">
                   <div
                     className="relative overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-900 animate-pulse"
                     style={{ aspectRatio: '9 / 16', height: 'calc(100dvh - 48px)', maxHeight: 'calc(100dvh - 48px)', width: 'auto' }}
@@ -578,7 +580,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                 </div>
 
                 {/* Right panel — appears same time as video, shaped by real data when available */}
-                <div className="hidden lg:flex w-[500px] shrink-0 flex-col px-14 max-h-[calc(100%-48px)]">
+                <div className="hidden lg:flex w-[440px] shrink-0 flex-col pl-10 pr-8 max-h-[calc(100%-48px)]">
                     {/* User card */}
                     <div className="flex items-center gap-3.5 mb-5">
                       <div
@@ -639,7 +641,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                           <div className="h-[13px] w-36 mx-auto rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
                         </div>
                       ) : (
-                        <div className="max-h-[180px] overflow-hidden space-y-4 pr-1">
+                        <div className="max-h-[180px] overflow-hidden space-y-4 pl-2.5 pr-1">
                           {Array.from({ length: Math.min(commentCount, 3) }).map((_, i) => {
                             const comment = skPost?.comments?.[i];
                             const commentLen = comment?.content?.length || 40;
@@ -697,9 +699,9 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                   className="absolute left-0 w-full flex items-center justify-center"
                   style={{ top: `${(index / posts.length) * 100}%`, height: `${100 / posts.length}%` }}
                 >
-                  <div className="flex items-center h-full w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-16">
+                  <div className="flex items-center justify-center h-full w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-16">
                     {/* Post media */}
-                    <div className="flex-1 h-full flex items-center justify-center">
+                    <div className="h-full flex items-center justify-end">
                       <div
                         className="relative overflow-hidden rounded-2xl bg-stone-100  dark:bg-stone-900"
                         style={{
@@ -805,7 +807,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                     </div>
 
                     {/* Info panel — slides with the media as one unit */}
-                    <div className="hidden lg:flex w-[500px] shrink-0 flex-col px-14 max-h-[calc(100%-48px)]">
+                    <div className="hidden lg:flex w-[440px] shrink-0 flex-col pl-10 pr-8 max-h-[calc(100%-48px)]">
                       {/* User card */}
                       <div className="flex items-center gap-3.5 mb-5">
                         <button
@@ -821,6 +823,11 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                             className="text-[15px] font-semibold text-stone-900  dark:text-white hover:text-stone-600 dark:text-stone-300 dark:hover:text-stone-300 transition-colors block truncate"
                           >
                             {post.user.name || 'Anonymous'}
+                            {!!post.user.name && SAMPLE_OWNER_NAMES.has(post.user.name) && (
+                              <span className="text-white font-normal" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
+                                {' · sample'}
+                              </span>
+                            )}
                           </button>
                           <p className="text-[12px] text-stone-400   dark:text-stone-400  mt-0.5">{format(new Date(post.createdAt), 'PPP')}</p>
                         </div>
@@ -950,7 +957,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                             )}
                           </div>
 
-                          <div ref={commentsScrollRef} className="max-h-[180px] overflow-y-auto space-y-4 pr-1 scrollbar-hide">
+                          <div ref={commentsScrollRef} className="max-h-[180px] overflow-y-auto space-y-4 pl-2.5 pr-1 scrollbar-hide">
                             {comments.length === 0 ? (
                               <div className="py-6 text-center">
                                 <p className="text-[13px] text-stone-400   dark:text-stone-400 ">Start the conversation</p>

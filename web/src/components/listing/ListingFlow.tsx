@@ -86,6 +86,7 @@ export default function ListingFlow({ mode = 'create', listingId, initialData }:
         serviceName: s.serviceName,
         price: s.price,
         category: s.category,
+        duration: typeof s.durationMinutes === 'number' ? s.durationMinutes : undefined,
       }));
     }
     return [];
@@ -295,11 +296,20 @@ export default function ListingFlow({ mode = 'create', listingId, initialData }:
 
     setIsLoading(true);
 
-    const validServices = services.filter(s =>
-      s.serviceName?.trim() &&
-      s.category?.trim() &&
-      Number(s.price) > 0
-    );
+    const validServices = services
+      .filter(s =>
+        s.serviceName?.trim() &&
+        s.category?.trim() &&
+        Number(s.price) > 0
+      )
+      .map(s => {
+        const { duration, ...rest } = s;
+        const dur = Number(duration);
+        return {
+          ...rest,
+          ...(Number.isFinite(dur) && dur > 0 ? { durationMinutes: Math.round(dur) } : {}),
+        };
+      });
 
     const { city, state } = splitLocation(String(data.location || ''));
 

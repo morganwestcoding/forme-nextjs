@@ -192,11 +192,15 @@ export async function POST(request: Request) {
         lng: coords?.lng ?? null,
 
         services: {
-          create: (parsedServices || []).map((s: any) => ({
-            serviceName: s.serviceName,
-            price: Math.round(Number(s.price) || 0),
-            category: s.category,
-          })),
+          create: (parsedServices || []).map((s: any) => {
+            const dur = Number(s.durationMinutes ?? s.duration);
+            return {
+              serviceName: s.serviceName,
+              price: Math.round(Number(s.price) || 0),
+              category: s.category,
+              ...(Number.isFinite(dur) && dur > 0 ? { durationMinutes: Math.round(dur) } : {}),
+            };
+          }),
         },
 
         phoneNumber,  

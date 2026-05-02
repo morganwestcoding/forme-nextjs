@@ -640,6 +640,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                             serviceName: svc.serviceName,
                             price: svc.price,
                             category: svc.category,
+                            durationMinutes: svc.durationMinutes,
                           }}
                           listing={stubListing}
                           currentUser={currentUser}

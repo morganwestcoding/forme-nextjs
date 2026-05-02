@@ -39,6 +39,7 @@ export const createListingSchema = z.object({
     serviceName: z.string().min(1),
     price: z.number().positive(),
     category: z.string(),
+    durationMinutes: z.number().int().positive().optional(),
     imageSrc: z.string().optional().nullable(),
   })),
   employees: z.array(z.object({

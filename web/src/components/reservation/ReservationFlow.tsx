@@ -53,10 +53,11 @@ export default function ReservationFlow({
   const router = useRouter();
   const stripeCheckoutModal = useStripeCheckoutModal();
 
-  // Determine flow order based on entry point
-  const isEmployeeFirstFlow = !!initialEmployeeId;
+  // When the professional is pre-assigned (e.g. clicking a service from their profile),
+  // skip the EMPLOYEE step entirely.
+  const skipEmployeeStep = !!initialEmployeeId;
 
-  const [step, setStep] = useState<STEPS>(isEmployeeFirstFlow ? STEPS.EMPLOYEE : STEPS.SERVICES);
+  const [step, setStep] = useState<STEPS>(STEPS.SERVICES);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -123,13 +124,13 @@ export default function ReservationFlow({
     return slotTime <= currentTimeWithBuffer;
   }, [date]);
 
-  // Flow path based on entry point
+  // Flow path — omit EMPLOYEE when the professional is pre-assigned.
   const getFlowPath = useCallback((): STEPS[] => {
-    if (isEmployeeFirstFlow) {
-      return [STEPS.EMPLOYEE, STEPS.SERVICES, STEPS.DATE, STEPS.TIME, STEPS.SUMMARY];
+    if (skipEmployeeStep) {
+      return [STEPS.SERVICES, STEPS.DATE, STEPS.TIME, STEPS.SUMMARY];
     }
     return [STEPS.SERVICES, STEPS.EMPLOYEE, STEPS.DATE, STEPS.TIME, STEPS.SUMMARY];
-  }, [isEmployeeFirstFlow]);
+  }, [skipEmployeeStep]);
 
   const canProceed = useCallback((): boolean => {
     switch (step) {
@@ -194,8 +195,8 @@ export default function ReservationFlow({
       setDirection(-1);
       setStep(prev);
     } else {
-      // First step - go back to listing
-      router.push(`/listings/${listing.id}`);
+      // First step — replace so the listing's back button doesn't return to /reserve.
+      router.replace(`/listings/${listing.id}`);
     }
   }, [getPreviousStep, router, listing.id]);
 
@@ -257,8 +258,8 @@ export default function ReservationFlow({
         customerEmail: currentUser.email || '',
       };
 
-      // Navigate to bookings and open Stripe modal after page loads
-      router.push(`/bookings/reservations`);
+      // Replace so the bookings page's back button doesn't return to /reserve.
+      router.replace(`/bookings/reservations`);
 
       setTimeout(() => {
         stripeCheckoutModal.onOpen(stripeData);

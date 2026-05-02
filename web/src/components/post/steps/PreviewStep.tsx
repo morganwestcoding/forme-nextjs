@@ -34,7 +34,7 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
       />
 
       {/* Newsfeed-style layout: media card + side panel */}
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-10">
         {/* Media card — same 9:16 proportions as newsfeed */}
         <div
           className="relative overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-800 flex-shrink-0"

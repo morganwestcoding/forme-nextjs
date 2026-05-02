@@ -29,8 +29,8 @@ export default function ServicesStep({
   return (
     <div>
       <TypeformHeading
-        question="Which services are you interested in?"
-        subtitle="Choose one or more services to continue"
+        question="Please select a service"
+        subtitle={selectedServices.length > 0 ? 'Choose one or more to continue' : 'Tap a service below to continue'}
       />
 
       <div className="grid grid-cols-2 gap-3">

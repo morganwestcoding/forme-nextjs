@@ -106,6 +106,11 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
 
       for (const s of incomingServices) {
         const priceInt = Math.round(Number(s.price) || 0);
+        const durRaw = Number(s.durationMinutes ?? s.duration);
+        const durationField =
+          Number.isFinite(durRaw) && durRaw > 0
+            ? { durationMinutes: Math.round(durRaw) }
+            : {};
         if (s.id && existingServiceIds.has(s.id)) {
           await tx.service.update({
             where: { id: s.id },
@@ -113,6 +118,7 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
               serviceName: s.serviceName,
               price: priceInt,
               category: s.category,
+              ...durationField,
             },
           });
         } else {
@@ -122,6 +128,7 @@ export async function PUT(request: Request, { params }: { params: IParams }) {
               price: priceInt,
               category: s.category,
               listingId,
+              ...durationField,
             },
           });
         }

@@ -20,9 +20,12 @@ interface PostCardProps {
   isHero?: boolean;
 }
 
+const SAMPLE_OWNER_NAMES = new Set(['Jordan Riley', 'Maya Vega', 'Kai Chen']);
+
 const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isHero = false, hideUserInfo = false }) => {
   const router = useRouter();
   const post = initialPost;
+  const isSample = !!post.user?.name && SAMPLE_OWNER_NAMES.has(post.user.name);
 
   const [imageLoaded, setImageLoaded] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
@@ -365,6 +368,11 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
             {!hideUserInfo && post.user && (
               <span className="text-white text-[12px] font-semibold truncate block drop-shadow-sm leading-none">
                 {post.user.name}
+                {isSample && (
+                  <span className="text-white/80 font-normal" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
+                    {' · sample'}
+                  </span>
+                )}
               </span>
             )}
             <div className="flex items-center gap-2 mt-[2px]">

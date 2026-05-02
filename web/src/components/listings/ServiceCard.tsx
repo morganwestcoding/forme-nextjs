@@ -20,8 +20,18 @@ interface ServiceItem {
   description?: string;
   popular?: boolean;
   isNew?: boolean;
-  unit?: string; // "60 min", "session", etc.
+  durationMinutes?: number;
+  unit?: string; // legacy override — "60 min", "session", etc.
 }
+
+const formatDuration = (minutes: number): string => {
+  if (!Number.isFinite(minutes) || minutes <= 0) return '';
+  if (minutes < 60) return `${minutes} min`;
+  const hours = Math.floor(minutes / 60);
+  const remainder = minutes % 60;
+  if (remainder === 0) return `${hours}h`;
+  return `${hours}h ${remainder}m`;
+};
 
 interface ServiceCardProps {
   service: ServiceItem;
@@ -71,7 +81,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   };
 
   const priceNum = Number(service.price ?? 0);
-  const durationDisplay = service.unit || '60 min';
+  const durationDisplay =
+    (typeof service.durationMinutes === 'number' && service.durationMinutes > 0
+      ? formatDuration(service.durationMinutes)
+      : service.unit) || '60 min';
   const listingName = listing?.title || 'Service';
 
   // Background image - use listing image

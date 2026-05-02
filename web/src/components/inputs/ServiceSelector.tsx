@@ -35,6 +35,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
         serviceName: s.serviceName ?? '',
         price: typeof s.price === 'number' ? s.price : 0,
         category: s.category ?? '',
+        duration: typeof s.duration === 'number' ? s.duration : undefined,
       }))
     : [{ serviceName: '', price: 0, category: '' }];
 
@@ -121,7 +122,7 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                   />
                 </div>
 
-                {/* Price & Category row */}
+                {/* Price & Duration row */}
                 <div className="flex gap-3">
                   <div className="flex-1">
                     <label htmlFor={`servicePrice-${i}`} className="block text-sm font-medium text-stone-700 dark:text-stone-200  mb-2">
@@ -139,6 +140,27 @@ const ServiceSelector: React.FC<ServiceSelectorProps> = ({
                     />
                   </div>
 
+                  <div className="flex-1">
+                    <label htmlFor={`serviceDuration-${i}`} className="block text-sm font-medium text-stone-700 dark:text-stone-200  mb-2">
+                      Duration
+                    </label>
+                    <div className="relative">
+                      <input
+                        id={`serviceDuration-${i}`}
+                        type="number"
+                        min={0}
+                        step={5}
+                        value={svc.duration ?? ''}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setRow(i, { duration: v === '' ? undefined : Math.max(0, Number(v)) });
+                        }}
+                        className="w-full px-4 pr-12 py-3.5 bg-stone-50 dark:bg-stone-900  border border-stone-200 dark:border-stone-800  rounded-xl text-stone-900 dark:text-stone-100  placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
+                        placeholder="30"
+                      />
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500 text-sm">min</span>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Category */}

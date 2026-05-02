@@ -161,7 +161,8 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
         : [STEPS.INTERESTS, STEPS.JOB_TITLE, STEPS.LOCATION, STEPS.IMAGES];
     }
 
-    const basePath = [STEPS.ACCOUNT, STEPS.INTERESTS, STEPS.USER_TYPE];
+    // INTERESTS is collected post-signup via the WelcomeModal, not as a step here.
+    const basePath = [STEPS.ACCOUNT, STEPS.USER_TYPE];
 
     if (userType === 'customer') {
       return [...basePath, STEPS.LOCATION, STEPS.IMAGES];

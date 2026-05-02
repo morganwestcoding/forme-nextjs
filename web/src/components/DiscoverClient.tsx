@@ -42,8 +42,8 @@ const BANNERS = [
     src: '/assets/people/v-drip.png',
     alt: 'V Drip Hair Studio',
     tag: 'Featured',
-    title: 'V Drip Hair Studio',
-    subtitle: 'Where the next look begins',
+    title: 'Look Like Your Next Level.',
+    subtitle: 'Premium cuts, styles, and treatments from top-tier professionals',
     href: '/shops',
   },
 ];
