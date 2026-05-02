@@ -7,9 +7,16 @@ import Image from 'next/image';
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { Tick02Icon as Check } from 'hugeicons-react';
 import { SafeUser } from '@/app/types';
 import Container from '@/components/Container';
 import Skeleton from '@/components/ui/Skeleton';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
 import { categories as ALL_CATEGORIES } from '@/components/Categories';
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || '';
@@ -49,6 +56,7 @@ function haversine(lat1: number, lng1: number, lat2: number, lng2: number): numb
 }
 
 const SOURCE_ID = 'listings';
+const CLUSTER_HALO_LAYER_ID = 'listings-cluster-halo';
 const CLUSTER_LAYER_ID = 'listings-clusters';
 const CLUSTER_COUNT_LAYER_ID = 'listings-cluster-count';
 const POINT_LAYER_ID = 'listings-points';
@@ -56,23 +64,30 @@ const WORKER_BADGE_BG_LAYER_ID = 'listings-worker-badge-bg';
 const WORKER_BADGE_TEXT_LAYER_ID = 'listings-worker-badge-text';
 const PIN_ICON_ID = 'listing-pin';
 
-// Inline SVG used as the unclustered marker. Rendered to an Image and registered with Mapbox via addImage.
-const PIN_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
-  <circle cx="22" cy="22" r="17" fill="#18181b" stroke="#ffffff" stroke-width="2.5"/>
-  <path d="M14 22l8-7 8 7v9a2 2 0 0 1-2 2h-12a2 2 0 0 1-2-2z" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <polyline points="20 32 20 25 24 25 24 32" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>`;
+const PIN_W = 44;
+const PIN_H = 44;
+const PIN_RATIO = 2; // raster the SVG at 2× so it stays crisp on retina
+
+// Build the unclustered marker — flag-style pin with a 2px line-art stroke.
+function buildPinDataUrl(): string {
+  const pinSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${PIN_W * PIN_RATIO}" height="${PIN_H * PIN_RATIO}" viewBox="0 0 24 24" fill="none" stroke="#141B34" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 16V21"/>
+    <path d="M8 5.2918C8 5.02079 8 4.88529 8.01312 4.77132C8.1194 3.84789 8.84789 3.1194 9.77133 3.01312C9.88529 3 10.0208 3 10.2918 3H13.7082C13.9792 3 14.1147 3 14.2287 3.01312C15.1521 3.1194 15.8806 3.84789 15.9869 4.77132C16 4.88529 16 5.02079 16 5.2918C16 5.37885 16 5.42237 15.9967 5.46264C15.9708 5.78281 15.7927 6.07104 15.5179 6.2374C15.4834 6.25832 15.4444 6.27779 15.3666 6.31672L15.1055 6.44726C14.7021 6.64897 14.5003 6.74983 14.3681 6.90564C14.26 7.03286 14.1856 7.18509 14.1515 7.34846C14.1097 7.54854 14.1539 7.76968 14.2424 8.21197L15 12H15.3333C15.9533 12 16.2633 12 16.5176 12.0681C17.2078 12.2531 17.7469 12.7922 17.9319 13.4824C18 13.7367 18 14.0467 18 14.6667C18 14.9767 18 15.1317 17.9659 15.2588C17.8735 15.6039 17.6039 15.8735 17.2588 15.9659C17.1317 16 16.9767 16 16.6667 16H7.33333C7.02334 16 6.86835 16 6.74118 15.9659C6.39609 15.8735 6.12654 15.6039 6.03407 15.2588C6 15.1317 6 14.9767 6 14.6667C6 14.0467 6 13.7367 6.06815 13.4824C6.25308 12.7922 6.79218 12.2531 7.48236 12.0681C7.73669 12 8.04669 12 8.66667 12H9L9.75761 8.21197C9.84606 7.76968 9.89029 7.54854 9.84852 7.34846C9.81441 7.18509 9.73995 7.03286 9.63194 6.90564C9.49965 6.74983 9.29794 6.64897 8.89452 6.44726L8.63344 6.31672C8.55558 6.27779 8.51665 6.25832 8.48208 6.2374C8.20731 6.07104 8.02917 5.78281 8.00326 5.46264C8 5.42237 8 5.37885 8 5.2918Z"/>
+  </svg>`;
+
+  return `data:image/svg+xml;base64,${btoa(pinSvg)}`;
+}
 
 function loadPinImage(map: mapboxgl.Map): Promise<void> {
   return new Promise((resolve) => {
     if (map.hasImage(PIN_ICON_ID)) return resolve();
-    const url = `data:image/svg+xml;base64,${btoa(PIN_SVG)}`;
-    const img = new window.Image(44, 44);
+    const url = buildPinDataUrl();
+    const img = new window.Image(PIN_W * PIN_RATIO, PIN_H * PIN_RATIO);
     img.onload = () => {
-      if (!map.hasImage(PIN_ICON_ID)) map.addImage(PIN_ICON_ID, img, { pixelRatio: 2 });
+      if (!map.hasImage(PIN_ICON_ID)) map.addImage(PIN_ICON_ID, img, { pixelRatio: PIN_RATIO });
       resolve();
     };
-    img.onerror = () => resolve(); // graceful fallback — points still render via paint props if needed
+    img.onerror = () => resolve();
     img.src = url;
   });
 }
@@ -383,20 +398,39 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
           clusterRadius: 50,
         });
 
+        // Soft halo behind cluster bubbles — gives them depth without a hard shadow.
+        map.current.addLayer({
+          id: CLUSTER_HALO_LAYER_ID,
+          type: 'circle',
+          source: SOURCE_ID,
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': '#18181b',
+            'circle-opacity': 0.12,
+            'circle-blur': 0.6,
+            'circle-radius': [
+              'step', ['get', 'point_count'],
+              26,
+              10, 30,
+              50, 38,
+            ],
+          },
+        });
+
         map.current.addLayer({
           id: CLUSTER_LAYER_ID,
           type: 'circle',
           source: SOURCE_ID,
           filter: ['has', 'point_count'],
           paint: {
-            'circle-color': '#18181b',
+            'circle-color': '#0c0a09',
             'circle-stroke-color': '#ffffff',
-            'circle-stroke-width': 3,
+            'circle-stroke-width': 2.5,
             'circle-radius': [
               'step', ['get', 'point_count'],
-              18,
-              10, 22,
-              50, 28,
+              17,
+              10, 21,
+              50, 27,
             ],
           },
         });
@@ -410,6 +444,8 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
             'text-field': ['get', 'point_count_abbreviated'],
             'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
             'text-size': 13,
+            'text-anchor': 'center',
+            'text-justify': 'center',
             'text-allow-overlap': true,
             'text-ignore-placement': true,
           },
@@ -423,13 +459,15 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
           filter: ['!', ['has', 'point_count']],
           layout: {
             'icon-image': PIN_ICON_ID,
-            'icon-size': 0.85,
+            'icon-size': 1.0,
             'icon-allow-overlap': true,
-            'icon-anchor': 'center',
+            'icon-anchor': 'bottom',
           },
         });
 
-        // Worker count badge — small white circle at the upper-right of each pin.
+        // Worker count badge — small white circle near the upper-right of the pin head.
+        // Pin renders at 44×44 CSS px anchored at the bottom; head curve top-right is at
+        // roughly (+11, -35) in viewport pixels relative to the geographic point.
         map.current.addLayer({
           id: WORKER_BADGE_BG_LAYER_ID,
           type: 'circle',
@@ -438,9 +476,9 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
           paint: {
             'circle-color': '#ffffff',
             'circle-radius': 8,
-            'circle-stroke-color': '#18181b',
+            'circle-stroke-color': '#0c0a09',
             'circle-stroke-width': 1.5,
-            'circle-translate': [12, -12],
+            'circle-translate': [11, -35],
             'circle-translate-anchor': 'viewport',
           },
         });
@@ -453,14 +491,16 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
             'text-field': ['to-string', ['get', 'workerCount']],
             'text-size': 10,
             'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
-            'text-offset': [0.95, -1.0],
+            'text-anchor': 'center',
+            'text-justify': 'center',
+            'text-offset': [1.1, -3.5],
             'text-allow-overlap': true,
-          'text-ignore-placement': true,
-        },
-        paint: {
-          'text-color': '#18181b',
-        },
-      });
+            'text-ignore-placement': true,
+          },
+          paint: {
+            'text-color': '#0c0a09',
+          },
+        });
 
       // Cluster click → expand
       map.current.on('click', CLUSTER_LAYER_ID, (e) => {
@@ -657,26 +697,43 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
             </div>
 
             <div className="grid grid-cols-3 gap-2">
-              <div className="relative col-span-2">
-                <select
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value as 'nearest' | 'name')}
-                  className="w-full appearance-none bg-transparent border border-stone-200 dark:border-stone-700/60 rounded-xl px-3 py-2 pr-7 text-[13px] text-stone-600 dark:text-stone-300 focus:outline-none focus:border-stone-400 transition-colors cursor-pointer"
-                >
-                  <option value="nearest">Nearest</option>
-                  <option value="name">Name</option>
-                </select>
-                <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 dark:text-stone-500 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m6 9 6 6 6-6"/>
-                </svg>
+              <div className="col-span-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      className="w-full flex items-center justify-between gap-1 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-4 py-2 text-[13px] text-stone-900 dark:text-stone-100 hover:border-stone-300 dark:hover:border-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-300 dark:focus:ring-stone-600 transition-colors"
+                    >
+                      <span>{sort === 'nearest' ? 'Nearest' : 'Name'}</span>
+                      <svg className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m6 9 6 6 6-6"/>
+                      </svg>
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="min-w-[var(--radix-dropdown-menu-trigger-width)]">
+                    {([
+                      { value: 'nearest' as const, label: 'Nearest' },
+                      { value: 'name' as const, label: 'Name' },
+                    ]).map((opt) => (
+                      <DropdownMenuItem
+                        key={opt.value}
+                        onSelect={() => setSort(opt.value)}
+                        className="justify-between"
+                      >
+                        <span>{opt.label}</span>
+                        {sort === opt.value && <Check className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400" />}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
               <button
                 onClick={() => setFiltersOpen((o) => !o)}
                 aria-expanded={filtersOpen}
-                className={`w-full flex items-center justify-between gap-1 appearance-none border rounded-xl px-3 py-2 text-[13px] text-left transition-colors ${
+                className={`w-full flex items-center justify-between gap-1 appearance-none border rounded-xl px-4 py-2 text-[13px] text-left transition-colors focus:outline-none focus:ring-2 focus:ring-stone-300 dark:focus:ring-stone-600 ${
                   activeFilterCount > 0 || filtersOpen
                     ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100'
-                    : 'bg-transparent text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700/60 hover:border-stone-400'
+                    : 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700'
                 }`}
               >
                 <span>Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}</span>

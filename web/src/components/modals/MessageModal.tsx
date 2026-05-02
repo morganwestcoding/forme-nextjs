@@ -286,39 +286,47 @@ const MessageModal: React.FC = () => {
         <div className="flex items-center gap-3">
           {/* Avatar */}
           <div className="relative flex-shrink-0">
-            <div
-              className={`w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-white font-semibold text-sm
-                         ${!otherUser?.image ? avatarColor : 'bg-stone-100 dark:bg-stone-800'}`}
-            >
-              {otherUser?.image ? (
-                <Image
-                  src={otherUser.image}
-                  alt={otherUser.name || 'User'}
-                  width={44}
-                  height={44}
-                  className="object-cover w-full h-full"
-                  onError={(e) => {
-                    const target = e.currentTarget.parentElement;
-                    if (target) {
-                      target.className = `w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-white font-semibold text-sm ${avatarColor}`;
-                      target.textContent = '';
-                      const span = document.createElement('span');
-                      span.textContent = initials(otherUser?.name);
-                      target.appendChild(span);
-                    }
-                  }}
-                />
-              ) : (
-                <span>{initials(otherUser?.name)}</span>
-              )}
-            </div>
+            {otherUser?.name ? (
+              <div
+                className={`w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-white font-semibold text-sm
+                           ${!otherUser?.image ? avatarColor : 'bg-stone-100 dark:bg-stone-800'}`}
+              >
+                {otherUser?.image ? (
+                  <Image
+                    src={otherUser.image}
+                    alt={otherUser.name || ''}
+                    width={44}
+                    height={44}
+                    className="object-cover w-full h-full"
+                    onError={(e) => {
+                      const target = e.currentTarget.parentElement;
+                      if (target) {
+                        target.className = `w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-white font-semibold text-sm ${avatarColor}`;
+                        target.textContent = '';
+                        const span = document.createElement('span');
+                        span.textContent = initials(otherUser?.name);
+                        target.appendChild(span);
+                      }
+                    }}
+                  />
+                ) : (
+                  <span>{initials(otherUser?.name)}</span>
+                )}
+              </div>
+            ) : (
+              <Skeleton rounded="full" className="w-11 h-11" />
+            )}
           </div>
 
           {/* Name */}
           <div>
-            <h3 className="font-semibold text-stone-900 dark:text-stone-100 text-sm tracking-tight">
-              {otherUser?.name || 'Unknown user'}
-            </h3>
+            {otherUser?.name ? (
+              <h3 className="font-semibold text-stone-900 dark:text-stone-100 text-sm tracking-tight">
+                {otherUser.name}
+              </h3>
+            ) : (
+              <Skeleton rounded="md" className="h-4 w-32" />
+            )}
           </div>
         </div>
       </div>
