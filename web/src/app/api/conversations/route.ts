@@ -40,30 +40,44 @@ export async function GET(request: Request) {
       }
     });
 
-    const safeConversations = conversations.map((conversation: typeof conversations[number]) => {
-      const otherUser = conversation.users.find((user: typeof conversation.users[number]) => user.id !== currentUser.id);
-      const lastMessage = conversation.messages[0];
-      
-      const safeConversation = {
-        id: conversation.id,
-        otherUser: {
-          id: otherUser?.id || '',
-          name: otherUser?.name || null,
-          image: otherUser?.image || null,
-        },
-        lastMessage: lastMessage ? {
-          content: lastMessage.content,
-          createdAt: lastMessage.createdAt.toISOString(),
-          // Treat messages the current user sent as already read for badge purposes —
-          // unread should only reflect messages received from the other party.
-          isRead: lastMessage.senderId === currentUser.id ? true : lastMessage.isRead,
-          senderId: lastMessage.senderId,
-        } : undefined,
-        lastMessageAt: conversation.lastMessageAt?.toISOString() || new Date().toISOString(), // Provide default value
-      };
-      
-      return safeConversation;
-    });
+    // A conversation with no surviving other party is a ghost thread — the
+    // counterparty was deleted before the cascade could clean it up. Hide it
+    // from the inbox and fire-and-forget a delete so it doesn't reappear.
+    const orphanConvIds: string[] = [];
+    const safeConversations = conversations
+      .map((conversation: typeof conversations[number]) => {
+        const otherUser = conversation.users.find((user: typeof conversation.users[number]) => user.id !== currentUser.id);
+        if (!otherUser) {
+          orphanConvIds.push(conversation.id);
+          return null;
+        }
+        const lastMessage = conversation.messages[0];
+        return {
+          id: conversation.id,
+          otherUser: {
+            id: otherUser.id,
+            name: otherUser.name || null,
+            image: otherUser.image || null,
+          },
+          lastMessage: lastMessage ? {
+            content: lastMessage.content,
+            createdAt: lastMessage.createdAt.toISOString(),
+            // Treat messages the current user sent as already read for badge purposes —
+            // unread should only reflect messages received from the other party.
+            isRead: lastMessage.senderId === currentUser.id ? true : lastMessage.isRead,
+            senderId: lastMessage.senderId,
+          } : undefined,
+          lastMessageAt: conversation.lastMessageAt?.toISOString() || new Date().toISOString(),
+        };
+      })
+      .filter((c): c is NonNullable<typeof c> => c !== null);
+
+    if (orphanConvIds.length) {
+      Promise.all([
+        prisma.message.deleteMany({ where: { conversationId: { in: orphanConvIds } } }),
+        prisma.conversation.deleteMany({ where: { id: { in: orphanConvIds } } }),
+      ]).catch(() => {});
+    }
 
     return NextResponse.json(safeConversations);
   } catch (error) {

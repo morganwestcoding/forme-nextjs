@@ -131,7 +131,7 @@ export default async function RootLayout({
                 <UserMenuModal currentUser={currentUser} />
                 <CreateModal />
                 <LocationModal />
-                {/* <WelcomeModal currentUser={currentUser} /> */}
+                <WelcomeModal currentUser={currentUser} />
                 <UpgradeModal />
                 <WalkthroughOverlay />
                 <UnreadBadgeProvider />

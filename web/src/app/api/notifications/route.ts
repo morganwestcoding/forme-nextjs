@@ -32,7 +32,34 @@ export async function GET(request: Request) {
     const items = hasMore ? notifications.slice(0, limit) : notifications;
     const nextCursor = hasMore ? items[items.length - 1].id : null;
 
-    const formatted = items.map((n: typeof items[number]) => ({
+    // Filter out notifications whose actor user is gone. Prisma's emulated
+    // SetNull on MongoDB nulls relatedUserId when the actor is deleted, so
+    // checking relatedUserId alone isn't enough — we key off the type. For
+    // any notification type that semantically requires an actor (e.g.
+    // "X started following you"), a missing relatedUser join means the
+    // entry is a ghost. The content string was baked in at creation time
+    // and would still render the deleted user's name. Hide and clean up.
+    const ACTOR_REQUIRED_TYPES = new Set([
+      'NEW_FOLLOWER',
+      'MUTUAL_FOLLOW',
+      'SHOP_FOLLOW',
+      'LISTING_FOLLOW',
+      'NEW_MESSAGE',
+      'POST_LIKED',
+      'NEW_BOOKMARK',
+      'POST_COMMENTED',
+    ]);
+    const isOrphan = (n: typeof items[number]) =>
+      ACTOR_REQUIRED_TYPES.has(n.type) && !n.relatedUser;
+    const orphanIds = items.filter(isOrphan).map((n) => n.id);
+    const visible = orphanIds.length ? items.filter((n) => !isOrphan(n)) : items;
+    if (orphanIds.length) {
+      prisma.notification
+        .deleteMany({ where: { id: { in: orphanIds } } })
+        .catch(() => {});
+    }
+
+    const formatted = visible.map((n: typeof visible[number]) => ({
       ...n,
       createdAt: n.createdAt.toISOString(),
     }));

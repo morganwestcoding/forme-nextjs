@@ -140,6 +140,8 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
   const listingDescription = watch('listingDescription');
   const locationVal = watch('location');
   const academyId = watch('academyId');
+  watch('image');
+  watch('bio');
 
   const setCustomValue = useCallback((id: string, value: any) => {
     setValue(id, value ?? '', {
@@ -265,11 +267,12 @@ export default function TypeformFlow({ mode = 'create', userId, initialData }: T
       case STEPS.LOCATION:
         return Boolean(data.location?.trim());
       case STEPS.IMAGES:
-        return true; // Optional
+        if (isEditMode) return true;
+        return Boolean(data.image?.trim() && data.bio?.trim());
       default:
         return true;
     }
-  }, [step, methods, userType]);
+  }, [step, methods, userType, isEditMode]);
 
   const handleNext = useCallback(async () => {
     const data = methods.getValues();

@@ -8,6 +8,7 @@ import { getUserFromRequest } from "@/app/utils/mobileAuth";
 import { apiError, apiErrorCode } from "@/app/utils/api";
 import { sanitizeText } from "@/app/utils/sanitize";
 import { deleteUserCascade } from "@/app/libs/deleteUserCascade";
+import { titleCaseName } from "@/lib/names";
 
 export async function GET(
   request: Request,
@@ -69,7 +70,7 @@ export async function PUT(
       hideWelcomeModal,
     } = body || {};
 
-    const sanitizedName = typeof name === "string" ? sanitizeText(name) : undefined;
+    const sanitizedName = typeof name === "string" ? titleCaseName(sanitizeText(name)) : undefined;
     const sanitizedBio = typeof bio === "string" ? sanitizeText(bio) : undefined;
     const sanitizedJobTitle = typeof jobTitle === "string" ? sanitizeText(jobTitle) : undefined;
 

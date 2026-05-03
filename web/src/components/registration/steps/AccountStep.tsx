@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ViewIcon as FiEye, ViewOffIcon as FiEyeOff, Tick02Icon as FiCheck } from 'hugeicons-react';
 import TypeformHeading from '../TypeformHeading';
+import { titleCaseName } from '@/lib/names';
 
 interface PasswordValidation {
   hasMinLength: boolean;
@@ -16,7 +17,7 @@ interface PasswordValidation {
 }
 
 export default function AccountStep() {
-  const { register, watch, formState: { errors } } = useFormContext();
+  const { register, watch, formState: { errors }, setValue } = useFormContext();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const password = watch('password') || '';
@@ -41,6 +42,30 @@ export default function AccountStep() {
       hasSpecialChar: /[!@#$%^&*(),]/.test(password),
     });
   }, [password]);
+
+  const firstNameReg = register('firstName', {
+    required: 'First name is required',
+    pattern: {
+      value: /^[a-zA-Z\s'.-]+$/,
+      message: 'First name can only contain letters and common punctuation'
+    }
+  });
+  const lastNameReg = register('lastName', {
+    required: 'Last name is required',
+    pattern: {
+      value: /^[a-zA-Z\s'.-]+$/,
+      message: 'Last name can only contain letters and common punctuation'
+    }
+  });
+
+  const handleNameBlur = (field: 'firstName' | 'lastName', reg: typeof firstNameReg) =>
+    (e: React.FocusEvent<HTMLInputElement>) => {
+      reg.onBlur(e);
+      const normalized = titleCaseName(e.target.value);
+      if (normalized !== e.target.value) {
+        setValue(field, normalized, { shouldValidate: true, shouldDirty: true });
+      }
+    };
 
   return (
     <div>
@@ -85,13 +110,8 @@ export default function AccountStep() {
               id="firstName"
               type="text"
               autoComplete="given-name"
-              {...register('firstName', {
-                required: 'First name is required',
-                pattern: {
-                  value: /^[a-zA-Z\s'.-]+$/,
-                  message: 'First name can only contain letters and common punctuation'
-                }
-              })}
+              {...firstNameReg}
+              onBlur={handleNameBlur('firstName', firstNameReg)}
               className={`w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-[box-shadow,border-color] duration-150 ${errors.firstName ? 'border-red-400 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
               placeholder="John"
             />
@@ -108,13 +128,8 @@ export default function AccountStep() {
               id="lastName"
               type="text"
               autoComplete="family-name"
-              {...register('lastName', {
-                required: 'Last name is required',
-                pattern: {
-                  value: /^[a-zA-Z\s'.-]+$/,
-                  message: 'Last name can only contain letters and common punctuation'
-                }
-              })}
+              {...lastNameReg}
+              onBlur={handleNameBlur('lastName', lastNameReg)}
               className={`w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-[box-shadow,border-color] duration-150 ${errors.lastName ? 'border-red-400 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
               placeholder="Doe"
             />

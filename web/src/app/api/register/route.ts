@@ -6,6 +6,7 @@ import { registerSchema, validateBody } from "@/app/utils/validations";
 import { signMobileToken } from "@/app/utils/mobileAuth";
 import { createRateLimiter, getIP } from "@/app/libs/rateLimit";
 import { sendEmail, welcomeEmail } from "@/app/libs/email";
+import { titleCaseName } from "@/lib/names";
 
 const limiter = createRateLimiter("register", { limit: 5, windowSeconds: 3600 });
 
@@ -64,6 +65,10 @@ export async function POST(request: Request) {
     if (existing) {
       return apiErrorCode('EMAIL_EXISTS');
     }
+
+    // Defensive normalization — the client (AccountStep) already title-cases
+    // on blur, but mobile/API consumers may post raw input.
+    const normalizedName = titleCaseName(name);
 
     // Validate student data
     let studentAcademy: Awaited<ReturnType<typeof prisma.academy.findUnique>> = null;
@@ -141,7 +146,7 @@ export async function POST(request: Request) {
     const user = await prisma.user.create({
       data: {
         email,
-        name,
+        name: normalizedName,
         hashedPassword,
         location: location ?? '',
         bio: bio ?? '',
@@ -186,7 +191,7 @@ export async function POST(request: Request) {
         // Create employee record - removed profileImage field
         const employee = await prisma.employee.create({
           data: {
-            fullName: name,
+            fullName: normalizedName,
             jobTitle: isOwnerManager ? 'Owner/Manager' : (jobTitle || ''),
             listingId: selectedListing,
             userId: user.id,
@@ -228,7 +233,7 @@ export async function POST(request: Request) {
 
         const employee = await prisma.employee.create({
           data: {
-            fullName: name,
+            fullName: normalizedName,
             jobTitle: jobTitle || 'Student',
             listingId: studentAcademyListing.id,
             userId: user.id,

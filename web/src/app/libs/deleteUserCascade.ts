@@ -199,7 +199,14 @@ export async function deleteUserCascade(
     messagesDel,
   ] = await Promise.all([
     prisma.comment.deleteMany({ where: { userId } }),
-    prisma.notification.deleteMany({ where: { userId } }),
+    // Wipe both directions: notifications received BY this user and
+    // notifications about this user (sent to others as the actor) — otherwise
+    // other users keep seeing entries like "X liked your post" pointing at a
+    // ghost. SetNull would normally handle the second case but Prisma emulates
+    // it on MongoDB and has been observed to leave dangling refs.
+    prisma.notification.deleteMany({
+      where: { OR: [{ userId }, { relatedUserId: userId }] },
+    }),
     prisma.account.deleteMany({ where: { userId } }),
     prisma.shop.deleteMany({ where: { userId } }),
     prisma.clientRecord.deleteMany({ where: { userId } }),
@@ -212,7 +219,16 @@ export async function deleteUserCascade(
     data: { userId: null },
   });
 
-  // 9. Scrub the user id from array fields on other documents.
+  // 9. Capture every conversation that included this user BEFORE we pull them
+  //    out — we need the ids to clean up any threads that end up with fewer
+  //    than two members afterward (those are unreachable in any inbox).
+  const userConvs = await prisma.conversation.findMany({
+    where: { userIds: { has: userId } },
+    select: { id: true },
+  });
+  const userConvIds = userConvs.map((c) => c.id);
+
+  // 10. Scrub the user id from array fields on other documents.
   await Promise.all([
     pullObjectIdFromCollection("User", "following", userId),
     pullObjectIdFromCollection("User", "followers", userId),
@@ -227,13 +243,33 @@ export async function deleteUserCascade(
     pullStringFromCollection("Listing", "followers", userId),
   ]);
 
-  // 10. Conversations the user was a part of: drop now-empty ones to avoid
-  //     orphaned threads in inboxes.
-  const emptyConversations = await prisma.conversation.deleteMany({
-    where: { userIds: { isEmpty: true } },
-  });
+  // 11. Drop any thread that no longer has at least two members — a 1-on-1
+  //     between the deleted user and someone else collapses to a solo thread
+  //     after the pull, which would otherwise linger in the survivor's inbox
+  //     with no one to talk to. Messages other participants left there go too.
+  let orphanMessagesDeleted = 0;
+  let orphanConversations = 0;
+  if (userConvIds.length) {
+    const survivors = await prisma.conversation.findMany({
+      where: { id: { in: userConvIds } },
+      select: { id: true, userIds: true },
+    });
+    const orphanIds = survivors
+      .filter((c) => (c.userIds?.length ?? 0) < 2)
+      .map((c) => c.id);
+    if (orphanIds.length) {
+      const msgs = await prisma.message.deleteMany({
+        where: { conversationId: { in: orphanIds } },
+      });
+      orphanMessagesDeleted = msgs.count;
+      const convs = await prisma.conversation.deleteMany({
+        where: { id: { in: orphanIds } },
+      });
+      orphanConversations = convs.count;
+    }
+  }
 
-  // 11. Finally, the user row itself.
+  // 12. Finally, the user row itself.
   await prisma.user.delete({ where: { id: userId } });
 
   return {
@@ -250,10 +286,10 @@ export async function deleteUserCascade(
     accounts: accountsDel.count,
     shops: shopsDel.count,
     clientRecords: clientRecordsDel.count,
-    messages: messagesDel.count,
+    messages: messagesDel.count + orphanMessagesDeleted,
     reviews: reviewsDeleted.count,
     postMentions: postMentionsTargeting.count,
-    conversations: emptyConversations.count,
+    conversations: orphanConversations,
     disputes: disputesUpdated.count,
   };
 }

@@ -46,28 +46,26 @@ export default function JobTitleStep({ userType, isOwnerManager, ownerPerformsSe
             onClick={() => onOwnerManagerChange(!isOwnerManager)}
             style={{ WebkitTapHighlightColor: 'transparent' }}
             className={`
-              w-full flex items-center gap-4 p-5 rounded-xl border-2 text-left
-              transition-[background-color,border-color] duration-200 ease-out
-              focus:outline-none
+              w-full flex items-center gap-4 p-4 rounded-xl border text-left transition-all duration-200
               ${isOwnerManager
-                ? 'border-stone-900 dark:border-stone-100 bg-stone-50 dark:bg-stone-900'
-                : 'border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 hover:border-stone-300 dark:hover:bg-stone-800'
+                ? 'border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 shadow-inset-pressed'
+                : 'border-stone-200 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 '
               }
             `}
           >
             <div className={`
-              w-6 h-6 rounded-xl border-2 flex items-center justify-center transition-colors duration-200
-              ${isOwnerManager ? 'border-stone-900 bg-stone-900 dark:border-stone-100 dark:bg-stone-100' : 'border-stone-300 dark:border-stone-700'}
+              w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all
+              ${isOwnerManager ? 'border-stone-900 bg-stone-900' : 'border-stone-300 dark:border-stone-700'}
             `}>
               {isOwnerManager && (
-                <svg className="w-4 h-4 text-white dark:text-stone-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               )}
             </div>
             <div>
-              <span className="font-medium text-stone-900 dark:text-stone-100">I&apos;m the owner or manager</span>
-              <p className="text-sm text-stone-500 dark:text-stone-500 mt-0.5">You&apos;ll have full access to manage the business</p>
+              <span className="text-sm font-medium text-stone-900 dark:text-stone-100">I&apos;m the owner or manager</span>
+              <p className="text-xs text-stone-500 dark:text-stone-500 mt-0.5">You&apos;ll have full access to manage the business</p>
             </div>
           </button>
         )}

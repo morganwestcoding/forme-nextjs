@@ -71,8 +71,14 @@ const PIN_RATIO = 2; // raster the SVG at 2× so it stays crisp on retina
 // Build the unclustered marker — flag-style pin with a 2px line-art stroke.
 function buildPinDataUrl(): string {
   const pinSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${PIN_W * PIN_RATIO}" height="${PIN_H * PIN_RATIO}" viewBox="0 0 24 24" fill="none" stroke="#141B34" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <defs>
+      <linearGradient id="listingPinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#2a2a2a"/>
+        <stop offset="100%" stop-color="#000000"/>
+      </linearGradient>
+    </defs>
     <path d="M12 16V21"/>
-    <path d="M8 5.2918C8 5.02079 8 4.88529 8.01312 4.77132C8.1194 3.84789 8.84789 3.1194 9.77133 3.01312C9.88529 3 10.0208 3 10.2918 3H13.7082C13.9792 3 14.1147 3 14.2287 3.01312C15.1521 3.1194 15.8806 3.84789 15.9869 4.77132C16 4.88529 16 5.02079 16 5.2918C16 5.37885 16 5.42237 15.9967 5.46264C15.9708 5.78281 15.7927 6.07104 15.5179 6.2374C15.4834 6.25832 15.4444 6.27779 15.3666 6.31672L15.1055 6.44726C14.7021 6.64897 14.5003 6.74983 14.3681 6.90564C14.26 7.03286 14.1856 7.18509 14.1515 7.34846C14.1097 7.54854 14.1539 7.76968 14.2424 8.21197L15 12H15.3333C15.9533 12 16.2633 12 16.5176 12.0681C17.2078 12.2531 17.7469 12.7922 17.9319 13.4824C18 13.7367 18 14.0467 18 14.6667C18 14.9767 18 15.1317 17.9659 15.2588C17.8735 15.6039 17.6039 15.8735 17.2588 15.9659C17.1317 16 16.9767 16 16.6667 16H7.33333C7.02334 16 6.86835 16 6.74118 15.9659C6.39609 15.8735 6.12654 15.6039 6.03407 15.2588C6 15.1317 6 14.9767 6 14.6667C6 14.0467 6 13.7367 6.06815 13.4824C6.25308 12.7922 6.79218 12.2531 7.48236 12.0681C7.73669 12 8.04669 12 8.66667 12H9L9.75761 8.21197C9.84606 7.76968 9.89029 7.54854 9.84852 7.34846C9.81441 7.18509 9.73995 7.03286 9.63194 6.90564C9.49965 6.74983 9.29794 6.64897 8.89452 6.44726L8.63344 6.31672C8.55558 6.27779 8.51665 6.25832 8.48208 6.2374C8.20731 6.07104 8.02917 5.78281 8.00326 5.46264C8 5.42237 8 5.37885 8 5.2918Z"/>
+    <path d="M8 5.2918C8 5.02079 8 4.88529 8.01312 4.77132C8.1194 3.84789 8.84789 3.1194 9.77133 3.01312C9.88529 3 10.0208 3 10.2918 3H13.7082C13.9792 3 14.1147 3 14.2287 3.01312C15.1521 3.1194 15.8806 3.84789 15.9869 4.77132C16 4.88529 16 5.02079 16 5.2918C16 5.37885 16 5.42237 15.9967 5.46264C15.9708 5.78281 15.7927 6.07104 15.5179 6.2374C15.4834 6.25832 15.4444 6.27779 15.3666 6.31672L15.1055 6.44726C14.7021 6.64897 14.5003 6.74983 14.3681 6.90564C14.26 7.03286 14.1856 7.18509 14.1515 7.34846C14.1097 7.54854 14.1539 7.76968 14.2424 8.21197L15 12H15.3333C15.9533 12 16.2633 12 16.5176 12.0681C17.2078 12.2531 17.7469 12.7922 17.9319 13.4824C18 13.7367 18 14.0467 18 14.6667C18 14.9767 18 15.1317 17.9659 15.2588C17.8735 15.6039 17.6039 15.8735 17.2588 15.9659C17.1317 16 16.9767 16 16.6667 16H7.33333C7.02334 16 6.86835 16 6.74118 15.9659C6.39609 15.8735 6.12654 15.6039 6.03407 15.2588C6 15.1317 6 14.9767 6 14.6667C6 14.0467 6 13.7367 6.06815 13.4824C6.25308 12.7922 6.79218 12.2531 7.48236 12.0681C7.73669 12 8.04669 12 8.66667 12H9L9.75761 8.21197C9.84606 7.76968 9.89029 7.54854 9.84852 7.34846C9.81441 7.18509 9.73995 7.03286 9.63194 6.90564C9.49965 6.74983 9.29794 6.64897 8.89452 6.44726L8.63344 6.31672C8.55558 6.27779 8.51665 6.25832 8.48208 6.2374C8.20731 6.07104 8.02917 5.78281 8.00326 5.46264C8 5.42237 8 5.37885 8 5.2918Z" fill="url(#listingPinGradient)"/>
   </svg>`;
 
   return `data:image/svg+xml;base64,${btoa(pinSvg)}`;
@@ -114,6 +120,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
     return v ? Number(v) : null;
   });
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [ratingHover, setRatingHover] = useState<number | null>(null);
 
   // Single setter that mirrors state into the URL (replace, no scroll).
   const updateUrl = useCallback((updates: Record<string, string | null>) => {
@@ -645,8 +652,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
           <div className={`order-2 lg:order-1 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 shadow-elevation-1 overflow-hidden flex flex-col ${cardHeight}`}>
             <div className="px-5 pt-5 pb-3 flex flex-col gap-3 border-b border-stone-200/70 dark:border-stone-800">
               <Skeleton rounded="xl" className="h-10 w-full" />
-              <div className="grid grid-cols-3 gap-2">
-                <Skeleton rounded="xl" className="h-9 w-full" />
+              <div className="grid grid-cols-2 gap-2">
                 <Skeleton rounded="xl" className="h-9 w-full" />
                 <Skeleton rounded="xl" className="h-9 w-full" />
               </div>
@@ -696,8 +702,8 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
               </svg>
             </div>
 
-            <div className="grid grid-cols-3 gap-2">
-              <div className="col-span-2">
+            <div className="grid grid-cols-2 gap-2">
+              <div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
@@ -730,7 +736,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
               <button
                 onClick={() => setFiltersOpen((o) => !o)}
                 aria-expanded={filtersOpen}
-                className={`w-full flex items-center justify-between gap-1 appearance-none border rounded-xl px-4 py-2 text-[13px] text-left transition-colors focus:outline-none focus:ring-2 focus:ring-stone-300 dark:focus:ring-stone-600 ${
+                className={`w-full flex items-center justify-between gap-1 appearance-none border rounded-xl px-4 py-2 text-[13px] text-left transition-colors focus:outline-none ${
                   activeFilterCount > 0 || filtersOpen
                     ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100'
                     : 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700'
@@ -744,11 +750,15 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
             </div>
           </div>
 
-          {/* Filter panel — collapsible */}
-          {filtersOpen && (
-            <div className="px-5 py-3.5 border-b border-stone-200/70 dark:border-stone-800 bg-[#FAFAF9] dark:bg-stone-950/30 flex flex-col gap-3.5">
+          {/* Filter panel — collapsible. Grid-rows trick gives a smooth height slide; results list below follows naturally because it sits in normal flow. Inner content rises + fades in once the slide is mostly done. */}
+          <div
+            className={`grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none ${filtersOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
+            aria-hidden={!filtersOpen}
+          >
+           <div className="overflow-hidden">
+            <div className={`px-5 py-4 border-b border-stone-200/70 dark:border-stone-800 bg-[#FAFAF9] dark:bg-stone-950/30 flex flex-col gap-4 transition-[opacity,transform] ease-out motion-reduce:transition-none ${filtersOpen ? 'opacity-100 translate-y-0 duration-500 delay-200' : 'opacity-0 -translate-y-1 duration-150 pointer-events-none'}`}>
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-stone-500 dark:text-stone-400 font-medium mb-1.5">Category</p>
+                <p className="text-[11px] text-stone-500 dark:text-stone-400 font-semibold mb-2">Category</p>
                 <div className="flex flex-wrap gap-1.5">
                   {ALL_CATEGORIES.map((c) => {
                     const on = filterCategories.includes(c.label);
@@ -758,10 +768,10 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
                         onClick={() => setFilterCategories(
                           on ? filterCategories.filter((x) => x !== c.label) : [...filterCategories, c.label]
                         )}
-                        className={`px-2.5 py-1 rounded-full text-[11px] border transition-colors ${
+                        className={`px-3 py-1.5 rounded-full text-[12px] font-medium border transition-all duration-150 active:scale-[0.97] ${
                           on
-                            ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100'
-                            : 'bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:border-stone-400'
+                            ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]'
+                            : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600 hover:bg-stone-50 dark:hover:bg-stone-800/60'
                         }`}
                       >
                         {c.label}
@@ -772,10 +782,10 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
               </div>
 
               <div>
-                <div className="flex items-baseline justify-between mb-1.5">
-                  <p className="text-[10px] uppercase tracking-wider text-stone-500 dark:text-stone-400 font-medium">Distance</p>
+                <div className="flex items-baseline justify-between mb-2">
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400 font-semibold">Distance</p>
                   {!userLoc && (
-                    <button onClick={handleUseMyLocation} className="text-[10px] text-stone-500 dark:text-stone-400 underline hover:text-stone-700">
+                    <button onClick={handleUseMyLocation} className="text-[10px] text-stone-500 dark:text-stone-400 underline hover:text-stone-700 dark:hover:text-stone-200 transition-colors">
                       Set location
                     </button>
                   )}
@@ -789,10 +799,10 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
                         disabled={!userLoc}
                         onClick={() => setFilterRadius(on ? null : r)}
                         title={!userLoc ? 'Set your location first' : undefined}
-                        className={`px-2 py-1 rounded-md text-[11px] border transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+                        className={`px-2 py-1.5 rounded-lg text-[11px] font-medium border transition-all duration-150 active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 ${
                           on
-                            ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100'
-                            : 'bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700'
+                            ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]'
+                            : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600 hover:bg-stone-50 dark:hover:bg-stone-800/60'
                         }`}
                       >
                         {r}mi
@@ -803,21 +813,47 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
               </div>
 
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-stone-500 dark:text-stone-400 font-medium mb-1.5">Min rating</p>
-                <div className="grid grid-cols-4 gap-1.5">
-                  {([null, 3, 4, 4.5] as Array<number | null>).map((r) => {
-                    const on = filterMinRating === r;
+                <div className="flex items-baseline justify-between mb-2">
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400 font-semibold">Min rating</p>
+                  <span className="text-[11px] text-stone-500 dark:text-stone-400 tabular-nums">
+                    {filterMinRating == null ? 'Any' : `${filterMinRating.toFixed(1)} & up`}
+                  </span>
+                </div>
+                <div
+                  className="flex items-center gap-1"
+                  onMouseLeave={() => setRatingHover(null)}
+                >
+                  {[1, 2, 3, 4, 5].map((n) => {
+                    const shown = ratingHover ?? filterMinRating ?? 0;
+                    const active = n <= shown;
                     return (
                       <button
-                        key={r ?? 'any'}
-                        onClick={() => setFilterMinRating(r)}
-                        className={`px-2 py-1 rounded-md text-[11px] border transition-colors ${
-                          on
-                            ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100'
-                            : 'bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700'
-                        }`}
+                        key={n}
+                        type="button"
+                        onClick={() => setFilterMinRating(filterMinRating === n ? null : n)}
+                        onMouseEnter={() => setRatingHover(n)}
+                        onFocus={() => setRatingHover(n)}
+                        onBlur={() => setRatingHover(null)}
+                        aria-label={`Minimum ${n} star${n === 1 ? '' : 's'}`}
+                        aria-pressed={filterMinRating === n}
+                        className="p-1.5 rounded-lg transition-all duration-150 active:scale-[0.92] hover:bg-stone-100 dark:hover:bg-stone-800/60"
                       >
-                        {r == null ? 'Any' : `${r}★+`}
+                        <svg width="20" height="20" viewBox="0 0 24 24" className="block">
+                          <defs>
+                            <linearGradient id={`filterStarGold-${n}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stopColor="#f5c842" />
+                              <stop offset="100%" stopColor="#d4a017" />
+                            </linearGradient>
+                          </defs>
+                          <path
+                            d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z"
+                            fill={active ? `url(#filterStarGold-${n})` : 'none'}
+                            stroke={active ? 'none' : 'currentColor'}
+                            strokeWidth={active ? 0 : 1.5}
+                            strokeLinejoin="round"
+                            className={active ? '' : 'text-stone-300 dark:text-stone-600'}
+                          />
+                        </svg>
                       </button>
                     );
                   })}
@@ -827,13 +863,14 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
               {activeFilterCount > 0 && (
                 <button
                   onClick={clearFilters}
-                  className="self-start text-[12px] text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors"
+                  className="self-start text-[12px] font-medium text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors"
                 >
                   Clear all filters
                 </button>
               )}
             </div>
-          )}
+           </div>
+          </div>
 
           {/* Results list — page-scrolls on mobile, internal-scrolls on desktop. */}
           <div

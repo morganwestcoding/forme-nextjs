@@ -57,6 +57,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
 
   const isStudent = user.userType === 'student';
   const isCustomer = user.userType === 'customer';
+  const isIndividual = user.userType === 'individual';
   // Show an admin/master badge on the profile owner's avatar.
   const isAdminProfile = (user as any).role === 'admin' || (user as any).role === 'master';
   const studentAcademyName = user.academyName ?? null;
@@ -671,9 +672,10 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
             )}
 
             {/* Businesses Section — places the user owns OR actively works at.
-                Hidden for students (represented via their academy) and for
-                customers (they book, they don't operate businesses). */}
-            {!isStudent && !isCustomer && (
+                Hidden for students (represented via their academy), customers
+                (they book, they don't operate businesses), and independent
+                providers (no storefront — they work on their own). */}
+            {!isStudent && !isCustomer && !isIndividual && (
               <section>
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-4">

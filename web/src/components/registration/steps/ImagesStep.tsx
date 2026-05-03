@@ -103,7 +103,7 @@ export default function ImagesStep({ userType }: ImagesStepProps) {
         {/* Bio */}
         <div className="mt-8">
           <label htmlFor="bio" className="block text-sm font-medium text-stone-900 dark:text-stone-100 mb-2">
-            Bio <span className="text-stone-400 dark:text-stone-500 font-normal">(optional)</span>
+            Bio
           </label>
           <textarea
             id="bio"
