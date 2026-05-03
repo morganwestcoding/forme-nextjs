@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, UseFormRegisterReturn } from 'react-hook-form';
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ViewIcon as FiEye, ViewOffIcon as FiEyeOff, Tick02Icon as FiCheck } from 'hugeicons-react';
@@ -58,7 +58,7 @@ export default function AccountStep() {
     }
   });
 
-  const handleNameBlur = (field: 'firstName' | 'lastName', reg: typeof firstNameReg) =>
+  const handleNameBlur = (field: 'firstName' | 'lastName', reg: UseFormRegisterReturn) =>
     (e: React.FocusEvent<HTMLInputElement>) => {
       reg.onBlur(e);
       const normalized = titleCaseName(e.target.value);

@@ -30,9 +30,17 @@ const VARIANT_CLASSES: Record<Variant, string> = {
 };
 
 const SIZE_CLASSES: Record<Size, string> = {
-  sm: 'h-8 px-3 text-[12px] gap-1.5',
-  md: 'h-10 px-4 text-[13px] gap-2',
-  lg: 'h-12 px-5 text-[14px] gap-2',
+  sm: 'h-8 px-3 text-[12px]',
+  md: 'h-10 px-4 text-[13px]',
+  lg: 'h-12 px-5 text-[14px]',
+};
+
+// Gap is applied to the inner content span (not the button itself) so the
+// absolutely-positioned loading spinner doesn't get spaced by it.
+const GAP_CLASSES: Record<Size, string> = {
+  sm: 'gap-1.5',
+  md: 'gap-2',
+  lg: 'gap-2',
 };
 
 const ICON_SIZE: Record<Size, number> = { sm: 14, md: 16, lg: 18 };
@@ -59,8 +67,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={isDisabled}
+        aria-busy={loading || undefined}
         className={`
-          inline-flex items-center justify-center font-medium rounded-xl
+          relative inline-flex items-center justify-center font-medium rounded-xl
           transition-all duration-200 active:scale-[0.98]
           disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900 focus-visible:ring-offset-2
@@ -71,13 +80,18 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         `}
         {...rest}
       >
-        {loading ? (
-          <Loading03Icon size={ICON_SIZE[size]} className="animate-spin" />
-        ) : (
-          leftIcon
+        <span
+          className={`inline-flex items-center justify-center ${GAP_CLASSES[size]} ${loading ? 'invisible' : ''}`}
+        >
+          {leftIcon}
+          <span>{children}</span>
+          {rightIcon}
+        </span>
+        {loading && (
+          <span className="absolute inset-0 inline-flex items-center justify-center" aria-hidden="true">
+            <Loading03Icon size={ICON_SIZE[size]} className="animate-spin" />
+          </span>
         )}
-        <span>{children}</span>
-        {!loading && rightIcon}
       </button>
     );
   }
