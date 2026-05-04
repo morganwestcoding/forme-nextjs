@@ -40,6 +40,22 @@ html {
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
+
+    /* Semantic status tokens — used by Button success/danger variants and
+       throughout the app for booked/pending/error states. Keep in sync
+       with the dark-mode block below. */
+    --success: 142 71% 45%;        /* emerald-600 */
+    --success-foreground: 0 0% 100%;
+    --success-soft: 142 76% 96%;   /* emerald-50  */
+    --success-soft-foreground: 142 72% 29%; /* emerald-700 */
+    --warning: 38 92% 50%;         /* amber-500  */
+    --warning-foreground: 24 10% 10%;
+    --warning-soft: 48 96% 89%;    /* amber-100  */
+    --warning-soft-foreground: 32 95% 44%;  /* amber-700 */
+    --danger: 0 72% 51%;           /* rose-500   */
+    --danger-foreground: 0 0% 100%;
+    --danger-soft: 0 86% 97%;      /* rose-50    */
+    --danger-soft-foreground: 0 74% 42%;    /* rose-700  */
   }
 
   /* Dark mode — stone-scale */
@@ -63,6 +79,19 @@ html {
     --border: 12 6% 15%;
     --input: 12 6% 15%;
     --ring: 24 5% 64%;
+
+    --success: 142 64% 38%;
+    --success-foreground: 0 0% 100%;
+    --success-soft: 142 35% 14%;
+    --success-soft-foreground: 142 60% 70%;
+    --warning: 38 92% 45%;
+    --warning-foreground: 0 0% 0%;
+    --warning-soft: 32 50% 14%;
+    --warning-soft-foreground: 38 90% 70%;
+    --danger: 0 65% 48%;
+    --danger-foreground: 0 0% 100%;
+    --danger-soft: 0 40% 14%;
+    --danger-soft-foreground: 0 80% 75%;
   }
 }
 

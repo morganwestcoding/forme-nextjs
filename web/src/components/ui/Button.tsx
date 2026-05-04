@@ -3,7 +3,17 @@
 import React, { forwardRef } from 'react';
 import { Loading03Icon } from 'hugeicons-react';
 
-type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
+type Variant =
+  | 'primary'
+  | 'secondary'
+  | 'outline'
+  | 'ghost'
+  | 'destructive'
+  | 'success'
+  | 'success-soft'
+  | 'danger-soft'
+  | 'warning-soft'
+  | 'link';
 type Size = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
@@ -26,7 +36,17 @@ const VARIANT_CLASSES: Record<Variant, string> = {
   ghost:
     'bg-transparent text-stone-700 hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-800',
   destructive:
-    'bg-rose-500 text-white hover:bg-rose-600 shadow-glow-danger',
+    'bg-danger text-danger-foreground hover:opacity-90 shadow-glow-danger',
+  success:
+    'bg-success text-success-foreground hover:opacity-90',
+  'success-soft':
+    'bg-success-soft text-success-soft-foreground hover:opacity-90',
+  'danger-soft':
+    'bg-danger-soft text-danger-soft-foreground hover:opacity-90',
+  'warning-soft':
+    'bg-warning-soft text-warning-soft-foreground hover:opacity-90',
+  link:
+    'bg-transparent text-stone-400 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300 shadow-none',
 };
 
 const SIZE_CLASSES: Record<Size, string> = {
@@ -63,18 +83,28 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const isDisabled = disabled || loading;
 
+    // The link variant is inline-text-shaped and skips height/padding from
+    // SIZE_CLASSES — it sizes to its content so it can sit beside body text.
+    const isLink = variant === 'link';
+    const sizeClass = isLink
+      ? size === 'sm' ? 'text-[12px]' : size === 'lg' ? 'text-[14px]' : 'text-[13px]'
+      : SIZE_CLASSES[size];
+    const shapeClass = isLink ? '' : 'rounded-xl';
+    const stateClass = isLink
+      ? 'transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed'
+      : 'transition-all duration-200 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100';
+
     return (
       <button
         ref={ref}
         disabled={isDisabled}
         aria-busy={loading || undefined}
         className={`
-          relative inline-flex items-center justify-center font-medium rounded-xl
-          transition-all duration-200 active:scale-[0.98]
-          disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
+          relative inline-flex items-center justify-center font-medium ${shapeClass}
+          ${stateClass}
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900 focus-visible:ring-offset-2
           ${VARIANT_CLASSES[variant]}
-          ${SIZE_CLASSES[size]}
+          ${sizeClass}
           ${fullWidth ? 'w-full' : ''}
           ${className}
         `}
