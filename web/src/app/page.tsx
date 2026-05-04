@@ -2,6 +2,7 @@ import React from 'react';
 import getCurrentUser from './actions/getCurrentUser';
 import getPosts, { IPostsParams } from './actions/getPost';
 import getListings from './actions/getListings';
+import getIndependentWorkers from './actions/getIndependentWorkers';
 import getShops, { IShopsParams } from './actions/getShops';
 import { useCategoryStore } from './hooks/useCategoryStore';
 import DiscoverClient from '@/components/DiscoverClient';
@@ -33,7 +34,7 @@ const Discover = async ({ searchParams }: PostProps) => {
     limit: 20,
   };
 
-  const [posts, currentUser, listings, shops] = await Promise.all([
+  const [posts, currentUser, listings, shops, independents] = await Promise.all([
     getPosts({
       ...searchParams,
       category: categoryToUse,
@@ -42,10 +43,17 @@ const Discover = async ({ searchParams }: PostProps) => {
     getCurrentUser().catch(() => null),
     getListings(listingParams).catch(() => []),
     getShops(shopsParams).catch(() => []),
+    getIndependentWorkers().catch(() => []),
   ]);
 
   const safeListings: SafeListing[] = Array.isArray(listings) ? listings : [];
-  const employees = safeListings.flatMap((listing: SafeListing) => listing.employees || []);
+  // Merge employees from real listings with independents (whose shell listings
+  // are filtered out of safeListings — see getListings.ts). Without this merge
+  // independents would never appear on Discover.
+  const employees = [
+    ...safeListings.flatMap((listing: SafeListing) => listing.employees || []),
+    ...independents,
+  ];
   const bookableListings = safeListings.filter((l) => !l.academyId);
 
   return (

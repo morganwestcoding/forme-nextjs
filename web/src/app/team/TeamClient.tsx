@@ -3,7 +3,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { SafeUser } from '@/app/types';
 import Button from '@/components/ui/Button';
 import { TeamData, TeamMember, TeamBooking } from '@/app/actions/getTeamData';
@@ -46,21 +45,34 @@ const StatusBadge = ({ status }: { status: string }) => {
 
 const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
   const router = useRouter();
-  const { status } = useSession();
   const inboxModal = useInboxModal();
 
   // Client-side fetch team data
   const [teamData, setTeamData] = useState<TeamData | null>(null);
   const [teamLoading, setTeamLoading] = useState(true);
+  const [teamError, setTeamError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/team/data')
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (!r.ok) {
+          const body = await r.json().catch(() => null);
+          throw new Error(body?.error || `Failed to load team data (${r.status})`);
+        }
+        return r.json();
+      })
       .then((data) => {
+        // Defensive: only accept the response if it has the expected shape.
+        // The error route returns `{ error: ... }` which would otherwise pass
+        // the truthy check below and crash the destructure.
+        if (!data || !Array.isArray(data.members) || !Array.isArray(data.listings)) {
+          throw new Error('Unexpected response shape');
+        }
         setTeamData(data);
         setTeamLoading(false);
       })
-      .catch(() => {
+      .catch((err) => {
+        setTeamError(err?.message || 'Failed to load');
         setTeamLoading(false);
       });
   }, []);
@@ -361,9 +373,31 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
     }
   }, [activeTab, clientsLoaded, loadClients]);
 
-  // Guard against sign-out re-render
-  if (!currentUser || status === 'unauthenticated') {
+  // currentUser is required by the page (page.tsx redirects if missing) — only
+  // bail if the prop is somehow absent. Don't gate on `status === 'unauthenticated'`
+  // here: useSession can briefly report unauthenticated on first paint before the
+  // session cookie is recognized, and the page-level auth check has already passed.
+  if (!currentUser) {
     return null;
+  }
+
+  // Surface fetch errors instead of rendering blank — error.tsx is for thrown
+  // render errors, not soft API failures.
+  if (teamError) {
+    return (
+      <Container>
+        <div className="mt-8 pb-16 text-center">
+          <p className="text-[15px] font-medium text-stone-900 dark:text-stone-100">Couldn&apos;t load Teammate Central</p>
+          <p className="mt-1 text-[13px] text-stone-500 dark:text-stone-400">{teamError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 text-[13px] text-stone-700 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
+          >
+            Try again
+          </button>
+        </div>
+      </Container>
+    );
   }
 
   // Inline skeleton while loading team data

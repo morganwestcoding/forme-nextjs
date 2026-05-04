@@ -23,7 +23,11 @@ interface WorkerCardProps {
     imageSrc: string;
     category: string;
   };
-  listing: SafeListing;
+  // Optional: independent providers don't have a real storefront — pass nothing
+  // (or an undefined listing) and the card falls back to user/employee fields only.
+  // Display data from `listing` (services, category) is intentionally never read
+  // when employee.isIndependent is true.
+  listing?: SafeListing;
   currentUser?: SafeUser | null;
   onFollow?: () => void;
   onBook?: () => void;
@@ -76,7 +80,10 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   const [imageError, setImageError] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
-  const { hasFavorited, toggleFavorite } = useFavorite({ listingId: listing.id, currentUser });
+  // Use employee.listingId so the favorite hook works even for independents
+  // (whose shell listing object is intentionally not passed in).
+  const favoriteListingId = listing?.id || employee.listingId;
+  const { hasFavorited, toggleFavorite } = useFavorite({ listingId: favoriteListingId, currentUser });
   const workerShareUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/profile/${employee.userId}`
     : `/profile/${employee.userId}`;
@@ -115,8 +122,12 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   const shouldShowImage = profileImage && !imageError;
   const rating = employee.rating ?? 5.0;
 
-  // Get price range from listing services
-  const prices = listing.services?.map(s => s.price).filter(p => p > 0) || [];
+  // Price range comes from the parent listing's services. For independents the
+  // shell listing is intentionally NOT passed in, so prices stay hidden here —
+  // they're sourced elsewhere (worker profile / intake), not from the shell.
+  const prices = !employee.isIndependent
+    ? listing?.services?.map(s => s.price).filter(p => p > 0) || []
+    : [];
   const minPrice = prices.length > 0 ? Math.min(...prices) : null;
   const maxPrice = prices.length > 0 ? Math.max(...prices) : null;
   const priceRange = minPrice !== null
@@ -284,13 +295,20 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
 
       {/* Info */}
       <div className="flex flex-col justify-center min-w-0 flex-1">
-        {/* Category — editorial cursive */}
-        {(employee.jobTitle || employee.user?.jobTitle || listing.category) && (
-          <p className="text-[11px] text-stone-400 dark:text-stone-500 leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
-            {employee.jobTitle || employee.user?.jobTitle || listing.category}
-            {isSample && <span className="text-amber-600 dark:text-amber-500"> · sample</span>}
-          </p>
-        )}
+        {/* Category — editorial cursive. Falls back to the listing's category
+            ONLY for non-independents; independents must never display data
+            sourced from their hidden shell listing. */}
+        {(() => {
+          const fallbackCategory = !employee.isIndependent ? listing?.category : null;
+          const label = employee.jobTitle || employee.user?.jobTitle || fallbackCategory;
+          if (!label) return null;
+          return (
+            <p className="text-[11px] text-stone-400 dark:text-stone-500 leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
+              {label}
+              {isSample && <span className="text-amber-600 dark:text-amber-500"> · sample</span>}
+            </p>
+          );
+        })()}
 
         {/* Name */}
         <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.01em] leading-tight line-clamp-2 mt-1.5">

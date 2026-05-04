@@ -26,13 +26,13 @@ import useNotificationsModal from '@/app/hooks/useNotificationsModal';
 import useLocationModal from '@/app/hooks/useLocationModal';
 
 interface DiscoverClientProps {
-  initialPosts?: SafePost[];
+  initialPosts: SafePost[];
   currentUser: SafeUser | null;
   categoryToUse?: string;
-  listings?: SafeListing[];
-  allListingsForLookup?: SafeListing[];
-  employees?: SafeEmployee[];
-  shops?: SafeShop[];
+  listings: SafeListing[];
+  allListingsForLookup: SafeListing[];
+  employees: SafeEmployee[];
+  shops: SafeShop[];
 }
 
 const FADE_OUT_DURATION = 200;
@@ -71,50 +71,22 @@ function shuffleArray<T>(array: T[], seed?: number): T[] {
 }
 
 const DiscoverClient: React.FC<DiscoverClientProps> = ({
-  initialPosts: serverPosts,
+  initialPosts,
   currentUser,
   categoryToUse,
-  listings: serverListings,
-  allListingsForLookup: serverAllListings,
-  employees: serverEmployees,
-  shops: serverShops,
+  listings: rawListings,
+  allListingsForLookup,
+  employees,
+  shops,
 }) => {
-  // Client-side data fetching when no server data provided
-  const [fetchedData, setFetchedData] = useState<{
-    posts: SafePost[];
-    listings: SafeListing[];
-    employees: SafeEmployee[];
-    shops: SafeShop[];
-  } | null>(
-    serverPosts ? { posts: serverPosts, listings: serverListings || [], employees: serverEmployees || [], shops: serverShops || [] } : null
+  // Independent workers don't get a storefront card — their shell listing is
+  // already filtered server-side; this is defense-in-depth in case any leaks
+  // through. They show up as a WorkerCard only.
+  const listings = rawListings.filter(
+    (l: SafeListing) => !l.academyId && !l.employees?.some(e => e.isIndependent)
   );
 
-  useEffect(() => {
-    if (serverPosts) return;
-    Promise.all([
-      fetch('/api/post/list?filter=for-you').then(r => r.json()),
-      fetch('/api/listings?includeAcademy=true').then(r => r.json()),
-      fetch('/api/shops?limit=20').then(r => r.json()),
-    ])
-      .then(([posts, listingsRes, shops]) => {
-        const allListings: SafeListing[] = Array.isArray(listingsRes) ? listingsRes : (listingsRes?.listings || []);
-        const emps = allListings.flatMap((l: SafeListing) => l.employees || []);
-        setFetchedData({ posts, listings: allListings, employees: emps, shops });
-      })
-      .catch(() => setFetchedData({ posts: [], listings: [], employees: [], shops: [] }));
-  }, [serverPosts]);
-
-  const isLoadingData = fetchedData === null;
-  const initialPosts = fetchedData?.posts || [];
-  // Independent workers don't get a storefront card — their listing is hidden from
-  // ListingCard rails; they show up as a WorkerCard only.
-  const listings = fetchedData?.listings.filter(
-    (l: SafeListing) => !l.academyId && !l.employees?.some(e => e.isIndependent)
-  ) || [];
-  const employees = fetchedData?.employees || [];
-  const shops = fetchedData?.shops || [];
-
-  const listingsForLookup = serverAllListings ?? fetchedData?.listings ?? listings;
+  const listingsForLookup = allListingsForLookup;
 
   const { viewMode, setViewMode } = useViewMode();
   const isSidebarCollapsed = useSidebarState();
@@ -417,7 +389,9 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
         items = listingsToUse.map(listing => ({ type: 'listing' as const, data: listing }));
       } else if (filterInfo.typeFilter === 'professionals') {
         items = employeesToUse.map(employee => {
-          const listing = listingsForLookup.find(l => l.id === employee.listingId) || listingsForLookup[0];
+          const listing = !employee.isIndependent
+            ? (listingsForLookup.find(l => l.id === employee.listingId) || undefined)
+            : undefined;
           return { type: 'employee' as const, data: employee, listingContext: listing };
         });
       } else if (filterInfo.typeFilter === 'shops') {
@@ -428,7 +402,9 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
         ...postsToUse.map(post => ({ type: 'post' as const, data: post })),
         ...listingsToUse.map(listing => ({ type: 'listing' as const, data: listing })),
         ...employeesToUse.map(employee => {
-          const listing = listingsForLookup.find(l => l.id === employee.listingId) || listingsForLookup[0];
+          const listing = !employee.isIndependent
+            ? (listingsForLookup.find(l => l.id === employee.listingId) || undefined)
+            : undefined;
           return { type: 'employee' as const, data: employee, listingContext: listing };
         }),
         ...shopsToUse.map(shop => ({ type: 'shop' as const, data: shop })),
@@ -442,160 +418,14 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
     <ClientProviders>
       <div className="min-h-screen">
         <Container>
-          {/* Inline skeleton — renders in same Container as real content */}
-          {isLoadingData && (
-            <div>
-              {/* ── Banner skeleton (matches aspect-[4/1] rounded-2xl + 3 dots) ── */}
-              <div className="mt-8">
-                <div className="rounded-2xl shadow-elevation-2 animate-pulse bg-stone-200/60 dark:bg-stone-800/60 w-full aspect-[4/1]" />
-                <div className="flex gap-1.5 mt-3 justify-center items-center">
-                  <div className="h-1.5 w-4 rounded-full animate-pulse bg-stone-300/60 dark:bg-stone-700/60" />
-                  <div className="h-1.5 w-1.5 rounded-full animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                  <div className="h-1.5 w-1.5 rounded-full animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                </div>
-              </div>
-
-              {/* ── Shop By Category (matches SectionHeader mt-8 mb-6 + 9 circles gap-6) ── */}
-              <div className="mt-8 mb-6">
-                <div className="flex items-center justify-between">
-                  <div className="h-7 w-48 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                </div>
-              </div>
-              <div className="flex gap-6 overflow-x-hidden pb-2 pl-4 pr-4 -ml-4">
-                {Array.from({ length: 9 }).map((_, i) => (
-                  <div key={i} className="flex flex-col items-center gap-2 shrink-0">
-                    <div className="w-[100px] h-[100px] rounded-full border-2 border-stone-200 dark:border-stone-700 animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                    <div className="h-3.5 w-14 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                  </div>
-                ))}
-              </div>
-
-              {/* ── Posts We Think You'll Love (SectionHeader + grid-cols-7 grid-rows-2 gap-0.5 rounded-xl) ── */}
-              <div className="mt-8 mb-6">
-                <div className="flex items-center justify-between">
-                  <div className="h-7 w-72 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                  <div className="flex items-center gap-1 ml-4">
-                    <div className="h-4 w-14 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-7 grid-rows-2 gap-0.5 rounded-xl overflow-hidden shadow-elevation-1">
-                {Array.from({ length: 14 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="w-full overflow-hidden bg-stone-100 dark:bg-stone-800 animate-pulse"
-                    style={{ aspectRatio: '5 / 6', boxShadow: 'inset 0 0 30px rgba(0,0,0,0.08), inset 0 0 6px rgba(0,0,0,0.04)' }}
-                  />
-                ))}
-              </div>
-
-              {/* ── Local Businesses (SectionHeader + ListingCard horizontal grid) ── */}
-              <div className="mt-8 mb-6">
-                <div className="flex items-center justify-between">
-                  <div className="h-7 w-80 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                  <div className="flex items-center gap-1 ml-4">
-                    <div className="h-4 w-14 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-1">
-                {Array.from({ length: 9 }).map((_, i) => (
-                  <div key={i} className="rounded-2xl p-3 -mx-3 flex flex-row gap-4">
-                    {/* 120x120 rounded-xl image */}
-                    <div className="relative overflow-hidden rounded-xl flex-shrink-0 w-[120px] h-[120px] animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                    {/* Text column matching ListingCard: category italic (11px) → title (15px 2 lines) → location (11px) → rating row (11px with star) */}
-                    <div className="flex flex-col justify-center min-w-0 flex-1">
-                      <div className="h-2.5 w-16 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '3px' }} />
-                      <div className="h-4 w-4/5 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '2px' }} />
-                      <div className="h-4 w-3/5 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '6px' }} />
-                      <div className="h-2.5 w-24 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '8px' }} />
-                      <div className="flex items-center gap-1">
-                        <div className="h-2.5 w-2.5 rounded-full animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                        <div className="h-2.5 w-8 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                        <div className="h-2.5 w-px bg-stone-200 dark:bg-stone-800 mx-1" />
-                        <div className="h-2.5 w-16 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* ── Trending Professionals (same grid, same ListingCard shape for WorkerCards) ── */}
-              <div className="mt-8 mb-6">
-                <div className="flex items-center justify-between">
-                  <div className="h-7 w-60 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                  <div className="flex items-center gap-1 ml-4">
-                    <div className="h-4 w-14 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-1">
-                {Array.from({ length: 9 }).map((_, i) => (
-                  <div key={i} className="rounded-2xl p-3 -mx-3 flex flex-row gap-4">
-                    <div className="relative overflow-hidden rounded-xl flex-shrink-0 w-[120px] h-[120px] animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                    <div className="flex flex-col justify-center min-w-0 flex-1">
-                      <div className="h-2.5 w-16 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '3px' }} />
-                      <div className="h-4 w-4/5 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '2px' }} />
-                      <div className="h-4 w-3/5 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '6px' }} />
-                      <div className="h-2.5 w-24 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '8px' }} />
-                      <div className="flex items-center gap-1">
-                        <div className="h-2.5 w-2.5 rounded-full animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                        <div className="h-2.5 w-8 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* ── Recommended Shops (same grid, ShopCard shape: 120x120 img + text + 4 product thumbs) ── */}
-              <div className="mt-8 mb-6">
-                <div className="flex items-center justify-between">
-                  <div className="h-7 w-56 rounded-md animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                  <div className="flex items-center gap-1 ml-4">
-                    <div className="h-4 w-14 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-1 pb-8">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="group">
-                    {/* Top row: 120x120 image + info side by side (matches ShopCard) */}
-                    <div className="flex flex-row gap-3">
-                      <div className="relative overflow-hidden rounded-xl flex-shrink-0 w-[120px] h-[120px] animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                      <div className="flex flex-col justify-center min-w-0">
-                        {/* title text-[15px] font-semibold */}
-                        <div className="h-4 w-32 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '4px' }} />
-                        {/* location text-[11px] */}
-                        <div className="h-2.5 w-24 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" style={{ marginBottom: '6px' }} />
-                        {/* rating row: star + number */}
-                        <div className="flex items-center gap-1">
-                          <div className="h-2.5 w-2.5 rounded-full animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                          <div className="h-2.5 w-8 rounded animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                        </div>
-                      </div>
-                    </div>
-                    {/* 4 product circles below — w-9 h-9 rounded-xl, gap-1.5, mt-2.5 */}
-                    <div className="flex items-center gap-1.5 mt-2.5">
-                      {Array.from({ length: 4 }).map((_, j) => (
-                        <div key={j} className="w-9 h-9 rounded-xl flex-shrink-0 animate-pulse bg-stone-200/60 dark:bg-stone-800/60" />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Editorial Banner — fades out when filtered */}
-          {!isLoadingData && (
-            <EditorialBanner
-              id="wt-banner"
-              banners={BANNERS}
-              hidden={filterInfo.isFiltered}
-            />
-          )}
+          <EditorialBanner
+            id="wt-banner"
+            banners={BANNERS}
+            hidden={filterInfo.isFiltered}
+          />
 
-          {!isLoadingData && <>
+          <>
           {/* Shop By Category */}
           <div id="wt-categories">
             <SectionHeader
@@ -730,7 +560,11 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                     />
                     <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 transition-all duration-300`}>
                       {employees.map((employee, idx) => {
-                        const listing = listingsForLookup.find(l => l.id === employee.listingId) || listingsForLookup[0];
+                        // Independents have no real listing — never pull from
+                        // the shell. Lookup is only performed for real employees.
+                        const listing = !employee.isIndependent
+                          ? (listingsForLookup.find(l => l.id === employee.listingId) || undefined)
+                          : undefined;
                         const imageSrc = listing?.imageSrc || (Array.isArray(listing?.galleryImages) ? listing.galleryImages[0] : undefined) || placeholderDataUri(listing?.title || 'Listing');
 
                         return (
@@ -892,7 +726,9 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           />
                           <div className={`grid ${gridColsClass} gap-x-8 gap-y-1 transition-all duration-300`}>
                             {currentEmployees.slice(0, 11).map((employee, idx) => {
-                              const listing = listingsForLookup.find(l => l.id === employee.listingId) || listingsForLookup[0];
+                              const listing = !employee.isIndependent
+                                ? (listingsForLookup.find(l => l.id === employee.listingId) || undefined)
+                                : undefined;
                               const imageSrc = listing?.imageSrc || (Array.isArray(listing?.galleryImages) ? listing.galleryImages[0] : undefined) || placeholderDataUri(listing?.title || 'Listing');
 
                               return (
@@ -1049,7 +885,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
             )}
           </div>
         </div>
-        </>}
+        </>
         </Container>
       </div>
 

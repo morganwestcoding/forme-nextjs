@@ -125,8 +125,11 @@ export default function SuccessPage() {
     placeholderDataUri(reservation?.listing?.title || 'Booking');
 
   return (
-    <div className="min-h-screen bg-stone-50 dark:bg-stone-900">
-      <div className="max-w-xl mx-auto px-4 sm:px-6 pt-12 sm:pt-20 pb-16">
+    // Vertically center the confirmation card on the viewport so the user
+    // lands looking right at it after the Stripe redirect. Page scrolls
+    // naturally when content overflows on shorter viewports.
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-900 flex items-center justify-center">
+      <div className="w-full max-w-xl mx-auto px-4 sm:px-6 py-12">
         {/* Confirmation header */}
         <div className="text-center mb-8">
           <div

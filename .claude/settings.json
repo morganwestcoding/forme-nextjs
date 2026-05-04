@@ -10,7 +10,9 @@
       "Bash(grep -r \"push.*reserve\\\\|push.*\\\\`/reserve\" /Users/greg/Desktop/forme/web/src --include=\"*.tsx\" --include=\"*.ts\" -n)",
       "Bash(tee /tmp/tsc.log)",
       "Bash(ps -p 866 -o command=)",
-      "Bash(ps -p 72003 -o command=)"
+      "Bash(ps -p 72003 -o command=)",
+      "Bash(grep -E \"\\\\.\\(tsx?|graphql|gql\\)$\")",
+      "Bash(awk 'NR==421,NR==563' /Users/greg/Desktop/forme/web/src/components/DiscoverClient.tsx)"
     ]
   }
 }

@@ -57,8 +57,17 @@ export async function GET(request: Request) {
   // they're internal containers, not real storefronts. (See getListings.ts.)
   where.employees = { none: { isIndependent: true } };
 
+  // Shell listings for independents — fetched separately so we can surface the
+  // *worker* without ever exposing the shell listing itself to the client.
+  // Category filter intentionally not applied here: independents have no listing
+  // category to match against, and the Discover page filters by category client-side.
+  const workerWhere: any = {
+    academyId: { isSet: false },
+    employees: { some: { isIndependent: true, isActive: true } },
+  };
+
   try {
-    const [listings, totalCount] = await Promise.all([
+    const [listings, totalCount, workerListings] = await Promise.all([
       prisma.listing.findMany({
         where,
         skip,
@@ -72,6 +81,26 @@ export async function GET(request: Request) {
         },
       }),
       prisma.listing.count({ where }),
+      prisma.listing.findMany({
+        where: workerWhere,
+        select: {
+          employees: {
+            where: { isIndependent: true, isActive: true },
+            select: {
+              id: true, fullName: true, jobTitle: true, listingId: true,
+              userId: true, serviceIds: true, isActive: true, isIndependent: true,
+              createdAt: true,
+              user: {
+                select: {
+                  id: true, name: true, image: true, imageSrc: true,
+                  backgroundImage: true, userType: true, jobTitle: true,
+                  academy: { select: { name: true } },
+                },
+              },
+            },
+          },
+        },
+      }),
     ]);
 
     // Map employee.user.academy.name → employee.user.academyName so WorkerCard can read it
@@ -86,8 +115,39 @@ export async function GET(request: Request) {
       })),
     }));
 
+    // Flatten independents into a SafeEmployee-shaped array. listingTitle/
+    // listingCategory are intentionally blank — the shell listing must never
+    // surface client-side, even as a label.
+    const workers = workerListings.flatMap((l: any) =>
+      (l.employees || []).map((e: any) => ({
+        id: e.id,
+        fullName: e.fullName,
+        jobTitle: e.jobTitle || null,
+        listingId: e.listingId,
+        userId: e.userId,
+        serviceIds: e.serviceIds || [],
+        isActive: e.isActive,
+        isIndependent: true,
+        createdAt: e.createdAt.toISOString(),
+        listingTitle: '',
+        listingCategory: '',
+        rating: null,
+        user: {
+          id: e.user?.id,
+          name: e.user?.name ?? null,
+          image: e.user?.image ?? null,
+          imageSrc: e.user?.imageSrc ?? null,
+          backgroundImage: e.user?.backgroundImage ?? null,
+          userType: e.user?.userType ?? null,
+          jobTitle: e.user?.jobTitle ?? null,
+          academyName: e.user?.academy?.name ?? null,
+        },
+      }))
+    );
+
     return NextResponse.json({
       listings: mapped,
+      workers,
       totalCount,
       hasMore: skip + listings.length < totalCount,
     });

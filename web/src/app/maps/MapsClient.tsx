@@ -45,6 +45,11 @@ interface MapItem {
   ratingCount?: number;
   distance?: number;
   workers: MapWorker[];
+  // Discriminates a real business storefront from an independent provider.
+  // Independents render as their own pin/row but route to /profile, not /listings.
+  kind: 'listing' | 'worker';
+  // Only set when kind === 'worker' — the user's profile id for the detail link.
+  userId?: string;
 }
 
 function haversine(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -168,14 +173,21 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
     const r = await fetch(url);
     if (!r.ok) throw new Error(`Map fetch failed (${r.status})`);
     const data = await r.json();
-    const rows = (data.listings || []) as Array<{
+    const listingRows = (data.listings || []) as Array<{
       id: string; title: string; category: string;
       location: string | null; address: string | null;
       imageSrc: string; lat: number; lng: number;
       rating: number | null; ratingCount: number;
       employees?: MapWorker[];
     }>;
-    return rows.map((l) => ({
+    const workerRows = (data.workers || []) as Array<{
+      id: string; userId: string; fullName: string;
+      jobTitle: string | null; image: string | null;
+      location: string; lat: number; lng: number;
+      rating: number | null; ratingCount: number;
+    }>;
+
+    const listings: MapItem[] = listingRows.map((l) => ({
       id: l.id,
       title: l.title,
       image: l.imageSrc,
@@ -186,7 +198,27 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
       rating: l.rating,
       ratingCount: l.ratingCount,
       workers: l.employees || [],
+      kind: 'listing',
     }));
+
+    // Independent workers come through with no real listing — surface them
+    // directly. We prefix the id so it can never collide with a Listing id.
+    const workers: MapItem[] = workerRows.map((w) => ({
+      id: `worker:${w.id}`,
+      title: w.fullName,
+      image: w.image || '',
+      category: w.jobTitle || 'Independent',
+      location: w.location,
+      lng: w.lng,
+      lat: w.lat,
+      rating: w.rating,
+      ratingCount: w.ratingCount,
+      workers: [],
+      kind: 'worker',
+      userId: w.userId,
+    }));
+
+    return [...listings, ...workers];
   }, []);
 
   // Initial load — server returns pre-geocoded rows only. No client-side geocoding fallback.
@@ -906,14 +938,20 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
                       : 'hover:bg-[#FAFAF9] dark:hover:bg-stone-800/60'
                   }`}
                 >
-                  <div className="w-11 h-11 rounded-full overflow-hidden bg-stone-100 dark:bg-stone-800 shrink-0 ring-1 ring-stone-200/80">
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      width={44}
-                      height={44}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="w-11 h-11 rounded-full overflow-hidden bg-stone-100 dark:bg-stone-800 shrink-0 ring-1 ring-stone-200/80 flex items-center justify-center">
+                    {item.image ? (
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        width={44}
+                        height={44}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-[13px] font-medium text-stone-500 dark:text-stone-400">
+                        {item.title.charAt(0).toUpperCase()}
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex-1 min-w-0">
@@ -1019,14 +1057,20 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
             >
               <div className="bg-stone-950/95 backdrop-blur-md rounded-2xl border border-stone-800 overflow-hidden shadow-elevation-4">
                 <div className="flex items-center gap-3 p-3.5">
-                  <div className="w-12 h-12 rounded-xl overflow-hidden bg-stone-800 shrink-0">
-                    <Image
-                      src={selected.image}
-                      alt={selected.title}
-                      width={48}
-                      height={48}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className={`w-12 h-12 ${selected.kind === 'worker' ? 'rounded-full' : 'rounded-xl'} overflow-hidden bg-stone-800 shrink-0 flex items-center justify-center`}>
+                    {selected.image ? (
+                      <Image
+                        src={selected.image}
+                        alt={selected.title}
+                        width={48}
+                        height={48}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-[15px] font-medium text-stone-300">
+                        {selected.title.charAt(0).toUpperCase()}
+                      </span>
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-[14px] font-semibold text-white truncate">{selected.title}</h3>
@@ -1097,7 +1141,13 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
                     Directions
                   </a>
                   <button
-                    onClick={(e) => { e.stopPropagation(); router.push(`/listings/${selected.id}`); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const href = selected.kind === 'worker' && selected.userId
+                        ? `/profile/${selected.userId}`
+                        : `/listings/${selected.id}`;
+                      router.push(href);
+                    }}
                     className="flex-1 py-2 rounded-xl bg-white text-stone-900 hover:bg-stone-100 text-[13px] font-medium transition-colors"
                     aria-label={`View details for ${selected.title}`}
                   >
