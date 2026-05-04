@@ -5,6 +5,12 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import { redirect } from "next/navigation";
 import dynamicImport from "next/dynamic";
 
+export const metadata = {
+  title: 'Subscription',
+  description: 'Manage your ForMe plan',
+  robots: { index: false, follow: false },
+};
+
 const SubscriptionSuccess = dynamicImport(
   () => import("@/components/subscription/SubscriptionSuccess"),
   { ssr: false }

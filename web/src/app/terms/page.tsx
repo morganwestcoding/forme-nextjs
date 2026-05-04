@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Terms of Service | ForMe',
+  title: 'Terms of Service',
   description: 'ForMe Technologies, Inc. Terms of Service',
 };
 

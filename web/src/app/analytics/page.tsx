@@ -6,6 +6,11 @@ import AnalyticsClient from "./AnalyticsClient";
 import { redirect } from "next/navigation";
 import { hasFeature } from "@/app/utils/subscription";
 
+export const metadata = {
+  title: 'Analytics',
+  description: 'Track your business performance',
+  robots: { index: false, follow: false },
+};
 
 const AnalyticsPage = async () => {
   const currentUser = await getCurrentUser();

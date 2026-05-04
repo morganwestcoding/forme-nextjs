@@ -2,7 +2,7 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import MapsClient from './MapsClient';
 
 export const metadata = {
-  title: 'Maps - ForMe',
+  title: 'Maps',
   description: 'Explore listings and workers on the map',
 };
 

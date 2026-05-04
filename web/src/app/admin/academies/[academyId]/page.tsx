@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import getCurrentUser from "@/app/actions/getCurrentUser";
@@ -9,6 +10,15 @@ import AcademyDetailClient from "./AcademyDetailClient";
 interface PageProps {
   params: { academyId: string };
   searchParams: { stripe_connect?: string };
+}
+
+export async function generateMetadata({ params }: { params: { academyId: string } }): Promise<Metadata> {
+  const academy = await getAcademyById(params.academyId).catch(() => null);
+  return {
+    title: academy ? `${academy.name} — Admin` : 'Academy — Admin',
+    description: 'Manage academy details',
+    robots: { index: false, follow: false },
+  };
 }
 
 export default async function AdminAcademyDetailPage({ params, searchParams }: PageProps) {

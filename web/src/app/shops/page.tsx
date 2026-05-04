@@ -5,7 +5,7 @@ import getProducts from '@/app/actions/getProducts';
 import Container from '@/components/Container';
 
 export const metadata = {
-  title: 'Shop - ForMe',
+  title: 'Shop',
   description: 'Discover unique products from our vendors',
 };
 

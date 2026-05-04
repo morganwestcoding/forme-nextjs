@@ -4,6 +4,11 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 import Container from "@/components/Container";
 
+export const metadata = {
+  title: 'Disputes — Admin',
+  description: 'Review and resolve user disputes',
+  robots: { index: false, follow: false },
+};
 
 export default async function AdminDisputesPage() {
   const currentUser = await getCurrentUser();

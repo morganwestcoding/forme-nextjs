@@ -1,3 +1,9 @@
+export const metadata = {
+  title: 'Booking Confirmed',
+  description: 'Your reservation is confirmed',
+  robots: { index: false, follow: false },
+};
+
 // The post-checkout success page is the tail end of the reservation flow,
 // not a regular browsing page — strip the global header/search/breadcrumb
 // chrome with a fixed-inset overlay so the user lands on a clean confirmation

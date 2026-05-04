@@ -5,6 +5,11 @@ import prisma from "@/app/libs/prismadb";
 import Container from "@/components/Container";
 import AdminUserList from "./AdminUserList";
 
+export const metadata = {
+  title: 'Users — Admin',
+  description: 'Manage platform users',
+  robots: { index: false, follow: false },
+};
 
 export default async function AdminUsersPage({
   searchParams,
