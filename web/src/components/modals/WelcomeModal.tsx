@@ -35,6 +35,10 @@ import { SafeUser } from '@/app/types';
 
 const WELCOME_PENDING_KEY = 'forme-welcome-pending';
 
+// Kill switch: set to false to fully suppress the welcome modal auto-open
+// flow (it can still be invoked manually via useWelcomeModal().onOpen()).
+const WELCOME_AUTO_OPEN_ENABLED = false;
+
 type Screen = 'welcome' | 'interests' | 'location' | 'started';
 
 const SCREEN_ORDER: Screen[] = ['welcome', 'interests', 'location', 'started'];
@@ -127,6 +131,10 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
   // Path-gating to '/' keeps the modal from popping mid-checkout on
   // /licensing or /subscription.
   useEffect(() => {
+    if (!WELCOME_AUTO_OPEN_ENABLED) {
+      setHasChecked(true);
+      return;
+    }
     if (!currentUser) {
       setHasChecked(true);
       return;
