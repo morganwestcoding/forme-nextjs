@@ -5,6 +5,9 @@ struct ChatView: View {
     @StateObject private var viewModel = ChatViewModel()
     @EnvironmentObject var authViewModel: AuthViewModel
     @State private var messageText = ""
+    @State private var typingUserName: String?
+    @State private var typingClearTask: Task<Void, Never>?
+    @State private var lastTypingPingAt: Date = .distantPast
     @FocusState private var isInputFocused: Bool
 
     var body: some View {
@@ -22,6 +25,12 @@ struct ChatView: View {
                             )
                             .id(message.id)
                         }
+
+                        if let name = typingUserName {
+                            TypingBubble(name: name, otherUser: conversation.otherUser)
+                                .id("typing-indicator")
+                                .transition(.opacity.combined(with: .move(edge: .bottom)))
+                        }
                     }
                     .padding(.horizontal, ForMe.space3)
                     .padding(.vertical, ForMe.space4)
@@ -31,6 +40,13 @@ struct ChatView: View {
                     if let last = viewModel.messages.last {
                         withAnimation(.easeOut(duration: 0.2)) {
                             proxy.scrollTo(last.id, anchor: .bottom)
+                        }
+                    }
+                }
+                .onChange(of: typingUserName) { _, newValue in
+                    if newValue != nil {
+                        withAnimation(.easeOut(duration: 0.2)) {
+                            proxy.scrollTo("typing-indicator", anchor: .bottom)
                         }
                     }
                 }
@@ -45,7 +61,7 @@ struct ChatView: View {
                 HStack(spacing: 10) {
                     TextField("Message...", text: $messageText, axis: .vertical)
                         .lineLimit(1...4)
-                        .font(.system(size: 15))
+                        .font(ForMe.font(.regular, size: 15))
                         .focused($isInputFocused)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 10)
@@ -78,7 +94,7 @@ struct ChatView: View {
                         size: .small
                     )
                     Text(conversation.otherUser?.name ?? "Chat")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 16))
                         .foregroundColor(ForMe.textPrimary)
                 }
             }
@@ -86,6 +102,52 @@ struct ChatView: View {
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await viewModel.loadMessages(conversationId: conversation.id)
+            try? await APIService.shared.markConversationRead(conversationId: conversation.id)
+        }
+        .onChange(of: messageText) { _, newValue in
+            handleTypingChange(text: newValue)
+        }
+        .onReceive(RealtimeService.shared.messageCreated) { incoming in
+            guard incoming.conversationId == conversation.id else { return }
+            // Skip our own optimistic add — it's already in the list.
+            guard incoming.senderId != authViewModel.currentUser?.id else { return }
+            guard !viewModel.messages.contains(where: { $0.id == incoming.id }) else { return }
+            viewModel.messages.append(incoming)
+            Task { try? await APIService.shared.markConversationRead(conversationId: conversation.id) }
+        }
+        .onReceive(RealtimeService.shared.messagesRead) { conversationId in
+            guard conversationId == conversation.id else { return }
+            for index in viewModel.messages.indices where viewModel.messages[index].senderId == authViewModel.currentUser?.id {
+                viewModel.messages[index].isRead = true
+            }
+        }
+        .onReceive(RealtimeService.shared.typing) { event in
+            guard event.conversationId == conversation.id else { return }
+            guard event.userId != authViewModel.currentUser?.id else { return }
+            withAnimation(.easeOut(duration: 0.2)) {
+                typingUserName = event.userName ?? conversation.otherUser?.name ?? "Someone"
+            }
+            typingClearTask?.cancel()
+            typingClearTask = Task {
+                try? await Task.sleep(nanoseconds: 3_000_000_000)
+                if !Task.isCancelled {
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        typingUserName = nil
+                    }
+                }
+            }
+        }
+    }
+
+    /// Send a typing ping at most once every 3s while the user is composing,
+    /// matching web's debounced behavior.
+    private func handleTypingChange(text: String) {
+        guard !text.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+        let now = Date()
+        guard now.timeIntervalSince(lastTypingPingAt) > 3 else { return }
+        lastTypingPingAt = now
+        Task {
+            try? await APIService.shared.sendTypingPing(conversationId: conversation.id)
         }
     }
 
@@ -116,6 +178,58 @@ struct ChatView: View {
     }
 }
 
+// MARK: - Typing Bubble
+
+struct TypingBubble: View {
+    let name: String
+    var otherUser: CompactUser?
+
+    @State private var phase: Int = 0
+
+    var body: some View {
+        HStack(alignment: .bottom, spacing: 8) {
+            DynamicAvatar(
+                name: otherUser?.name ?? name,
+                imageUrl: otherUser?.image,
+                size: .tiny
+            )
+            .padding(.bottom, 2)
+
+            HStack(spacing: 4) {
+                ForEach(0..<3, id: \.self) { dot in
+                    Circle()
+                        .fill(ForMe.stone400)
+                        .frame(width: 6, height: 6)
+                        .scaleEffect(phase == dot ? 1.0 : 0.6)
+                        .opacity(phase == dot ? 1.0 : 0.5)
+                }
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .background(ForMe.stone100)
+            .clipShape(ChatBubbleShape(isCurrentUser: false))
+
+            Spacer(minLength: 50)
+        }
+        .padding(.vertical, 2)
+        .onAppear {
+            withAnimation(.easeInOut(duration: 0.6).repeatForever(autoreverses: false)) {
+                phase = (phase + 1) % 3
+            }
+            // The above only animates one transition; drive a timer for the
+            // chained dots so each dot rises in sequence.
+            Task {
+                while !Task.isCancelled {
+                    try? await Task.sleep(nanoseconds: 350_000_000)
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        phase = (phase + 1) % 3
+                    }
+                }
+            }
+        }
+    }
+}
+
 // MARK: - Message Bubble
 
 struct MessageBubble: View {
@@ -138,7 +252,7 @@ struct MessageBubble: View {
 
             VStack(alignment: isCurrentUser ? .trailing : .leading, spacing: 3) {
                 Text(message.content)
-                    .font(.system(size: 15))
+                    .font(ForMe.font(.regular, size: 15))
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
                     .background(isCurrentUser ? ForMe.stone900 : ForMe.stone100)
@@ -147,7 +261,7 @@ struct MessageBubble: View {
 
                 if let dateStr = message.createdAt {
                     Text(formatTime(dateStr))
-                        .font(.system(size: 10))
+                        .font(ForMe.font(.regular, size: 10))
                         .foregroundColor(ForMe.stone400)
                         .padding(.horizontal, 4)
                 }

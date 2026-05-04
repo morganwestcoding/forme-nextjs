@@ -150,10 +150,103 @@ class APIService {
         return response.exists
     }
 
+    /// Request a password-reset email. Always succeeds from the client's view —
+    /// the server intentionally returns the same message regardless of whether
+    /// the email exists, to prevent account enumeration.
+    func requestPasswordReset(email: String) async throws {
+        let body = try encoder.encode(["email": email])
+        let request = try buildRequest(endpoint: "/auth/forgot-password", method: "POST", body: body)
+        let _: PasswordResetResponse = try await perform(request)
+    }
+
+    /// Submit a new password using the token from the reset email. Used when
+    /// iOS handles the deep-link reset flow itself.
+    func resetPassword(token: String, newPassword: String) async throws {
+        let body = try encoder.encode(["token": token, "newPassword": newPassword])
+        let request = try buildRequest(endpoint: "/auth/reset-password", method: "POST", body: body)
+        let _: PasswordResetResponse = try await perform(request)
+    }
+
     // MARK: - Academies
 
     func getAcademies() async throws -> [Academy] {
         let request = try buildRequest(endpoint: "/academies")
+        return try await perform(request)
+    }
+
+    // MARK: - Academy management (admin-only)
+    //
+    // Mirrors /api/academies/[academyId]/services (CRUD) and
+    // /api/academies/[academyId]/stripe-connect/{status,onboard}. All endpoints
+    // require master/admin role server-side; the iOS surface should gate the
+    // entry point, but the server is the source of truth either way.
+
+    func getAcademyServices(academyId: String) async throws -> [Service] {
+        let request = try buildRequest(endpoint: "/academies/\(academyId)/services")
+        return try await perform(request)
+    }
+
+    func createAcademyService(
+        academyId: String,
+        serviceName: String,
+        price: Double,
+        category: String
+    ) async throws -> Service {
+        let body = try encoder.encode(AcademyServiceRequest(
+            serviceName: serviceName,
+            price: price,
+            category: category
+        ))
+        let request = try buildRequest(endpoint: "/academies/\(academyId)/services", method: "POST", body: body)
+        return try await perform(request)
+    }
+
+    /// Partial update — only fields that change need to be passed. Server
+    /// trims strings and re-rounds price.
+    func updateAcademyService(
+        academyId: String,
+        serviceId: String,
+        serviceName: String? = nil,
+        price: Double? = nil,
+        category: String? = nil
+    ) async throws -> Service {
+        var payload: [String: Any] = [:]
+        if let serviceName { payload["serviceName"] = serviceName }
+        if let price { payload["price"] = price }
+        if let category { payload["category"] = category }
+        let body = try JSONSerialization.data(withJSONObject: payload)
+        let request = try buildRequest(
+            endpoint: "/academies/\(academyId)/services/\(serviceId)",
+            method: "PATCH",
+            body: body
+        )
+        return try await perform(request)
+    }
+
+    func deleteAcademyService(academyId: String, serviceId: String) async throws {
+        let request = try buildRequest(
+            endpoint: "/academies/\(academyId)/services/\(serviceId)",
+            method: "DELETE"
+        )
+        let _: EmptyResponse = try await perform(request)
+    }
+
+    /// Stripe Connect status for an academy. Same shape as the per-user
+    /// status endpoint, so we reuse `StripeConnectStatus`.
+    func getAcademyStripeConnectStatus(academyId: String) async throws -> StripeConnectStatus {
+        let request = try buildRequest(endpoint: "/academies/\(academyId)/stripe-connect/status")
+        return try await perform(request)
+    }
+
+    /// Returns a Stripe-hosted onboarding URL for an academy. The web's return
+    /// URL points at `/admin/academies/{id}?stripe_connect=success`; the
+    /// WebView intercepts the redirect on the `stripe_connect=` query so the
+    /// return path doesn't need to be iOS-aware.
+    func createAcademyStripeConnectOnboarding(academyId: String) async throws -> StripeURLResponse {
+        let request = try buildRequest(
+            endpoint: "/academies/\(academyId)/stripe-connect/onboard",
+            method: "POST"
+        )
         return try await perform(request)
     }
 
@@ -365,12 +458,44 @@ class APIService {
         let _: EmptyResponse = try await perform(request)
     }
 
+    /// Issue / request a refund. The server distinguishes role internally:
+    /// owner+admin process the Stripe refund immediately; customers mark it
+    /// "requested" and the owner approves it later. The mobile UI doesn't
+    /// need to know which path it took — the caller just refreshes after.
+    func refundReservation(id: String, reason: String? = nil) async throws -> RefundResponse {
+        let body: Data
+        if let reason {
+            body = try encoder.encode(["reason": reason])
+        } else {
+            body = Data("{}".utf8)
+        }
+        let request = try buildRequest(endpoint: "/reservations/\(id)/refund", method: "POST", body: body)
+        return try await perform(request)
+    }
+
     func cancelReservation(id: String) async throws {
         let request = try buildRequest(endpoint: "/reservations/\(id)", method: "DELETE")
         let _: EmptyResponse = try await perform(request)
     }
 
     // MARK: - Messages
+
+    /// Tell the server the current user is typing. Server emits a TYPING SSE
+    /// event to the conversation's other participants; iOS receives that on
+    /// the RealtimeService stream.
+    func sendTypingPing(conversationId: String) async throws {
+        let body = try encoder.encode(["conversationId": conversationId])
+        let request = try buildRequest(endpoint: "/sse/typing", method: "POST", body: body)
+        let _: EmptyResponse = try await perform(request)
+    }
+
+    /// Mark a conversation's incoming messages as read. Server flips
+    /// `isRead` and emits MESSAGES_READ to the senders.
+    func markConversationRead(conversationId: String) async throws {
+        let body = try encoder.encode(["conversationId": conversationId])
+        let request = try buildRequest(endpoint: "/messages/read", method: "POST", body: body)
+        let _: EmptyResponse = try await perform(request)
+    }
 
     func startConversation(userId: String) async throws -> Conversation {
         let body = try encoder.encode(["userId": userId])
@@ -499,6 +624,30 @@ class APIService {
         return try await perform(request)
     }
 
+    // MARK: - Stripe Connect (vendor payouts)
+
+    /// Whether the user has a connected Stripe Express account and the
+    /// onboarding/charges/payouts flags. The server hits Stripe live, so
+    /// callers should refetch after the user returns from onboarding.
+    func getStripeConnectStatus() async throws -> StripeConnectStatus {
+        let request = try buildRequest(endpoint: "/stripe-connect/status")
+        return try await perform(request)
+    }
+
+    /// Returns a Stripe-hosted onboarding URL; iOS opens it in a WebView and
+    /// listens for the return-URL redirect to know onboarding finished.
+    func createStripeConnectOnboarding() async throws -> StripeURLResponse {
+        let request = try buildRequest(endpoint: "/stripe-connect/onboard", method: "POST")
+        return try await perform(request)
+    }
+
+    /// Returns a Stripe Express dashboard login URL (one-time use). Vendor
+    /// uses this to view payouts, balance, payment history.
+    func openStripeConnectDashboard() async throws -> StripeURLResponse {
+        let request = try buildRequest(endpoint: "/stripe-connect/dashboard", method: "POST")
+        return try await perform(request)
+    }
+
     // MARK: - Favorites
 
     func getFavorites() async throws -> FavoritesResponse {
@@ -543,6 +692,59 @@ class APIService {
     func toggleFollow(userId: String) async throws {
         let request = try buildRequest(endpoint: "/follow/\(userId)", method: "POST")
         let _: EmptyResponse = try await perform(request)
+    }
+
+    // MARK: - Reviews
+
+    /// Web POST /api/reviews. `targetType` is "user" or "listing"; pass the
+    /// matching id. `reservationId` enables the verified-booking badge when
+    /// reviewing a user.
+    func submitReview(
+        rating: Int,
+        comment: String?,
+        targetType: String,
+        targetUserId: String? = nil,
+        targetListingId: String? = nil,
+        reservationId: String? = nil
+    ) async throws -> Review {
+        let body = try encoder.encode(SubmitReviewRequest(
+            rating: rating,
+            comment: comment,
+            targetType: targetType,
+            targetUserId: targetUserId,
+            targetListingId: targetListingId,
+            reservationId: reservationId
+        ))
+        let request = try buildRequest(endpoint: "/reviews", method: "POST", body: body)
+        return try await perform(request)
+    }
+
+    func getListingReviews(listingId: String, limit: Int = 20, offset: Int = 0) async throws -> [Review] {
+        let items = [
+            URLQueryItem(name: "targetType", value: "listing"),
+            URLQueryItem(name: "targetListingId", value: listingId),
+            URLQueryItem(name: "limit", value: "\(limit)"),
+            URLQueryItem(name: "offset", value: "\(offset)"),
+        ]
+        let request = try buildRequest(endpoint: "/reviews", queryItems: items)
+        return try await perform(request)
+    }
+
+    func getUserReviews(userId: String, limit: Int = 20, offset: Int = 0) async throws -> [Review] {
+        let items = [
+            URLQueryItem(name: "targetType", value: "user"),
+            URLQueryItem(name: "targetUserId", value: userId),
+            URLQueryItem(name: "limit", value: "\(limit)"),
+            URLQueryItem(name: "offset", value: "\(offset)"),
+        ]
+        let request = try buildRequest(endpoint: "/reviews", queryItems: items)
+        return try await perform(request)
+    }
+
+    /// Toggles the current user's helpful vote on a review.
+    func toggleReviewHelpful(reviewId: String) async throws -> ReviewHelpfulResponse {
+        let request = try buildRequest(endpoint: "/reviews/\(reviewId)/helpful", method: "POST")
+        return try await perform(request)
     }
 
     // MARK: - Notifications
@@ -610,10 +812,127 @@ class APIService {
         let _: EmptyResponse = try await perform(request)
     }
 
+    // MARK: - Team Pay
+    //
+    // Mirrors /api/team/pay/{agreement,balance,periods,payout}. All endpoints
+    // are scoped per-employee. The server enforces role:
+    //   • agreement PUT, period POST/PATCH, payout PATCH → owner only
+    //   • payout POST → employee only
+    //   • balance GET, periods GET, payout GET, agreement GET → owner OR self
+
+    /// The employee's pay agreement, or nil when none has been set up yet.
+    func getPayAgreement(employeeId: String) async throws -> TeamPayAgreement? {
+        let queryItems = [URLQueryItem(name: "employeeId", value: employeeId)]
+        let request = try buildRequest(endpoint: "/team/pay/agreement", queryItems: queryItems)
+        let response: PayAgreementResponse = try await perform(request)
+        return response.agreement
+    }
+
+    /// Owner-only. Upserts the pay agreement. For commission, pass
+    /// `splitPercent` and leave rental fields nil. For chair_rental, pass
+    /// `rentalAmount` + `rentalFrequency` and leave splitPercent nil.
+    func setPayAgreement(
+        employeeId: String,
+        type: String,
+        splitPercent: Double? = nil,
+        rentalAmount: Double? = nil,
+        rentalFrequency: String? = nil,
+        autoApprovePayout: Bool
+    ) async throws -> TeamPayAgreement {
+        let payload = PayAgreementRequest(
+            employeeId: employeeId,
+            type: type,
+            splitPercent: splitPercent,
+            rentalAmount: rentalAmount,
+            rentalFrequency: rentalFrequency,
+            autoApprovePayout: autoApprovePayout
+        )
+        let body = try encoder.encode(payload)
+        let request = try buildRequest(endpoint: "/team/pay/agreement", method: "PUT", body: body)
+        let response: PayAgreementResponse = try await perform(request)
+        guard let agreement = response.agreement else {
+            throw APIError.serverError("Agreement save returned empty response")
+        }
+        return agreement
+    }
+
+    func getPayBalance(employeeId: String) async throws -> PayBalance {
+        let queryItems = [URLQueryItem(name: "employeeId", value: employeeId)]
+        let request = try buildRequest(endpoint: "/team/pay/balance", queryItems: queryItems)
+        return try await perform(request)
+    }
+
+    func getPayPeriods(employeeId: String) async throws -> [PayPeriod] {
+        let queryItems = [URLQueryItem(name: "employeeId", value: employeeId)]
+        let request = try buildRequest(endpoint: "/team/pay/periods", queryItems: queryItems)
+        let response: PayPeriodsResponse = try await perform(request)
+        return response.periods
+    }
+
+    /// Owner-only. Generates the current period for a chair-rental employee
+    /// (server picks the date range based on the agreement frequency).
+    func generatePayPeriod(employeeId: String) async throws -> PayPeriod {
+        let body = try encoder.encode(GeneratePayPeriodRequest(employeeId: employeeId))
+        let request = try buildRequest(endpoint: "/team/pay/periods", method: "POST", body: body)
+        return try await perform(request)
+    }
+
+    /// Owner-only. Waive a charged period (or recharge a waived one).
+    func updatePayPeriodStatus(periodId: String, action: String, reason: String? = nil) async throws -> PayPeriodActionResponse {
+        let body = try encoder.encode(PayPeriodActionRequest(periodId: periodId, action: action, reason: reason))
+        let request = try buildRequest(endpoint: "/team/pay/periods", method: "PATCH", body: body)
+        return try await perform(request)
+    }
+
+    func getPayouts(employeeId: String) async throws -> [Payout] {
+        let queryItems = [URLQueryItem(name: "employeeId", value: employeeId)]
+        let request = try buildRequest(endpoint: "/team/pay/payout", queryItems: queryItems)
+        let response: PayoutsResponse = try await perform(request)
+        return response.payouts
+    }
+
+    /// Employee-only. Requests a payout against the available balance.
+    /// Server requires the user's stripeConnectPayoutsEnabled flag — caller
+    /// should gate the UI on that before hitting this.
+    func requestPayout(employeeId: String, amount: Double, note: String? = nil) async throws -> PayoutCreateResponse {
+        let body = try encoder.encode(RequestPayoutRequest(employeeId: employeeId, amount: amount, note: note))
+        let request = try buildRequest(endpoint: "/team/pay/payout", method: "POST", body: body)
+        return try await perform(request)
+    }
+
+    /// Owner-only. Approves a pending payout (triggers Stripe transfer) or
+    /// denies it with an optional note.
+    func decidePayout(payoutId: String, action: String, note: String? = nil) async throws -> PayoutDecideResponse {
+        let body = try encoder.encode(PayoutDecideRequest(payoutId: payoutId, action: action, note: note))
+        let request = try buildRequest(endpoint: "/team/pay/payout", method: "PATCH", body: body)
+        return try await perform(request)
+    }
+
     func createPost(_ post: CreatePostRequest) async throws -> Post {
         let body = try encoder.encode(post)
         let request = try buildRequest(endpoint: "/post", method: "POST", body: body)
         return try await perform(request)
+    }
+
+    /// Owner-only post deletion. Server enforces ownership / admin role.
+    func deletePost(id: String) async throws {
+        let request = try buildRequest(endpoint: "/post/\(id)", method: "DELETE")
+        let _: EmptyResponse = try await perform(request)
+    }
+
+    /// Hide a post from the current user's feed (server adds the user to
+    /// the post's hiddenBy array; subsequent feed fetches filter it out).
+    func hidePost(id: String) async throws {
+        let request = try buildRequest(endpoint: "/postActions/\(id)/hide", method: "POST")
+        let _: EmptyResponse = try await perform(request)
+    }
+
+    /// Mark a post as viewed. Server is idempotent — repeated calls from the
+    /// same user are a no-op, so we don't need client-side dedup beyond not
+    /// firing twice for the exact same paging snap.
+    func markPostView(id: String) async throws {
+        let request = try buildRequest(endpoint: "/post/\(id)/view", method: "POST")
+        let _: EmptyResponse = try await perform(request)
     }
 
     func likePost(postId: String) async throws -> LikeResponse {
@@ -656,6 +975,7 @@ struct CreateListingRequest: Codable {
     var address: String
     var zipCode: String
     var imageSrc: String?
+    var galleryImages: [String]?
 }
 
 struct CreateShopRequest: Codable {
@@ -746,6 +1066,12 @@ struct SubscriptionVerifyResponse: Codable {
         let interval: String?
         let planDisplayName: String?
     }
+}
+
+struct AcademyServiceRequest: Codable {
+    var serviceName: String
+    var price: Double
+    var category: String
 }
 
 struct CreatePostRequest: Codable {

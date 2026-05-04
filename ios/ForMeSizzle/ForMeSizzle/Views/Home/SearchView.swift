@@ -73,7 +73,7 @@ struct SearchView: View {
                     // the list client-side — no debounce, no re-fetch, full 100-item
                     // loaded set stays searchable rather than being capped at 5.
                     TextField("Search posts, users, listings, shops…", text: $viewModel.query)
-                        .font(.system(size: 15))
+                        .font(ForMe.font(.regular, size: 15))
                         .foregroundColor(ForMe.textPrimary)
                         .tint(ForMe.accent)
                         .focused($searchFieldFocused)
@@ -99,7 +99,7 @@ struct SearchView: View {
                     RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
                         .stroke(searchFieldFocused ? ForMe.borderHover : ForMe.border, lineWidth: 1)
                 )
-                .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
+                .elevation(.level1)
                 .padding(.horizontal)
                 }
 
@@ -209,12 +209,12 @@ struct SearchView: View {
         let count = viewModel.displayListings.count
         return HStack(spacing: 4) {
             Text("\(count) \(count == 1 ? "result" : "results")")
-                .font(.system(size: 13, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 13))
                 .foregroundColor(ForMe.textPrimary)
 
             if viewModel.sortOption != .relevance {
                 Text("• sorted by \(viewModel.sortOption.label)")
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.textTertiary)
             }
 
@@ -232,12 +232,12 @@ struct SearchView: View {
                 .foregroundColor(ForMe.textTertiary)
 
             Text(emptyStateTitle)
-                .font(.system(size: 15, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 15))
                 .foregroundColor(ForMe.textSecondary)
 
             if let hint = emptyStateHint {
                 Text(hint)
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.textTertiary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
@@ -248,7 +248,7 @@ struct SearchView: View {
                     viewModel.query = ""
                 } label: {
                     Text("Clear search")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 13))
                         .foregroundColor(.white)
                         .padding(.horizontal, 18)
                         .padding(.vertical, 9)
@@ -281,7 +281,7 @@ struct FilterChip: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 13, weight: isSelected ? .semibold : .medium))
+                .font(ForMe.font(isSelected ? .semibold : .medium, size: 13))
                 .padding(.horizontal, 14)
                 .padding(.vertical, 7)
                 .background(isSelected ? ForMe.textPrimary : Color(hex: "F7F7F6"))
@@ -313,11 +313,11 @@ struct WorkerRow: View {
             DynamicAvatar(name: name, imageUrl: image, size: .medium)
             VStack(alignment: .leading, spacing: 4) {
                 Text(name)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 15))
                     .foregroundColor(ForMe.textPrimary)
                 if let location = listing?.location {
                     Text(location)
-                        .font(.system(size: 12))
+                        .font(ForMe.font(.regular, size: 12))
                         .foregroundColor(ForMe.textTertiary)
                 }
             }

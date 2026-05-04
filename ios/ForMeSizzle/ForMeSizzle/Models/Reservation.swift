@@ -10,6 +10,7 @@ struct Reservation: Codable, Identifiable {
     var totalPrice: Double?
     var paymentIntentId: String?
     var paymentStatus: String?
+    var refundStatus: String?  // "requested" | "completed" | nil
     var status: ReservationStatus
     var userId: String?
     var listingId: String?
@@ -21,6 +22,12 @@ struct Reservation: Codable, Identifiable {
     var employee: Employee?
     var service: Service?
     var createdAt: String?
+}
+
+struct RefundResponse: Codable {
+    let status: String        // "completed" | "requested"
+    let refundId: String?
+    let amount: Int?
 }
 
 // MARK: - Status Enums

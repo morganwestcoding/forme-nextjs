@@ -83,11 +83,11 @@ struct EditorialBanner: View {
                                 .tracking(0.5)
 
                             Text(banners[activeIndex].title)
-                                .font(.system(size: 24, weight: .bold))
+                                .font(ForMe.font(.bold, size: 24))
                                 .foregroundColor(.white)
 
                             Text(banners[activeIndex].subtitle)
-                                .font(.system(size: 14))
+                                .font(ForMe.font(.regular, size: 14))
                                 .foregroundColor(Color.white.opacity(0.7))
                         }
                         .animation(.easeInOut(duration: 0.5), value: activeIndex)

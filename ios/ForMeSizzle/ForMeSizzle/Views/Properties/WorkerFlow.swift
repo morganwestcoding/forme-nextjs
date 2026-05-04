@@ -171,7 +171,7 @@ struct WorkerFlow: View {
                 .padding(.top, 40)
         } else if userListings.isEmpty {
             Text("You don't have any listings yet.")
-                .font(.system(size: 14))
+                .font(ForMe.font(.regular, size: 14))
                 .foregroundColor(ForMe.stone400)
                 .frame(maxWidth: .infinity)
                 .padding(.top, 40)
@@ -203,10 +203,10 @@ struct WorkerFlow: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(listing.title)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 15))
                         .foregroundColor(ForMe.textPrimary)
                     Text(listing.category)
-                        .font(.system(size: 13))
+                        .font(ForMe.font(.regular, size: 13))
                         .foregroundColor(ForMe.stone500)
                 }
                 Spacer()
@@ -241,7 +241,7 @@ struct WorkerFlow: View {
                 .foregroundColor(ForMe.stone400)
                 .padding(.leading, 16)
             TextField("Name or email", text: $searchQuery)
-                .font(.system(size: 15))
+                .font(ForMe.font(.regular, size: 15))
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .padding(.horizontal, 12)
@@ -271,7 +271,7 @@ struct WorkerFlow: View {
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text(user.name ?? "User")
-                                .font(.system(size: 15, weight: .semibold))
+                                .font(ForMe.font(.semibold, size: 15))
                                 .foregroundColor(ForMe.textPrimary)
                         }
                         Spacer()
@@ -296,7 +296,7 @@ struct WorkerFlow: View {
 
             if searchQuery.count >= 2 && searchResults.isEmpty {
                 Text("No users found")
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone400)
                     .padding(.top, 20)
             }
@@ -333,11 +333,11 @@ struct WorkerFlow: View {
                     .font(.system(size: 20))
                     .foregroundColor(selectedServiceIds.contains(service.id) ? ForMe.textPrimary : ForMe.stone300)
                 Text(service.serviceName)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(ForMe.font(.medium, size: 14))
                     .foregroundColor(ForMe.textPrimary)
                 Spacer()
                 Text(service.formattedPrice)
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone500)
             }
             .padding(14)

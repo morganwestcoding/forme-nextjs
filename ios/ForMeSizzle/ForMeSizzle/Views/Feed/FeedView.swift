@@ -19,14 +19,21 @@ struct FeedView: View {
     @State private var likeCounts: [String: Int] = [:]
     @State private var commentCounts: [String: Int] = [:]
     @State private var bookmarkCounts: [String: Int] = [:]
+    @State private var removedPostIds: Set<String> = []
+    @State private var pendingDeletePostId: String?
+    @State private var viewedPostIds: Set<String> = []
 
     private let screen = UIScreen.main.bounds
+
+    private var visiblePosts: [Post] {
+        posts.filter { !removedPostIds.contains($0.id) }
+    }
 
     var body: some View {
         ZStack(alignment: .bottom) {
             ScrollView(.vertical, showsIndicators: false) {
                 LazyVStack(spacing: 0) {
-                    ForEach(Array(posts.enumerated()), id: \.element.id) { index, post in
+                    ForEach(Array(visiblePosts.enumerated()), id: \.element.id) { index, post in
                         ZStack {
                             FeedCard(post: post, screenSize: screen.size, isActive: currentIndex == index)
 
@@ -63,12 +70,38 @@ struct FeedView: View {
                                     ActionButton(icon: .share, label: "Share") {
                                         sharePost(post)
                                     }
+
+                                    Menu {
+                                        if isOwnPost(post) {
+                                            Button(role: .destructive) {
+                                                pendingDeletePostId = post.id
+                                            } label: {
+                                                Label("Delete", systemImage: "trash")
+                                            }
+                                        } else {
+                                            Button {
+                                                hidePost(post)
+                                            } label: {
+                                                Label("Hide", systemImage: "eye.slash")
+                                            }
+                                        }
+                                    } label: {
+                                        Image(systemName: "ellipsis")
+                                            .font(.system(size: 22, weight: .semibold))
+                                            .foregroundColor(.white)
+                                            .frame(width: 26, height: 40)
+                                            .shadow(color: .black.opacity(0.4), radius: 3, x: 0, y: 1)
+                                    }
+                                    .menuOrder(.fixed)
                                 }
                             }
                             .padding(.horizontal, ForMe.space5)
                         }
                         .frame(width: screen.width, height: screen.height)
                         .id(index)
+                        .onAppear {
+                            markViewed(post)
+                        }
                     }
                 }
                 .scrollTargetLayout()
@@ -99,6 +132,24 @@ struct FeedView: View {
             }
         }
         .statusBarHidden()
+        .confirmationDialog(
+            "Delete this post?",
+            isPresented: .init(
+                get: { pendingDeletePostId != nil },
+                set: { if !$0 { pendingDeletePostId = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                if let id = pendingDeletePostId, let post = posts.first(where: { $0.id == id }) {
+                    deletePost(post)
+                }
+                pendingDeletePostId = nil
+            }
+            Button("Cancel", role: .cancel) { pendingDeletePostId = nil }
+        } message: {
+            Text("This can't be undone.")
+        }
         .sheet(isPresented: $showComments) {
             CommentsSheet(
                 postId: activePostId ?? "",
@@ -120,6 +171,7 @@ struct FeedView: View {
     // MARK: - Actions
 
     private func toggleLike(_ post: Post) {
+        Haptics.confirm()
         let id = post.id
         let current = likeCounts[id] ?? post.likeCount
         if likedPosts.contains(id) {
@@ -141,6 +193,7 @@ struct FeedView: View {
     }
 
     private func toggleBookmark(_ post: Post) {
+        Haptics.confirm()
         let id = post.id
         let current = bookmarkCounts[id] ?? post.bookmarkCount
         if bookmarkedPosts.contains(id) {
@@ -163,6 +216,36 @@ struct FeedView: View {
             root.present(activityVC, animated: true)
         }
     }
+
+    private func hidePost(_ post: Post) {
+        Haptics.tap()
+        withAnimation(.easeOut(duration: 0.25)) {
+            removedPostIds.insert(post.id)
+        }
+        Task { try? await APIService.shared.hidePost(id: post.id) }
+    }
+
+    private func deletePost(_ post: Post) {
+        Haptics.warning()
+        withAnimation(.easeOut(duration: 0.25)) {
+            removedPostIds.insert(post.id)
+        }
+        Task { try? await APIService.shared.deletePost(id: post.id) }
+    }
+
+    private func isOwnPost(_ post: Post) -> Bool {
+        guard let me = authViewModel.currentUser?.id, let author = post.userId else { return false }
+        return me == author
+    }
+
+    /// Fire a single view-track call per post per session. Server is also
+    /// idempotent, but skipping the request when the local flag is set saves
+    /// network on the inevitable scrub-up-and-down behavior.
+    private func markViewed(_ post: Post) {
+        guard !viewedPostIds.contains(post.id) else { return }
+        viewedPostIds.insert(post.id)
+        Task { try? await APIService.shared.markPostView(id: post.id) }
+    }
 }
 
 // MARK: - Comments Sheet
@@ -183,7 +266,7 @@ struct CommentsSheet: View {
                     LazyVStack(alignment: .leading, spacing: ForMe.space4) {
                         if comments.isEmpty {
                             Text("No comments yet")
-                                .font(.system(size: 14))
+                                .font(ForMe.font(.regular, size: 14))
                                 .foregroundColor(ForMe.textTertiary)
                                 .frame(maxWidth: .infinity)
                                 .padding(.top, 40)
@@ -197,10 +280,10 @@ struct CommentsSheet: View {
                                     )
                                     VStack(alignment: .leading, spacing: 3) {
                                         Text(comment.user?.name ?? "User")
-                                            .font(.system(size: 13, weight: .semibold))
+                                            .font(ForMe.font(.semibold, size: 13))
                                             .foregroundColor(ForMe.textPrimary)
                                         Text(comment.content)
-                                            .font(.system(size: 14))
+                                            .font(ForMe.font(.regular, size: 14))
                                             .foregroundColor(ForMe.textSecondary)
                                             .lineSpacing(2)
                                     }
@@ -215,7 +298,7 @@ struct CommentsSheet: View {
                 Divider()
                 HStack(spacing: 10) {
                     TextField("Add a comment...", text: $commentText)
-                        .font(.system(size: 14))
+                        .font(ForMe.font(.regular, size: 14))
                         .focused($isFocused)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 10)
@@ -284,7 +367,7 @@ private struct FeedTabs: View {
                 } label: {
                     VStack(spacing: 6) {
                         Text(title)
-                            .font(.system(size: 15, weight: selectedTab == index ? .bold : .medium))
+                            .font(ForMe.font(selectedTab == index ? .bold : .medium, size: 15))
                             .foregroundColor(selectedTab == index ? .white : .white.opacity(0.5))
                             .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
 
@@ -332,7 +415,7 @@ private struct FeedTabBar: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 22, height: 22)
                         Text(label)
-                            .font(.system(size: 10, weight: .medium))
+                            .font(ForMe.font(.medium, size: 10))
                     }
                     .foregroundColor(.white.opacity(0.6))
                     .frame(maxWidth: .infinity)
@@ -372,7 +455,7 @@ private struct ActionButton: View {
                     .shadow(color: .black.opacity(0.4), radius: 3, x: 0, y: 1)
 
                 Text(label)
-                    .font(.system(size: 11))
+                    .font(ForMe.font(.regular, size: 11))
                     .foregroundColor(.white)
                     .shadow(color: .black.opacity(0.4), radius: 2, x: 0, y: 1)
             }
@@ -550,17 +633,17 @@ struct FeedCard: View {
                         DynamicAvatar(name: user.name ?? "User", imageUrl: user.image, size: .smallMedium)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(user.name ?? "Anonymous")
-                                .font(.system(size: 15, weight: .semibold))
+                                .font(ForMe.font(.semibold, size: 15))
                                 .foregroundColor(.white)
                             Text(formatDate(post.createdAt))
-                                .font(.system(size: 12))
+                                .font(ForMe.font(.regular, size: 12))
                                 .foregroundColor(.white.opacity(0.7))
                         }
                     }
                 }
                 if let content = post.content, !content.isEmpty {
                     Text(content)
-                        .font(.system(size: 14))
+                        .font(ForMe.font(.regular, size: 14))
                         .foregroundColor(.white.opacity(0.9))
                         .lineLimit(3)
                         .lineSpacing(3)
@@ -588,7 +671,7 @@ struct FeedCard: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     .padding(.leading, 24).padding(.top, 80)
                 Text(post.content ?? "")
-                    .font(.system(size: 22, weight: .medium))
+                    .font(ForMe.font(.medium, size: 22))
                     .foregroundColor(.white.opacity(0.9))
                     .multilineTextAlignment(.center)
                     .lineSpacing(6).padding(40)

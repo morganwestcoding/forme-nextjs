@@ -200,7 +200,7 @@ private extension HomeView {
             RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
                 .stroke(searchFieldFocused ? ForMe.borderHover : ForMe.border, lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
+        .elevation(.level1)
         .padding(.horizontal)
     }
 
@@ -238,7 +238,7 @@ private extension HomeView {
                 RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
                     .stroke(ForMe.borderLight, lineWidth: 1)
             )
-            .shadow(color: .black.opacity(0.12), radius: 12, x: 0, y: 4)
+            .elevation(.level2)
             .padding(.horizontal)
 
             Spacer()
@@ -892,6 +892,7 @@ struct SectionHeader: View {
 
 struct ListingRow: View {
     let listing: Listing
+    @State private var bookingService: Service?
 
     var body: some View {
         HStack(spacing: 14) {
@@ -972,6 +973,9 @@ struct ListingRow: View {
             .padding(.trailing, -8)
         }
         .padding(ForMe.space3)
+        .sheet(item: $bookingService) { service in
+            BookingView(listing: listing, service: service)
+        }
     }
 
     private var listingPlaceholder: some View {
@@ -986,8 +990,20 @@ struct ListingRow: View {
     }
 
     private func quickBook() {
-        // TODO: present BookingView for the first available service
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        Haptics.tap()
+        Task {
+            if let cached = listing.services?.first {
+                bookingService = cached
+                return
+            }
+            do {
+                let services = try await APIService.shared.getListingServices(listingId: listing.id)
+                bookingService = services.first
+            } catch {
+                // If services can't be fetched, fall back silently — the user
+                // can still navigate into the detail view via the row tap.
+            }
+        }
     }
 
     private func shareListing() {
@@ -1186,6 +1202,7 @@ struct ProviderRow: View {
     let name: String
     let image: String?
     let listing: Listing
+    @State private var bookingService: Service?
 
     init(user: CompactUser, listing: Listing) {
         self.name = user.name ?? "Provider"
@@ -1274,6 +1291,9 @@ struct ProviderRow: View {
             .padding(.trailing, -8)
         }
         .padding(ForMe.space3)
+        .sheet(item: $bookingService) { service in
+            BookingView(listing: listing, service: service)
+        }
     }
 
     private var placeholder: some View {
@@ -1300,7 +1320,19 @@ struct ProviderRow: View {
     }
 
     private func quickBook() {
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        Haptics.tap()
+        Task {
+            if let cached = listing.services?.first {
+                bookingService = cached
+                return
+            }
+            do {
+                let services = try await APIService.shared.getListingServices(listingId: listing.id)
+                bookingService = services.first
+            } catch {
+                // Quietly fail; the row can still be tapped to navigate to detail.
+            }
+        }
     }
 
     private func shareProfile() {

@@ -79,7 +79,7 @@ struct AnalyticsDateRangePicker: View {
             Spacer()
 
             Text("Select range")
-                .font(.system(size: 15, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 15))
                 .foregroundColor(ForMe.textPrimary)
 
             Spacer()
@@ -89,7 +89,7 @@ struct AnalyticsDateRangePicker: View {
                 dismiss()
             } label: {
                 Text("Apply")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 13))
                     .foregroundColor(.white)
                     .padding(.horizontal, 14)
                     .frame(height: 32)
@@ -106,10 +106,10 @@ struct AnalyticsDateRangePicker: View {
     private var rangeSummary: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(summaryLabel)
-                .font(.system(size: 17, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 17))
                 .foregroundColor(ForMe.textPrimary)
             Text("\(dayCount) day\(dayCount == 1 ? "" : "s")")
-                .font(.system(size: 12))
+                .font(ForMe.font(.regular, size: 12))
                 .foregroundColor(ForMe.stone500)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -129,7 +129,7 @@ struct AnalyticsDateRangePicker: View {
                         }
                     } label: {
                         Text(p.title)
-                            .font(.system(size: 12, weight: active ? .semibold : .medium))
+                            .font(ForMe.font(active ? .semibold : .medium, size: 12))
                             .foregroundColor(active ? .white : ForMe.stone600)
                             .padding(.horizontal, 14)
                             .frame(height: 32)
@@ -156,10 +156,10 @@ struct AnalyticsDateRangePicker: View {
                 } label: {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(endpoint.title)
-                            .font(.system(size: 11, weight: .medium))
+                            .font(ForMe.font(.medium, size: 11))
                             .foregroundColor(ForMe.stone500)
                         Text(formatFull(endpoint == .from ? start : end))
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(ForMe.font(.semibold, size: 14))
                             .foregroundColor(ForMe.textPrimary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -214,7 +214,7 @@ struct AnalyticsDateRangePicker: View {
             }
         } label: {
             Text("Clear filters")
-                .font(.system(size: 13, weight: .medium))
+                .font(ForMe.font(.medium, size: 13))
                 .foregroundColor(ForMe.stone600)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)

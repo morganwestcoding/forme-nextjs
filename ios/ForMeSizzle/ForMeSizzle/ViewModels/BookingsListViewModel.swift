@@ -48,4 +48,23 @@ class BookingsListViewModel: ObservableObject {
             self.error = error.localizedDescription
         }
     }
+
+    /// Customer-side request OR owner-side immediate refund. The server
+    /// branches on role; the iOS UI just reports the status it gets back.
+    func refundReservation(id: String, reason: String? = nil) async -> RefundResponse? {
+        do {
+            let response = try await api.refundReservation(id: id, reason: reason)
+            if let index = reservations.firstIndex(where: { $0.id == id }) {
+                reservations[index].refundStatus = response.status
+                if response.status == "completed" {
+                    reservations[index].paymentStatus = "refunded"
+                    reservations[index].status = .cancelled
+                }
+            }
+            return response
+        } catch {
+            self.error = error.localizedDescription
+            return nil
+        }
+    }
 }

@@ -72,7 +72,7 @@ struct AnalyticsRangeCalendar: View {
             Spacer()
 
             Text(monthYearLabel)
-                .font(.system(size: 15, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 15))
                 .foregroundColor(ForMe.textPrimary)
 
             Spacer()
@@ -95,7 +95,7 @@ struct AnalyticsRangeCalendar: View {
         HStack(spacing: 0) {
             ForEach(Array(weekdayLabels.enumerated()), id: \.offset) { _, label in
                 Text(label)
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 11))
                     .foregroundColor(ForMe.stone400)
                     .frame(maxWidth: .infinity)
             }
@@ -168,7 +168,7 @@ struct AnalyticsRangeCalendar: View {
                     }
 
                     Text("\(calendar.component(.day, from: date))")
-                        .font(.system(size: 14, weight: style.isEndpoint ? .semibold : .regular))
+                        .font(ForMe.font(style.isEndpoint ? .semibold : .regular, size: 14))
                         .foregroundColor(textColor(for: style))
                 }
                 .frame(height: 40)

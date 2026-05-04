@@ -174,7 +174,7 @@ struct ProductFlow: View {
                 .padding(.top, 40)
         } else if userShops.isEmpty {
             Text("You don't have any shops yet.")
-                .font(.system(size: 14))
+                .font(ForMe.font(.regular, size: 14))
                 .foregroundColor(ForMe.stone400)
                 .frame(maxWidth: .infinity)
                 .padding(.top, 40)
@@ -206,11 +206,11 @@ struct ProductFlow: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(shop.name)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 15))
                         .foregroundColor(ForMe.textPrimary)
                     if let loc = shop.location {
                         Text(loc)
-                            .font(.system(size: 13))
+                            .font(ForMe.font(.regular, size: 13))
                             .foregroundColor(ForMe.stone500)
                     }
                 }
@@ -279,7 +279,7 @@ struct ProductFlow: View {
             FlowLabel(text: "Sizes")
             HStack(spacing: 8) {
                 TextField("Add size (S, M, L)", text: $currentSize)
-                    .font(.system(size: 15))
+                    .font(ForMe.font(.regular, size: 15))
                     .padding(.horizontal, 16)
                     .padding(.vertical, 14)
                     .background(ForMe.inputBg)
@@ -332,17 +332,30 @@ struct ProductFlow: View {
     private func submit() async {
         guard let shop = selectedShop, let priceValue = Double(price) else { return }
         isSubmitting = true
-        let request = CreateProductRequest(
-            name: name.ws,
-            description: description.ws,
-            price: priceValue,
-            category: category.isEmpty ? nil : category,
-            image: "",
-            images: [],
-            sizes: sizes,
-            shopId: shop.id
-        )
         do {
+            var uploaded: [String] = []
+            for slot in imageData {
+                guard let data = slot, let image = UIImage(data: data) else { continue }
+                let url = try await CloudinaryService.shared.uploadImage(
+                    image,
+                    folder: .shopProducts,
+                    targetWidth: 1000,
+                    targetHeight: 1000,
+                    cropMode: .thumb
+                )
+                uploaded.append(url)
+            }
+
+            let request = CreateProductRequest(
+                name: name.ws,
+                description: description.ws,
+                price: priceValue,
+                category: category.isEmpty ? nil : category,
+                image: uploaded.first ?? "",
+                images: uploaded,
+                sizes: sizes,
+                shopId: shop.id
+            )
             _ = try await APIService.shared.createProduct(request)
             isSubmitting = false
             dismiss()

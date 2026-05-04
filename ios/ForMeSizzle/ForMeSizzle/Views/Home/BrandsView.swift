@@ -5,6 +5,7 @@ struct BrandsView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var authViewModel: AuthViewModel
     @State private var showMessages = false
+    @State private var showAlerts = false
 
     var body: some View {
         ScrollView {
@@ -25,7 +26,7 @@ struct BrandsView: View {
 
                     HStack(spacing: 12) {
                         HeaderIconButton(icon: "AlertBell") {
-                            // TODO: alerts
+                            showAlerts = true
                         }
 
                         HeaderIconButton(icon: "HeaderChat") {
@@ -109,6 +110,9 @@ struct BrandsView: View {
             NavigationStack {
                 MessagesListView()
             }
+        }
+        .sheet(isPresented: $showAlerts) {
+            NotificationsView()
         }
     }
 }

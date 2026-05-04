@@ -76,7 +76,7 @@ struct EditProfileView: View {
                             ProgressView().tint(ForMe.textPrimary)
                         } else {
                             Text("Save")
-                                .font(.system(size: 14, weight: .semibold))
+                                .font(ForMe.font(.semibold, size: 14))
                                 .foregroundColor(ForMe.textPrimary)
                         }
                     }
@@ -99,12 +99,12 @@ struct EditProfileView: View {
     private func formField(label: String, text: Binding<String>, isMultiline: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(label)
-                .font(.system(size: 12, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 12))
                 .foregroundColor(ForMe.stone500)
 
             if isMultiline {
                 TextEditor(text: text)
-                    .font(.system(size: 15))
+                    .font(ForMe.font(.regular, size: 15))
                     .scrollContentBackground(.hidden)
                     .frame(minHeight: 100)
                     .padding(ForMe.space3)
@@ -116,7 +116,7 @@ struct EditProfileView: View {
                     )
             } else {
                 TextField("", text: text)
-                    .font(.system(size: 15))
+                    .font(ForMe.font(.regular, size: 15))
                     .padding(.horizontal, ForMe.space4)
                     .padding(.vertical, 14)
                     .background(ForMe.surface)
@@ -131,12 +131,23 @@ struct EditProfileView: View {
 
     private func save() async {
         isSaving = true
-        var update = ProfileUpdateRequest()
-        update.name = name
-        update.bio = bio
-        update.location = location
-
         do {
+            var update = ProfileUpdateRequest()
+            update.name = name
+            update.bio = bio
+            update.location = location
+
+            if let data = imageData, let image = UIImage(data: data) {
+                update.image = try await CloudinaryService.shared.uploadImage(
+                    image,
+                    folder: .profiles,
+                    targetWidth: 400,
+                    targetHeight: 400,
+                    cropMode: .thumb,
+                    gravity: "g_face"
+                )
+            }
+
             let updated = try await APIService.shared.updateProfile(update)
             authViewModel.currentUser = updated
             isSaving = false

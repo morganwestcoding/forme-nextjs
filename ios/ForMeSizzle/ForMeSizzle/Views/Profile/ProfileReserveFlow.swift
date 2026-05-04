@@ -114,11 +114,11 @@ private extension ProfileReserveFlow {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(listing.title)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 15))
                     .foregroundColor(ForMe.textPrimary)
                 if let location = listing.location {
                     Text(location)
-                        .font(.system(size: 12))
+                        .font(ForMe.font(.regular, size: 12))
                         .foregroundColor(ForMe.textTertiary)
                 }
             }
@@ -164,22 +164,22 @@ private extension ProfileReserveFlow {
     func serviceCard(_ service: Service) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(service.serviceName)
-                .font(.system(size: 14, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 14))
                 .foregroundColor(ForMe.textPrimary)
                 .lineLimit(2)
                 .multilineTextAlignment(.leading)
 
             HStack(spacing: 6) {
                 Text(service.formattedPrice)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 13))
                     .foregroundColor(ForMe.textPrimary)
 
                 if !service.formattedDuration.isEmpty {
                     Text("·")
-                        .font(.system(size: 12))
+                        .font(ForMe.font(.regular, size: 12))
                         .foregroundColor(ForMe.textTertiary)
                     Text(service.formattedDuration)
-                        .font(.system(size: 12))
+                        .font(ForMe.font(.regular, size: 12))
                         .foregroundColor(ForMe.textTertiary)
                 }
             }

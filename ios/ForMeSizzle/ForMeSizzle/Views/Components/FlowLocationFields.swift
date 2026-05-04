@@ -172,7 +172,7 @@ struct FlowZipField: View {
         VStack(alignment: .leading, spacing: 8) {
             FlowLabel(text: "ZIP code")
             TextField("12345", text: $text)
-                .font(.system(size: 15))
+                .font(ForMe.font(.regular, size: 15))
                 .foregroundColor(ForMe.textPrimary)
                 .keyboardType(.numberPad)
                 .textInputAutocapitalization(.never)

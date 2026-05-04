@@ -170,7 +170,7 @@ struct ShopFlow: View {
                             .frame(width: 56, height: 56)
                             .clipShape(Circle())
                         Text(cat.rawValue)
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(ForMe.font(.semibold, size: 14))
                             .foregroundColor(ForMe.textPrimary)
                     }
                     .frame(maxWidth: .infinity)
@@ -266,10 +266,10 @@ struct ShopFlow: View {
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(product.name)
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(ForMe.font(.semibold, size: 15))
                             .foregroundColor(ForMe.textPrimary)
                         Text(product.priceDisplay)
-                            .font(.system(size: 13))
+                            .font(ForMe.font(.regular, size: 13))
                             .foregroundColor(ForMe.stone500)
                     }
                     Spacer()
@@ -309,7 +309,7 @@ struct ShopFlow: View {
                     Image(systemName: "plus")
                         .font(.system(size: 13, weight: .semibold))
                     Text("Add Product")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 14))
                 }
                 .foregroundColor(ForMe.textPrimary)
                 .padding(.vertical, 14)
@@ -342,36 +342,60 @@ struct ShopFlow: View {
 
     private func submit() async {
         isSubmitting = true
-        let composedLocation: String? = {
-            guard !isOnlineOnly, !city.isEmpty, !stateName.isEmpty else { return nil }
-            return "\(city), \(stateName)"
-        }()
-        let request = CreateShopRequest(
-            name: name.ws,
-            description: description.ws,
-            category: category?.rawValue,
-            logo: "",
-            coverImage: nil,
-            location: composedLocation,
-            address: isOnlineOnly ? nil : address,
-            zipCode: isOnlineOnly ? nil : zipCode,
-            isOnlineOnly: isOnlineOnly,
-            storeUrl: storeUrl.isEmpty ? nil : storeUrl,
-            galleryImages: [],
-            shopEnabled: shopEnabled,
-            listingId: nil
-        )
-
         do {
+            var logoURL: String = ""
+            if let data = logoData, let image = UIImage(data: data) {
+                logoURL = try await CloudinaryService.shared.uploadImage(
+                    image,
+                    folder: .shops,
+                    targetWidth: 400,
+                    targetHeight: 400,
+                    cropMode: .thumb
+                )
+            }
+
+            let composedLocation: String? = {
+                guard !isOnlineOnly, !city.isEmpty, !stateName.isEmpty else { return nil }
+                return "\(city), \(stateName)"
+            }()
+            let request = CreateShopRequest(
+                name: name.ws,
+                description: description.ws,
+                category: category?.rawValue,
+                logo: logoURL,
+                coverImage: nil,
+                location: composedLocation,
+                address: isOnlineOnly ? nil : address,
+                zipCode: isOnlineOnly ? nil : zipCode,
+                isOnlineOnly: isOnlineOnly,
+                storeUrl: storeUrl.isEmpty ? nil : storeUrl,
+                galleryImages: [],
+                shopEnabled: shopEnabled,
+                listingId: nil
+            )
+
             let shop = try await APIService.shared.createShop(request)
             for product in products {
+                var productURLs: [String] = []
+                for data in product.imageData {
+                    if let image = UIImage(data: data) {
+                        let url = try await CloudinaryService.shared.uploadImage(
+                            image,
+                            folder: .shopProducts,
+                            targetWidth: 1000,
+                            targetHeight: 1000,
+                            cropMode: .thumb
+                        )
+                        productURLs.append(url)
+                    }
+                }
                 let pReq = CreateProductRequest(
                     name: product.name,
                     description: product.description,
                     price: product.priceValue ?? 0,
                     category: product.category,
-                    image: "",
-                    images: [],
+                    image: productURLs.first ?? "",
+                    images: productURLs,
                     sizes: product.sizes,
                     shopId: shop.id
                 )
@@ -482,7 +506,7 @@ struct ShopProductFormSheet: View {
                         FlowLabel(text: "Sizes")
                         HStack(spacing: 8) {
                             TextField("Add size (S, M, L)", text: $currentSize)
-                                .font(.system(size: 15))
+                                .font(ForMe.font(.regular, size: 15))
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 14)
                                 .background(ForMe.inputBg)
@@ -534,7 +558,7 @@ struct ShopProductFormSheet: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") { save() }
                         .disabled(!canSave)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 15))
                         .foregroundColor(canSave ? ForMe.textPrimary : ForMe.stone300)
                 }
             }

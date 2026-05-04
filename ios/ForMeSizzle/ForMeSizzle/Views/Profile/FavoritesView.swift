@@ -65,6 +65,9 @@ struct FavoritesView: View {
             .task {
                 await viewModel.loadFavorites()
             }
+            .refreshable {
+                await viewModel.loadFavorites()
+            }
         }
     }
 
@@ -74,11 +77,12 @@ struct FavoritesView: View {
             emptyState(icon: "heart.slash", text: "No favorite listings yet")
         } else {
             LazyVStack(spacing: 4) {
-                ForEach(viewModel.listings) { listing in
+                ForEach(Array(viewModel.listings.enumerated()), id: \.element.id) { index, listing in
                     NavigationLink(value: listing) {
                         ListingRow(listing: listing)
                     }
                     .buttonStyle(.plain)
+                    .staggeredFadeIn(index: index)
                 }
             }
             .padding(.horizontal)
@@ -91,11 +95,12 @@ struct FavoritesView: View {
             emptyState(icon: "person.2.slash", text: "No favorite workers yet")
         } else {
             LazyVStack(spacing: 4) {
-                ForEach(viewModel.workers, id: \.id) { professional in
+                ForEach(Array(viewModel.workers.enumerated()), id: \.element.id) { index, professional in
                     NavigationLink(value: ProfileRoute(userId: professional.user.id)) {
                         ProviderRow(user: professional.user, listing: professional.listing)
                     }
                     .buttonStyle(.plain)
+                    .staggeredFadeIn(index: index)
                 }
             }
             .padding(.horizontal)
@@ -108,8 +113,9 @@ struct FavoritesView: View {
             emptyState(icon: "bag", text: "No favorite shops yet")
         } else {
             LazyVStack(spacing: 4) {
-                ForEach(viewModel.shops) { shop in
+                ForEach(Array(viewModel.shops.enumerated()), id: \.element.id) { index, shop in
                     ShopRow(shop: shop)
+                        .staggeredFadeIn(index: index)
                 }
             }
             .padding(.horizontal)
@@ -144,7 +150,7 @@ struct FavoritesView: View {
                 .font(.system(size: 40))
                 .foregroundColor(ForMe.stone300)
             Text(text)
-                .font(.system(size: 14, weight: .medium))
+                .font(ForMe.font(.medium, size: 14))
                 .foregroundColor(ForMe.textSecondary)
         }
         .frame(maxWidth: .infinity)
@@ -169,7 +175,7 @@ private struct FavoritesTabBar: View {
                 } label: {
                     VStack(spacing: 8) {
                         Text(tab)
-                            .font(.system(size: 13, weight: selectedTab == index ? .semibold : .medium))
+                            .font(ForMe.font(selectedTab == index ? .semibold : .medium, size: 13))
                             .foregroundColor(selectedTab == index ? ForMe.textPrimary : ForMe.stone400)
 
                         if selectedTab == index {

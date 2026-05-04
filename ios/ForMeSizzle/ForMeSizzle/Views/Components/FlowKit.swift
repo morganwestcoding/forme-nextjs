@@ -24,7 +24,7 @@ struct FlowLabel: View {
     let text: String
     var body: some View {
         Text(text)
-            .font(.system(size: 14, weight: .semibold))
+            .font(ForMe.font(.semibold, size: 14))
             .foregroundColor(ForMe.stone700)
     }
 }
@@ -43,7 +43,7 @@ struct FlowTextField: View {
         VStack(alignment: .leading, spacing: 8) {
             FlowLabel(text: label)
             TextField(placeholder, text: $text)
-                .font(.system(size: 15))
+                .font(ForMe.font(.regular, size: 15))
                 .foregroundColor(ForMe.textPrimary)
                 .keyboardType(keyboardType)
                 .textInputAutocapitalization(autoCapitalization)
@@ -76,14 +76,14 @@ struct FlowTextArea: View {
             ZStack(alignment: .topLeading) {
                 if text.isEmpty && !placeholder.isEmpty {
                     Text(placeholder)
-                        .font(.system(size: 15))
+                        .font(ForMe.font(.regular, size: 15))
                         .foregroundColor(ForMe.stone400)
                         .padding(.horizontal, 16 + 4)
                         .padding(.vertical, 14 + 8)
                         .allowsHitTesting(false)
                 }
                 TextEditor(text: $text)
-                    .font(.system(size: 15))
+                    .font(ForMe.font(.regular, size: 15))
                     .foregroundColor(ForMe.textPrimary)
                     .scrollContentBackground(.hidden)
                     .focused($focused)
@@ -121,7 +121,7 @@ struct FlowSelect: View {
             } label: {
                 HStack {
                     Text(displayLabel)
-                        .font(.system(size: 15))
+                        .font(ForMe.font(.regular, size: 15))
                         .foregroundColor(selection.isEmpty ? ForMe.stone400 : ForMe.textPrimary)
                     Spacer()
                     Image(systemName: "chevron.down")
@@ -155,7 +155,7 @@ struct FlowChip: View {
     var body: some View {
         HStack(spacing: 6) {
             Text(text)
-                .font(.system(size: 13, weight: .medium))
+                .font(ForMe.font(.medium, size: 13))
                 .foregroundColor(ForMe.textPrimary)
             Button(action: onRemove) {
                 Image(systemName: "xmark")
@@ -181,10 +181,10 @@ struct FlowToggleRow: View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 15))
                     .foregroundColor(ForMe.textPrimary)
                 Text(subtitle)
-                    .font(.system(size: 12))
+                    .font(ForMe.font(.regular, size: 12))
                     .foregroundColor(ForMe.stone500)
             }
             Spacer(minLength: 16)
@@ -261,7 +261,7 @@ struct FlowLogoUploader: View {
             Circle()
                 .fill(ForMe.surface)
                 .frame(width: 40, height: 40)
-                .shadow(color: .black.opacity(0.04), radius: 2, x: 0, y: 1)
+                .elevation(.level1)
                 .overlay(Circle().stroke(ForMe.border, lineWidth: 1))
             Image(systemName: "plus")
                 .font(.system(size: 18, weight: .regular))
@@ -314,7 +314,7 @@ struct FlowProductImageSlot: View {
                                 Circle()
                                     .fill(ForMe.surface)
                                     .frame(width: 36, height: 36)
-                                    .shadow(color: .black.opacity(0.04), radius: 2, x: 0, y: 1)
+                                    .elevation(.level1)
                                     .overlay(Circle().stroke(ForMe.border, lineWidth: 1))
                                 Image(systemName: "plus")
                                     .font(.system(size: 16, weight: .regular))
@@ -343,15 +343,24 @@ struct FlowProgressBar: View {
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
-                Rectangle()
+                Capsule(style: .continuous)
                     .fill(ForMe.stone100)
-                Rectangle()
-                    .fill(ForMe.stone900)
+
+                Capsule(style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [ForMe.stone700, ForMe.stone900],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
                     .frame(width: max(0, geo.size.width * progress))
                     .animation(.interpolatingSpring(stiffness: 300, damping: 30), value: progress)
             }
         }
         .frame(height: 4)
+        .padding(.horizontal, ForMe.space4)
+        .padding(.top, 6)
     }
 }
 
@@ -377,7 +386,7 @@ struct FlowBottomBar: View {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 12, weight: .semibold))
                             Text(backLabel)
-                                .font(.system(size: 14, weight: .medium))
+                                .font(ForMe.font(.medium, size: 14))
                         }
                         .foregroundColor(ForMe.stone500)
                     }
@@ -392,7 +401,7 @@ struct FlowBottomBar: View {
                             ForMeLoader(size: .small, color: .white)
                         } else {
                             Text(primaryLabel)
-                                .font(.system(size: 14, weight: .semibold))
+                                .font(ForMe.font(.semibold, size: 14))
                                 .foregroundColor(.white)
                         }
                     }
@@ -526,7 +535,7 @@ struct FlowDropdownPicker: View {
             } label: {
                 HStack(spacing: 12) {
                     Text(selection.isEmpty ? placeholder : selection)
-                        .font(.system(size: 15))
+                        .font(ForMe.font(.regular, size: 15))
                         .foregroundColor(selection.isEmpty ? ForMe.stone400 : ForMe.textPrimary)
                         .lineLimit(1)
                     Spacer(minLength: 0)
@@ -585,7 +594,7 @@ struct FlowAutocompleteField: View {
 
             ZStack(alignment: .trailing) {
                 TextField(placeholder, text: $text)
-                    .font(.system(size: 15))
+                    .font(ForMe.font(.regular, size: 15))
                     .foregroundColor(ForMe.textPrimary)
                     .textInputAutocapitalization(.words)
                     .autocorrectionDisabled()
@@ -644,13 +653,13 @@ struct DropdownList: View {
                     } label: {
                         HStack(spacing: 10) {
                             Text(option)
-                                .font(.system(size: 14, weight: selection == option ? .semibold : .regular))
+                                .font(ForMe.font(selection == option ? .semibold : .regular, size: 14))
                                 .foregroundColor(ForMe.textPrimary)
                                 .lineLimit(1)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             if let sub = subtext[option], !sub.isEmpty {
                                 Text(sub)
-                                    .font(.system(size: 11))
+                                    .font(ForMe.font(.regular, size: 11))
                                     .foregroundColor(ForMe.stone400)
                             }
                             if selection == option {
@@ -683,7 +692,7 @@ struct DropdownList: View {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .stroke(ForMe.border, lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 4)
+        .elevation(.level2)
     }
 }
 
@@ -712,11 +721,11 @@ struct FlowLocationPreview: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(street)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 14))
                     .foregroundColor(ForMe.textPrimary)
                     .lineLimit(1)
                 Text("\(city), \(state) \(zip)")
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone500)
                     .lineLimit(1)
             }

@@ -60,7 +60,13 @@
       "Bash(echo \"---exit: $?---\")",
       "Bash(git ls-remote *)",
       "Read(//Users/greg/.claude/**)",
-      "Bash(echo \"Origin main = $\\(git ls-remote origin main)"
+      "Bash(echo \"Origin main = $\\(git ls-remote origin main)",
+      "Bash(git rm *)",
+      "Bash(grep -v \"^app$\")",
+      "Bash(grep -rEnB 1 \"\\\\.font\\\\\\(\\\\.system\\\\\\(\" --include=\"*.swift\")",
+      "Bash(grep -E \"^\\\\.padding\\\\\\([0-9]+\\\\\\)$|, [0-9]+\\\\\\)$\")",
+      "Bash(grep -v \":0$\")",
+      "Bash(grep -rEnA 5 \"func staggeredFadeIn|struct.*StaggeredFadeIn\" --include=\"*.swift\" /Users/greg/Desktop/forme/ios/ForMeSizzle/ForMeSizzle)"
     ],
     "additionalDirectories": [
       "/Users/greg/Desktop/forme/web/src/components/listings",

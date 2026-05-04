@@ -9,6 +9,8 @@ struct ProfileView: View {
     @State private var showEditProfile = false
     @State private var showSettings = false
     @State private var showReserveFlow = false
+    @State private var pendingConversation: Conversation?
+    @State private var startConversationError: String?
 
     private var user: User? {
         viewModel.user ?? (userId == nil ? authViewModel.currentUser : nil)
@@ -57,12 +59,29 @@ struct ProfileView: View {
                 )
             }
         }
+        .sheet(item: $pendingConversation) { convo in
+            NavigationStack {
+                ChatView(conversation: convo)
+            }
+        }
+        .alert("Couldn't open chat", isPresented: .init(
+            get: { startConversationError != nil },
+            set: { if !$0 { startConversationError = nil } }
+        )) {
+            Button("OK") { startConversationError = nil }
+        } message: {
+            Text(startConversationError ?? "")
+        }
         .task {
             if let id = userId {
                 await viewModel.loadProfile(userId: id)
             } else if let id = authViewModel.currentUser?.id {
                 await viewModel.loadProfile(userId: id)
             }
+        }
+        .refreshable {
+            let id = userId ?? authViewModel.currentUser?.id
+            if let id { await viewModel.loadProfile(userId: id) }
         }
     }
 
@@ -73,8 +92,9 @@ struct ProfileView: View {
             } label: {
                 HugeIcon(paths: HugeIcon.arrowLeftPaths, size: 20, color: ForMe.stone500)
                     .frame(width: 40, height: 40)
-                    .background(Circle().fill(ForMe.stone100))
-                    .overlay(Circle().stroke(ForMe.stone200, lineWidth: 1))
+                    .background(Circle().fill(.ultraThinMaterial))
+                    .overlay(Circle().stroke(ForMe.stone200.opacity(0.6), lineWidth: 1))
+                    .elevation(.level1)
             }
             .buttonStyle(.plain)
 
@@ -96,7 +116,7 @@ struct ProfileView: View {
                               systemImage: "person.badge.plus")
                     }
                     Button {
-                        // TODO: open message
+                        Task { await startMessage() }
                     } label: {
                         Label("Message", systemImage: "bubble.left")
                     }
@@ -108,14 +128,25 @@ struct ProfileView: View {
             } label: {
                 HugeMoreVertical(size: 20, color: ForMe.stone500)
                     .frame(width: 40, height: 40)
-                    .background(Circle().fill(ForMe.stone100))
-                    .overlay(Circle().stroke(ForMe.stone200, lineWidth: 1))
+                    .background(Circle().fill(.ultraThinMaterial))
+                    .overlay(Circle().stroke(ForMe.stone200.opacity(0.6), lineWidth: 1))
+                    .elevation(.level1)
             }
             .menuOrder(.fixed)
             .buttonStyle(.plain)
         }
         .padding(.horizontal, 12)
         .padding(.top, 8)
+    }
+
+    private func startMessage() async {
+        guard let targetId = user?.id, !isCurrentUser else { return }
+        do {
+            let convo = try await APIService.shared.startConversation(userId: targetId)
+            pendingConversation = convo
+        } catch {
+            startConversationError = error.localizedDescription
+        }
     }
 
     private func shareProfile() {
@@ -144,13 +175,13 @@ private extension ProfileView {
                 showBorder: false
             )
             .overlay(Circle().stroke(.white, lineWidth: 3))
-            .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
+            .elevation(.level2)
             .padding(.bottom, 12)
 
             // Name + verification
             HStack(spacing: 6) {
                 Text(user?.name ?? "User")
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 20))
                     .foregroundColor(ForMe.textPrimary)
 
                 if user?.isVerified == true {
@@ -164,7 +195,7 @@ private extension ProfileView {
             // Student badge
             if user?.isStudent == true, let academy = user?.academyName {
                 Text("Student at \(academy)")
-                    .font(.system(size: 11, weight: .medium))
+                    .font(ForMe.font(.medium, size: 11))
                     .foregroundColor(Color(red: 0.71, green: 0.45, blue: 0.05))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
@@ -184,7 +215,7 @@ private extension ProfileView {
             // still surface something.
             if let title = jobTitleText {
                 Text(title)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(ForMe.font(.medium, size: 13))
                     .foregroundColor(ForMe.textTertiary)
                     .padding(.top, 2)
             }
@@ -192,7 +223,7 @@ private extension ProfileView {
             // Location
             if let location = user?.location {
                 Text(location)
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone400)
                     .padding(.top, 2)
             }
@@ -211,7 +242,7 @@ private extension ProfileView {
             // above and below so the Save/Share row sits in the same place.
             if let bio = user?.bio, !bio.isEmpty {
                 Text(bio)
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone500)
                     .lineSpacing(5)
                     .multilineTextAlignment(.center)
@@ -257,7 +288,7 @@ private extension ProfileView {
                 }
             }
             Text("\(viewModel.reviewStats?.totalCount ?? 0)")
-                .font(.system(size: 12))
+                .font(ForMe.font(.regular, size: 12))
                 .foregroundColor(ForMe.stone400)
                 .padding(.leading, 6)
         }
@@ -281,7 +312,7 @@ private extension ProfileView {
                 .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundColor(ForMe.textPrimary)
             Text(label)
-                .font(.system(size: 12))
+                .font(ForMe.font(.regular, size: 12))
                 .foregroundColor(ForMe.stone400)
         }
         .frame(maxWidth: .infinity)
@@ -294,7 +325,7 @@ private extension ProfileView {
                 showEditProfile = true
             } label: {
                 Text("Edit Profile")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 13))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
@@ -307,7 +338,7 @@ private extension ProfileView {
                     showReserveFlow = true
                 } label: {
                     Text("Reserve")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 13))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
@@ -319,7 +350,7 @@ private extension ProfileView {
                     Task { await viewModel.toggleFollow() }
                 } label: {
                     Text(viewModel.isFollowing ? "Following" : "Follow")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 13))
                         .foregroundColor(ForMe.stone700)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
@@ -463,7 +494,7 @@ private extension ProfileView {
 
     func sectionTitle(_ text: String) -> some View {
         Text(text)
-            .font(.system(size: 17, weight: .semibold))
+            .font(ForMe.font(.semibold, size: 17))
             .foregroundColor(ForMe.textPrimary)
     }
 }
@@ -483,7 +514,7 @@ struct ReviewRow: View {
                 )
                 VStack(alignment: .leading, spacing: 2) {
                     Text(review.user?.name ?? "User")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 13))
                         .foregroundColor(ForMe.textPrimary)
 
                     HStack(spacing: 2) {
@@ -503,7 +534,7 @@ struct ReviewRow: View {
 
             if let comment = review.comment, !comment.isEmpty {
                 Text(comment)
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone600)
                     .lineSpacing(3)
             }

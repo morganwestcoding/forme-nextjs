@@ -9,6 +9,7 @@ struct MessagesListView: View {
     @State private var isSearchingUsers = false
     @State private var searchTask: Task<Void, Never>?
     @State private var navigateTo: Conversation?
+    @FocusState private var searchFocused: Bool
 
     var filteredConversations: [Conversation] {
         if searchText.isEmpty { return viewModel.conversations }
@@ -23,23 +24,25 @@ struct MessagesListView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header
+            // Header — iMessage-style: title left, compose right.
+            // Drag indicator on the sheet handles dismissal; no explicit X.
             HStack(alignment: .center) {
                 Text("Messages")
-                    .font(.system(size: 24, weight: .bold))
+                    .font(ForMe.font(.bold, size: 24))
                     .foregroundColor(ForMe.textPrimary)
 
                 Spacer()
 
-                Button { dismiss() } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(ForMe.textSecondary)
+                Button {
+                    searchFocused = true
+                } label: {
+                    Image(systemName: "square.and.pencil")
+                        .font(.system(size: 17, weight: .medium))
+                        .foregroundColor(ForMe.textPrimary)
                         .frame(width: 34, height: 34)
-                        .background(ForMe.stone100)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(ForMe.border, lineWidth: 1))
+                        .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
             }
             .padding(.horizontal, ForMe.space6)
             .padding(.top, ForMe.space4)
@@ -51,8 +54,9 @@ struct MessagesListView: View {
                     .font(.system(size: 14))
                     .foregroundColor(ForMe.textTertiary)
                 TextField("Search people or conversations", text: $searchText)
-                    .font(.system(size: 14))
+                    .font(ForMe.font(.regular, size: 14))
                     .foregroundColor(ForMe.textPrimary)
+                    .focused($searchFocused)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
                 if !searchText.isEmpty {
@@ -83,7 +87,7 @@ struct MessagesListView: View {
             if !userResults.isEmpty {
                 VStack(alignment: .leading, spacing: 0) {
                     Text("People")
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 11))
                         .foregroundColor(ForMe.textTertiary)
                         .textCase(.uppercase)
                         .tracking(0.6)
@@ -99,11 +103,11 @@ struct MessagesListView: View {
                                 DynamicAvatar(name: user.displayTitle, imageUrl: user.image, size: .medium)
                                 VStack(alignment: .leading, spacing: 3) {
                                     Text(user.displayTitle)
-                                        .font(.system(size: 15, weight: .semibold))
+                                        .font(ForMe.font(.semibold, size: 15))
                                         .foregroundColor(ForMe.textPrimary)
                                     if let subtitle = user.subtitle, !subtitle.isEmpty {
                                         Text(subtitle)
-                                            .font(.system(size: 12))
+                                            .font(ForMe.font(.regular, size: 12))
                                             .foregroundColor(ForMe.textTertiary)
                                     }
                                 }
@@ -133,10 +137,10 @@ struct MessagesListView: View {
                         .font(.system(size: 40))
                         .foregroundColor(ForMe.stone300)
                     Text(searchText.isEmpty ? "No messages yet" : "No results")
-                        .font(.system(size: 15, weight: .medium))
+                        .font(ForMe.font(.medium, size: 15))
                         .foregroundColor(ForMe.textSecondary)
                     Text("Start a conversation from someone's profile")
-                        .font(.system(size: 13))
+                        .font(ForMe.font(.regular, size: 13))
                         .foregroundColor(ForMe.textTertiary)
                 }
                 Spacer()
@@ -174,6 +178,25 @@ struct MessagesListView: View {
         }
         .task {
             await viewModel.loadConversations()
+        }
+        .onReceive(RealtimeService.shared.messageCreated) { _ in
+            // A new message in any conversation may shift ordering / unread
+            // state — refresh the list so the right row jumps to the top.
+            Task { await viewModel.loadConversations() }
+        }
+        .onReceive(RealtimeService.shared.conversationUpdated) { update in
+            if let index = viewModel.conversations.firstIndex(where: { $0.id == update.conversationId }) {
+                if let last = update.lastMessage {
+                    viewModel.conversations[index].lastMessage = .init(
+                        content: last.content,
+                        createdAt: last.createdAt,
+                        isRead: last.isRead
+                    )
+                }
+                viewModel.conversations[index].lastMessageAt = update.lastMessageAt
+                let row = viewModel.conversations.remove(at: index)
+                viewModel.conversations.insert(row, at: 0)
+            }
         }
         .onChange(of: searchText) { _, newValue in
             searchTask?.cancel()
@@ -236,14 +259,14 @@ struct ConversationRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text(conversation.otherUser?.name ?? "User")
-                        .font(.system(size: 15, weight: isUnread ? .bold : .semibold))
+                        .font(ForMe.font(isUnread ? .bold : .semibold, size: 15))
                         .foregroundColor(ForMe.textPrimary)
 
                     Spacer()
 
                     if let dateStr = conversation.lastMessageAt {
                         Text(formatRelativeDate(dateStr))
-                            .font(.system(size: 12))
+                            .font(ForMe.font(.regular, size: 12))
                             .foregroundColor(isUnread ? ForMe.textPrimary : ForMe.textTertiary)
                     }
                 }
@@ -251,7 +274,7 @@ struct ConversationRow: View {
                 HStack(spacing: 6) {
                     if let lastMessage = conversation.lastMessage {
                         Text(lastMessage.content)
-                            .font(.system(size: 13))
+                            .font(ForMe.font(.regular, size: 13))
                             .foregroundColor(isUnread ? ForMe.textPrimary : ForMe.stone400)
                             .lineLimit(1)
                     }

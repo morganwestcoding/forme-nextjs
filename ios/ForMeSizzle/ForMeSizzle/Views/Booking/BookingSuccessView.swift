@@ -109,12 +109,12 @@ private extension BookingSuccessView {
     var titleBlock: some View {
         VStack(spacing: 10) {
             Text("You're all set!")
-                .font(.system(size: 30, weight: .bold))
+                .font(ForMe.font(.bold, size: 30))
                 .foregroundColor(ForMe.textPrimary)
                 .tracking(-0.5)
 
             Text("Your reservation is confirmed. A receipt is on the way to your inbox.")
-                .font(.system(size: 14))
+                .font(ForMe.font(.regular, size: 14))
                 .foregroundColor(ForMe.stone500)
                 .multilineTextAlignment(.center)
                 .lineSpacing(3)
@@ -146,11 +146,11 @@ private extension BookingSuccessView {
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(listing.title)
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 16))
                         .foregroundColor(ForMe.textPrimary)
                         .lineLimit(1)
                     Text(service.serviceName)
-                        .font(.system(size: 13))
+                        .font(ForMe.font(.regular, size: 13))
                         .foregroundColor(ForMe.stone500)
                         .lineLimit(1)
                 }
@@ -158,7 +158,7 @@ private extension BookingSuccessView {
 
                 // Small confirmed pill, echoes status badges elsewhere
                 Text("Confirmed")
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 10))
                     .tracking(0.4)
                     .textCase(.uppercase)
                     .foregroundColor(successGreen)
@@ -184,7 +184,7 @@ private extension BookingSuccessView {
 
             HStack {
                 Text("Total paid")
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone500)
                 Spacer()
                 Text(service.formattedPrice)
@@ -200,14 +200,14 @@ private extension BookingSuccessView {
             RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
                 .stroke(ForMe.borderLight, lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.06), radius: 20, x: 0, y: 8)
+        .elevation(.level2)
     }
 
     var buttons: some View {
         VStack(spacing: 10) {
             Button(action: onViewBookings) {
                 Text("View My Bookings")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 15))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
@@ -218,7 +218,7 @@ private extension BookingSuccessView {
 
             Button(action: onDismiss) {
                 Text("Done")
-                    .font(.system(size: 14, weight: .medium))
+                    .font(ForMe.font(.medium, size: 14))
                     .foregroundColor(ForMe.stone500)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
@@ -246,11 +246,11 @@ private extension BookingSuccessView {
                 .foregroundColor(successGreen)
                 .frame(width: 20)
             Text(label)
-                .font(.system(size: 14))
+                .font(ForMe.font(.regular, size: 14))
                 .foregroundColor(ForMe.stone500)
             Spacer()
             Text(value)
-                .font(.system(size: 14, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 14))
                 .foregroundColor(ForMe.textPrimary)
         }
         .padding(.horizontal, ForMe.space4)
@@ -264,6 +264,7 @@ private extension BookingSuccessView {
     }
 
     func runEntranceAnimation() {
+        Haptics.success()
         // Checkmark "pops" in with spring
         withAnimation(.spring(response: 0.5, dampingFraction: 0.6).delay(0.1)) {
             checkmarkScale = 1.0

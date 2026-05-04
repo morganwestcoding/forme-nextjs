@@ -48,16 +48,7 @@ struct BookingView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Progress bar
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        Rectangle().fill(ForMe.stone100).frame(height: 3)
-                        Rectangle().fill(ForMe.stone900)
-                            .frame(width: geo.size.width * progress, height: 3)
-                            .animation(.easeInOut(duration: 0.3), value: progress)
-                    }
-                }
-                .frame(height: 3)
+                FlowProgressBar(progress: progress)
 
                 // Step content
                 Group {
@@ -201,7 +192,7 @@ private extension BookingView {
                             viewModel.selectedTime = time
                         } label: {
                             Text(time)
-                                .font(.system(size: 14, weight: .medium))
+                                .font(ForMe.font(.medium, size: 14))
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 14)
                                 .background(viewModel.selectedTime == time ? ForMe.stone900 : ForMe.surface)
@@ -241,11 +232,11 @@ private extension BookingView {
 
                     VStack(alignment: .leading, spacing: 3) {
                         Text(listing.title)
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(ForMe.font(.semibold, size: 16))
                             .foregroundColor(ForMe.textPrimary)
                         if let location = listing.location {
                             Text(location)
-                                .font(.system(size: 13))
+                                .font(ForMe.font(.regular, size: 13))
                                 .foregroundColor(ForMe.textTertiary)
                         }
                     }
@@ -277,11 +268,11 @@ private extension BookingView {
                 // Notes
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Notes (optional)")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(ForMe.font(.medium, size: 14))
                         .foregroundColor(ForMe.textSecondary)
                     TextField("Any special requests?", text: $viewModel.note, axis: .vertical)
                         .lineLimit(3...6)
-                        .font(.system(size: 14))
+                        .font(ForMe.font(.regular, size: 14))
                         .forMeInput()
                 }
             }
@@ -292,11 +283,11 @@ private extension BookingView {
     func summaryRow(label: String, value: String, isBold: Bool = false) -> some View {
         HStack {
             Text(label)
-                .font(.system(size: 14))
+                .font(ForMe.font(.regular, size: 14))
                 .foregroundColor(ForMe.textSecondary)
             Spacer()
             Text(value)
-                .font(.system(size: 14, weight: isBold ? .bold : .medium))
+                .font(ForMe.font(isBold ? .bold : .medium, size: 14))
                 .foregroundColor(ForMe.textPrimary)
         }
         .padding(.horizontal, ForMe.space4)
@@ -318,7 +309,7 @@ private extension BookingView {
             Divider()
             if step == .summary {
                 Text("By booking, you agree to the [Terms of Service](https://forme.app/terms) and [Privacy Policy](https://forme.app/privacy).")
-                    .font(.system(size: 11))
+                    .font(ForMe.font(.regular, size: 11))
                     .foregroundColor(ForMe.textTertiary)
                     .multilineTextAlignment(.center)
                     .tint(ForMe.accent)
@@ -328,10 +319,10 @@ private extension BookingView {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Total")
-                        .font(.system(size: 12))
+                        .font(ForMe.font(.regular, size: 12))
                         .foregroundColor(ForMe.textTertiary)
                     Text(service.formattedPrice)
-                        .font(.system(size: 20, weight: .bold))
+                        .font(ForMe.font(.bold, size: 20))
                         .foregroundColor(ForMe.textPrimary)
                 }
 
@@ -339,6 +330,7 @@ private extension BookingView {
 
                 Button {
                     if step == .summary {
+                        Haptics.impact()
                         Task {
                             _ = await viewModel.createBooking(
                                 listingId: listing.id,
@@ -349,6 +341,7 @@ private extension BookingView {
                             )
                         }
                     } else {
+                        Haptics.tap()
                         withAnimation(.easeInOut(duration: 0.25)) {
                             step = BookingStep(rawValue: step.rawValue + 1) ?? .summary
                         }
@@ -359,7 +352,7 @@ private extension BookingView {
                             .frame(width: 140)
                     } else {
                         Text(step == .summary ? "Reserve & Pay" : "Continue")
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(ForMe.font(.semibold, size: 15))
                             .frame(width: 140)
                     }
                 }
@@ -400,13 +393,13 @@ struct ProviderOption: View {
 
                 VStack(spacing: 2) {
                     Text(name)
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 13))
                         .foregroundColor(isSelected ? ForMe.textPrimary : ForMe.textSecondary)
                         .lineLimit(1)
 
                     if let subtitle = subtitle {
                         Text(subtitle)
-                            .font(.system(size: 11))
+                            .font(ForMe.font(.regular, size: 11))
                             .foregroundColor(ForMe.textTertiary)
                             .lineLimit(1)
                     }
@@ -438,7 +431,7 @@ struct EmployeeChip: View {
             HStack(spacing: 8) {
                 DynamicAvatar(name: name, imageUrl: imageUrl, size: .small)
                 Text(name)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(ForMe.font(.medium, size: 13))
                     .foregroundColor(isSelected ? .white : ForMe.textPrimary)
             }
             .padding(.horizontal, ForMe.space3)

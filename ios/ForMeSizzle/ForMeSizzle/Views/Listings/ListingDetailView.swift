@@ -3,7 +3,10 @@ import SwiftUI
 struct ListingDetailView: View {
     let listing: Listing
     @StateObject private var viewModel = ListingDetailViewModel()
+    @EnvironmentObject var authViewModel: AuthViewModel
     @State private var showBooking = false
+    @State private var showQR = false
+    @State private var showReviewWrite = false
     @Environment(\.dismiss) private var dismiss
 
     private var services: [Service] {
@@ -43,8 +46,20 @@ struct ListingDetailView: View {
                 BookingView(listing: listing, service: service)
             }
         }
+        .sheet(isPresented: $showQR) {
+            ListingQRSheet(listing: listing)
+        }
+        .sheet(isPresented: $showReviewWrite) {
+            ReviewWriteSheet(
+                title: listing.title,
+                targetListingId: listing.id
+            ) { review in
+                viewModel.insert(review: review)
+            }
+        }
         .task {
             await viewModel.loadServices(for: listing.id)
+            await viewModel.loadReviews(for: listing.id)
         }
     }
 
@@ -55,8 +70,9 @@ struct ListingDetailView: View {
             } label: {
                 HugeIcon(paths: HugeIcon.arrowLeftPaths, size: 20, color: ForMe.stone500)
                     .frame(width: 40, height: 40)
-                    .background(Circle().fill(ForMe.stone100))
-                    .overlay(Circle().stroke(ForMe.stone200, lineWidth: 1))
+                    .background(Circle().fill(.ultraThinMaterial))
+                    .overlay(Circle().stroke(ForMe.stone200.opacity(0.6), lineWidth: 1))
+                    .elevation(.level1)
             }
             .buttonStyle(.plain)
 
@@ -64,16 +80,23 @@ struct ListingDetailView: View {
 
             Menu {
                 Button {
-                    // TODO: QR modal
+                    showQR = true
                 } label: {
                     Label("View QR Code", systemImage: "qrcode")
                 }
-                Button {
-                    // TODO: follow/unfollow
-                } label: {
-                    Label("Follow", systemImage: "person.badge.plus")
+                if let ownerId = listing.userId {
+                    Button {
+                        Haptics.confirm()
+                        Task { await viewModel.toggleFollow(userId: ownerId) }
+                    } label: {
+                        Label(
+                            viewModel.isFollowing ? "Following" : "Follow",
+                            systemImage: viewModel.isFollowing ? "person.badge.minus" : "person.badge.plus"
+                        )
+                    }
                 }
                 Button {
+                    Haptics.confirm()
                     Task { await viewModel.toggleFavorite(listingId: listing.id) }
                 } label: {
                     Label(
@@ -82,7 +105,7 @@ struct ListingDetailView: View {
                     )
                 }
                 Button {
-                    // TODO: review modal
+                    showReviewWrite = true
                 } label: {
                     Label("Add Review", systemImage: "star")
                 }
@@ -95,8 +118,9 @@ struct ListingDetailView: View {
             } label: {
                 HugeMoreVertical(size: 20, color: ForMe.stone500)
                     .frame(width: 40, height: 40)
-                    .background(Circle().fill(ForMe.stone100))
-                    .overlay(Circle().stroke(ForMe.stone200, lineWidth: 1))
+                    .background(Circle().fill(.ultraThinMaterial))
+                    .overlay(Circle().stroke(ForMe.stone200.opacity(0.6), lineWidth: 1))
+                    .elevation(.level1)
             }
             .menuOrder(.fixed)
             .buttonStyle(.plain)
@@ -144,13 +168,13 @@ private extension ListingDetailView {
                 RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
                     .stroke(.white, lineWidth: 3)
             )
-            .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
+            .elevation(.level2)
             .padding(.bottom, 12)
 
             // Title + verification
             HStack(spacing: 6) {
                 Text(listing.title)
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 20))
                     .foregroundColor(ForMe.textPrimary)
 
                 if listing.user?.verificationStatus == "verified" {
@@ -164,7 +188,7 @@ private extension ListingDetailView {
             // Location
             if let location = listing.address ?? listing.location {
                 Text(location)
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone400)
                     .padding(.top, 2)
             }
@@ -185,7 +209,7 @@ private extension ListingDetailView {
             // Description
             if let desc = listing.description, !desc.isEmpty {
                 Text(desc)
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone500)
                     .lineSpacing(5)
                     .multilineTextAlignment(.center)
@@ -209,11 +233,11 @@ private extension ListingDetailView {
                 if let hours = today {
                     HStack(spacing: 0) {
                         Text(hours.isClosed ? "Closed" : "Open")
-                            .font(.system(size: 13, weight: .medium))
+                            .font(ForMe.font(.medium, size: 13))
                             .foregroundColor(hours.isClosed ? ForMe.statusCancelled : ForMe.statusConfirmed)
                         if !hours.isClosed, let close = hours.closeTime {
                             Text(" · Closes \(close)")
-                                .font(.system(size: 13))
+                                .font(ForMe.font(.regular, size: 13))
                                 .foregroundColor(ForMe.stone400)
                         }
                     }
@@ -242,7 +266,7 @@ private extension ListingDetailView {
                 }
             }
             Text("\(listing.ratingCount ?? 0)")
-                .font(.system(size: 12))
+                .font(ForMe.font(.regular, size: 12))
                 .foregroundColor(ForMe.stone400)
                 .padding(.leading, 6)
         }
@@ -265,7 +289,7 @@ private extension ListingDetailView {
                 .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundColor(ForMe.textPrimary)
             Text(label)
-                .font(.system(size: 12))
+                .font(ForMe.font(.regular, size: 12))
                 .foregroundColor(ForMe.stone400)
         }
         .frame(maxWidth: .infinity)
@@ -280,7 +304,7 @@ private extension ListingDetailView {
                 }
             } label: {
                 Text("Reserve")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 13))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
@@ -289,20 +313,24 @@ private extension ListingDetailView {
             }
 
             Button {
-                // TODO: follow
+                if let ownerId = listing.userId {
+                    Haptics.confirm()
+                    Task { await viewModel.toggleFollow(userId: ownerId) }
+                }
             } label: {
-                Text("Follow")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundColor(ForMe.stone700)
+                Text(viewModel.isFollowing ? "Following" : "Follow")
+                    .font(ForMe.font(.semibold, size: 13))
+                    .foregroundColor(viewModel.isFollowing ? .white : ForMe.stone700)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(ForMe.stone50)
+                    .background(viewModel.isFollowing ? ForMe.stone700 : ForMe.stone50)
                     .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
-                            .stroke(ForMe.stone200, lineWidth: 1)
+                            .stroke(viewModel.isFollowing ? Color.clear : ForMe.stone200, lineWidth: 1)
                     )
             }
+            .disabled(listing.userId == nil)
         }
     }
 }
@@ -320,6 +348,8 @@ private extension ListingDetailView {
                 employeesSection
             }
 
+            // Reviews
+            reviewsSection
 
             // Gallery
             if let gallery = listing.galleryImages, !gallery.isEmpty {
@@ -330,6 +360,64 @@ private extension ListingDetailView {
         .padding(.top, ForMe.space4)
     }
 
+    var reviewsSection: some View {
+        VStack(alignment: .leading, spacing: ForMe.space3) {
+            HStack(alignment: .firstTextBaseline) {
+                SectionHeader(title: "Reviews")
+                Spacer()
+                Button {
+                    showReviewWrite = true
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "plus")
+                            .font(.system(size: 11, weight: .semibold))
+                        Text("Write")
+                            .font(ForMe.font(.semibold, size: 12))
+                    }
+                    .foregroundColor(ForMe.textPrimary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(ForMe.stone100)
+                    .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+
+            if viewModel.reviews.isEmpty {
+                HStack {
+                    Spacer()
+                    VStack(spacing: 6) {
+                        Image(systemName: "star")
+                            .font(.system(size: 24))
+                            .foregroundColor(ForMe.stone300)
+                        Text("No reviews yet")
+                            .font(ForMe.font(.medium, size: 13))
+                            .foregroundColor(ForMe.textTertiary)
+                        Text("Be the first to review this listing.")
+                            .font(ForMe.font(.regular, size: 12))
+                            .foregroundColor(ForMe.textTertiary)
+                    }
+                    .padding(.vertical, ForMe.space5)
+                    Spacer()
+                }
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: ForMe.space3) {
+                        ForEach(Array(viewModel.reviews.enumerated()), id: \.element.id) { index, review in
+                            ReviewCardView(
+                                review: review,
+                                currentUserId: authViewModel.currentUser?.id
+                            )
+                            .staggeredFadeIn(index: index)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+                .scrollClipDisabled()
+            }
+        }
+    }
+
     var servicesSection: some View {
         VStack(alignment: .leading, spacing: ForMe.space3) {
             SectionHeader(title: "Book A Service")
@@ -338,7 +426,7 @@ private extension ListingDetailView {
                 ProgressView().frame(maxWidth: .infinity).padding()
             } else if services.isEmpty {
                 Text("No services listed")
-                    .font(.system(size: 14))
+                    .font(ForMe.font(.regular, size: 14))
                     .foregroundColor(ForMe.textTertiary)
                     .padding()
             } else {
@@ -385,17 +473,17 @@ private extension ListingDetailView {
                 ForEach(storeHours) { hour in
                     HStack {
                         Text(hour.shortName)
-                            .font(.system(size: 13, weight: .medium))
+                            .font(ForMe.font(.medium, size: 13))
                             .foregroundColor(ForMe.textPrimary)
                             .frame(width: 40, alignment: .leading)
 
                         if hour.isClosed {
                             Text("Closed")
-                                .font(.system(size: 13))
+                                .font(ForMe.font(.regular, size: 13))
                                 .foregroundColor(ForMe.statusCancelled)
                         } else if let open = hour.openTime, let close = hour.closeTime {
                             Text("\(open) – \(close)")
-                                .font(.system(size: 13))
+                                .font(ForMe.font(.regular, size: 13))
                                 .foregroundColor(ForMe.stone500)
                         }
 

@@ -60,10 +60,10 @@ struct CreateMenuView: View {
                 // Header
                 VStack(alignment: .leading, spacing: 4) {
                     Text("What would you like to create?")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 16))
                         .foregroundColor(ForMe.textPrimary)
                     Text("Choose an option to get started")
-                        .font(.system(size: 13))
+                        .font(ForMe.font(.regular, size: 13))
                         .foregroundColor(ForMe.stone400)
                 }
                 .padding(.horizontal, ForMe.space6)
@@ -134,10 +134,10 @@ struct CreateMenuView: View {
 
                         VStack(spacing: 3) {
                             Text(item.label)
-                                .font(.system(size: 12, weight: .medium))
+                                .font(ForMe.font(.medium, size: 12))
                                 .foregroundColor(ForMe.stone600)
                             Text(item.description)
-                                .font(.system(size: 10))
+                                .font(ForMe.font(.regular, size: 10))
                                 .foregroundColor(ForMe.stone400)
                         }
                     }
@@ -162,17 +162,17 @@ struct CreateMenuView: View {
     private func noResourceView(title: String, subtitle: String, cta: String, action: @escaping () -> Void) -> some View {
         VStack(spacing: 12) {
             Text(title)
-                .font(.system(size: 14, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 14))
                 .foregroundColor(ForMe.textPrimary)
             Text(subtitle)
-                .font(.system(size: 12))
+                .font(ForMe.font(.regular, size: 12))
                 .foregroundColor(ForMe.stone500)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, ForMe.space6)
 
             Button(action: action) {
                 Text(cta)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 14))
                     .foregroundColor(.white)
                     .padding(.horizontal, ForMe.space6)
                     .padding(.vertical, 12)
@@ -182,7 +182,7 @@ struct CreateMenuView: View {
             .padding(.top, 8)
 
             Button("Go back") { gateState = .menu }
-                .font(.system(size: 12))
+                .font(ForMe.font(.regular, size: 12))
                 .foregroundColor(ForMe.stone400)
                 .padding(.top, 4)
         }

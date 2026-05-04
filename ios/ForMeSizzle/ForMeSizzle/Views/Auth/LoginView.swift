@@ -19,11 +19,11 @@ struct LoginView: View {
                 // Header
                 VStack(spacing: 6) {
                     Text("Welcome back")
-                        .font(.system(size: 22, weight: .bold))
+                        .font(ForMe.font(.bold, size: 22))
                         .foregroundColor(ForMe.textPrimary)
 
                     Text("Sign in to your account")
-                        .font(.system(size: 14))
+                        .font(ForMe.font(.regular, size: 14))
                         .foregroundColor(ForMe.textTertiary)
                 }
                 .padding(.top, 40)
@@ -34,11 +34,11 @@ struct LoginView: View {
                     // Email
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Email")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(ForMe.font(.semibold, size: 12))
                             .foregroundColor(ForMe.textSecondary)
 
                         TextField("you@example.com", text: $email)
-                            .font(.system(size: 15))
+                            .font(ForMe.font(.regular, size: 15))
                             .keyboardType(.emailAddress)
                             .autocapitalization(.none)
                             .textContentType(.emailAddress)
@@ -56,7 +56,7 @@ struct LoginView: View {
                     // Password
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Password")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(ForMe.font(.semibold, size: 12))
                             .foregroundColor(ForMe.textSecondary)
 
                         HStack(spacing: 10) {
@@ -67,7 +67,7 @@ struct LoginView: View {
                                     SecureField("Enter your password", text: $password)
                                 }
                             }
-                            .font(.system(size: 15))
+                            .font(ForMe.font(.regular, size: 15))
                             .textContentType(.password)
                             .focused($focusedField, equals: .password)
 
@@ -90,11 +90,13 @@ struct LoginView: View {
 
                         HStack {
                             Spacer()
-                            Button("Forgot password?") {
-                                // TODO: forgot password flow
+                            NavigationLink {
+                                ForgotPasswordView()
+                            } label: {
+                                Text("Forgot password?")
+                                    .font(ForMe.font(.medium, size: 12))
+                                    .foregroundColor(ForMe.textTertiary)
                             }
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(ForMe.textTertiary)
                         }
                     }
                 }
@@ -102,7 +104,7 @@ struct LoginView: View {
                 // Error
                 if let error = authViewModel.error {
                     Text(error)
-                        .font(.system(size: 12, weight: .medium))
+                        .font(ForMe.font(.medium, size: 12))
                         .foregroundColor(Color(hex: "F43F5E"))
                         .multilineTextAlignment(.center)
                         .padding(.top, ForMe.space3)
@@ -137,7 +139,7 @@ struct LoginView: View {
                     .foregroundColor(ForMe.textPrimary)
                     .fontWeight(.semibold)
                 }
-                .font(.system(size: 13))
+                .font(ForMe.font(.regular, size: 13))
                 .padding(.top, ForMe.space5)
 
                 Spacer()

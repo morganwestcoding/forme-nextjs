@@ -45,7 +45,7 @@ struct MainTabView: View {
         }
         .ignoresSafeArea(.keyboard)
         .sheet(isPresented: $appState.showingInbox) {
-            Text("Inbox") // TODO: InboxView
+            MessagesListView()
         }
         .sheet(isPresented: $appState.showingNotifications) {
             NotificationsView()
@@ -135,7 +135,7 @@ private struct ForMeTabBar: View {
                         .foregroundColor(isActive ? ForMe.textPrimary : ForMe.textTertiary)
 
                         Text(item.label)
-                            .font(.system(size: 10, weight: .medium))
+                            .font(ForMe.font(.medium, size: 10))
                             .foregroundColor(isActive ? ForMe.textPrimary : ForMe.textTertiary)
                     }
                     .frame(maxWidth: .infinity)
@@ -154,7 +154,7 @@ private struct ForMeTabBar: View {
         .background(
             RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
                 .fill(.ultraThinMaterial)
-                .shadow(color: .black.opacity(0.1), radius: 16, x: 0, y: 4)
+                .elevation(.level2)
         )
         .fixedSize(horizontal: false, vertical: true)
         .padding(.horizontal, ForMe.space4)

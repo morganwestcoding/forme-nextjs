@@ -6,6 +6,7 @@ struct PropertiesView: View {
     @EnvironmentObject var appState: AppState
     @State private var listingToDelete: Listing?
     @State private var showCreateListing = false
+    @State private var listingToEdit: Listing?
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -15,11 +16,11 @@ struct PropertiesView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         HStack(spacing: 10) {
                             Text("My Listings")
-                                .font(.system(size: 24, weight: .bold))
+                                .font(ForMe.font(.bold, size: 24))
                                 .foregroundColor(ForMe.textPrimary)
 
                             Text("\(viewModel.listings.count)")
-                                .font(.system(size: 13, weight: .semibold))
+                                .font(ForMe.font(.semibold, size: 13))
                                 .foregroundColor(ForMe.stone500)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 3)
@@ -27,7 +28,7 @@ struct PropertiesView: View {
                                 .clipShape(Capsule())
                         }
                         Text("Manage your businesses")
-                            .font(.system(size: 13))
+                            .font(ForMe.font(.regular, size: 13))
                             .foregroundColor(ForMe.stone400)
                     }
 
@@ -57,16 +58,17 @@ struct PropertiesView: View {
                     emptyState
                 } else {
                     VStack(spacing: 30) {
-                        ForEach(viewModel.listings) { listing in
+                        ForEach(Array(viewModel.listings.enumerated()), id: \.element.id) { index, listing in
                             PropertyCard(
                                 listing: listing,
                                 onEdit: {
-                                    // TODO: open ListingFlow in edit mode
+                                    listingToEdit = listing
                                 },
                                 onDelete: {
                                     listingToDelete = listing
                                 }
                             )
+                            .staggeredFadeIn(index: index)
                         }
                     }
                     .padding(.horizontal)
@@ -100,6 +102,9 @@ struct PropertiesView: View {
         .sheet(isPresented: $showCreateListing) {
             ListingFlow()
         }
+        .sheet(item: $listingToEdit) { listing in
+            ListingFlow(existingListing: listing)
+        }
         .task {
             await viewModel.loadListings()
         }
@@ -116,10 +121,10 @@ struct PropertiesView: View {
 
             VStack(spacing: 6) {
                 Text("No listings yet")
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 18))
                     .foregroundColor(ForMe.textPrimary)
                 Text("Create your first listing to start accepting bookings")
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone400)
                     .multilineTextAlignment(.center)
             }
@@ -131,7 +136,7 @@ struct PropertiesView: View {
                     Image(systemName: "plus")
                         .font(.system(size: 13, weight: .semibold))
                     Text("Create Listing")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 14))
                 }
                 .foregroundColor(.white)
                 .padding(.horizontal, ForMe.space5)
@@ -184,7 +189,7 @@ struct PropertyCard: View {
                             .frame(width: 36, height: 36)
                             .background(.white)
                             .clipShape(Circle())
-                            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+                            .elevation(.level1)
                     }
                     Button(action: onDelete) {
                         Image(systemName: "trash")
@@ -193,7 +198,7 @@ struct PropertyCard: View {
                             .frame(width: 36, height: 36)
                             .background(.white)
                             .clipShape(Circle())
-                            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+                            .elevation(.level1)
                     }
                 }
                 .padding(ForMe.space4)
@@ -204,14 +209,14 @@ struct PropertyCard: View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(listing.title)
-                        .font(.system(size: 18, weight: .bold))
+                        .font(ForMe.font(.bold, size: 18))
                         .foregroundColor(ForMe.textPrimary)
                         .lineLimit(1)
 
                     HStack(spacing: 0) {
                         if let location = listing.location {
                             Text(location)
-                                .font(.system(size: 12))
+                                .font(ForMe.font(.regular, size: 12))
                                 .foregroundColor(ForMe.textTertiary)
                         }
 
@@ -221,7 +226,7 @@ struct PropertyCard: View {
                             .padding(.horizontal, 6)
 
                         Text(listing.category)
-                            .font(.system(size: 12, weight: .medium))
+                            .font(ForMe.font(.medium, size: 12))
                             .foregroundColor(ForMe.textTertiary)
                     }
 
@@ -241,10 +246,10 @@ struct PropertyCard: View {
     func statBadge(label: String, suffix: String) -> some View {
         HStack(spacing: 3) {
             Text(label)
-                .font(.system(size: 12, weight: .bold))
+                .font(ForMe.font(.bold, size: 12))
                 .foregroundColor(ForMe.textPrimary)
             Text(suffix)
-                .font(.system(size: 11))
+                .font(ForMe.font(.regular, size: 11))
                 .foregroundColor(ForMe.stone400)
         }
     }

@@ -50,7 +50,7 @@ struct ForMeCalendar: View {
                 Spacer()
 
                 Text(monthTitle)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(ForMe.font(.bold, size: 16))
                     .foregroundColor(ForMe.textPrimary)
 
                 Spacer()
@@ -74,7 +74,7 @@ struct ForMeCalendar: View {
             HStack(spacing: 0) {
                 ForEach(weekdays, id: \.self) { day in
                     Text(day)
-                        .font(.system(size: 13, weight: .medium))
+                        .font(ForMe.font(.medium, size: 13))
                         .foregroundColor(ForMe.stone400)
                         .frame(maxWidth: .infinity)
                 }
@@ -98,7 +98,7 @@ struct ForMeCalendar: View {
                             }
                         } label: {
                             Text("\(calendar.component(.day, from: date))")
-                                .font(.system(size: 15, weight: isSelected ? .bold : isToday ? .semibold : .regular))
+                                .font(ForMe.font(isSelected ? .bold : isToday ? .semibold : .regular, size: 15))
                                 .foregroundColor(
                                     isPast ? ForMe.stone300 :
                                     isSelected ? .white :
@@ -128,7 +128,7 @@ struct ForMeCalendar: View {
 
             // Footer
             Text("Past dates are disabled and cannot be selected")
-                .font(.system(size: 12))
+                .font(ForMe.font(.regular, size: 12))
                 .foregroundColor(ForMe.stone400)
                 .padding(.top, ForMe.space4)
                 .padding(.bottom, ForMe.space4)

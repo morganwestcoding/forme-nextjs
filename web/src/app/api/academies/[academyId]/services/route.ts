@@ -1,20 +1,28 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { getUserFromRequest } from "@/app/utils/mobileAuth";
 import prisma from "@/app/libs/prismadb";
 import { apiError, apiErrorCode } from "@/app/utils/api";
 
 
-// Master-only helper. Returns the current master user or a NextResponse error.
-async function requireMaster() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+// Master-only helper. Accepts either a NextAuth web session OR a mobile bearer
+// token (Phase 11 admin-from-iOS). Returns the current admin user or an error.
+async function requireMaster(request: Request) {
+  const mobileUser = await getUserFromRequest(request);
+  const session = mobileUser ? null : await getServerSession(authOptions);
+  if (!mobileUser && !session?.user?.email) {
     return { error: apiError("Not authenticated", 401) };
   }
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email as string },
-    select: { id: true, role: true },
-  });
+  const user = mobileUser
+    ? await prisma.user.findUnique({
+        where: { id: mobileUser.id },
+        select: { id: true, role: true },
+      })
+    : await prisma.user.findUnique({
+        where: { email: session!.user!.email as string },
+        select: { id: true, role: true },
+      });
   if (!user || (user.role !== "master" && user.role !== "admin")) {
     return { error: apiErrorCode("FORBIDDEN") };
   }
@@ -31,10 +39,10 @@ async function getAcademyListing(academyId: string) {
 //
 // Returns every service on the academy's listing. Used by the admin UI.
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: { academyId: string } }
 ) {
-  const auth = await requireMaster();
+  const auth = await requireMaster(request);
   if (auth.error) return auth.error;
 
   const listing = await getAcademyListing(params.academyId);
@@ -58,7 +66,7 @@ export async function POST(
   request: Request,
   { params }: { params: { academyId: string } }
 ) {
-  const auth = await requireMaster();
+  const auth = await requireMaster(request);
   if (auth.error) return auth.error;
 
   const listing = await getAcademyListing(params.academyId);

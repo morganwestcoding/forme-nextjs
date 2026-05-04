@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { getUserFromRequest } from "@/app/utils/mobileAuth";
 import prisma from "@/app/libs/prismadb";
 import Stripe from "stripe";
 import { apiError, apiErrorCode } from "@/app/utils/api";
@@ -13,20 +14,27 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 // GET /api/academies/[academyId]/stripe-connect/status
 //
 // Returns the current Connect onboarding status for an academy and syncs the
-// local DB with whatever Stripe reports. Master-only (v1).
+// local DB with whatever Stripe reports. Master/admin only — accepts either a
+// NextAuth web session or a mobile bearer token.
 export async function GET(
   request: Request,
   { params }: { params: { academyId: string } }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const mobileUser = await getUserFromRequest(request);
+  const session = mobileUser ? null : await getServerSession(authOptions);
+  if (!mobileUser && !session?.user?.email) {
     return apiError("Not authenticated", 401);
   }
 
-  const currentUser = await prisma.user.findUnique({
-    where: { email: session.user.email as string },
-    select: { id: true, role: true },
-  });
+  const currentUser = mobileUser
+    ? await prisma.user.findUnique({
+        where: { id: mobileUser.id },
+        select: { id: true, role: true },
+      })
+    : await prisma.user.findUnique({
+        where: { email: session!.user!.email as string },
+        select: { id: true, role: true },
+      });
 
   if (!currentUser || (currentUser.role !== "master" && currentUser.role !== "admin")) {
     return apiError("Only platform admins can view academy payment status", 403);

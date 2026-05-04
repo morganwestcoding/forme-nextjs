@@ -94,7 +94,7 @@ struct WelcomeView: View {
                                 Text("The experiences you'll remember.")
                                     .foregroundColor(Color.white.opacity(0.45))
                             }
-                            .font(.system(size: 15, weight: .regular))
+                            .font(ForMe.font(.regular, size: 15))
                             .tracking(0.2)
                             .multilineTextAlignment(.center)
                             .opacity(taglineReady ? 1 : 0)
@@ -107,11 +107,11 @@ struct WelcomeView: View {
                     // Buttons
                     VStack(spacing: 12) {
                         Button {
-                            UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+                            Haptics.tap()
                             showRegister = true
                         } label: {
                             Text("Get Started")
-                                .font(.system(size: 15, weight: .semibold))
+                                .font(ForMe.font(.semibold, size: 15))
                                 .foregroundColor(.black)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 52)
@@ -124,11 +124,11 @@ struct WelcomeView: View {
                         .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
 
                         Button {
-                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            Haptics.tap()
                             showLogin = true
                         } label: {
                             Text("Sign In")
-                                .font(.system(size: 15, weight: .semibold))
+                                .font(ForMe.font(.semibold, size: 15))
                                 .foregroundColor(.white.opacity(0.8))
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 52)
@@ -145,7 +145,7 @@ struct WelcomeView: View {
                         .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
 
                         Text("By continuing you agree to our Terms & Privacy Policy")
-                            .font(.system(size: 11))
+                            .font(ForMe.font(.regular, size: 11))
                             .foregroundColor(Color.white.opacity(0.3))
                             .multilineTextAlignment(.center)
                             .padding(.top, 8)

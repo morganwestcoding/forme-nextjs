@@ -6,6 +6,7 @@ struct SettingsView: View {
     @AppStorage("isDarkMode") private var isDarkMode = false
     @AppStorage("accentColorHex") private var accentColorHex = "60A5FA"
     @State private var showLogoutConfirm = false
+    @State private var showStripeConnect = false
 
     private let presetColors: [(String, String)] = [
         ("60A5FA", "Blue"),
@@ -25,10 +26,10 @@ struct SettingsView: View {
                     // Header
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Settings")
-                            .font(.system(size: 22, weight: .bold))
+                            .font(ForMe.font(.bold, size: 22))
                             .foregroundColor(ForMe.textPrimary)
                         Text("Customize your app appearance")
-                            .font(.system(size: 13))
+                            .font(ForMe.font(.regular, size: 13))
                             .foregroundColor(ForMe.stone400)
                     }
                     .padding(.horizontal, ForMe.space6)
@@ -48,10 +49,10 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: ForMe.space3) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Accent Color")
-                                .font(.system(size: 14, weight: .semibold))
+                                .font(ForMe.font(.semibold, size: 14))
                                 .foregroundColor(ForMe.textPrimary)
                             Text("Pick your favorite accent")
-                                .font(.system(size: 12))
+                                .font(ForMe.font(.regular, size: 12))
                                 .foregroundColor(ForMe.stone400)
                         }
 
@@ -70,7 +71,7 @@ struct SettingsView: View {
                                                     .padding(-3)
                                             )
                                         Text(name)
-                                            .font(.system(size: 11))
+                                            .font(ForMe.font(.regular, size: 11))
                                             .foregroundColor(ForMe.stone500)
                                     }
                                 }
@@ -90,12 +91,15 @@ struct SettingsView: View {
                     // Account section
                     VStack(alignment: .leading, spacing: 0) {
                         Text("Account")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(ForMe.font(.semibold, size: 12))
                             .foregroundColor(ForMe.stone400)
                             .padding(.horizontal, ForMe.space4)
                             .padding(.bottom, 8)
 
                         accountRow(icon: "person.crop.circle", label: "Edit Profile") {}
+                        accountRow(icon: "banknote", label: "Payouts") {
+                            showStripeConnect = true
+                        }
                         accountRow(icon: "bell", label: "Notifications") {}
                         accountRow(icon: "lock", label: "Privacy") {}
                         accountRow(icon: "questionmark.circle", label: "Help & Support") {}
@@ -107,7 +111,7 @@ struct SettingsView: View {
                         showLogoutConfirm = true
                     } label: {
                         Text("Sign Out")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(ForMe.font(.semibold, size: 14))
                             .foregroundColor(ForMe.statusCancelled)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
@@ -143,6 +147,9 @@ struct SettingsView: View {
                 }
                 Button("Cancel", role: .cancel) {}
             }
+            .sheet(isPresented: $showStripeConnect) {
+                StripeConnectView()
+            }
         }
     }
 
@@ -154,10 +161,10 @@ struct SettingsView: View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 14))
                     .foregroundColor(ForMe.textPrimary)
                 Text(subtitle)
-                    .font(.system(size: 12))
+                    .font(ForMe.font(.regular, size: 12))
                     .foregroundColor(ForMe.stone400)
             }
             Spacer()
@@ -181,7 +188,7 @@ struct SettingsView: View {
                     .foregroundColor(ForMe.stone600)
                     .frame(width: 24)
                 Text(label)
-                    .font(.system(size: 14))
+                    .font(ForMe.font(.regular, size: 14))
                     .foregroundColor(ForMe.textPrimary)
                 Spacer()
                 Image(systemName: "chevron.right")

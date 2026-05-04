@@ -22,6 +22,7 @@ class AuthViewModel: ObservableObject {
         do {
             currentUser = try await api.getCurrentUser()
             isAuthenticated = true
+            RealtimeService.shared.start()
         } catch {
             isAuthenticated = false
             currentUser = nil
@@ -37,6 +38,7 @@ class AuthViewModel: ObservableObject {
             let response = try await api.login(email: email, password: password)
             currentUser = response.user
             isAuthenticated = true
+            RealtimeService.shared.start()
             isLoading = false
             return true
         } catch let apiError as APIError {
@@ -58,6 +60,7 @@ class AuthViewModel: ObservableObject {
             let response = try await api.register(request)
             currentUser = response.user
             isAuthenticated = true
+            RealtimeService.shared.start()
             isLoading = false
             return true
         } catch let apiError as APIError {
@@ -72,6 +75,7 @@ class AuthViewModel: ObservableObject {
     }
 
     func logout() {
+        RealtimeService.shared.stop()
         api.logout()
         currentUser = nil
         isAuthenticated = false

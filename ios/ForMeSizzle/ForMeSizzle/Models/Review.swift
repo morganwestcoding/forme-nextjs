@@ -17,3 +17,18 @@ struct Review: Codable, Identifiable {
     var user: CompactUser?
     var isVerifiedBooking: Bool?
 }
+
+struct SubmitReviewRequest: Codable {
+    let rating: Int
+    let comment: String?
+    let targetType: String
+    let targetUserId: String?
+    let targetListingId: String?
+    let reservationId: String?
+}
+
+struct ReviewHelpfulResponse: Codable {
+    let success: Bool
+    let helpfulVotes: [String]
+    let hasVoted: Bool
+}

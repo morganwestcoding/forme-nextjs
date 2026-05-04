@@ -19,10 +19,10 @@ struct NotificationsView: View {
                             .font(.system(size: 40))
                             .foregroundColor(ForMe.stone300)
                         Text("No notifications yet")
-                            .font(.system(size: 15, weight: .medium))
+                            .font(ForMe.font(.medium, size: 15))
                             .foregroundColor(ForMe.textSecondary)
                         Text("You'll see updates here")
-                            .font(.system(size: 13))
+                            .font(ForMe.font(.regular, size: 13))
                             .foregroundColor(ForMe.textTertiary)
                     }
                     Spacer()
@@ -60,7 +60,7 @@ struct NotificationsView: View {
                         Button("Read all") {
                             Task { await markAllRead() }
                         }
-                        .font(.system(size: 13, weight: .medium))
+                        .font(ForMe.font(.medium, size: 13))
                         .foregroundColor(ForMe.textPrimary)
                     }
                 }
@@ -70,6 +70,13 @@ struct NotificationsView: View {
             }
             .refreshable {
                 await loadNotifications()
+            }
+            .onReceive(RealtimeService.shared.notificationCreated) { notification in
+                guard !notifications.contains(where: { $0.id == notification.id }) else { return }
+                withAnimation(.easeOut(duration: 0.25)) {
+                    notifications.insert(notification, at: 0)
+                }
+                Haptics.tap()
             }
         }
     }
@@ -132,14 +139,14 @@ struct NotificationRow: View {
                 // Content
                 VStack(alignment: .leading, spacing: 4) {
                     Text(notification.content)
-                        .font(.system(size: 13.5))
+                        .font(ForMe.font(.regular, size: 13.5))
                         .foregroundColor(notification.isRead ? ForMe.stone500 : ForMe.textPrimary)
                         .fontWeight(notification.isRead ? .regular : .medium)
                         .multilineTextAlignment(.leading)
                         .lineSpacing(2)
 
                     Text(formatTimeAgo(notification.createdAt))
-                        .font(.system(size: 11.5))
+                        .font(ForMe.font(.regular, size: 11.5))
                         .foregroundColor(ForMe.stone400)
                 }
 

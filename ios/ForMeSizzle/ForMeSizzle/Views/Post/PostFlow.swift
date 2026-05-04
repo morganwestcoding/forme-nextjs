@@ -1,5 +1,6 @@
 import SwiftUI
 import PhotosUI
+import UniformTypeIdentifiers
 
 // MARK: - Multi-step Post Creation Flow (matches web PostFlow)
 
@@ -11,6 +12,7 @@ struct PostFlow: View {
     @State private var textContent = ""
     @State private var selectedImage: PhotosPickerItem?
     @State private var imageData: Data?
+    @State private var isVideo: Bool = false
     @State private var isSubmitting = false
     @State private var error: String?
     @State private var showSourcePicker = false
@@ -54,16 +56,7 @@ struct PostFlow: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Progress bar
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        Rectangle().fill(ForMe.stone100).frame(height: 3)
-                        Rectangle().fill(ForMe.stone900)
-                            .frame(width: geo.size.width * progress, height: 3)
-                            .animation(.easeInOut(duration: 0.3), value: progress)
-                    }
-                }
-                .frame(height: 3)
+                FlowProgressBar(progress: progress)
 
                 Group {
                     switch step {
@@ -175,7 +168,7 @@ struct PostFlow: View {
                                 .font(.system(size: 36))
                                 .foregroundColor(ForMe.stone400)
                             Text("Tap to choose media")
-                                .font(.system(size: 14, weight: .medium))
+                                .font(ForMe.font(.medium, size: 14))
                                 .foregroundColor(ForMe.textSecondary)
                         }
                         .frame(height: 360)
@@ -201,7 +194,9 @@ struct PostFlow: View {
                 .photosPicker(isPresented: $showPhotoLibrary, selection: $selectedImage, matching: .any(of: [.images, .videos]))
                 .onChange(of: selectedImage) { _, newValue in
                     Task {
-                        if let data = try? await newValue?.loadTransferable(type: Data.self) {
+                        guard let item = newValue else { return }
+                        isVideo = item.supportedContentTypes.contains { $0.conforms(to: .movie) }
+                        if let data = try? await item.loadTransferable(type: Data.self) {
                             imageData = data
                         }
                     }
@@ -223,7 +218,7 @@ struct PostFlow: View {
                 .padding(.top, ForMe.space4)
 
                 TextEditor(text: $textContent)
-                    .font(.system(size: 16))
+                    .font(ForMe.font(.regular, size: 16))
                     .scrollContentBackground(.hidden)
                     .frame(minHeight: 200)
                     .padding(ForMe.space3)
@@ -251,7 +246,7 @@ struct PostFlow: View {
                 .padding(.top, ForMe.space4)
 
                 TextEditor(text: $caption)
-                    .font(.system(size: 16))
+                    .font(ForMe.font(.regular, size: 16))
                     .scrollContentBackground(.hidden)
                     .frame(minHeight: 150)
                     .padding(ForMe.space3)
@@ -288,7 +283,7 @@ struct PostFlow: View {
                                 endPoint: .bottomTrailing
                             )
                             Text(textContent)
-                                .font(.system(size: 18, weight: .medium))
+                                .font(ForMe.font(.medium, size: 18))
                                 .foregroundColor(.white.opacity(0.9))
                                 .multilineTextAlignment(.center)
                                 .padding(30)
@@ -308,7 +303,7 @@ struct PostFlow: View {
 
                         if !caption.isEmpty {
                             Text(caption)
-                                .font(.system(size: 14))
+                                .font(ForMe.font(.regular, size: 14))
                                 .foregroundColor(ForMe.textSecondary)
                                 .padding(.horizontal, ForMe.space2)
                         }
@@ -336,7 +331,7 @@ struct PostFlow: View {
                         .frame(maxWidth: .infinity)
                 } else {
                     Text(step == .preview ? "Share Post" : "Continue")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 15))
                         .frame(maxWidth: .infinity)
                 }
             }
@@ -371,12 +366,36 @@ struct PostFlow: View {
     private func submit() async {
         isSubmitting = true
         do {
-            // For media posts, upload would happen here. Stubbed: just send caption/text.
+            var imageSrc: String? = nil
+            var mediaUrl: String? = nil
+            var mediaType: String? = nil
+
+            if postType == .media, let data = imageData {
+                if isVideo {
+                    let resp = try await CloudinaryService.shared.uploadMedia(
+                        data: data,
+                        folder: .posts,
+                        resourceType: .auto,
+                        mimeType: "video/mp4",
+                        filename: "post.mp4"
+                    )
+                    mediaUrl = resp.secure_url
+                    mediaType = "video"
+                } else if let image = UIImage(data: data) {
+                    imageSrc = try await CloudinaryService.shared.uploadImage(
+                        image,
+                        folder: .posts,
+                        targetWidth: 1080,
+                        targetHeight: 1080
+                    )
+                }
+            }
+
             let request = CreatePostRequest(
                 content: postType == .text ? textContent : caption,
-                imageSrc: nil, // TODO: upload to Cloudinary
-                mediaUrl: nil,
-                mediaType: nil,
+                imageSrc: imageSrc,
+                mediaUrl: mediaUrl,
+                mediaType: mediaType,
                 beforeImageSrc: nil,
                 category: nil,
                 location: nil,
@@ -413,10 +432,10 @@ struct PostTypeButton: View {
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(title)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 15))
                         .foregroundColor(ForMe.textPrimary)
                     Text(subtitle)
-                        .font(.system(size: 12))
+                        .font(ForMe.font(.regular, size: 12))
                         .foregroundColor(ForMe.textTertiary)
                 }
 

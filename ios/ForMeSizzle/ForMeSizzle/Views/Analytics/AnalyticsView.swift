@@ -64,11 +64,11 @@ struct AnalyticsView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Analytics")
-                .font(.system(size: 24, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 24))
                 .tracking(-0.5)
                 .foregroundColor(ForMe.textPrimary)
             Text("Welcome back, \(authViewModel.currentUser?.name ?? "there")")
-                .font(.system(size: 14))
+                .font(ForMe.font(.regular, size: 14))
                 .foregroundColor(ForMe.stone400)
         }
         .padding(.horizontal)
@@ -83,7 +83,7 @@ struct AnalyticsView: View {
                         withAnimation(.easeInOut(duration: 0.2)) { selectedTab = tab }
                     } label: {
                         Text(tab.title)
-                            .font(.system(size: 13, weight: .medium))
+                            .font(ForMe.font(.medium, size: 13))
                             .foregroundColor(selectedTab == tab ? .white : ForMe.stone500)
                             .padding(.horizontal, 16)
                             .frame(height: 36)
@@ -138,11 +138,11 @@ struct AnalyticsView: View {
                 .font(.system(size: 28))
                 .foregroundColor(ForMe.stone300)
             Text("Couldn't load analytics")
-                .font(.system(size: 14, weight: .medium))
+                .font(ForMe.font(.medium, size: 14))
                 .foregroundColor(ForMe.stone500)
             if let err = viewModel.error {
                 Text(err)
-                    .font(.system(size: 12))
+                    .font(ForMe.font(.regular, size: 12))
                     .foregroundColor(ForMe.stone400)
                     .multilineTextAlignment(.center)
             }
@@ -212,7 +212,7 @@ private extension AnalyticsView {
                         AxisGridLine()
                             .foregroundStyle(ForMe.stone100)
                         AxisValueLabel()
-                            .font(.system(size: 11, weight: .medium))
+                            .font(ForMe.font(.medium, size: 11))
                             .foregroundStyle(ForMe.stone400)
                     }
                 }
@@ -221,7 +221,7 @@ private extension AnalyticsView {
                         AxisValueLabel {
                             if let s = value.as(String.self) {
                                 Text(axisLabel(s))
-                                    .font(.system(size: 11, weight: .medium))
+                                    .font(ForMe.font(.medium, size: 11))
                                     .foregroundStyle(ForMe.stone500)
                             }
                         }
@@ -272,19 +272,19 @@ private extension AnalyticsView {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(service.serviceName)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(ForMe.font(.medium, size: 14))
                         .foregroundColor(ForMe.textPrimary)
                     Text(service.category)
-                        .font(.system(size: 12))
+                        .font(ForMe.font(.regular, size: 12))
                         .foregroundColor(ForMe.stone500)
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
                     Text("\(service.bookings)")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 14))
                         .foregroundColor(ForMe.textPrimary)
                     Text(currency(service.revenue))
-                        .font(.system(size: 12))
+                        .font(ForMe.font(.regular, size: 12))
                         .foregroundColor(ForMe.stone500)
                 }
             }
@@ -298,19 +298,19 @@ private extension AnalyticsView {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(res.serviceName)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(ForMe.font(.medium, size: 14))
                         .foregroundColor(ForMe.textPrimary)
                     Text("\(res.user.name ?? "Customer") · \(shortDate(res.date))")
-                        .font(.system(size: 12))
+                        .font(ForMe.font(.regular, size: 12))
                         .foregroundColor(ForMe.stone500)
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 4) {
                     Text(currency(res.totalPrice))
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 14))
                         .foregroundColor(ForMe.textPrimary)
                     Text(res.status.prefix(1).uppercased() + res.status.dropFirst())
-                        .font(.system(size: 11, weight: .medium))
+                        .font(ForMe.font(.medium, size: 11))
                         .foregroundColor(statusColor(res.status))
                 }
             }
@@ -322,7 +322,7 @@ private extension AnalyticsView {
     func recentPostRow(_ post: AnalyticsData.RecentActivity.PostSummary, isLast: Bool) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(post.content)
-                .font(.system(size: 14))
+                .font(ForMe.font(.regular, size: 14))
                 .foregroundColor(ForMe.stone700)
                 .lineLimit(2)
 
@@ -333,7 +333,7 @@ private extension AnalyticsView {
                     .labelStyle(.titleAndIcon)
                 Text(shortDate(post.createdAt))
             }
-            .font(.system(size: 12))
+            .font(ForMe.font(.regular, size: 12))
             .foregroundColor(ForMe.stone500)
 
             if !isLast { Divider().background(ForMe.stone100).padding(.top, 4) }
@@ -351,15 +351,15 @@ private extension AnalyticsView {
             // Header row
             HStack {
                 Text("Listing")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 12))
                     .foregroundColor(ForMe.stone500)
                 Spacer()
                 Text("Reservations")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 12))
                     .foregroundColor(ForMe.stone500)
                     .frame(width: 90, alignment: .trailing)
                 Text("Revenue")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 12))
                     .foregroundColor(ForMe.stone500)
                     .frame(width: 80, alignment: .trailing)
             }
@@ -378,28 +378,28 @@ private extension AnalyticsView {
                         HStack(alignment: .top) {
                             VStack(alignment: .leading, spacing: 3) {
                                 Text(listing.title)
-                                    .font(.system(size: 14, weight: .medium))
+                                    .font(ForMe.font(.medium, size: 14))
                                     .foregroundColor(ForMe.textPrimary)
                                     .lineLimit(1)
                                 HStack(spacing: 6) {
                                     Text(listing.category)
-                                        .font(.system(size: 11, weight: .medium))
+                                        .font(ForMe.font(.medium, size: 11))
                                         .foregroundColor(ForMe.stone600)
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 2)
                                         .background(Capsule().fill(ForMe.stone100))
                                     Text(shortDate(listing.createdAt))
-                                        .font(.system(size: 11))
+                                        .font(ForMe.font(.regular, size: 11))
                                         .foregroundColor(ForMe.stone400)
                                 }
                             }
                             Spacer()
                             Text("\(listing.reservations)")
-                                .font(.system(size: 14))
+                                .font(ForMe.font(.regular, size: 14))
                                 .foregroundColor(ForMe.textPrimary)
                                 .frame(width: 90, alignment: .trailing)
                             Text(currency(listing.revenue))
-                                .font(.system(size: 14, weight: .semibold))
+                                .font(ForMe.font(.semibold, size: 14))
                                 .foregroundColor(ForMe.textPrimary)
                                 .frame(width: 80, alignment: .trailing)
                         }
@@ -458,7 +458,7 @@ private extension AnalyticsView {
                         AxisGridLine()
                             .foregroundStyle(ForMe.stone100)
                         AxisValueLabel()
-                            .font(.system(size: 11, weight: .medium))
+                            .font(ForMe.font(.medium, size: 11))
                             .foregroundStyle(ForMe.stone400)
                     }
                 }
@@ -467,7 +467,7 @@ private extension AnalyticsView {
                         AxisValueLabel {
                             if let s = value.as(String.self) {
                                 Text(axisLabel(s))
-                                    .font(.system(size: 11, weight: .medium))
+                                    .font(ForMe.font(.medium, size: 11))
                                     .foregroundStyle(ForMe.stone500)
                             }
                         }
@@ -492,7 +492,7 @@ private extension AnalyticsView {
                         AxisMarks(values: .automatic(desiredCount: 3)) { _ in
                             AxisGridLine().foregroundStyle(ForMe.stone100)
                             AxisValueLabel()
-                                .font(.system(size: 11, weight: .medium))
+                                .font(ForMe.font(.medium, size: 11))
                                 .foregroundStyle(ForMe.stone400)
                         }
                     }
@@ -501,7 +501,7 @@ private extension AnalyticsView {
                             AxisValueLabel(orientation: .verticalReversed) {
                                 if let s = value.as(String.self) {
                                     Text(s)
-                                        .font(.system(size: 11, weight: .medium))
+                                        .font(ForMe.font(.medium, size: 11))
                                         .foregroundStyle(ForMe.stone500)
                                 }
                             }
@@ -540,7 +540,7 @@ private extension AnalyticsView {
                         AxisGridLine()
                             .foregroundStyle(ForMe.stone100)
                         AxisValueLabel()
-                            .font(.system(size: 11, weight: .medium))
+                            .font(ForMe.font(.medium, size: 11))
                             .foregroundStyle(ForMe.stone400)
                     }
                 }
@@ -549,7 +549,7 @@ private extension AnalyticsView {
                         AxisValueLabel {
                             if let s = value.as(String.self) {
                                 Text(axisLabel(s))
-                                    .font(.system(size: 11, weight: .medium))
+                                    .font(ForMe.font(.medium, size: 11))
                                     .foregroundStyle(ForMe.stone500)
                             }
                         }
@@ -597,10 +597,10 @@ private extension AnalyticsView {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .firstTextBaseline, spacing: 4) {
                 Text(String(format: "%.1f", reviews.averageRating))
-                    .font(.system(size: 28, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 28))
                     .foregroundColor(ForMe.textPrimary)
                 Text("/5")
-                    .font(.system(size: 14))
+                    .font(ForMe.font(.regular, size: 14))
                     .foregroundColor(ForMe.stone400)
             }
             HStack(spacing: 2) {
@@ -618,10 +618,10 @@ private extension AnalyticsView {
     func totalReviewsContent(_ reviews: AnalyticsData.ReviewStatsBlock) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("\(reviews.totalReviews)")
-                .font(.system(size: 28, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 28))
                 .foregroundColor(ForMe.textPrimary)
             Text("Reviews received")
-                .font(.system(size: 12))
+                .font(ForMe.font(.regular, size: 12))
                 .foregroundColor(ForMe.stone500)
         }
     }
@@ -633,10 +633,10 @@ private extension AnalyticsView {
             : 0
         return VStack(alignment: .leading, spacing: 8) {
             Text("\(count)")
-                .font(.system(size: 28, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 28))
                 .foregroundColor(ForMe.textPrimary)
             Text(reviews.totalReviews > 0 ? "\(pct)% of total" : "No reviews yet")
-                .font(.system(size: 12))
+                .font(ForMe.font(.regular, size: 12))
                 .foregroundColor(ForMe.stone500)
         }
     }
@@ -649,7 +649,7 @@ private extension AnalyticsView {
         return HStack(spacing: 12) {
             HStack(spacing: 4) {
                 Text("\(star)")
-                    .font(.system(size: 13, weight: .medium))
+                    .font(ForMe.font(.medium, size: 13))
                     .foregroundColor(ForMe.stone700)
                 GoldStar(size: 12)
             }
@@ -665,7 +665,7 @@ private extension AnalyticsView {
             .frame(height: 10)
 
             Text("\(count)")
-                .font(.system(size: 13))
+                .font(ForMe.font(.regular, size: 13))
                 .foregroundColor(ForMe.stone500)
                 .frame(width: 36, alignment: .trailing)
         }
@@ -677,10 +677,10 @@ private extension AnalyticsView {
             VStack(spacing: 10) {
                 GoldStar(size: 40, fillColor: ForMe.stone200)
                 Text("No reviews yet")
-                    .font(.system(size: 14))
+                    .font(ForMe.font(.regular, size: 14))
                     .foregroundColor(ForMe.stone500)
                 Text("Start collecting reviews to see goal progress")
-                    .font(.system(size: 12))
+                    .font(ForMe.font(.regular, size: 12))
                     .foregroundColor(ForMe.stone400)
                     .multilineTextAlignment(.center)
             }
@@ -692,10 +692,10 @@ private extension AnalyticsView {
                     ForEach(0..<5, id: \.self) { _ in GoldStar(size: 24) }
                 }
                 Text("Perfect 5-star rating!")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 16))
                     .foregroundColor(ForMe.textPrimary)
                 Text("You've achieved the highest possible rating")
-                    .font(.system(size: 12))
+                    .font(ForMe.font(.regular, size: 12))
                     .foregroundColor(ForMe.stone500)
             }
             .frame(maxWidth: .infinity)
@@ -705,11 +705,11 @@ private extension AnalyticsView {
                 // Current rating summary
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Current rating")
-                        .font(.system(size: 13))
+                        .font(ForMe.font(.regular, size: 13))
                         .foregroundColor(ForMe.stone600)
                     HStack(spacing: 8) {
                         Text(String(format: "%.1f", reviews.averageRating))
-                            .font(.system(size: 22, weight: .bold))
+                            .font(ForMe.font(.bold, size: 22))
                             .foregroundColor(ForMe.textPrimary)
                         HStack(spacing: 2) {
                             ForEach(1...5, id: \.self) { s in
@@ -721,7 +721,7 @@ private extension AnalyticsView {
                             }
                         }
                         Text("from \(reviews.totalReviews) reviews")
-                            .font(.system(size: 12))
+                            .font(ForMe.font(.regular, size: 12))
                             .foregroundColor(ForMe.stone500)
                     }
                 }
@@ -749,11 +749,11 @@ private extension AnalyticsView {
             HStack {
                 HStack(spacing: 6) {
                     Text(String(format: "%.1f", target))
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 16))
                         .foregroundColor(ForMe.textPrimary)
                     GoldStar(size: 14)
                     Text("rating goal")
-                        .font(.system(size: 12))
+                        .font(ForMe.font(.regular, size: 12))
                         .foregroundColor(ForMe.stone500)
                 }
                 Spacer()
@@ -762,12 +762,12 @@ private extension AnalyticsView {
                         Image(systemName: "checkmark")
                             .font(.system(size: 11, weight: .bold))
                         Text("Achieved")
-                            .font(.system(size: 12, weight: .medium))
+                            .font(ForMe.font(.medium, size: 12))
                     }
                     .foregroundColor(Color(hex: "059669"))
                 } else {
                     Text("\(needed) more 5-star \(needed == 1 ? "review" : "reviews") needed")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(ForMe.font(.medium, size: 12))
                         .foregroundColor(ForMe.textPrimary)
                 }
             }
@@ -795,7 +795,7 @@ private extension AnalyticsView {
     func bigReviewCard(title: String, content: AnyView) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
-                .font(.system(size: 11, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 11))
                 .foregroundColor(ForMe.stone400)
             content
         }
@@ -817,7 +817,7 @@ private extension AnalyticsView {
         HStack {
             Spacer()
             Text(text)
-                .font(.system(size: 13))
+                .font(ForMe.font(.regular, size: 13))
                 .foregroundColor(ForMe.stone400)
             Spacer()
         }
@@ -902,7 +902,7 @@ private struct RangeCapsuleButton: View {
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(ForMe.stone500)
                 Text(label)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 12))
                     .foregroundColor(ForMe.textPrimary)
                     .lineLimit(1)
                 Image(systemName: "chevron.down")
@@ -954,12 +954,12 @@ struct AnalyticsCard<Content: View, Toolbar: View>: View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 15))
                         .foregroundColor(ForMe.textPrimary)
                         .tracking(-0.2)
                     if let subtitle {
                         Text(subtitle)
-                            .font(.system(size: 11, weight: .medium))
+                            .font(ForMe.font(.medium, size: 11))
                             .foregroundColor(ForMe.stone500)
                     }
                 }
@@ -990,7 +990,7 @@ struct StatCard: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text(title)
-                    .font(.system(size: 12))
+                    .font(ForMe.font(.regular, size: 12))
                     .foregroundColor(ForMe.stone400)
                     .lineLimit(1)
                 Spacer()
@@ -999,14 +999,14 @@ struct StatCard: View {
                         Image(systemName: g >= 0 ? "arrow.up.right" : "arrow.down.right")
                             .font(.system(size: 10, weight: .semibold))
                         Text(String(format: "%.1f%%", abs(g)))
-                            .font(.system(size: 11, weight: .medium))
+                            .font(ForMe.font(.medium, size: 11))
                     }
                     .foregroundColor(g >= 0 ? Color(hex: "059669") : Color(hex: "DC2626"))
                 }
             }
 
             Text(value)
-                .font(.system(size: 24, weight: .bold))
+                .font(ForMe.font(.bold, size: 24))
                 .tracking(-0.5)
                 .foregroundColor(ForMe.textPrimary)
                 .monospacedDigit()

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { apiError, apiErrorCode } from "@/app/utils/api";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { getUserFromRequest } from "@/app/utils/mobileAuth";
 import prisma from "@/app/libs/prismadb";
 import Stripe from "stripe";
 
@@ -11,22 +12,35 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export async function GET(request: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  // Accept either mobile bearer token or web NextAuth session.
+  const mobileUser = await getUserFromRequest(request);
+  const session = mobileUser ? null : await getServerSession(authOptions);
+  if (!mobileUser && !session?.user?.email) {
     return apiErrorCode('UNAUTHORIZED');
   }
 
   try {
-    const currentUser = await prisma.user.findUnique({
-      where: { email: session.user.email as string },
-      select: {
-        id: true,
-        stripeConnectAccountId: true,
-        stripeConnectOnboardingComplete: true,
-        stripeConnectChargesEnabled: true,
-        stripeConnectPayoutsEnabled: true,
-      },
-    });
+    const currentUser = mobileUser
+      ? await prisma.user.findUnique({
+          where: { id: mobileUser.id },
+          select: {
+            id: true,
+            stripeConnectAccountId: true,
+            stripeConnectOnboardingComplete: true,
+            stripeConnectChargesEnabled: true,
+            stripeConnectPayoutsEnabled: true,
+          },
+        })
+      : await prisma.user.findUnique({
+          where: { email: session!.user!.email as string },
+          select: {
+            id: true,
+            stripeConnectAccountId: true,
+            stripeConnectOnboardingComplete: true,
+            stripeConnectChargesEnabled: true,
+            stripeConnectPayoutsEnabled: true,
+          },
+        });
 
     if (!currentUser) {
       return apiErrorCode('USER_NOT_FOUND');

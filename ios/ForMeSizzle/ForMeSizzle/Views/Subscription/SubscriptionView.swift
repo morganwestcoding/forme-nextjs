@@ -115,11 +115,11 @@ struct SubscriptionView: View {
         VStack(alignment: .leading, spacing: 4) {
             if isOnboarding {
                 Text("Final step")
-                    .font(.system(size: 11, weight: .medium))
+                    .font(ForMe.font(.medium, size: 11))
                     .foregroundColor(ForMe.stone400)
             }
             Text(isOnboarding ? "Choose Your Plan" : "Subscription")
-                .font(.system(size: 26, weight: .bold))
+                .font(ForMe.font(.bold, size: 26))
                 .foregroundColor(ForMe.textPrimary)
                 .tracking(-0.4)
             Group {
@@ -135,7 +135,7 @@ struct SubscriptionView: View {
                         .foregroundColor(ForMe.stone400)
                 }
             }
-            .font(.system(size: 14))
+            .font(ForMe.font(.regular, size: 14))
             .foregroundColor(ForMe.stone400)
         }
     }
@@ -144,11 +144,11 @@ struct SubscriptionView: View {
         VStack(alignment: .leading, spacing: 14) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("CURRENT PLAN")
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 10))
                     .tracking(0.8)
                     .foregroundColor(ForMe.stone400)
                 Text(viewModel.currentPlan.displayName)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(ForMe.font(.bold, size: 20))
                     .foregroundColor(ForMe.textPrimary)
 
                 let status = viewModel.currentUser?.subscriptionStatus ?? ""
@@ -156,12 +156,12 @@ struct SubscriptionView: View {
                 let renews = status == "active" ? "Renews" : "Access until"
                 if let endRaw, let formatted = formatDate(endRaw) {
                     Text("\(renews) \(formatted)")
-                        .font(.system(size: 13))
+                        .font(ForMe.font(.regular, size: 13))
                         .foregroundColor(ForMe.stone500)
                 }
                 if let interval = viewModel.currentUser?.subscriptionBillingInterval {
                     Text("Billed \(interval == "year" ? "yearly" : "monthly")")
-                        .font(.system(size: 13))
+                        .font(ForMe.font(.regular, size: 13))
                         .foregroundColor(ForMe.stone500)
                 }
             }
@@ -169,7 +169,7 @@ struct SubscriptionView: View {
             HStack(spacing: 8) {
                 Button { viewModel.openBillingPortal() } label: {
                     Text("Billing & Invoices")
-                        .font(.system(size: 13, weight: .medium))
+                        .font(ForMe.font(.medium, size: 13))
                         .foregroundColor(ForMe.stone600)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 10)
@@ -184,7 +184,7 @@ struct SubscriptionView: View {
 
                 Button { viewModel.showCancelConfirm = true } label: {
                     Text("Cancel Plan")
-                        .font(.system(size: 13, weight: .medium))
+                        .font(ForMe.font(.medium, size: 13))
                         .foregroundColor(.red)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 10)
@@ -216,7 +216,7 @@ struct SubscriptionView: View {
                     withAnimation(.easeOut(duration: 0.18)) { viewModel.billing = interval }
                 } label: {
                     Text(interval.displayName)
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 13))
                         .foregroundColor(viewModel.billing == interval ? .white : ForMe.stone500)
                         .padding(.horizontal, 18)
                         .padding(.vertical, 9)
@@ -254,7 +254,7 @@ struct SubscriptionView: View {
         HStack {
             Spacer()
             Text("By selecting a plan, you agree to our Terms & Privacy Policy.")
-                .font(.system(size: 11))
+                .font(ForMe.font(.regular, size: 11))
                 .foregroundColor(ForMe.stone400)
                 .multilineTextAlignment(.center)
             Spacer()
@@ -269,7 +269,7 @@ struct SubscriptionView: View {
                 .frame(height: 1)
                 .padding(.vertical, 8)
             Text("Feature Comparison")
-                .font(.system(size: 17, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 17))
                 .foregroundColor(ForMe.textPrimary)
 
             FeatureComparisonTable()
@@ -326,20 +326,26 @@ private struct PlanCard: View {
             if let badge = plan.badge {
                 HStack {
                     Text(badge.uppercased())
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 10))
                         .tracking(0.8)
-                        .foregroundColor(.white)
+                        .foregroundColor(isPopular ? ForMe.stone900 : .white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 4)
-                        .background(Capsule().fill(ForMe.stone700))
+                        .background(
+                            Capsule().fill(
+                                isPopular
+                                    ? LinearGradient(colors: [.white, ForMe.stone200], startPoint: .top, endPoint: .bottom)
+                                    : LinearGradient(colors: [ForMe.stone700, ForMe.stone900], startPoint: .top, endPoint: .bottom)
+                            )
+                        )
                     Spacer()
                 }
             }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(plan.displayName)
-                    .font(.system(size: 12))
-                    .foregroundColor(isPopular ? ForMe.stone400 : ForMe.stone400)
+                    .font(ForMe.font(.regular, size: 12))
+                    .foregroundColor(isPopular ? ForMe.stone300 : ForMe.stone400)
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text(viewModel.priceDisplay(for: plan))
                         .font(.system(size: 34, weight: .bold, design: .rounded))
@@ -347,18 +353,18 @@ private struct PlanCard: View {
                         .tracking(-0.6)
                     if plan.monthlyPrice > 0 {
                         Text("/\(viewModel.billing.suffix)")
-                            .font(.system(size: 13))
-                            .foregroundColor(ForMe.stone400)
+                            .font(ForMe.font(.regular, size: 13))
+                            .foregroundColor(isPopular ? ForMe.stone300 : ForMe.stone400)
                     }
                 }
                 if viewModel.billing == .yearly, plan.monthlyPrice > 0 {
                     Text("Save $\(viewModel.yearlySavings(for: plan))/yr")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor(.green)
+                        .font(ForMe.font(.semibold, size: 11))
+                        .foregroundColor(isPopular ? Color(hex: "34D399") : .green)
                 }
                 Text(plan.feesLabel)
-                    .font(.system(size: 11))
-                    .foregroundColor(isPopular ? ForMe.stone400 : ForMe.stone500)
+                    .font(ForMe.font(.regular, size: 11))
+                    .foregroundColor(isPopular ? ForMe.stone300 : ForMe.stone500)
                     .padding(.top, 4)
             }
 
@@ -367,16 +373,17 @@ private struct PlanCard: View {
                     HStack(alignment: .firstTextBaseline, spacing: 10) {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 13))
-                            .foregroundColor(isPopular ? ForMe.stone400 : ForMe.stone400)
+                            .foregroundColor(isPopular ? .white : ForMe.stone400)
                         Text(feature)
-                            .font(.system(size: 13))
-                            .foregroundColor(isPopular ? ForMe.stone300 : ForMe.stone500)
+                            .font(ForMe.font(.regular, size: 13))
+                            .foregroundColor(isPopular ? ForMe.stone200 : ForMe.stone500)
                         Spacer(minLength: 0)
                     }
                 }
             }
 
             Button {
+                Haptics.confirm()
                 viewModel.selectPlan(plan, isOnboarding: isOnboarding)
             } label: {
                 HStack(spacing: 6) {
@@ -387,7 +394,7 @@ private struct PlanCard: View {
                             Image(systemName: "checkmark.circle.fill").font(.system(size: 12, weight: .semibold))
                         }
                         Text(viewModel.isSaving ? "Processing…" : ctaLabel)
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(ForMe.font(.semibold, size: 14))
                         if !isCurrent {
                             Image(systemName: "arrow.right").font(.system(size: 11, weight: .semibold))
                         }
@@ -410,8 +417,10 @@ private struct PlanCard: View {
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .background {
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(cardBackgroundStyle)
+        }
         .overlay(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .stroke(cardBorder, lineWidth: 1)
@@ -423,8 +432,17 @@ private struct PlanCard: View {
         isPopular ? .white : ForMe.textPrimary
     }
 
-    private var cardBackground: Color {
-        isPopular ? ForMe.stone900 : ForMe.surface
+    private var cardBackgroundStyle: AnyShapeStyle {
+        if isPopular {
+            return AnyShapeStyle(
+                LinearGradient(
+                    colors: [ForMe.stone800, ForMe.stone950],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+        }
+        return AnyShapeStyle(ForMe.surface)
     }
 
     private var cardBorder: Color {
@@ -458,13 +476,13 @@ private struct CancelConfirmSheet: View {
                     Image(systemName: "xmark").foregroundColor(.red).font(.system(size: 14, weight: .bold))
                 }
                 Text("Cancel Subscription?")
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 18))
                     .foregroundColor(ForMe.textPrimary)
                 Spacer()
             }
 
             Text("Your \(viewModel.currentPlan.displayName) plan will remain active until the end of your current billing period. After that you'll be downgraded to Freemium and lose access to premium features.")
-                .font(.system(size: 13))
+                .font(ForMe.font(.regular, size: 13))
                 .foregroundColor(ForMe.stone500)
 
             Spacer()
@@ -474,7 +492,7 @@ private struct CancelConfirmSheet: View {
                     dismiss()
                 } label: {
                     Text("Keep Plan")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 14))
                         .foregroundColor(ForMe.stone600)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -492,7 +510,7 @@ private struct CancelConfirmSheet: View {
                     dismiss()
                 } label: {
                     Text(viewModel.isSaving ? "Cancelling…" : "Cancel Subscription")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 14))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -517,29 +535,29 @@ private struct ChangePlanConfirmSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Change Plan")
-                .font(.system(size: 18, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 18))
                 .foregroundColor(ForMe.textPrimary)
 
             if let pending = viewModel.pendingPlanChange {
                 Text("Switch from ")
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone500)
                 + Text(viewModel.currentPlan.displayName)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 13))
                     .foregroundColor(ForMe.textPrimary)
                 + Text(" to ")
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone500)
                 + Text("\(pending.plan.displayName) (\(pending.interval.displayName.lowercased()))")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 13))
                     .foregroundColor(ForMe.textPrimary)
                 + Text("?")
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone500)
             }
 
             Text("The price difference will be prorated to your current billing cycle. Your new plan starts immediately.")
-                .font(.system(size: 13))
+                .font(ForMe.font(.regular, size: 13))
                 .foregroundColor(ForMe.stone500)
 
             Spacer()
@@ -547,7 +565,7 @@ private struct ChangePlanConfirmSheet: View {
             HStack(spacing: 10) {
                 Button { dismiss() } label: {
                     Text("Never Mind")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 14))
                         .foregroundColor(ForMe.stone600)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -565,7 +583,7 @@ private struct ChangePlanConfirmSheet: View {
                     dismiss()
                 } label: {
                     Text(viewModel.isSaving ? "Switching…" : "Confirm Switch")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 14))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -599,10 +617,10 @@ private struct CelebrationView: View {
 
             VStack(spacing: 8) {
                 Text(userName.map { "Welcome, \($0)!" } ?? "You're all set!")
-                    .font(.system(size: 24, weight: .bold))
+                    .font(ForMe.font(.bold, size: 24))
                     .foregroundColor(ForMe.textPrimary)
                 Text("Your subscription is active.")
-                    .font(.system(size: 15))
+                    .font(ForMe.font(.regular, size: 15))
                     .foregroundColor(ForMe.stone500)
             }
             .opacity(appeared ? 1 : 0)
@@ -612,7 +630,7 @@ private struct CelebrationView: View {
 
             Button(action: onContinue) {
                 Text("Continue")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 15))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 15)
@@ -657,19 +675,19 @@ private struct FeatureComparisonTable: View {
             // Header
             HStack {
                 Text("Feature")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 11))
                     .foregroundColor(ForMe.stone400)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Text("Freemium")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 11))
                     .foregroundColor(ForMe.stone400)
                     .frame(width: 72, alignment: .center)
                 Text("Gold")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 11))
                     .foregroundColor(ForMe.stone400)
                     .frame(width: 60, alignment: .center)
                 Text("Platinum")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 11))
                     .foregroundColor(ForMe.stone400)
                     .frame(width: 78, alignment: .center)
             }
@@ -680,14 +698,14 @@ private struct FeatureComparisonTable: View {
                 Rectangle().fill(ForMe.border).frame(height: 1)
                 HStack {
                     Text(row.label)
-                        .font(.system(size: 13))
+                        .font(ForMe.font(.regular, size: 13))
                         .foregroundColor(ForMe.textPrimary)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    Text(row.bronze).font(.system(size: 13)).foregroundColor(ForMe.stone500)
+                    Text(row.bronze).font(ForMe.font(.regular, size: 13)).foregroundColor(ForMe.stone500)
                         .frame(width: 72, alignment: .center)
-                    Text(row.gold).font(.system(size: 13)).foregroundColor(ForMe.stone500)
+                    Text(row.gold).font(ForMe.font(.regular, size: 13)).foregroundColor(ForMe.stone500)
                         .frame(width: 60, alignment: .center)
-                    Text(row.platinum).font(.system(size: 13)).foregroundColor(ForMe.stone500)
+                    Text(row.platinum).font(ForMe.font(.regular, size: 13)).foregroundColor(ForMe.stone500)
                         .frame(width: 78, alignment: .center)
                 }
                 .padding(.horizontal, 14)

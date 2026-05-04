@@ -1,19 +1,28 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { getUserFromRequest } from "@/app/utils/mobileAuth";
 import prisma from "@/app/libs/prismadb";
 import { apiError, apiErrorCode } from "@/app/utils/api";
 
 
-async function requireMaster() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+// Accepts either a NextAuth web session OR a mobile bearer token. Returns the
+// current admin user or an error.
+async function requireMaster(request: Request) {
+  const mobileUser = await getUserFromRequest(request);
+  const session = mobileUser ? null : await getServerSession(authOptions);
+  if (!mobileUser && !session?.user?.email) {
     return { error: apiError("Not authenticated", 401) };
   }
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email as string },
-    select: { id: true, role: true },
-  });
+  const user = mobileUser
+    ? await prisma.user.findUnique({
+        where: { id: mobileUser.id },
+        select: { id: true, role: true },
+      })
+    : await prisma.user.findUnique({
+        where: { email: session!.user!.email as string },
+        select: { id: true, role: true },
+      });
   if (!user || (user.role !== "master" && user.role !== "admin")) {
     return { error: apiErrorCode("FORBIDDEN") };
   }
@@ -38,7 +47,7 @@ export async function PATCH(
   request: Request,
   { params }: { params: { academyId: string; serviceId: string } }
 ) {
-  const auth = await requireMaster();
+  const auth = await requireMaster(request);
   if (auth.error) return auth.error;
 
   const found = await loadAcademyService(params.academyId, params.serviceId);
@@ -87,10 +96,10 @@ export async function PATCH(
 // Hard-deletes the service. Also strips the service id out of every active
 // student's Employee.serviceIds at this academy (Phase 8c).
 export async function DELETE(
-  _request: Request,
+  request: Request,
   { params }: { params: { academyId: string; serviceId: string } }
 ) {
-  const auth = await requireMaster();
+  const auth = await requireMaster(request);
   if (auth.error) return auth.error;
 
   const found = await loadAcademyService(params.academyId, params.serviceId);

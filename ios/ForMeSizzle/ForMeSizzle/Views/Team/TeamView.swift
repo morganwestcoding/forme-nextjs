@@ -4,6 +4,7 @@ struct TeamView: View {
     @StateObject private var viewModel = TeamViewModel()
     @State private var selectedTab = 0
     @State private var editingScheduleFor: TeamMember?
+    @State private var payDetailFor: TeamMember?
     @State private var showMessagesSheet = false
 
     private let tabs = ["Overview", "Schedule", "Bookings", "Pay"]
@@ -14,10 +15,10 @@ struct TeamView: View {
                 // Header
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Team")
-                        .font(.system(size: 24, weight: .bold))
+                        .font(ForMe.font(.bold, size: 24))
                         .foregroundColor(ForMe.textPrimary)
                     Text("Manage your staff and operations")
-                        .font(.system(size: 13))
+                        .font(ForMe.font(.regular, size: 13))
                         .foregroundColor(ForMe.stone400)
                 }
                 .padding(.horizontal)
@@ -32,7 +33,7 @@ struct TeamView: View {
                                     withAnimation { viewModel.selectedListingId = listing.id }
                                 } label: {
                                     Text(listing.title)
-                                        .font(.system(size: 13, weight: .semibold))
+                                        .font(ForMe.font(.semibold, size: 13))
                                         .foregroundColor(viewModel.selectedListingId == listing.id ? .white : ForMe.textPrimary)
                                         .padding(.horizontal, ForMe.space4)
                                         .padding(.vertical, 10)
@@ -61,7 +62,7 @@ struct TeamView: View {
                         .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
 
                         Text(listing.title)
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(ForMe.font(.semibold, size: 14))
                             .foregroundColor(ForMe.textPrimary)
                         Spacer()
                     }
@@ -85,7 +86,7 @@ struct TeamView: View {
                                 withAnimation { selectedTab = index }
                             } label: {
                                 Text(title)
-                                    .font(.system(size: 13, weight: .medium))
+                                    .font(ForMe.font(.medium, size: 13))
                                     .foregroundColor(selectedTab == index ? .white : ForMe.textSecondary)
                                     .padding(.horizontal, ForMe.space4)
                                     .frame(height: 36)
@@ -120,6 +121,9 @@ struct TeamView: View {
         .task {
             await viewModel.load()
         }
+        .refreshable {
+            await viewModel.load()
+        }
         .sheet(item: $editingScheduleFor) { member in
             EditScheduleSheet(member: member) { schedule in
                 Task {
@@ -133,6 +137,16 @@ struct TeamView: View {
                 MessagesListView()
             }
         }
+        .sheet(item: $payDetailFor) { member in
+            MemberPayDetailSheet(
+                member: member,
+                isOwner: viewModel.isOwnerOfSelected,
+                isSelf: member.userId == viewModel.currentUserId,
+                onDismissed: {
+                    Task { await viewModel.load() }
+                }
+            )
+        }
     }
 }
 
@@ -142,12 +156,12 @@ private extension TeamView {
     var overviewTab: some View {
         VStack(alignment: .leading, spacing: ForMe.space4) {
             Text("Team Members")
-                .font(.system(size: 17, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 17))
                 .foregroundColor(ForMe.textPrimary)
 
             if viewModel.members.isEmpty {
                 Text("No team members yet")
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone400)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 40)
@@ -177,12 +191,12 @@ private extension TeamView {
     var scheduleTab: some View {
         VStack(alignment: .leading, spacing: ForMe.space3) {
             Text("Weekly Schedule")
-                .font(.system(size: 17, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 17))
                 .foregroundColor(ForMe.textPrimary)
 
             if viewModel.members.isEmpty {
                 Text("No team members to schedule")
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone400)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 40)
@@ -205,12 +219,12 @@ private extension TeamView {
     var bookingsTab: some View {
         VStack(alignment: .leading, spacing: ForMe.space3) {
             Text("Recent Bookings")
-                .font(.system(size: 17, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 17))
                 .foregroundColor(ForMe.textPrimary)
 
             if viewModel.bookings.isEmpty {
                 Text("No bookings yet")
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone400)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 40)
@@ -237,31 +251,45 @@ private extension TeamView {
     var payTab: some View {
         VStack(alignment: .leading, spacing: ForMe.space4) {
             Text(viewModel.isOwnerOfSelected ? "Pay Agreements" : "My Pay")
-                .font(.system(size: 17, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 17))
                 .foregroundColor(ForMe.textPrimary)
 
             // Employee view — only own row + message-manager CTA when no agreement
             if !viewModel.isOwnerOfSelected, let me = viewModel.myMember {
-                MemberPayRow(member: me, showMessageManager: true) {
-                    showMessagesSheet = true
+                Button {
+                    Haptics.tap()
+                    payDetailFor = me
+                } label: {
+                    MemberPayRow(
+                        member: me,
+                        showMessageManager: true,
+                        onMessageManager: { showMessagesSheet = true }
+                    )
                 }
+                .buttonStyle(.plain)
             } else if viewModel.isOwnerOfSelected {
                 if viewModel.members.isEmpty {
                     Text("Add team members to set up pay agreements")
-                        .font(.system(size: 13))
+                        .font(ForMe.font(.regular, size: 13))
                         .foregroundColor(ForMe.stone400)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 40)
                 } else {
                     VStack(spacing: 12) {
                         ForEach(viewModel.members) { member in
-                            MemberPayRow(member: member, showMessageManager: false, onMessageManager: {})
+                            Button {
+                                Haptics.tap()
+                                payDetailFor = member
+                            } label: {
+                                MemberPayRow(member: member, showMessageManager: false, onMessageManager: {})
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
                 }
             } else {
                 Text("No pay info available")
-                    .font(.system(size: 13))
+                    .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone400)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 40)
@@ -284,11 +312,11 @@ struct TeamMemberRow: View {
             )
             VStack(alignment: .leading, spacing: 3) {
                 Text(member.fullName)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 15))
                     .foregroundColor(ForMe.textPrimary)
                 if let title = member.jobTitle {
                     Text(title)
-                        .font(.system(size: 12))
+                        .font(ForMe.font(.regular, size: 12))
                         .foregroundColor(ForMe.textTertiary)
                 }
             }
@@ -325,12 +353,12 @@ struct MemberScheduleCard: View {
             HStack(spacing: 10) {
                 DynamicAvatar(name: member.fullName, imageUrl: member.user?.image, size: .small)
                 Text(member.fullName)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 14))
                     .foregroundColor(ForMe.textPrimary)
                 Spacer()
                 Button(action: onEdit) {
                     Text("Edit")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(ForMe.font(.medium, size: 12))
                         .foregroundColor(ForMe.textPrimary)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
@@ -344,12 +372,12 @@ struct MemberScheduleCard: View {
                 ForEach(days, id: \.self) { day in
                     HStack {
                         Text(short[day] ?? day)
-                            .font(.system(size: 12, weight: .medium))
+                            .font(ForMe.font(.medium, size: 12))
                             .foregroundColor(ForMe.textSecondary)
                             .frame(width: 40, alignment: .leading)
                         Spacer()
                         Text(display(for: day))
-                            .font(.system(size: 12))
+                            .font(ForMe.font(.regular, size: 12))
                             .foregroundColor(display(for: day) == "Off" ? ForMe.stone400 : ForMe.textPrimary)
                     }
                     .padding(.vertical, 8)
@@ -395,19 +423,22 @@ struct MemberPayRow: View {
                 DynamicAvatar(name: member.fullName, imageUrl: member.user?.image, size: .small)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(member.fullName)
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 14))
                         .foregroundColor(ForMe.textPrimary)
                     Text(agreementLine)
-                        .font(.system(size: 11))
+                        .font(ForMe.font(.regular, size: 11))
                         .foregroundColor(ForMe.stone400)
                 }
                 Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(ForMe.stone400)
             }
 
             if showMessageManager && member.payAgreement == nil {
                 Button(action: onMessageManager) {
                     Text("Message your manager →")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(ForMe.font(.medium, size: 12))
                         .foregroundColor(ForMe.textPrimary)
                         .underline()
                 }

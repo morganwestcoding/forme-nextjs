@@ -27,6 +27,13 @@ struct MapsView: View {
             }
             .mapStyle(.standard(pointsOfInterest: .excludingAll))
             .ignoresSafeArea()
+            .onTapGesture {
+                if selectedListing != nil {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        selectedListing = nil
+                    }
+                }
+            }
 
             // Top search bar overlay
             VStack(spacing: 0) {
@@ -35,7 +42,7 @@ struct MapsView: View {
                         .font(.system(size: 15))
                         .foregroundColor(ForMe.textTertiary)
                     Text("Search this area")
-                        .font(.system(size: 15))
+                        .font(ForMe.font(.regular, size: 15))
                         .foregroundColor(ForMe.textTertiary)
                     Spacer()
                 }
@@ -85,7 +92,7 @@ private struct MapPin: View {
 
                 if let price = listing.priceRange {
                     Text(price)
-                        .font(.system(size: 10, weight: .bold))
+                        .font(ForMe.font(.bold, size: 10))
                         .foregroundColor(isSelected ? .white : ForMe.stone900)
                 } else {
                     Circle()
@@ -122,6 +129,25 @@ private struct SelectedListingCard: View {
     let listing: Listing
 
     var body: some View {
+        VStack(spacing: 0) {
+            Capsule()
+                .fill(ForMe.stone300)
+                .frame(width: 36, height: 4)
+                .padding(.top, 6)
+                .padding(.bottom, 8)
+
+            cardBody
+        }
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
+                .stroke(ForMe.border, lineWidth: 1)
+        )
+        .elevation(.level2)
+    }
+
+    private var cardBody: some View {
         HStack(spacing: 14) {
             // Thumbnail
             if let src = listing.imageSrc, let url = URL(string: src) {
@@ -136,13 +162,13 @@ private struct SelectedListingCard: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(listing.title)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 15))
                     .foregroundColor(ForMe.textPrimary)
                     .lineLimit(1)
 
                 if !listing.displayLocation.isEmpty {
                     Text(listing.displayLocation)
-                        .font(.system(size: 12))
+                        .font(ForMe.font(.regular, size: 12))
                         .foregroundColor(ForMe.textSecondary)
                 }
 
@@ -150,14 +176,14 @@ private struct SelectedListingCard: View {
                     if let rating = listing.rating, rating > 0 {
                         GoldStar(size: 10)
                         Text(String(format: "%.1f", rating))
-                            .font(.system(size: 12, weight: .medium))
+                            .font(ForMe.font(.medium, size: 12))
                             .foregroundColor(ForMe.textPrimary)
                     }
                     if let price = listing.priceRange {
                         Text("·")
                             .foregroundColor(ForMe.stone300)
                         Text(price)
-                            .font(.system(size: 12, weight: .medium))
+                            .font(ForMe.font(.medium, size: 12))
                             .foregroundColor(ForMe.textSecondary)
                     }
                 }
@@ -169,14 +195,8 @@ private struct SelectedListingCard: View {
                 .font(.system(size: 12, weight: .medium))
                 .foregroundColor(ForMe.stone300)
         }
-        .padding(ForMe.space3)
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
-                .stroke(ForMe.border, lineWidth: 1)
-        )
-        .elevation(.level2)
+        .padding(.horizontal, ForMe.space3)
+        .padding(.bottom, ForMe.space3)
     }
 }
 

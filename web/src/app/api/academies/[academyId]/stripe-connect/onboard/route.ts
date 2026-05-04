@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { getUserFromRequest } from "@/app/utils/mobileAuth";
 import prisma from "@/app/libs/prismadb";
 import Stripe from "stripe";
 import { apiError, apiErrorCode } from "@/app/utils/api";
@@ -15,22 +16,27 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 // Creates (or reuses) a Stripe Connect Express account for an Academy and
 // returns an onboarding link the master admin can hand to the academy.
 //
-// Auth: platform admins only (master or admin). v1 has no academy admin
-// accounts (Phase 7), so the platform owner initiates onboarding on the
-// academy's behalf — the academy completes KYC themselves via the returned URL.
+// Auth: platform admins only (master or admin). Accepts either a NextAuth web
+// session or a mobile bearer token (Phase 11 admin-from-iOS).
 export async function POST(
   request: Request,
   { params }: { params: { academyId: string } }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
+  const mobileUser = await getUserFromRequest(request);
+  const session = mobileUser ? null : await getServerSession(authOptions);
+  if (!mobileUser && !session?.user?.email) {
     return apiError("Not authenticated", 401);
   }
 
-  const currentUser = await prisma.user.findUnique({
-    where: { email: session.user.email as string },
-    select: { id: true, role: true },
-  });
+  const currentUser = mobileUser
+    ? await prisma.user.findUnique({
+        where: { id: mobileUser.id },
+        select: { id: true, role: true },
+      })
+    : await prisma.user.findUnique({
+        where: { email: session!.user!.email as string },
+        select: { id: true, role: true },
+      });
 
   if (!currentUser || (currentUser.role !== "master" && currentUser.role !== "admin")) {
     return apiError("Only platform admins can onboard academies", 403);

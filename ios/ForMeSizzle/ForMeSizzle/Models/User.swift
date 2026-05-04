@@ -150,6 +150,10 @@ struct CheckEmailResponse: Codable {
     let exists: Bool
 }
 
+struct PasswordResetResponse: Codable {
+    let message: String
+}
+
 struct ProfileUpdateRequest: Codable {
     var name: String?
     var bio: String?

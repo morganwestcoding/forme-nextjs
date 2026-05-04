@@ -153,7 +153,7 @@ struct ListingFlow: View {
                             .frame(width: 56, height: 56)
                             .clipShape(Circle())
                         Text(cat.rawValue)
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(ForMe.font(.semibold, size: 14))
                             .foregroundColor(ForMe.textPrimary)
                     }
                     .frame(maxWidth: .infinity)
@@ -217,7 +217,7 @@ struct ListingFlow: View {
                 VStack(spacing: 0) {
                     HStack {
                         TextField("Service name", text: $service.name)
-                            .font(.system(size: 15, weight: .medium))
+                            .font(ForMe.font(.medium, size: 15))
                         Spacer()
                         Button {
                             services.removeAll { $0.id == service.id }
@@ -235,14 +235,14 @@ struct ListingFlow: View {
                     HStack(spacing: 0) {
                         TextField("Price", text: $service.price)
                             .keyboardType(.decimalPad)
-                            .font(.system(size: 15))
+                            .font(ForMe.font(.regular, size: 15))
                         Rectangle()
                             .fill(ForMe.border)
                             .frame(width: 1, height: 22)
                             .padding(.horizontal, 12)
                         TextField("Duration (min)", text: $service.duration)
                             .keyboardType(.numberPad)
-                            .font(.system(size: 15))
+                            .font(ForMe.font(.regular, size: 15))
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 14)
@@ -262,7 +262,7 @@ struct ListingFlow: View {
                     Image(systemName: "plus")
                         .font(.system(size: 13, weight: .semibold))
                     Text("Add Service")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 14))
                 }
                 .foregroundColor(ForMe.textPrimary)
                 .padding(.vertical, 14)
@@ -320,7 +320,7 @@ struct ListingFlow: View {
                         Circle()
                             .fill(ForMe.surface)
                             .frame(width: 36, height: 36)
-                            .shadow(color: .black.opacity(0.04), radius: 2, x: 0, y: 1)
+                            .elevation(.level1)
                             .overlay(Circle().stroke(ForMe.border, lineWidth: 1))
                         Image(systemName: "plus")
                             .font(.system(size: 16, weight: .regular))
@@ -354,7 +354,7 @@ struct ListingFlow: View {
             ForEach($hours) { $day in
                 HStack(spacing: 12) {
                     Text(day.day)
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 14))
                         .foregroundColor(ForMe.textPrimary)
                         .frame(width: 88, alignment: .leading)
 
@@ -362,12 +362,12 @@ struct ListingFlow: View {
 
                     if day.isClosed {
                         Text("Closed")
-                            .font(.system(size: 13))
+                            .font(ForMe.font(.regular, size: 13))
                             .foregroundColor(ForMe.stone400)
                     } else {
                         HStack(spacing: 6) {
                             TextField("9 am", text: $day.openTime)
-                                .font(.system(size: 13))
+                                .font(ForMe.font(.regular, size: 13))
                                 .frame(width: 64)
                                 .padding(.vertical, 6)
                                 .padding(.horizontal, 8)
@@ -381,7 +381,7 @@ struct ListingFlow: View {
                             Text("–")
                                 .foregroundColor(ForMe.stone400)
                             TextField("5 pm", text: $day.closeTime)
-                                .font(.system(size: 13))
+                                .font(ForMe.font(.regular, size: 13))
                                 .frame(width: 64)
                                 .padding(.vertical, 6)
                                 .padding(.horizontal, 8)
@@ -437,16 +437,16 @@ struct ListingFlow: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(title.isEmpty ? "Untitled" : title)
-                    .font(.system(size: 18, weight: .bold))
+                    .font(ForMe.font(.bold, size: 18))
                     .foregroundColor(ForMe.textPrimary)
                 if let cat = category {
                     Text(cat.rawValue)
-                        .font(.system(size: 12, weight: .medium))
+                        .font(ForMe.font(.medium, size: 12))
                         .foregroundColor(ForMe.stone500)
                 }
                 if !city.isEmpty || !stateName.isEmpty {
                     Text("\(city), \(stateName)")
-                        .font(.system(size: 13))
+                        .font(ForMe.font(.regular, size: 13))
                         .foregroundColor(ForMe.stone400)
                 }
             }
@@ -468,11 +468,11 @@ struct ListingFlow: View {
     private func summaryRow(label: String, value: String) -> some View {
         HStack {
             Text(label)
-                .font(.system(size: 13))
+                .font(ForMe.font(.regular, size: 13))
                 .foregroundColor(ForMe.stone500)
             Spacer()
             Text(value)
-                .font(.system(size: 14, weight: .semibold))
+                .font(ForMe.font(.semibold, size: 14))
                 .foregroundColor(ForMe.textPrimary)
         }
         .padding(.horizontal, 16)
@@ -502,18 +502,42 @@ struct ListingFlow: View {
 
     private func submit() async {
         isSubmitting = true
-        let composedLocation = "\(city), \(stateName)"
-        let request = CreateListingRequest(
-            title: title,
-            description: description,
-            category: category?.rawValue ?? "",
-            location: composedLocation,
-            address: address,
-            zipCode: zipCode,
-            imageSrc: nil // TODO: upload to Cloudinary
-        )
-
         do {
+            var coverURL: String? = nil
+            if let data = imageData, let image = UIImage(data: data) {
+                coverURL = try await CloudinaryService.shared.uploadImage(
+                    image,
+                    folder: .listings,
+                    targetWidth: 1200,
+                    targetHeight: 900
+                )
+            }
+
+            var galleryURLs: [String] = []
+            for data in galleryDataList {
+                if let image = UIImage(data: data) {
+                    let url = try await CloudinaryService.shared.uploadImage(
+                        image,
+                        folder: .listingsGallery,
+                        targetWidth: 1200,
+                        targetHeight: 900
+                    )
+                    galleryURLs.append(url)
+                }
+            }
+
+            let composedLocation = "\(city), \(stateName)"
+            let request = CreateListingRequest(
+                title: title,
+                description: description,
+                category: category?.rawValue ?? "",
+                location: composedLocation,
+                address: address,
+                zipCode: zipCode,
+                imageSrc: coverURL,
+                galleryImages: galleryURLs.isEmpty ? nil : galleryURLs
+            )
+
             _ = try await APIService.shared.createListing(request)
             isSubmitting = false
             dismiss()

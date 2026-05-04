@@ -13,7 +13,7 @@ struct BookingsView: View {
                 // Header
                 HStack(alignment: .center) {
                     Text("Bookings")
-                        .font(.system(size: 24, weight: .bold))
+                        .font(ForMe.font(.bold, size: 24))
                         .foregroundColor(ForMe.textPrimary)
 
                     Spacer()
@@ -79,6 +79,9 @@ struct BookingsView: View {
                                 },
                                 onReject: {
                                     Task { await viewModel.updateReservationStatus(id: reservation.id, status: "cancelled") }
+                                },
+                                onRefund: {
+                                    Task { _ = await viewModel.refundReservation(id: reservation.id) }
                                 }
                             )
                             .staggeredFadeIn(index: index)
@@ -145,9 +148,11 @@ struct BookingCard: View {
     let onCancel: () -> Void
     var onAccept: (() -> Void)? = nil
     var onReject: (() -> Void)? = nil
+    var onRefund: (() -> Void)? = nil
 
     @State private var showCancelConfirm = false
     @State private var showRejectConfirm = false
+    @State private var showRefundConfirm = false
 
     // Parsed booking date (from reservation.date ISO string) in the user's
     // local calendar. Nil if the string can't be parsed.
@@ -214,7 +219,7 @@ struct BookingCard: View {
                 .stroke(ForMe.stone200.opacity(0.7), lineWidth: 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .shadow(color: .black.opacity(0.04), radius: 12, x: 0, y: 6)
+        .elevation(.level2)
         .confirmationDialog("Cancel Booking?", isPresented: $showCancelConfirm) {
             Button("Cancel Booking", role: .destructive, action: onCancel)
             Button("Keep Booking", role: .cancel) {}
@@ -223,6 +228,22 @@ struct BookingCard: View {
             Button("Decline", role: .destructive) { onReject?() }
             Button("Keep", role: .cancel) {}
         }
+        .confirmationDialog(refundDialogTitle, isPresented: $showRefundConfirm, titleVisibility: .visible) {
+            Button(isIncoming ? "Issue Refund" : "Request Refund", role: .destructive) { onRefund?() }
+            Button("Keep", role: .cancel) {}
+        } message: {
+            Text(refundDialogMessage)
+        }
+    }
+
+    private var refundDialogTitle: String {
+        isIncoming ? "Issue refund?" : "Request a refund?"
+    }
+
+    private var refundDialogMessage: String {
+        isIncoming
+            ? "This will refund the customer's payment via Stripe immediately."
+            : "The business owner will be notified and can approve your refund."
     }
 
     // MARK: Date block (left column)
@@ -236,15 +257,15 @@ struct BookingCard: View {
             )
             VStack(spacing: 0) {
                 Text(monthLabel)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(ForMe.font(.medium, size: 11))
                     .foregroundColor(ForMe.stone400)
                 Text(dayLabel)
-                    .font(.system(size: 34, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 34))
                     .foregroundColor(ForMe.textPrimary)
                     .monospacedDigit()
                     .padding(.top, 6)
                 Text(weekdayLabel)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(ForMe.font(.medium, size: 11))
                     .foregroundColor(ForMe.stone400)
                     .padding(.top, 8)
             }
@@ -275,13 +296,13 @@ struct BookingCard: View {
                     }
 
                     Text(reservation.serviceName ?? "Service")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 18))
                         .tracking(-0.27)
                         .foregroundColor(ForMe.textPrimary)
                         .lineLimit(1)
 
                     Text(subtitleText)
-                        .font(.system(size: 12))
+                        .font(ForMe.font(.regular, size: 12))
                         .foregroundColor(ForMe.stone500)
                         .lineLimit(1)
                 }
@@ -289,14 +310,14 @@ struct BookingCard: View {
 
                 VStack(alignment: .trailing, spacing: 4) {
                     Text(priceText)
-                        .font(.system(size: 26, weight: .black))
+                        .font(ForMe.font(.bold, size: 26))
                         .tracking(-0.5)
                         .monospacedDigit()
                         .foregroundColor(isRefunded ? ForMe.stone400 : ForMe.textPrimary)
                         .strikethrough(isRefunded, color: ForMe.stone400)
                     if let time = reservation.time {
                         Text(formatTime(time))
-                            .font(.system(size: 11, weight: .medium))
+                            .font(ForMe.font(.medium, size: 11))
                             .foregroundColor(ForMe.stone400)
                     }
                 }
@@ -306,10 +327,36 @@ struct BookingCard: View {
             HStack(spacing: 12) {
                 avatar
                 Text(bottomRowText)
-                    .font(.system(size: 12))
+                    .font(ForMe.font(.regular, size: 12))
                     .foregroundColor(ForMe.stone500)
                     .lineLimit(1)
                 Spacer(minLength: 0)
+
+                if let badge = refundBadgeText {
+                    Text(badge)
+                        .font(ForMe.font(.semibold, size: 10))
+                        .tracking(0.5)
+                        .textCase(.uppercase)
+                        .foregroundColor(ForMe.stone500)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Capsule().fill(ForMe.stone100))
+                } else if showRefundButton {
+                    Button {
+                        Haptics.warning()
+                        showRefundConfirm = true
+                    } label: {
+                        Text("Refund")
+                            .font(ForMe.font(.semibold, size: 11))
+                            .foregroundColor(ForMe.stone600)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(
+                                Capsule().stroke(ForMe.stone200, lineWidth: 1)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                }
 
                 // Outgoing flow still needs a way to cancel — small chevron
                 // opens the confirm dialog. Incoming+pending uses the full
@@ -372,7 +419,7 @@ struct BookingCard: View {
                     Image(systemName: "xmark")
                         .font(.system(size: 11, weight: .bold))
                     Text("Decline")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 12))
                 }
                 .foregroundColor(ForMe.stone600)
                 .frame(maxWidth: .infinity)
@@ -392,7 +439,7 @@ struct BookingCard: View {
                     Image(systemName: "checkmark")
                         .font(.system(size: 11, weight: .bold))
                     Text("Accept")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 12))
                 }
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
@@ -476,6 +523,24 @@ struct BookingCard: View {
         reservation.paymentStatus == "refunded"
     }
 
+    /// "Refund" pill shows only for paid bookings that haven't already been
+    /// refunded or have a pending request. Both customer (request) and
+    /// listing-owner (immediate) can press it; the server branches by role.
+    private var showRefundButton: Bool {
+        guard reservation.paymentStatus == "completed" else { return false }
+        guard reservation.refundStatus != "completed" else { return false }
+        guard reservation.refundStatus != "requested" else { return false }
+        return onRefund != nil
+    }
+
+    private var refundBadgeText: String? {
+        switch reservation.refundStatus {
+        case "completed": return "Refunded"
+        case "requested": return "Refund pending"
+        default: return nil
+        }
+    }
+
     private var showOutgoingCancel: Bool {
         !isIncoming && (reservation.status == .pending
                         || reservation.status == .confirmed
@@ -556,7 +621,7 @@ private struct SlidingToggle: View {
                     }
                 } label: {
                     Text(title)
-                        .font(.system(size: 13, weight: selectedTab == index ? .semibold : .medium))
+                        .font(ForMe.font(selectedTab == index ? .semibold : .medium, size: 13))
                         .foregroundColor(selectedTab == index ? .white : ForMe.textSecondary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 13)
@@ -577,7 +642,7 @@ private struct SlidingToggle: View {
                 .stroke(ForMe.border, lineWidth: 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL))
-        .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
+        .elevation(.level1)
     }
 }
 

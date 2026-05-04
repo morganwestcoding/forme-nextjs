@@ -57,7 +57,7 @@ struct EditScheduleSheet: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text(day)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(ForMe.font(.semibold, size: 14))
                     .foregroundColor(ForMe.textPrimary)
                 Spacer()
                 Toggle("", isOn: Binding(
@@ -70,12 +70,12 @@ struct EditScheduleSheet: View {
             if !binding.wrappedValue.isOff {
                 HStack(spacing: 12) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Start").font(.system(size: 11)).foregroundColor(ForMe.stone400)
+                        Text("Start").font(ForMe.font(.regular, size: 11)).foregroundColor(ForMe.stone400)
                         DatePicker("", selection: binding.start, displayedComponents: .hourAndMinute)
                             .labelsHidden()
                     }
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("End").font(.system(size: 11)).foregroundColor(ForMe.stone400)
+                        Text("End").font(ForMe.font(.regular, size: 11)).foregroundColor(ForMe.stone400)
                         DatePicker("", selection: binding.end, displayedComponents: .hourAndMinute)
                             .labelsHidden()
                     }
@@ -83,7 +83,7 @@ struct EditScheduleSheet: View {
                 }
             } else {
                 Text("Off")
-                    .font(.system(size: 12))
+                    .font(ForMe.font(.regular, size: 12))
                     .foregroundColor(ForMe.stone400)
             }
         }

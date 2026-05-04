@@ -3,7 +3,12 @@ import SwiftUI
 struct PostCard: View {
     let post: Post
     var width: CGFloat? = 180
+    /// Fired after a successful hide or delete so the host view can remove
+    /// the post locally without waiting for a refresh.
+    var onRemove: (() -> Void)? = nil
+    @EnvironmentObject var authViewModel: AuthViewModel
     @State private var isLiked = false
+    @State private var showDeleteConfirm = false
 
     private var aspectRatio: CGFloat { 5 / 6 }
 
@@ -71,11 +76,19 @@ struct PostCard: View {
             Button { sharePost() } label: {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
-            Button {} label: {
-                Label("Save", systemImage: "bookmark")
+            if !isOwnPost {
+                Button {
+                    hidePost()
+                } label: {
+                    Label("Hide", systemImage: "eye.slash")
+                }
             }
-            Button(role: .destructive) {} label: {
-                Label("Report", systemImage: "flag")
+            if isOwnPost {
+                Button(role: .destructive) {
+                    showDeleteConfirm = true
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
             }
         } label: {
             HugeMoreHorizontal(size: 20, color: .white.opacity(0.85))
@@ -85,6 +98,17 @@ struct PostCard: View {
         }
         .menuOrder(.fixed)
         .padding(ForMe.space4)
+        .confirmationDialog("Delete this post?", isPresented: $showDeleteConfirm, titleVisibility: .visible) {
+            Button("Delete", role: .destructive) { deletePost() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This can't be undone.")
+        }
+    }
+
+    private var isOwnPost: Bool {
+        guard let me = authViewModel.currentUser?.id, let author = post.userId else { return false }
+        return me == author
     }
 
     @ViewBuilder
@@ -97,7 +121,7 @@ struct PostCard: View {
                     Circle().fill(ForMe.stone400)
                         .overlay(
                             Text(user.name?.prefix(1).uppercased() ?? "")
-                                .font(.system(size: 13, weight: .bold))
+                                .font(ForMe.font(.bold, size: 13))
                                 .foregroundColor(.white)
                         )
                 }
@@ -109,7 +133,7 @@ struct PostCard: View {
             VStack(alignment: .leading, spacing: 2) {
                 if let user = post.user {
                     Text(user.name ?? "")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(ForMe.font(.semibold, size: 13))
                         .foregroundColor(.white)
                         .lineLimit(1)
                         .truncationMode(.tail)
@@ -118,7 +142,7 @@ struct PostCard: View {
 
                 if let content = post.content, !content.isEmpty, !isTextPost {
                     Text(content)
-                        .font(.system(size: 12))
+                        .font(ForMe.font(.regular, size: 12))
                         .foregroundColor(.white.opacity(0.8))
                         .lineLimit(1)
                         .truncationMode(.tail)
@@ -149,7 +173,7 @@ struct PostCard: View {
                     .padding(.top, 10)
 
                 Text(post.content ?? "")
-                    .font(.system(size: 13, weight: .medium))
+                    .font(ForMe.font(.medium, size: 13))
                     .foregroundColor(.white.opacity(0.9))
                     .multilineTextAlignment(.center)
                     .lineLimit(7)
@@ -202,6 +226,7 @@ struct PostCard: View {
     }
 
     private func toggleFavorite() {
+        Haptics.confirm()
         isLiked.toggle()
         Task {
             do {
@@ -213,6 +238,22 @@ struct PostCard: View {
             } catch {
                 isLiked.toggle()
             }
+        }
+    }
+
+    private func hidePost() {
+        Haptics.tap()
+        onRemove?()
+        Task {
+            try? await APIService.shared.hidePost(id: post.id)
+        }
+    }
+
+    private func deletePost() {
+        Haptics.warning()
+        onRemove?()
+        Task {
+            try? await APIService.shared.deletePost(id: post.id)
         }
     }
 }

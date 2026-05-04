@@ -57,11 +57,11 @@ struct UserMenuView: View {
                     )
                     VStack(alignment: .leading, spacing: 2) {
                         Text(user.name ?? "User")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(ForMe.font(.semibold, size: 16))
                             .foregroundColor(ForMe.textPrimary)
                         if let email = user.email {
                             Text(email)
-                                .font(.system(size: 12))
+                                .font(ForMe.font(.regular, size: 12))
                                 .foregroundColor(ForMe.textTertiary)
                         }
                     }
@@ -85,7 +85,7 @@ struct UserMenuView: View {
                             icon(for: item.action)
                                 .frame(width: 24)
                             Text(item.label)
-                                .font(.system(size: 15, weight: .medium))
+                                .font(ForMe.font(.medium, size: 15))
                                 .foregroundColor(ForMe.textPrimary)
                             Spacer()
                             Image(systemName: "chevron.right")
@@ -115,7 +115,7 @@ struct UserMenuView: View {
                         .foregroundColor(ForMe.stone600)
                         .frame(width: 24)
                     Text("Settings")
-                        .font(.system(size: 15, weight: .medium))
+                        .font(ForMe.font(.medium, size: 15))
                         .foregroundColor(ForMe.textPrimary)
                     Spacer()
                     Image(systemName: "chevron.right")
@@ -136,7 +136,7 @@ struct UserMenuView: View {
                         .foregroundColor(ForMe.statusCancelled)
                         .frame(width: 24)
                     Text("Sign Out")
-                        .font(.system(size: 15, weight: .medium))
+                        .font(ForMe.font(.medium, size: 15))
                         .foregroundColor(ForMe.statusCancelled)
                     Spacer()
                 }

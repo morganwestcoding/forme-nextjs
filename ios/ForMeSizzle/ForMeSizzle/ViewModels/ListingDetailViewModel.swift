@@ -6,8 +6,10 @@ class ListingDetailViewModel: ObservableObject {
     @Published var services: [Service] = []
     @Published var selectedService: Service?
     @Published var isFavorite = false
+    @Published var isFollowing = false
     @Published var isLoading = false
     @Published var error: String?
+    @Published var reviews: [Review] = []
 
     private let api = APIService.shared
 
@@ -21,6 +23,21 @@ class ListingDetailViewModel: ObservableObject {
         isLoading = false
     }
 
+    func loadReviews(for listingId: String) async {
+        do {
+            reviews = try await api.getListingReviews(listingId: listingId)
+        } catch {
+            // Reviews are non-critical for the page render, surface only via
+            // log; the section just stays empty if the call fails.
+        }
+    }
+
+    /// Prepend a freshly-submitted review so the listing detail reviews
+    /// strip updates instantly without a refetch.
+    func insert(review: Review) {
+        reviews.insert(review, at: 0)
+    }
+
     func toggleFavorite(listingId: String) async {
         do {
             if isFavorite {
@@ -30,6 +47,20 @@ class ListingDetailViewModel: ObservableObject {
             }
             isFavorite.toggle()
         } catch {
+            self.error = error.localizedDescription
+        }
+    }
+
+    /// Web's /api/follow/[userId] is a single toggle endpoint — POST flips the
+    /// follow state. We mirror by flipping local state optimistically and
+    /// rolling back on error.
+    func toggleFollow(userId: String) async {
+        let previous = isFollowing
+        isFollowing.toggle()
+        do {
+            try await api.toggleFollow(userId: userId)
+        } catch {
+            isFollowing = previous
             self.error = error.localizedDescription
         }
     }
