@@ -21,6 +21,7 @@ import { SafeReservation, SafeUser } from '@/app/types';
 import Button from '@/components/ui/Button';
 import Container from '@/components/Container';
 import { placeholderDataUri } from '@/lib/placeholders';
+import useReservationModal from '@/app/hooks/useReservationModal';
 import { Navigation03Icon, Call02Icon, CalendarAdd02Icon, Tick02Icon, Cancel01Icon, UserAccountIcon, InboxIcon as Inbox, ArrowUpRight01Icon as ArrowUpRight, Clock01Icon as Clock, Location01Icon as MapPin, UserIcon, Cancel01Icon as X, Search01Icon as Search, Navigation03Icon as Navigation, Call02Icon as Phone, CalendarAdd02Icon as CalendarPlus, Share08Icon as Share2, StarIcon as Star, RefreshIcon as RotateCw, ArrowRight01Icon as ChevronRight, SparklesIcon as Sparkles, Tick02Icon as Check, RotateLeft03Icon as Undo2, ArrowLeftRightIcon as ArrowLeftRight } from 'hugeicons-react';
 
 interface ReservationsClientProps {
@@ -108,6 +109,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
   currentUser,
 }) => {
   const router = useRouter();
+  const reservationModal = useReservationModal();
   const [incomingReservations, setIncomingReservations] = useState<SafeReservation[]>([]);
   const [outgoingReservations, setOutgoingReservations] = useState<SafeReservation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -356,23 +358,39 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                 sublabel={group.sublabel}
                 count={group.items.length}
               >
-                {group.items.map((r, idx) => (
-                  <TripRow
-                    key={r.id}
-                    reservation={r}
-                    direction={directionTab}
-                    isNext={r.id === nextTrip?.id}
-                    idx={idx}
-                    past={timeTab === 'past'}
-                    disabled={processingId === r.id}
-                    onCancel={() => onCancel(r.id)}
-                    onRefund={() => onRefund(r.id)}
-                    onAccept={() => onAccept(r.id)}
-                    onDecline={() => onDecline(r.id)}
-                    onOpen={() => router.push(`/listings/${(r.listing as any).id}`)}
-                    onRebook={() => router.push(`/listings/${(r.listing as any).id}`)}
-                  />
-                ))}
+                {group.items.map((r, idx) => {
+                  const goToListing = () =>
+                    router.push(`/listings/${(r.listing as any).id}`);
+                  return (
+                    <TripRow
+                      key={r.id}
+                      reservation={r}
+                      direction={directionTab}
+                      isNext={r.id === nextTrip?.id}
+                      idx={idx}
+                      past={timeTab === 'past'}
+                      disabled={processingId === r.id}
+                      onCancel={() => onCancel(r.id)}
+                      onRefund={() => onRefund(r.id)}
+                      onAccept={() => onAccept(r.id)}
+                      onDecline={() => onDecline(r.id)}
+                      onOpen={() =>
+                        reservationModal.onOpen({
+                          reservation: r,
+                          direction: directionTab,
+                          past: timeTab === 'past',
+                          onCancel: () => onCancel(r.id),
+                          onRefund: () => onRefund(r.id),
+                          onAccept: () => onAccept(r.id),
+                          onDecline: () => onDecline(r.id),
+                          onViewListing: goToListing,
+                          onRebook: goToListing,
+                        })
+                      }
+                      onRebook={goToListing}
+                    />
+                  );
+                })}
               </TimelineGroup>
             ))}
           </div>

@@ -27,6 +27,7 @@ const ResetPasswordModal = dynamic(() => import('@/components/modals/ResetPasswo
 const InboxModal = dynamic(() => import('@/components/modals/InboxModal'), { ssr: false });
 const StripeCheckoutModal = dynamic(() => import('@/components/modals/StripeCheckoutModal'), { ssr: false });
 const ReviewModal = dynamic(() => import('@/components/modals/ReviewModal'), { ssr: false });
+const ReservationModal = dynamic(() => import('@/components/modals/ReservationModal'), { ssr: false });
 const UserMenuModal = dynamic(() => import('@/components/modals/UserMenuModal'), { ssr: false });
 const CreateModal = dynamic(() => import('@/components/modals/CreateModal'), { ssr: false });
 const LocationModal = dynamic(() => import('@/components/modals/LocationModal'), { ssr: false });
@@ -122,6 +123,7 @@ export default async function RootLayout({
                 {/* Modals */}
                 <ToasterProvider/>
                 <ReviewModal/>
+                <ReservationModal/>
                 <InboxModal/>
                 <StripeCheckoutModal />
                 <ForgotPasswordModal/>

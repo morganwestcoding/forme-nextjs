@@ -9,7 +9,7 @@ import TypeformHeading from '@/components/registration/TypeformHeading';
 interface PreviewStepProps {
   mediaSrc: string;
   mediaType: 'image' | 'video';
-  caption: string;
+  content: string;
   beforeImageSrc: string;
   currentUser: SafeUser;
   isTextPost?: boolean;
@@ -18,7 +18,7 @@ interface PreviewStepProps {
 const PreviewStep: React.FC<PreviewStepProps> = ({
   mediaSrc,
   mediaType,
-  caption,
+  content,
   beforeImageSrc,
   currentUser,
   isTextPost = false,
@@ -50,8 +50,8 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
             <>
               <div className="absolute inset-0 bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900" />
               <div className="absolute inset-0 flex items-center justify-center p-6">
-                <p className="text-white/90 text-sm leading-relaxed font-medium text-center line-clamp-8 whitespace-pre-wrap">
-                  {caption}
+                <p className="text-white/90 text-sm leading-relaxed font-medium text-center line-clamp-8 whitespace-pre-wrap break-words">
+                  {content}
                 </p>
               </div>
               <div className="absolute top-3 left-3 text-white/20 text-3xl font-serif leading-none select-none">
@@ -129,9 +129,9 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
           </div>
 
           {/* Caption */}
-          {caption && (
-            <p className="text-[13px] leading-[1.7] text-stone-600 dark:text-stone-300 line-clamp-4 mb-4">
-              {caption}
+          {content && !isTextPost && (
+            <p className="text-[13px] leading-[1.7] text-stone-600 dark:text-stone-300 line-clamp-4 mb-4 break-words">
+              {content}
             </p>
           )}
 

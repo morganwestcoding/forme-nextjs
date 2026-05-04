@@ -4,16 +4,16 @@ import React from 'react';
 import TypeformHeading from '@/components/registration/TypeformHeading';
 
 interface CaptionStepProps {
-  caption: string;
-  onCaptionChange: (caption: string) => void;
+  content: string;
+  onContentChange: (content: string) => void;
 }
 
 const CaptionStep: React.FC<CaptionStepProps> = ({
-  caption,
-  onCaptionChange,
+  content,
+  onContentChange,
 }) => {
   const maxLength = 500;
-  const remaining = maxLength - caption.length;
+  const remaining = maxLength - content.length;
 
   return (
     <div>
@@ -24,8 +24,8 @@ const CaptionStep: React.FC<CaptionStepProps> = ({
 
       <div className="space-y-2">
         <textarea
-          value={caption}
-          onChange={(e) => onCaptionChange(e.target.value.slice(0, maxLength))}
+          value={content}
+          onChange={(e) => onContentChange(e.target.value.slice(0, maxLength))}
           placeholder="Clean fade for the summer..."
           className="w-full h-40 px-4 py-3 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-900  placeholder:text-stone-400 dark:text-stone-500 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-transparent resize-none transition-all"
         />

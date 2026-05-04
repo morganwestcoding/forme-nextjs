@@ -43,8 +43,7 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
   const [postType, setPostType] = useState<PostType | null>(null);
   const [mediaSrc, setMediaSrc] = useState<string>('');
   const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
-  const [caption, setCaption] = useState<string>('');
-  const [textContent, setTextContent] = useState<string>('');
+  const [content, setContent] = useState<string>('');
   const [beforeImageSrc, setBeforeImageSrc] = useState<string>('');
 
   const getFlowPath = useCallback((): STEPS[] => {
@@ -61,7 +60,7 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
       case STEPS.MEDIA:
         return Boolean(mediaSrc);
       case STEPS.TEXT_CONTENT:
-        return textContent.trim().length > 0;
+        return content.trim().length > 0;
       case STEPS.CAPTION:
         return true; // Caption is optional
       case STEPS.PREVIEW:
@@ -69,7 +68,7 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
       default:
         return true;
     }
-  }, [step, postType, mediaSrc, textContent]);
+  }, [step, postType, mediaSrc, content]);
 
   const getNextStep = useCallback((): STEPS | null => {
     const flowPath = getFlowPath();
@@ -124,7 +123,7 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
       toast.error('Please upload media');
       return;
     }
-    if (postType === 'text' && !textContent.trim()) {
+    if (postType === 'text' && !content.trim()) {
       toast.error('Please write something');
       return;
     }
@@ -134,11 +133,11 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
     try {
       const payload = postType === 'text'
         ? {
-            content: textContent.trim(),
+            content: content.trim(),
             postType: 'text',
           }
         : {
-            content: caption.trim() || '',
+            content: content.trim(),
             imageSrc: mediaType === 'image' ? mediaSrc : undefined,
             mediaUrl: mediaType === 'video' ? mediaSrc : undefined,
             mediaType: mediaType,
@@ -159,7 +158,7 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [postType, mediaSrc, mediaType, caption, textContent, beforeImageSrc, router]);
+  }, [postType, mediaSrc, mediaType, content, beforeImageSrc, router]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -220,16 +219,15 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
       case STEPS.TEXT_CONTENT:
         return (
           <TextContentStep
-            content={textContent}
-            onContentChange={setTextContent}
-            currentUser={currentUser}
+            content={content}
+            onContentChange={setContent}
           />
         );
       case STEPS.CAPTION:
         return (
           <CaptionStep
-            caption={caption}
-            onCaptionChange={setCaption}
+            content={content}
+            onContentChange={setContent}
           />
         );
       case STEPS.PREVIEW:
@@ -237,7 +235,7 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
           <PreviewStep
             mediaSrc=""
             mediaType="image"
-            caption={textContent}
+            content={content}
             beforeImageSrc=""
             currentUser={currentUser}
             isTextPost
@@ -246,7 +244,7 @@ export default function PostFlow({ currentUser }: PostFlowProps) {
           <PreviewStep
             mediaSrc={mediaSrc}
             mediaType={mediaType}
-            caption={caption}
+            content={content}
             beforeImageSrc={beforeImageSrc}
             currentUser={currentUser}
           />
