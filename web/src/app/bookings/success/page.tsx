@@ -78,7 +78,7 @@ export default function SuccessPage() {
       <div className="min-h-screen bg-stone-50 dark:bg-stone-900 flex items-center justify-center px-4">
         <div className="flex flex-col items-center text-center">
           <div className="w-10 h-10 rounded-full border-2 border-stone-200 dark:border-stone-800 border-t-stone-900 animate-spin" />
-          <p className="mt-5 text-[14px] text-stone-500  dark:text-stone-500">Confirming your reservation…</p>
+          <p className="mt-5 text-sm text-stone-500  dark:text-stone-500">Confirming your reservation…</p>
         </div>
       </div>
     );
@@ -94,22 +94,22 @@ export default function SuccessPage() {
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </div>
-          <h1 className="text-[20px] font-semibold text-stone-900 dark:text-stone-100 tracking-tight">
+          <h1 className="text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">
             We couldn&apos;t verify your payment
           </h1>
-          <p className="text-[13px] text-stone-500  dark:text-stone-500 mt-2">
+          <p className="text-sm text-stone-500  dark:text-stone-500 mt-2">
             If you were charged, your booking will appear in My Trips shortly. Please contact support if it doesn&apos;t.
           </p>
           <div className="flex gap-2.5 mt-6">
             <Link
               href="/"
-              className="flex-1 py-3 rounded-2xl bg-stone-100  text-stone-700 dark:text-stone-200 text-[13px] font-medium hover:bg-stone-200 dark:bg-stone-700 transition-colors"
+              className="flex-1 py-3 rounded-2xl bg-stone-100  text-stone-700 dark:text-stone-200 text-sm font-medium hover:bg-stone-200 dark:bg-stone-700 transition-colors"
             >
               Go home
             </Link>
             <Link
               href="/bookings/reservations"
-              className="flex-1 py-3 rounded-2xl bg-stone-900 text-white text-[13px] font-medium hover:bg-stone-800 transition-colors"
+              className="flex-1 py-3 rounded-2xl bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors"
             >
               My trips
             </Link>
@@ -138,10 +138,10 @@ export default function SuccessPage() {
           >
             <Check className="w-6 h-6 text-white" strokeWidth={3} />
           </div>
-          <h1 className="mt-6 text-[26px] sm:text-[30px] font-semibold text-stone-900 dark:text-stone-100 tracking-tight">
+          <h1 className="mt-6 text-3xl sm:text-3xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">
             You&apos;re booked
           </h1>
-          <p className="text-[14px] text-stone-500  dark:text-stone-500 mt-2">
+          <p className="text-sm text-stone-500  dark:text-stone-500 mt-2">
             We&apos;ve sent a confirmation to your email.
           </p>
         </div>
@@ -160,10 +160,10 @@ export default function SuccessPage() {
                 />
               </div>
               <div className="min-w-0">
-                <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 leading-snug truncate">
+                <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100 leading-snug truncate">
                   {reservation.listing?.title || 'Your booking'}
                 </h2>
-                <p className="text-[12px] text-stone-500  dark:text-stone-500 mt-0.5 truncate">
+                <p className="text-xs text-stone-500  dark:text-stone-500 mt-0.5 truncate">
                   {reservation.serviceCount && reservation.serviceCount > 1
                     ? `${reservation.serviceCount} services`
                     : reservation.serviceName}
@@ -198,19 +198,19 @@ export default function SuccessPage() {
             <div className="px-5 py-4 bg-stone-50/60 border-t border-stone-100 dark:border-stone-800 space-y-1.5">
               {typeof reservation.tipAmount === 'number' && reservation.tipAmount > 0 && typeof reservation.subtotal === 'number' && (
                 <>
-                  <div className="flex items-baseline justify-between text-[12px] text-stone-500 dark:text-stone-500">
+                  <div className="flex items-baseline justify-between text-xs text-stone-500 dark:text-stone-500">
                     <span>Subtotal</span>
                     <span className="tabular-nums">${reservation.subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex items-baseline justify-between text-[12px] text-stone-500 dark:text-stone-500">
+                  <div className="flex items-baseline justify-between text-xs text-stone-500 dark:text-stone-500">
                     <span>Tip</span>
                     <span className="tabular-nums">${reservation.tipAmount.toFixed(2)}</span>
                   </div>
                 </>
               )}
               <div className="flex items-baseline justify-between">
-                <span className="text-[13px] text-stone-500 dark:text-stone-500">Total paid</span>
-                <span className="text-[18px] font-semibold text-stone-900 dark:text-stone-100 tabular-nums">
+                <span className="text-sm text-stone-500 dark:text-stone-500">Total paid</span>
+                <span className="text-lg font-semibold text-stone-900 dark:text-stone-100 tabular-nums">
                   ${(reservation.totalPrice ?? 0).toFixed(2)}
                 </span>
               </div>
@@ -223,21 +223,21 @@ export default function SuccessPage() {
         <div className="flex gap-2.5 mt-6">
           <Link
             href="/"
-            className={`text-center py-3.5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/70 text-stone-700 dark:text-stone-200 text-[13px] font-medium hover:border-stone-300 dark:border-stone-700 transition-colors ${reservation?.isGuest ? 'flex-1' : 'flex-1'}`}
+            className={`text-center py-3.5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/70 text-stone-700 dark:text-stone-200 text-sm font-medium hover:border-stone-300 dark:border-stone-700 transition-colors ${reservation?.isGuest ? 'flex-1' : 'flex-1'}`}
           >
             Keep browsing
           </Link>
           {!reservation?.isGuest && (
             <Link
               href="/bookings/reservations"
-              className="flex-1 text-center py-3.5 rounded-2xl bg-stone-900 text-white text-[13px] font-medium hover:bg-stone-800 transition-colors"
+              className="flex-1 text-center py-3.5 rounded-2xl bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors"
             >
               View my trips
             </Link>
           )}
         </div>
 
-        <p className="text-center text-[12px] text-stone-400 dark:text-stone-500 mt-5">
+        <p className="text-center text-xs text-stone-400 dark:text-stone-500 mt-5">
           {reservation?.isGuest
             ? 'A confirmation has been sent to your email. Reply to that email to cancel or reschedule.'
             : 'You can cancel or reschedule from My Trips.'}
@@ -269,10 +269,10 @@ function DetailRow({
         {icon}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="text-[11px] uppercase tracking-wider text-stone-400 dark:text-stone-500 font-medium">
+        <div className="text-xs uppercase tracking-wider text-stone-400 dark:text-stone-500 font-medium">
           {label}
         </div>
-        <div className="text-[14px] text-stone-900 dark:text-stone-100 mt-0.5 leading-snug">
+        <div className="text-sm text-stone-900 dark:text-stone-100 mt-0.5 leading-snug">
           {children}
         </div>
       </div>

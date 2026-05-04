@@ -150,7 +150,7 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
           {/* Status indicator */}
           <div className="absolute bottom-2 left-2 z-20">
             <span
-              className={`inline-flex items-center justify-center text-[10px] font-semibold px-2.5 h-[22px] rounded-full backdrop-blur-md border ${status.bg}`}
+              className={`inline-flex items-center justify-center text-xs font-semibold px-2.5 h-[22px] rounded-full backdrop-blur-md border ${status.bg}`}
               style={{ lineHeight: '22px' }}
             >
               {status.label}
@@ -213,22 +213,22 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
         {/* Text content */}
         <div className={`flex flex-col justify-center min-w-0 flex-1 gap-1 ${showActions ? 'pr-16' : ''}`}>
           {/* Date & Time */}
-          <span className="text-[12px] text-stone-400 dark:text-stone-500">
+          <span className="text-xs text-stone-400 dark:text-stone-500">
             {format(new Date(reservation.date), 'EEE, MMM d')} · {formatTime(reservation.time)}
           </span>
 
           {/* Service name */}
-          <h1 className="text-stone-900 dark:text-stone-100 text-[16px] leading-snug font-semibold tracking-[-0.01em] line-clamp-1">
+          <h1 className="text-stone-900 dark:text-stone-100 text-base leading-snug font-semibold tracking-[-0.01em] line-clamp-1">
             {reservation.serviceName}
           </h1>
 
           {/* Business name */}
-          <p className="text-stone-400 dark:text-stone-500 text-[12px] line-clamp-1">
+          <p className="text-stone-400 dark:text-stone-500 text-xs line-clamp-1">
             {listing.title}
           </p>
 
           {/* Employee & Price */}
-          <div className="flex items-center gap-2 text-[12px]">
+          <div className="flex items-center gap-2 text-xs">
             {employeeName && (
               <>
                 <span className="text-stone-500  dark:text-stone-500">with {employeeName}</span>
@@ -239,20 +239,20 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
               ${reservation.totalPrice}
             </span>
             {isRefunded && (
-              <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">Refunded</span>
+              <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">Refunded</span>
             )}
             {isRefundRequested && (
-              <span className="text-[10px] font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">Refund Requested</span>
+              <span className="text-xs font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">Refund Requested</span>
             )}
             {isDisputed && (
-              <span className="text-[10px] font-medium text-red-600 bg-red-50 px-1.5 py-0.5 rounded-full">Disputed</span>
+              <span className="text-xs font-medium text-red-600 bg-red-50 px-1.5 py-0.5 rounded-full">Disputed</span>
             )}
           </div>
           {canRefund && (
             <button
               onClick={(e) => { e.stopPropagation(); onRefund(); }}
               disabled={disabled}
-              className="mt-1 text-[11px] font-medium text-stone-500  dark:text-stone-500 hover:text-red-600 transition-colors"
+              className="mt-1 text-xs font-medium text-stone-500  dark:text-stone-500 hover:text-red-600 transition-colors"
             >
               Request refund
             </button>

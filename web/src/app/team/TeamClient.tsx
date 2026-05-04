@@ -37,7 +37,7 @@ const StatusBadge = ({ status }: { status: string }) => {
     processing: 'bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-300',
   };
   return (
-    <span className={`text-[11px] font-medium px-2.5 py-1 rounded-full capitalize ${styles[status] || 'bg-stone-100 dark:bg-stone-800 text-stone-500  dark:text-stone-500'}`}>
+    <span className={`text-xs font-medium px-2.5 py-1 rounded-full capitalize ${styles[status] || 'bg-stone-100 dark:bg-stone-800 text-stone-500  dark:text-stone-500'}`}>
       {status}
     </span>
   );
@@ -387,11 +387,11 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
     return (
       <Container>
         <div className="mt-8 pb-16 text-center">
-          <p className="text-[15px] font-medium text-stone-900 dark:text-stone-100">Couldn&apos;t load Teammate Central</p>
-          <p className="mt-1 text-[13px] text-stone-500 dark:text-stone-400">{teamError}</p>
+          <p className="text-sm font-medium text-stone-900 dark:text-stone-100">Couldn&apos;t load Teammate Central</p>
+          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">{teamError}</p>
           <button
             onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 text-[13px] text-stone-700 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
+            className="mt-4 px-4 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 text-sm text-stone-700 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
           >
             Try again
           </button>
@@ -502,29 +502,29 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
           {booking.clientImage ? (
             <Image src={booking.clientImage} alt={booking.clientName || 'Client avatar'} width={36} height={36} className="object-cover w-full h-full" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-stone-400 dark:text-stone-500 text-[13px] font-medium">
+            <div className="w-full h-full flex items-center justify-center text-stone-400 dark:text-stone-500 text-sm font-medium">
               {booking.clientName?.[0] || '?'}
             </div>
           )}
         </div>
         <div className="min-w-0">
-          <p className="text-[13px] font-semibold text-stone-900 dark:text-stone-100 truncate">{booking.clientName || 'Client'}</p>
-          <p className="text-[12px] text-stone-400 dark:text-stone-500 truncate">{booking.serviceName} · {booking.time} · {booking.employeeName}</p>
+          <p className="text-sm font-semibold text-stone-900 dark:text-stone-100 truncate">{booking.clientName || 'Client'}</p>
+          <p className="text-xs text-stone-400 dark:text-stone-500 truncate">{booking.serviceName} · {booking.time} · {booking.employeeName}</p>
         </div>
       </div>
       <div className="flex items-center gap-2 shrink-0">
-        <span className="text-[13px] font-bold text-stone-900 dark:text-stone-100 tabular-nums">${booking.totalPrice}</span>
+        <span className="text-sm font-bold text-stone-900 dark:text-stone-100 tabular-nums">${booking.totalPrice}</span>
         {showActions && booking.status === 'pending' ? (
           <div className="flex gap-1.5 ml-2">
             <button
               onClick={() => handleBookingAction(booking.id, 'accept')}
-              className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
+              className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-xs font-medium hover:bg-emerald-100 transition-colors"
             >
               Accept
             </button>
             <button
               onClick={() => handleBookingAction(booking.id, 'decline')}
-              className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
+              className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-xs font-medium hover:bg-red-100 transition-colors"
             >
               Decline
             </button>
@@ -543,7 +543,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Teammate Central</h1>
-              <p className="text-[14px] text-stone-400 dark:text-stone-500 mt-1">
+              <p className="text-sm text-stone-400 dark:text-stone-500 mt-1">
                 {stats.totalMembers} team member{stats.totalMembers !== 1 ? 's' : ''}
                 {selectedListing && ` · ${selectedListing.title}`}
               </p>
@@ -555,7 +555,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                   setSelectedListingId(e.target.value);
                   setClientsLoaded(false);
                 }}
-                className="text-[13px] px-4 py-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-300"
+                className="text-sm px-4 py-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-300"
               >
                 {listings.map((l) => (
                   <option key={l.id} value={l.id}>{l.title}</option>
@@ -571,7 +571,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap flex items-center gap-1.5 ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap flex items-center gap-1.5 ${
                 activeTab === tab.key
                   ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-pill-active dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-pill-active-dark'
                   : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-inset-outline'
@@ -579,7 +579,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
             >
               {tab.label}
               {tab.count !== undefined && tab.count > 0 && (
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
                   activeTab === tab.key ? 'bg-white/20' : 'bg-stone-200 dark:bg-stone-700'
                 }`}>
                   {tab.count}
@@ -604,8 +604,8 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                   key={i}
                   className="rounded-2xl border border-stone-200/60 p-5 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2 transition-all duration-300"
                 >
-                  <p className="text-[12px] text-stone-400 dark:text-stone-500">{stat.label}</p>
-                  <p className="text-[24px] font-bold text-stone-900 dark:text-stone-100 tabular-nums mt-1">{stat.value}</p>
+                  <p className="text-xs text-stone-400 dark:text-stone-500">{stat.label}</p>
+                  <p className="text-2xl font-bold text-stone-900 dark:text-stone-100 tabular-nums mt-1">{stat.value}</p>
                 </div>
               ))}
             </div>
@@ -617,7 +617,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                   <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Today&apos;s Bookings</h2>
                   <button
                     onClick={() => setActiveTab('bookings')}
-                    className="text-[13px] text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
+                    className="text-sm text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
                   >
                     View all
                   </button>
@@ -637,7 +637,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
               <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 tracking-tight mb-4">Team</h2>
               {members.length === 0 ? (
                 <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
-                  <p className="text-stone-400 dark:text-stone-500 text-[14px]">No team members yet. Add employees to your listing to get started.</p>
+                  <p className="text-stone-400 dark:text-stone-500 text-sm">No team members yet. Add employees to your listing to get started.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -651,22 +651,22 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                         {(member.user.image || member.user.imageSrc) ? (
                           <Image src={member.user.image || member.user.imageSrc || ''} alt={member.fullName} width={44} height={44} className="object-cover w-full h-full" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-stone-500  dark:text-stone-500 text-[15px] font-semibold">
+                          <div className="w-full h-full flex items-center justify-center text-stone-500  dark:text-stone-500 text-sm font-semibold">
                             {member.fullName[0]}
                           </div>
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 min-w-0">
-                          <p className="text-[14px] font-semibold text-stone-900 dark:text-stone-100 truncate">{member.fullName}</p>
-                          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-500  dark:text-stone-500 capitalize shrink-0">{member.teamRole}</span>
+                          <p className="text-sm font-semibold text-stone-900 dark:text-stone-100 truncate">{member.fullName}</p>
+                          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-500  dark:text-stone-500 capitalize shrink-0">{member.teamRole}</span>
                         </div>
-                        <p className="text-[12px] text-stone-400 dark:text-stone-500 truncate">{member.jobTitle || 'Team Member'}</p>
+                        <p className="text-xs text-stone-400 dark:text-stone-500 truncate">{member.jobTitle || 'Team Member'}</p>
                       </div>
                       {canSeeRevenue && (
                         <div className="text-right shrink-0">
-                          <p className="text-[14px] font-bold text-stone-900 dark:text-stone-100 tabular-nums">${member.monthlyRevenue.toLocaleString()}</p>
-                          <p className="text-[11px] text-stone-400 dark:text-stone-500">this month</p>
+                          <p className="text-sm font-bold text-stone-900 dark:text-stone-100 tabular-nums">${member.monthlyRevenue.toLocaleString()}</p>
+                          <p className="text-xs text-stone-400 dark:text-stone-500">this month</p>
                         </div>
                       )}
                     </div>
@@ -680,14 +680,14 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
               <div>
                 <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 tracking-tight mb-4">
                   Time Off Requests
-                  <span className="ml-2 text-[12px] font-normal text-amber-500">{pendingTimeOffRequests.length} pending</span>
+                  <span className="ml-2 text-xs font-normal text-amber-500">{pendingTimeOffRequests.length} pending</span>
                 </h2>
                 <div className="space-y-3">
                   {pendingTimeOffRequests.map((req) => (
                     <div key={req.id} className="flex items-center justify-between p-4 rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900">
                       <div>
-                        <p className="text-[14px] font-medium text-stone-900 dark:text-stone-100">{req.employeeName}</p>
-                        <p className="text-[12px] text-stone-400 dark:text-stone-500">
+                        <p className="text-sm font-medium text-stone-900 dark:text-stone-100">{req.employeeName}</p>
+                        <p className="text-xs text-stone-400 dark:text-stone-500">
                           {new Date(req.startDate).toLocaleDateString()} - {new Date(req.endDate).toLocaleDateString()}
                           {req.reason && ` · ${req.reason}`}
                         </p>
@@ -695,13 +695,13 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                       <div className="flex gap-1.5">
                         <button
                           onClick={() => handleTimeOffAction(req.id, 'approved')}
-                          className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
+                          className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-xs font-medium hover:bg-emerald-100 transition-colors"
                         >
                           Approve
                         </button>
                         <button
                           onClick={() => handleTimeOffAction(req.id, 'denied')}
-                          className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
+                          className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-xs font-medium hover:bg-red-100 transition-colors"
                         >
                           Deny
                         </button>
@@ -723,15 +723,15 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
 
             {members.length === 0 ? (
               <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
-                <p className="text-stone-400 dark:text-stone-500 text-[14px]">No team members to schedule.</p>
+                <p className="text-stone-400 dark:text-stone-500 text-sm">No team members to schedule.</p>
               </div>
             ) : (
               <div className="rounded-2xl border border-stone-200/60 overflow-hidden bg-white dark:bg-stone-900">
                 {/* Header row */}
                 <div className="grid grid-cols-8 border-b border-stone-100 dark:border-stone-800">
-                  <div className="p-4 text-[12px] text-stone-400 dark:text-stone-500">Team</div>
+                  <div className="p-4 text-xs text-stone-400 dark:text-stone-500">Team</div>
                   {DAYS.map((day) => (
-                    <div key={day} className="p-4 text-[12px] text-stone-400 dark:text-stone-500 text-center">{DAY_SHORT[day]}</div>
+                    <div key={day} className="p-4 text-xs text-stone-400 dark:text-stone-500 text-center">{DAY_SHORT[day]}</div>
                   ))}
                 </div>
 
@@ -744,16 +744,16 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                           {(member.user.image || member.user.imageSrc) ? (
                             <Image src={member.user.image || member.user.imageSrc || ''} alt={member.user.name || 'Team member avatar'} width={28} height={28} className="object-cover w-full h-full" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-stone-400 dark:text-stone-500 text-[11px] font-medium">
+                            <div className="w-full h-full flex items-center justify-center text-stone-400 dark:text-stone-500 text-xs font-medium">
                               {member.fullName[0]}
                             </div>
                           )}
                         </div>
                         <div className="min-w-0">
-                          <span className="text-[13px] font-medium text-stone-700 dark:text-stone-200 truncate block">{member.fullName.split(' ')[0]}</span>
+                          <span className="text-sm font-medium text-stone-700 dark:text-stone-200 truncate block">{member.fullName.split(' ')[0]}</span>
                           <button
                             onClick={() => editingSchedule === member.id ? setEditingSchedule(null) : startEditSchedule(member)}
-                            className="text-[10px] text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
+                            className="text-xs text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
                           >
                             {editingSchedule === member.id ? 'Cancel' : 'Edit'}
                           </button>
@@ -764,7 +764,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                         const isOff = shift === 'Off';
                         return (
                           <div key={day} className="p-4 flex items-center justify-center">
-                            <span className={`text-[12px] px-2.5 py-1 rounded-xl ${
+                            <span className={`text-xs px-2.5 py-1 rounded-xl ${
                               isOff
                                 ? 'text-stone-300 bg-stone-50 dark:bg-stone-900'
                                 : 'text-stone-600 dark:text-stone-300 bg-stone-100 dark:bg-stone-800 font-medium'
@@ -782,7 +782,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                         <div className="grid grid-cols-7 gap-3 mb-4">
                           {DAYS.map((day) => (
                             <div key={day} className="space-y-2">
-                              <p className="text-[11px] font-medium text-stone-500  dark:text-stone-500 text-center">{DAY_SHORT[day]}</p>
+                              <p className="text-xs font-medium text-stone-500  dark:text-stone-500 text-center">{DAY_SHORT[day]}</p>
                               <label className="flex items-center justify-center gap-1.5 cursor-pointer">
                                 <input
                                   type="checkbox"
@@ -793,7 +793,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                                   }))}
                                   className="w-3.5 h-3.5 rounded border-stone-300 dark:border-stone-700"
                                 />
-                                <span className="text-[11px] text-stone-400 dark:text-stone-500">Off</span>
+                                <span className="text-xs text-stone-400 dark:text-stone-500">Off</span>
                               </label>
                               {!scheduleForm[day]?.isOff && (
                                 <div className="space-y-1">
@@ -804,7 +804,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                                       ...prev,
                                       [day]: { ...prev[day], startTime: e.target.value },
                                     }))}
-                                    className="w-full text-[11px] px-2 py-1 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
+                                    className="w-full text-xs px-2 py-1 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
                                   />
                                   <input
                                     type="time"
@@ -813,7 +813,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                                       ...prev,
                                       [day]: { ...prev[day], endTime: e.target.value },
                                     }))}
-                                    className="w-full text-[11px] px-2 py-1 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
+                                    className="w-full text-xs px-2 py-1 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
                                   />
                                 </div>
                               )}
@@ -823,7 +823,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                         <div className="flex justify-end gap-2">
                           <button
                             onClick={() => setEditingSchedule(null)}
-                            className="px-4 py-2 rounded-xl text-[13px] font-medium text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-all"
+                            className="px-4 py-2 rounded-xl text-sm font-medium text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-all"
                           >
                             Cancel
                           </button>
@@ -847,8 +847,8 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                     m.timeOffRequests.map((req) => (
                       <div key={req.id} className="flex items-center justify-between p-4 rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900">
                         <div>
-                          <p className="text-[14px] font-medium text-stone-900 dark:text-stone-100">{m.fullName}</p>
-                          <p className="text-[12px] text-stone-400 dark:text-stone-500">
+                          <p className="text-sm font-medium text-stone-900 dark:text-stone-100">{m.fullName}</p>
+                          <p className="text-xs text-stone-400 dark:text-stone-500">
                             {new Date(req.startDate).toLocaleDateString()} - {new Date(req.endDate).toLocaleDateString()}
                             {req.reason && ` · ${req.reason}`}
                           </p>
@@ -857,13 +857,13 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                           <div className="flex gap-1.5">
                             <button
                               onClick={() => handleTimeOffAction(req.id, 'approved')}
-                              className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
+                              className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-xs font-medium hover:bg-emerald-100 transition-colors"
                             >
                               Approve
                             </button>
                             <button
                               onClick={() => handleTimeOffAction(req.id, 'denied')}
-                              className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
+                              className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-xs font-medium hover:bg-red-100 transition-colors"
                             >
                               Deny
                             </button>
@@ -887,11 +887,11 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
             <div>
               <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 tracking-tight mb-4">
                 Today
-                <span className="ml-2 text-[14px] font-normal text-stone-400 dark:text-stone-500">{todayBookings.length} booking{todayBookings.length !== 1 ? 's' : ''}</span>
+                <span className="ml-2 text-sm font-normal text-stone-400 dark:text-stone-500">{todayBookings.length} booking{todayBookings.length !== 1 ? 's' : ''}</span>
               </h2>
               {todayBookings.length === 0 ? (
                 <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
-                  <p className="text-stone-400 dark:text-stone-500 text-[14px]">No bookings today</p>
+                  <p className="text-stone-400 dark:text-stone-500 text-sm">No bookings today</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -908,11 +908,11 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
             <div>
               <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 tracking-tight mb-4">
                 Upcoming
-                <span className="ml-2 text-[14px] font-normal text-stone-400 dark:text-stone-500">{upcomingBookings.length} booking{upcomingBookings.length !== 1 ? 's' : ''}</span>
+                <span className="ml-2 text-sm font-normal text-stone-400 dark:text-stone-500">{upcomingBookings.length} booking{upcomingBookings.length !== 1 ? 's' : ''}</span>
               </h2>
               {upcomingBookings.length === 0 ? (
                 <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
-                  <p className="text-stone-400 dark:text-stone-500 text-[14px]">No upcoming bookings this week</p>
+                  <p className="text-stone-400 dark:text-stone-500 text-sm">No upcoming bookings this week</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -923,16 +923,16 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                         <div className="flex items-center justify-between gap-2 p-3 rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 transition-all">
                           <div className="flex items-center gap-3 min-w-0">
                             <div className="text-center shrink-0 w-10">
-                              <p className="text-[11px] text-stone-400 dark:text-stone-500">{date.toLocaleDateString('en-US', { weekday: 'short' })}</p>
-                              <p className="text-[18px] font-bold text-stone-900 dark:text-stone-100 tabular-nums">{date.getDate()}</p>
+                              <p className="text-xs text-stone-400 dark:text-stone-500">{date.toLocaleDateString('en-US', { weekday: 'short' })}</p>
+                              <p className="text-lg font-bold text-stone-900 dark:text-stone-100 tabular-nums">{date.getDate()}</p>
                             </div>
                             <div className="min-w-0">
-                              <p className="text-[13px] font-semibold text-stone-900 dark:text-stone-100 truncate">{booking.clientName || 'Client'}</p>
-                              <p className="text-[12px] text-stone-400 dark:text-stone-500 truncate">{booking.serviceName} · {booking.time} · {booking.employeeName}</p>
+                              <p className="text-sm font-semibold text-stone-900 dark:text-stone-100 truncate">{booking.clientName || 'Client'}</p>
+                              <p className="text-xs text-stone-400 dark:text-stone-500 truncate">{booking.serviceName} · {booking.time} · {booking.employeeName}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-1.5 shrink-0">
-                            <span className="text-[13px] font-bold text-stone-900 dark:text-stone-100 tabular-nums">${booking.totalPrice}</span>
+                            <span className="text-sm font-bold text-stone-900 dark:text-stone-100 tabular-nums">${booking.totalPrice}</span>
                             <StatusBadge status={booking.status} />
                           </div>
                         </div>
@@ -956,17 +956,17 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && loadClients()}
-                className="flex-1 max-w-xs text-[13px] px-4 py-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-300"
+                className="flex-1 max-w-xs text-sm px-4 py-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-300"
               />
             </div>
 
             {loadingClients ? (
               <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
-                <p className="text-stone-400 dark:text-stone-500 text-[14px]">Loading clients...</p>
+                <p className="text-stone-400 dark:text-stone-500 text-sm">Loading clients...</p>
               </div>
             ) : clients.length === 0 ? (
               <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
-                <p className="text-stone-400 dark:text-stone-500 text-[14px]">
+                <p className="text-stone-400 dark:text-stone-500 text-sm">
                   {clientsLoaded ? 'No clients found' : 'Loading...'}
                 </p>
               </div>
@@ -984,28 +984,28 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                           {client.image ? (
                             <Image src={client.image} alt={client.name || 'Client avatar'} width={40} height={40} className="object-cover w-full h-full" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-stone-400 dark:text-stone-500 text-[14px] font-medium">
+                            <div className="w-full h-full flex items-center justify-center text-stone-400 dark:text-stone-500 text-sm font-medium">
                               {client.name?.[0] || '?'}
                             </div>
                           )}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-[14px] font-semibold text-stone-900 dark:text-stone-100 truncate">{client.name || 'Unknown'}</p>
-                          <p className="text-[12px] text-stone-400 dark:text-stone-500 truncate">{client.email}</p>
+                          <p className="text-sm font-semibold text-stone-900 dark:text-stone-100 truncate">{client.name || 'Unknown'}</p>
+                          <p className="text-xs text-stone-400 dark:text-stone-500 truncate">{client.email}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-6 text-right shrink-0">
                         <div>
-                          <p className="text-[14px] font-bold text-stone-900 dark:text-stone-100 tabular-nums">{client.visitCount}</p>
-                          <p className="text-[11px] text-stone-400 dark:text-stone-500">visits</p>
+                          <p className="text-sm font-bold text-stone-900 dark:text-stone-100 tabular-nums">{client.visitCount}</p>
+                          <p className="text-xs text-stone-400 dark:text-stone-500">visits</p>
                         </div>
                         <div>
-                          <p className="text-[14px] font-bold text-stone-900 dark:text-stone-100 tabular-nums">${client.totalSpent.toLocaleString()}</p>
-                          <p className="text-[11px] text-stone-400 dark:text-stone-500">spent</p>
+                          <p className="text-sm font-bold text-stone-900 dark:text-stone-100 tabular-nums">${client.totalSpent.toLocaleString()}</p>
+                          <p className="text-xs text-stone-400 dark:text-stone-500">spent</p>
                         </div>
                         <div>
-                          <p className="text-[12px] text-stone-500  dark:text-stone-500">{new Date(client.lastVisit).toLocaleDateString()}</p>
-                          <p className="text-[11px] text-stone-400 dark:text-stone-500">last visit</p>
+                          <p className="text-xs text-stone-500  dark:text-stone-500">{new Date(client.lastVisit).toLocaleDateString()}</p>
+                          <p className="text-xs text-stone-400 dark:text-stone-500">last visit</p>
                         </div>
                       </div>
                     </div>
@@ -1015,7 +1015,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                       <div className="px-4 pb-3">
                         <div className="flex flex-wrap gap-1.5">
                           {client.recentBookings.slice(0, 3).map((b: any) => (
-                            <span key={b.id} className="text-[11px] px-2 py-0.5 rounded-full bg-stone-50 dark:bg-stone-900 text-stone-500  dark:text-stone-500">
+                            <span key={b.id} className="text-xs px-2 py-0.5 rounded-full bg-stone-50 dark:bg-stone-900 text-stone-500  dark:text-stone-500">
                               {b.serviceName}
                             </span>
                           ))}
@@ -1031,7 +1031,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                         value={clientNotes[client.userId] ?? client.notes ?? ''}
                         onChange={(e) => setClientNotes((prev) => ({ ...prev, [client.userId]: e.target.value }))}
                         onBlur={() => saveClientNote(client.userId)}
-                        className="flex-1 text-[12px] px-3 py-1.5 rounded-xl border border-stone-150 bg-stone-50 dark:bg-stone-900 focus:outline-none focus:ring-1 focus:ring-stone-300 placeholder:text-stone-300"
+                        className="flex-1 text-xs px-3 py-1.5 rounded-xl border border-stone-150 bg-stone-50 dark:bg-stone-900 focus:outline-none focus:ring-1 focus:ring-stone-300 placeholder:text-stone-300"
                       />
                     </div>
                   </div>
@@ -1057,8 +1057,8 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                     { label: 'Available Balance', value: `$${balances[myEmployee.id].availableBalance?.toLocaleString() || '0'}`, highlight: balances[myEmployee.id].availableBalance < 0 },
                   ].map((stat, i) => (
                     <div key={i} className="text-center">
-                      <p className="text-[11px] text-stone-400 dark:text-stone-500">{stat.label}</p>
-                      <p className={`text-[22px] font-bold tabular-nums mt-1 ${stat.highlight ? 'text-red-500' : 'text-stone-900 dark:text-stone-100'}`}>{stat.value}</p>
+                      <p className="text-xs text-stone-400 dark:text-stone-500">{stat.label}</p>
+                      <p className={`text-2xl font-bold tabular-nums mt-1 ${stat.highlight ? 'text-red-500' : 'text-stone-900 dark:text-stone-100'}`}>{stat.value}</p>
                     </div>
                   ))}
                 </div>
@@ -1066,13 +1066,13 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                 {/* Agreement info */}
                 <div className="border-t border-stone-100 dark:border-stone-800 pt-4 mb-4">
                   {myEmployee.payAgreement ? (
-                    <p className="text-[12px] text-stone-400 dark:text-stone-500">
+                    <p className="text-xs text-stone-400 dark:text-stone-500">
                       {myEmployee.payAgreement.type === 'commission'
                         ? `You keep ${myEmployee.payAgreement.splitPercent}% of each booking`
                         : `Chair rental: $${myEmployee.payAgreement.rentalAmount} ${myEmployee.payAgreement.rentalFrequency}`}
                     </p>
                   ) : (
-                    <p className="text-[12px] text-stone-400 dark:text-stone-500">
+                    <p className="text-xs text-stone-400 dark:text-stone-500">
                       No pay agreement set up —{' '}
                       <button
                         onClick={() => inboxModal.onOpen(currentUser)}
@@ -1087,11 +1087,11 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                 {/* Payout request */}
                 {balances[myEmployee.id].availableBalance > 0 && (
                   <div className="border-t border-stone-100 dark:border-stone-800 pt-4">
-                    <h4 className="text-[13px] font-semibold text-stone-900 dark:text-stone-100 mb-3">Request Payout</h4>
+                    <h4 className="text-sm font-semibold text-stone-900 dark:text-stone-100 mb-3">Request Payout</h4>
                     <div className="space-y-3">
                       <div className="flex gap-3 items-end">
                         <div>
-                          <label className="text-[11px] text-stone-400 dark:text-stone-500 block mb-1">Amount ($)</label>
+                          <label className="text-xs text-stone-400 dark:text-stone-500 block mb-1">Amount ($)</label>
                           <input
                             type="number"
                             min={1}
@@ -1099,7 +1099,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                             value={payoutAmount}
                             onChange={(e) => setPayoutAmount(e.target.value)}
                             placeholder={`Up to $${balances[myEmployee.id].availableBalance.toFixed(2)}`}
-                            className="w-48 text-[13px] px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
+                            className="w-48 text-sm px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
                           />
                         </div>
                         <Button
@@ -1116,7 +1116,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                         value={payoutNote}
                         onChange={(e) => setPayoutNote(e.target.value)}
                         placeholder="Add a note (optional)"
-                        className="w-full text-[13px] px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
+                        className="w-full text-sm px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
                       />
                     </div>
                   </div>
@@ -1124,22 +1124,22 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
               </div>
             ) : (
               <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
-                <p className="text-stone-400 dark:text-stone-500 text-[14px]">Loading pay data...</p>
+                <p className="text-stone-400 dark:text-stone-500 text-sm">Loading pay data...</p>
               </div>
             )}
 
             {/* Fee periods */}
             {(payPeriods[myEmployee.id] || []).length > 0 && (
               <div className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 p-5">
-                <h4 className="text-[13px] font-semibold text-stone-900 dark:text-stone-100 mb-3">Fee History</h4>
+                <h4 className="text-sm font-semibold text-stone-900 dark:text-stone-100 mb-3">Fee History</h4>
                 <div className="space-y-2">
                   {(payPeriods[myEmployee.id] || []).map((period: any) => (
                     <div key={period.id} className="flex items-center justify-between py-2">
                       <div>
-                        <p className="text-[12px] text-stone-700 dark:text-stone-200">
+                        <p className="text-xs text-stone-700 dark:text-stone-200">
                           {new Date(period.periodStart).toLocaleDateString()} - {new Date(period.periodEnd).toLocaleDateString()}
                         </p>
-                        <p className="text-[11px] text-stone-400 dark:text-stone-500">${period.feeAmount}</p>
+                        <p className="text-xs text-stone-400 dark:text-stone-500">${period.feeAmount}</p>
                       </div>
                       <StatusBadge status={period.status} />
                     </div>
@@ -1155,25 +1155,25 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
               const displayed = showAll ? allPayouts : allPayouts.slice(0, 5);
               return (
                 <div className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 p-5">
-                  <h4 className="text-[13px] font-semibold text-stone-900 dark:text-stone-100 mb-3">Payout History</h4>
+                  <h4 className="text-sm font-semibold text-stone-900 dark:text-stone-100 mb-3">Payout History</h4>
                   <div className="space-y-2">
                     {displayed.map((payout: any) => (
                       <div key={payout.id} className="py-2">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-[13px] font-medium text-stone-900 dark:text-stone-100 tabular-nums">${payout.amount.toFixed(2)}</p>
-                            <p className="text-[11px] text-stone-400 dark:text-stone-500">{new Date(payout.requestedAt).toLocaleDateString()}</p>
+                            <p className="text-sm font-medium text-stone-900 dark:text-stone-100 tabular-nums">${payout.amount.toFixed(2)}</p>
+                            <p className="text-xs text-stone-400 dark:text-stone-500">{new Date(payout.requestedAt).toLocaleDateString()}</p>
                           </div>
                           <StatusBadge status={payout.status} />
                         </div>
-                        {payout.note && <p className="text-[11px] text-stone-400 dark:text-stone-500 mt-1">{payout.note}</p>}
+                        {payout.note && <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">{payout.note}</p>}
                       </div>
                     ))}
                   </div>
                   {allPayouts.length > 5 && (
                     <button
                       onClick={() => setShowAllPayouts(prev => ({ ...prev, [myEmployee.id]: !showAll }))}
-                      className="text-[12px] text-stone-400  hover:text-stone-600 dark:text-stone-300 mt-3 transition-colors"
+                      className="text-xs text-stone-400  hover:text-stone-600 dark:text-stone-300 mt-3 transition-colors"
                     >
                       {showAll ? 'Show less' : `View all ${allPayouts.length} payouts`}
                     </button>
@@ -1189,7 +1189,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
           <div className="space-y-8">
             {members.length === 0 ? (
               <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
-                <p className="text-stone-400 dark:text-stone-500 text-[14px]">No team members to manage pay for.</p>
+                <p className="text-stone-400 dark:text-stone-500 text-sm">No team members to manage pay for.</p>
               </div>
             ) : (() => {
               const unset = members.filter((m) => !m.payAgreement);
@@ -1209,14 +1209,14 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                   className="w-full rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors p-5 flex items-center justify-between text-left"
                 >
                   <div>
-                    <p className="text-[14px] font-semibold text-stone-900 dark:text-stone-100">
+                    <p className="text-sm font-semibold text-stone-900 dark:text-stone-100">
                       {unset.length === 1 ? '1 member' : `${unset.length} members`} without a pay agreement
                     </p>
-                    <p className="text-[12px] text-stone-400 dark:text-stone-500 mt-0.5">
+                    <p className="text-xs text-stone-400 dark:text-stone-500 mt-0.5">
                       Set one up so they can receive payouts.
                     </p>
                   </div>
-                  <span className="text-[12px] font-medium text-stone-900 dark:text-stone-100 px-3 py-1.5 rounded-xl bg-stone-100 dark:bg-stone-800">
+                  <span className="text-xs font-medium text-stone-900 dark:text-stone-100 px-3 py-1.5 rounded-xl bg-stone-100 dark:bg-stone-800">
                     Set up pay →
                   </span>
                 </button>
@@ -1243,12 +1243,12 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                           {(member.user.image || member.user.imageSrc) ? (
                             <Image src={member.user.image || member.user.imageSrc || ''} alt={member.user.name || 'Team member avatar'} width={40} height={40} className="object-cover w-full h-full" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-stone-500  dark:text-stone-500 text-[14px] font-semibold">{member.fullName[0]}</div>
+                            <div className="w-full h-full flex items-center justify-center text-stone-500  dark:text-stone-500 text-sm font-semibold">{member.fullName[0]}</div>
                           )}
                         </div>
                         <div>
-                          <p className="text-[14px] font-semibold text-stone-900 dark:text-stone-100">{member.fullName}</p>
-                          <p className="text-[12px] text-stone-400 dark:text-stone-500">
+                          <p className="text-sm font-semibold text-stone-900 dark:text-stone-100">{member.fullName}</p>
+                          <p className="text-xs text-stone-400 dark:text-stone-500">
                             {member.payAgreement
                               ? member.payAgreement.type === 'commission'
                                 ? `${member.payAgreement.splitPercent}% commission`
@@ -1273,7 +1273,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                             setEditingAgreement(member.id);
                           }
                         }}
-                        className="text-[12px] text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors px-3 py-1.5 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900"
+                        className="text-xs text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors px-3 py-1.5 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900"
                       >
                         {isEditing ? 'Cancel' : member.payAgreement ? 'Edit Agreement' : 'Set Up Pay'}
                       </button>
@@ -1287,7 +1287,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                             <button
                               key={type}
                               onClick={() => setAgreementForm((prev) => ({ ...prev, type }))}
-                              className={`px-4 py-2 rounded-xl text-[13px] font-medium transition-all ${
+                              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                                 agreementForm.type === type ? 'bg-stone-900 text-white' : 'bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-stone-500  dark:text-stone-500'
                               }`}
                             >
@@ -1299,20 +1299,20 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                         {agreementForm.type === 'chair_rental' ? (
                           <div className="flex items-center gap-4">
                             <div>
-                              <label className="text-[11px] text-stone-400 dark:text-stone-500 block mb-1">Rental Amount ($)</label>
+                              <label className="text-xs text-stone-400 dark:text-stone-500 block mb-1">Rental Amount ($)</label>
                               <input
                                 type="number"
                                 value={agreementForm.rentalAmount}
                                 onChange={(e) => setAgreementForm((prev) => ({ ...prev, rentalAmount: Number(e.target.value) }))}
-                                className="w-32 text-[13px] px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
+                                className="w-32 text-sm px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
                               />
                             </div>
                             <div>
-                              <label className="text-[11px] text-stone-400 dark:text-stone-500 block mb-1">Frequency</label>
+                              <label className="text-xs text-stone-400 dark:text-stone-500 block mb-1">Frequency</label>
                               <select
                                 value={agreementForm.rentalFrequency}
                                 onChange={(e) => setAgreementForm((prev) => ({ ...prev, rentalFrequency: e.target.value }))}
-                                className="text-[13px] px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
+                                className="text-sm px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
                               >
                                 <option value="daily">Daily</option>
                                 <option value="weekly">Weekly</option>
@@ -1322,16 +1322,16 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                           </div>
                         ) : (
                           <div>
-                            <label className="text-[11px] text-stone-400 dark:text-stone-500 block mb-1">Employee keeps (%)</label>
+                            <label className="text-xs text-stone-400 dark:text-stone-500 block mb-1">Employee keeps (%)</label>
                             <input
                               type="number"
                               min={0}
                               max={100}
                               value={agreementForm.splitPercent}
                               onChange={(e) => setAgreementForm((prev) => ({ ...prev, splitPercent: Number(e.target.value) }))}
-                              className="w-32 text-[13px] px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
+                              className="w-32 text-sm px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
                             />
-                            <p className="text-[11px] text-stone-400 dark:text-stone-500 mt-1">Business keeps {100 - agreementForm.splitPercent}%</p>
+                            <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">Business keeps {100 - agreementForm.splitPercent}%</p>
                           </div>
                         )}
 
@@ -1342,7 +1342,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                             onChange={(e) => setAgreementForm((prev) => ({ ...prev, autoApprovePayout: e.target.checked }))}
                             className="w-4 h-4 rounded border-stone-300 dark:border-stone-700"
                           />
-                          <span className="text-[13px] text-stone-600 dark:text-stone-300">Auto-approve payout requests</span>
+                          <span className="text-sm text-stone-600 dark:text-stone-300">Auto-approve payout requests</span>
                         </label>
 
                         <Button onClick={() => saveAgreement(member.id)} size="sm">
@@ -1362,8 +1362,8 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                             { label: 'Available Balance', value: `$${bal.availableBalance?.toLocaleString() || '0'}`, highlight: bal.availableBalance < 0 },
                           ].map((stat, i) => (
                             <div key={i} className="text-center">
-                              <p className="text-[11px] text-stone-400 dark:text-stone-500">{stat.label}</p>
-                              <p className={`text-[18px] font-bold tabular-nums mt-0.5 ${stat.highlight ? 'text-red-500' : 'text-stone-900 dark:text-stone-100'}`}>{stat.value}</p>
+                              <p className="text-xs text-stone-400 dark:text-stone-500">{stat.label}</p>
+                              <p className={`text-lg font-bold tabular-nums mt-0.5 ${stat.highlight ? 'text-red-500' : 'text-stone-900 dark:text-stone-100'}`}>{stat.value}</p>
                             </div>
                           ))}
                         </div>
@@ -1374,10 +1374,10 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                     {member.payAgreement?.type === 'chair_rental' && memberPeriods.length > 0 && (
                       <div className="p-5 border-b border-stone-100 dark:border-stone-800">
                         <div className="flex items-center justify-between mb-3">
-                          <h4 className="text-[13px] font-semibold text-stone-900 dark:text-stone-100">Rental Fees</h4>
+                          <h4 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Rental Fees</h4>
                           <button
                             onClick={() => generatePeriod(member.id)}
-                            className="text-[11px] text-stone-400  hover:text-stone-600 dark:text-stone-300 px-2 py-1 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 transition-colors"
+                            className="text-xs text-stone-400  hover:text-stone-600 dark:text-stone-300 px-2 py-1 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 transition-colors"
                           >
                             + Generate Period
                           </button>
@@ -1387,10 +1387,10 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                             <div key={period.id} className="py-2">
                               <div className="flex items-center justify-between">
                                 <div>
-                                  <p className="text-[12px] text-stone-700 dark:text-stone-200">
+                                  <p className="text-xs text-stone-700 dark:text-stone-200">
                                     {new Date(period.periodStart).toLocaleDateString()} - {new Date(period.periodEnd).toLocaleDateString()}
                                   </p>
-                                  <p className="text-[11px] text-stone-400 dark:text-stone-500">${period.feeAmount}</p>
+                                  <p className="text-xs text-stone-400 dark:text-stone-500">${period.feeAmount}</p>
                                 </div>
                                 {period.status === 'charged' ? (
                                   <div className="flex items-center gap-2">
@@ -1402,16 +1402,16 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                                           value={waiveReason}
                                           onChange={(e) => setWaiveReason(e.target.value)}
                                           placeholder="Reason"
-                                          className="w-28 text-[11px] px-2 py-1 rounded-lg border border-stone-200 dark:border-stone-800"
+                                          className="w-28 text-xs px-2 py-1 rounded-lg border border-stone-200 dark:border-stone-800"
                                           autoFocus
                                         />
-                                        <button onClick={() => waivePeriod(period.id, member.id, waiveReason)} className="text-[11px] text-emerald-600 font-medium">OK</button>
-                                        <button onClick={() => { setWaivingPeriodId(null); setWaiveReason(''); }} className="text-[11px] text-stone-400 dark:text-stone-500">✕</button>
+                                        <button onClick={() => waivePeriod(period.id, member.id, waiveReason)} className="text-xs text-emerald-600 font-medium">OK</button>
+                                        <button onClick={() => { setWaivingPeriodId(null); setWaiveReason(''); }} className="text-xs text-stone-400 dark:text-stone-500">✕</button>
                                       </div>
                                     ) : (
                                       <button
                                         onClick={() => setWaivingPeriodId(period.id)}
-                                        className="text-[11px] text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
+                                        className="text-xs text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
                                       >
                                         Waive
                                       </button>
@@ -1421,14 +1421,14 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                                   <StatusBadge status={period.status} />
                                 )}
                               </div>
-                              {period.waivedReason && <p className="text-[11px] text-purple-400 mt-1">Reason: {period.waivedReason}</p>}
+                              {period.waivedReason && <p className="text-xs text-purple-400 mt-1">Reason: {period.waivedReason}</p>}
                             </div>
                           ))}
                         </div>
                         {memberPeriods.length > 5 && (
                           <button
                             onClick={() => setShowAllPeriods(prev => ({ ...prev, [member.id]: !prev[member.id] }))}
-                            className="text-[12px] text-stone-400  hover:text-stone-600 dark:text-stone-300 mt-3 transition-colors"
+                            className="text-xs text-stone-400  hover:text-stone-600 dark:text-stone-300 mt-3 transition-colors"
                           >
                             {showAllPeriods[member.id] ? 'Show less' : `View all ${memberPeriods.length} periods`}
                           </button>
@@ -1439,20 +1439,20 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                     {/* Payout history */}
                     {memberPayouts.length > 0 && (
                       <div className="p-5">
-                        <h4 className="text-[13px] font-semibold text-stone-900 dark:text-stone-100 mb-3">Payouts</h4>
+                        <h4 className="text-sm font-semibold text-stone-900 dark:text-stone-100 mb-3">Payouts</h4>
                         <div className="space-y-2">
                           {(showAllPayouts[member.id] ? memberPayouts : memberPayouts.slice(0, 5)).map((payout: any) => (
                             <div key={payout.id} className="py-2">
                               <div className="flex items-center justify-between">
                                 <div>
-                                  <p className="text-[13px] font-medium text-stone-900 dark:text-stone-100 tabular-nums">${payout.amount.toFixed(2)}</p>
-                                  <p className="text-[11px] text-stone-400 dark:text-stone-500">{new Date(payout.requestedAt).toLocaleDateString()}</p>
+                                  <p className="text-sm font-medium text-stone-900 dark:text-stone-100 tabular-nums">${payout.amount.toFixed(2)}</p>
+                                  <p className="text-xs text-stone-400 dark:text-stone-500">{new Date(payout.requestedAt).toLocaleDateString()}</p>
                                 </div>
                                 {payout.status === 'pending' ? (
                                   <div className="flex gap-1.5">
                                     <button
                                       onClick={() => handlePayoutAction(payout.id, 'approve')}
-                                      className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-[11px] font-medium hover:bg-emerald-100 transition-colors"
+                                      className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-xs font-medium hover:bg-emerald-100 transition-colors"
                                     >
                                       Approve
                                     </button>
@@ -1463,16 +1463,16 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                                           value={denyNote}
                                           onChange={(e) => setDenyNote(e.target.value)}
                                           placeholder="Reason"
-                                          className="w-28 text-[11px] px-2 py-1 rounded-lg border border-stone-200 dark:border-stone-800"
+                                          className="w-28 text-xs px-2 py-1 rounded-lg border border-stone-200 dark:border-stone-800"
                                           autoFocus
                                         />
-                                        <button onClick={() => handlePayoutAction(payout.id, 'deny', denyNote)} className="text-[11px] text-red-600 font-medium">Deny</button>
-                                        <button onClick={() => { setDenyingPayoutId(null); setDenyNote(''); }} className="text-[11px] text-stone-400 dark:text-stone-500">✕</button>
+                                        <button onClick={() => handlePayoutAction(payout.id, 'deny', denyNote)} className="text-xs text-red-600 font-medium">Deny</button>
+                                        <button onClick={() => { setDenyingPayoutId(null); setDenyNote(''); }} className="text-xs text-stone-400 dark:text-stone-500">✕</button>
                                       </div>
                                     ) : (
                                       <button
                                         onClick={() => setDenyingPayoutId(payout.id)}
-                                        className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-[11px] font-medium hover:bg-red-100 transition-colors"
+                                        className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-xs font-medium hover:bg-red-100 transition-colors"
                                       >
                                         Deny
                                       </button>
@@ -1482,14 +1482,14 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                                   <StatusBadge status={payout.status} />
                                 )}
                               </div>
-                              {payout.note && <p className="text-[11px] text-stone-400 dark:text-stone-500 mt-1">{payout.note}</p>}
+                              {payout.note && <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">{payout.note}</p>}
                             </div>
                           ))}
                         </div>
                         {memberPayouts.length > 5 && (
                           <button
                             onClick={() => setShowAllPayouts(prev => ({ ...prev, [member.id]: !prev[member.id] }))}
-                            className="text-[12px] text-stone-400  hover:text-stone-600 dark:text-stone-300 mt-3 transition-colors"
+                            className="text-xs text-stone-400  hover:text-stone-600 dark:text-stone-300 mt-3 transition-colors"
                           >
                             {showAllPayouts[member.id] ? 'Show less' : `View all ${memberPayouts.length} payouts`}
                           </button>
@@ -1500,7 +1500,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                     {/* Empty state for no pay data */}
                     {!bal && !isEditing && (
                       <div className="p-5 text-center">
-                        <p className="text-[12px] text-stone-400 dark:text-stone-500">Loading pay data...</p>
+                        <p className="text-xs text-stone-400 dark:text-stone-500">Loading pay data...</p>
                       </div>
                     )}
                   </div>

@@ -202,16 +202,16 @@ const ReservationModal: React.FC = () => {
           />
         </button>
         <div className="min-w-0 flex-1">
-          <h2 className="text-[18px] font-semibold text-stone-900 dark:text-stone-100 leading-tight tracking-[-0.015em] truncate">
+          <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 leading-tight tracking-[-0.015em] truncate">
             {listing.title}
           </h2>
           {listing.address && (
-            <p className="text-[12px] text-stone-500 dark:text-stone-500 truncate mt-1">
+            <p className="text-xs text-stone-500 dark:text-stone-500 truncate mt-1">
               {listing.address}
             </p>
           )}
           <p
-            className={`text-[11px] leading-none mt-2 ${STATUS_TEXT_COLORS[status]}`}
+            className={`text-xs leading-none mt-2 ${STATUS_TEXT_COLORS[status]}`}
             style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}
           >
             {STATUS_LABELS[status]}
@@ -223,26 +223,26 @@ const ReservationModal: React.FC = () => {
       {/* Date + time block */}
       <div className="rounded-2xl bg-stone-50 dark:bg-stone-800/50 border border-stone-200/70 dark:border-stone-700 px-4 py-3.5 flex items-center gap-4">
         <div className="flex flex-col items-center justify-center w-12 shrink-0">
-          <span className="text-[10px] font-medium text-stone-400 dark:text-stone-500 uppercase tracking-wider">
+          <span className="text-xs font-medium text-stone-400 dark:text-stone-500 uppercase tracking-wider">
             {format(date, 'MMM')}
           </span>
-          <span className="text-[24px] font-semibold tabular-nums leading-none text-stone-900 dark:text-stone-100 mt-0.5">
+          <span className="text-2xl font-semibold tabular-nums leading-none text-stone-900 dark:text-stone-100 mt-0.5">
             {format(date, 'd')}
           </span>
-          <span className="text-[10px] font-medium text-stone-400 dark:text-stone-500 mt-0.5">
+          <span className="text-xs font-medium text-stone-400 dark:text-stone-500 mt-0.5">
             {format(date, 'EEE')}
           </span>
         </div>
         <div className="w-px h-12 bg-stone-200 dark:bg-stone-700" />
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-semibold text-stone-500 dark:text-stone-400">
+          <p className="text-xs font-semibold text-stone-500 dark:text-stone-400">
             Appointment
           </p>
-          <p className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 mt-0.5 flex items-center gap-2">
+          <p className="text-sm font-semibold text-stone-900 dark:text-stone-100 mt-0.5 flex items-center gap-2">
             <Clock01Icon size={14} strokeWidth={1.8} />
             {formatTime(reservation.time)}
             {durationMin ? (
-              <span className="text-[12px] text-stone-400 dark:text-stone-500 font-normal">
+              <span className="text-xs text-stone-400 dark:text-stone-500 font-normal">
                 · {durationMin} min
               </span>
             ) : null}
@@ -278,13 +278,13 @@ const ReservationModal: React.FC = () => {
                 )}
               </div>
               <div className="min-w-0">
-                <p className="text-[13px] font-medium text-stone-900 dark:text-stone-100 truncate">
+                <p className="text-sm font-medium text-stone-900 dark:text-stone-100 truncate">
                   {isIncoming
                     ? `${customerName}${isGuestBooking ? ' (guest)' : ''}`
                     : employeeName || 'Unassigned'}
                 </p>
                 {!isIncoming && employeeRole && (
-                  <p className="text-[11px] text-stone-400 dark:text-stone-500 truncate">
+                  <p className="text-xs text-stone-400 dark:text-stone-500 truncate">
                     {employeeRole}
                   </p>
                 )}
@@ -298,7 +298,7 @@ const ReservationModal: React.FC = () => {
           value={
             <div className="flex items-center gap-2">
               <span
-                className={`text-[15px] font-semibold tabular-nums ${
+                className={`text-sm font-semibold tabular-nums ${
                   isRefunded
                     ? 'text-stone-400 dark:text-stone-500 line-through'
                     : 'text-stone-900 dark:text-stone-100'
@@ -307,12 +307,12 @@ const ReservationModal: React.FC = () => {
                 ${reservation.totalPrice}
               </span>
               {paymentStatus === 'paid' && !isRefunded && (
-                <span className="text-[10px] font-medium px-1.5 h-5 rounded-md inline-flex items-center bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
+                <span className="text-xs font-medium px-1.5 h-5 rounded-md inline-flex items-center bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
                   Paid
                 </span>
               )}
               {isRefunded && (
-                <span className="text-[10px] font-medium px-1.5 h-5 rounded-md inline-flex items-center bg-stone-100 text-stone-500 dark:bg-stone-800 dark:text-stone-400">
+                <span className="text-xs font-medium px-1.5 h-5 rounded-md inline-flex items-center bg-stone-100 text-stone-500 dark:bg-stone-800 dark:text-stone-400">
                   Refunded
                 </span>
               )}
@@ -325,7 +325,7 @@ const ReservationModal: React.FC = () => {
       {(listing.phoneNumber ||
         (isIncoming && (customerPhone || customerEmail))) && (
         <div>
-          <p className="text-[11px] font-medium text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-2">
+          <p className="text-xs font-medium text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-2">
             Contact
           </p>
           <div className="flex flex-col gap-2">
@@ -391,7 +391,7 @@ const ReservationModal: React.FC = () => {
           <button
             onClick={() => handleAction(onDecline)}
             disabled={busy}
-            className="inline-flex items-center justify-center gap-1.5 h-11 rounded-xl text-[13px] font-semibold text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 hover:text-red-600 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-500/10 dark:hover:text-red-300 dark:hover:border-red-500/30 transition-all disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-1.5 h-11 rounded-xl text-sm font-semibold text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 hover:text-red-600 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-500/10 dark:hover:text-red-300 dark:hover:border-red-500/30 transition-all disabled:opacity-50"
           >
             <Cancel01Icon size={16} strokeWidth={2} />
             Decline
@@ -399,7 +399,7 @@ const ReservationModal: React.FC = () => {
           <button
             onClick={() => handleAction(onAccept)}
             disabled={busy}
-            className="inline-flex items-center justify-center gap-1.5 h-11 rounded-xl text-[13px] font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-400/60 shadow-[0_2px_8px_-1px_rgba(16,185,129,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] hover:from-emerald-400 hover:to-emerald-500 transition-all disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-1.5 h-11 rounded-xl text-sm font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-400/60 shadow-[0_2px_8px_-1px_rgba(16,185,129,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] hover:from-emerald-400 hover:to-emerald-500 transition-all disabled:opacity-50"
           >
             <Tick02Icon size={16} strokeWidth={2.4} />
             Accept
@@ -408,10 +408,10 @@ const ReservationModal: React.FC = () => {
       ) : canCancel ? (
         confirmCancel ? (
           <div className="rounded-2xl border border-red-200/70 dark:border-red-500/30 bg-red-50/60 dark:bg-red-500/10 px-4 py-3.5">
-            <p className="text-[13px] font-semibold text-red-700 dark:text-red-300">
+            <p className="text-sm font-semibold text-red-700 dark:text-red-300">
               {isIncoming ? 'Decline this booking?' : 'Cancel this booking?'}
             </p>
-            <p className="text-[12px] text-red-700/80 dark:text-red-300/80 mt-1">
+            <p className="text-xs text-red-700/80 dark:text-red-300/80 mt-1">
               {isIncoming
                 ? 'The customer will be notified and refunded if applicable.'
                 : 'You will be refunded if eligible. This cannot be undone.'}
@@ -420,14 +420,14 @@ const ReservationModal: React.FC = () => {
               <button
                 onClick={() => setConfirmCancel(false)}
                 disabled={busy}
-                className="flex-1 inline-flex items-center justify-center h-10 rounded-xl text-[13px] font-medium text-stone-700 dark:text-stone-200 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 transition-all disabled:opacity-50"
+                className="flex-1 inline-flex items-center justify-center h-10 rounded-xl text-sm font-medium text-stone-700 dark:text-stone-200 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 transition-all disabled:opacity-50"
               >
                 Keep it
               </button>
               <button
                 onClick={() => handleAction(isIncoming ? onDecline : onCancel)}
                 disabled={busy}
-                className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-xl text-[13px] font-semibold text-white bg-gradient-to-b from-red-500 to-red-600 border border-red-400/60 hover:from-red-400 hover:to-red-500 transition-all disabled:opacity-50"
+                className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-xl text-sm font-semibold text-white bg-gradient-to-b from-red-500 to-red-600 border border-red-400/60 hover:from-red-400 hover:to-red-500 transition-all disabled:opacity-50"
               >
                 {busy ? 'Working…' : isIncoming ? 'Decline' : 'Cancel booking'}
               </button>
@@ -438,7 +438,7 @@ const ReservationModal: React.FC = () => {
             <button
               onClick={() => setConfirmCancel(true)}
               disabled={busy}
-              className="inline-flex items-center justify-center gap-1.5 h-11 rounded-xl text-[13px] font-semibold text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 hover:text-red-600 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-500/10 dark:hover:text-red-300 dark:hover:border-red-500/30 transition-all disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-1.5 h-11 rounded-xl text-sm font-semibold text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 hover:text-red-600 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-500/10 dark:hover:text-red-300 dark:hover:border-red-500/30 transition-all disabled:opacity-50"
             >
               <Cancel01Icon size={16} strokeWidth={2} />
               {isIncoming ? 'Decline booking' : 'Cancel booking'}
@@ -447,7 +447,7 @@ const ReservationModal: React.FC = () => {
               <button
                 onClick={() => handleAction(onRefund)}
                 disabled={busy}
-                className="inline-flex items-center justify-center gap-1.5 h-10 rounded-xl text-[12px] font-medium text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-1.5 h-10 rounded-xl text-xs font-medium text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors disabled:opacity-50"
               >
                 Request refund
               </button>
@@ -460,7 +460,7 @@ const ReservationModal: React.FC = () => {
             onClose();
             onRebook();
           }}
-          className="inline-flex items-center justify-center gap-1.5 h-11 rounded-xl text-[13px] font-semibold text-white bg-gradient-to-b from-stone-800 to-stone-900 dark:from-stone-100 dark:to-white dark:text-stone-900 hover:from-stone-700 hover:to-stone-800 dark:hover:from-stone-200 transition-all"
+          className="inline-flex items-center justify-center gap-1.5 h-11 rounded-xl text-sm font-semibold text-white bg-gradient-to-b from-stone-800 to-stone-900 dark:from-stone-100 dark:to-white dark:text-stone-900 hover:from-stone-700 hover:to-stone-800 dark:hover:from-stone-200 transition-all"
         >
           Book again
         </button>
@@ -496,10 +496,10 @@ function DetailRow({
       <div className="w-7 h-7 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-500 dark:text-stone-400 shrink-0">
         {icon}
       </div>
-      <span className="text-[12px] text-stone-400 dark:text-stone-500 w-20 shrink-0">
+      <span className="text-xs text-stone-400 dark:text-stone-500 w-20 shrink-0">
         {label}
       </span>
-      <div className="min-w-0 flex-1 text-[13px] text-stone-900 dark:text-stone-100 truncate">
+      <div className="min-w-0 flex-1 text-sm text-stone-900 dark:text-stone-100 truncate">
         {value}
       </div>
     </div>
@@ -523,7 +523,7 @@ function ContactLink({
       <div className="w-7 h-7 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-500 dark:text-stone-400 shrink-0">
         {icon}
       </div>
-      <span className="text-[13px] font-medium text-stone-900 dark:text-stone-100 truncate">
+      <span className="text-sm font-medium text-stone-900 dark:text-stone-100 truncate">
         {label}
       </span>
     </a>
@@ -544,7 +544,7 @@ function QuickAction({
   label: string;
 }) {
   const cls =
-    'inline-flex flex-col items-center justify-center gap-1.5 h-16 rounded-xl text-[12px] font-medium text-stone-700 dark:text-stone-200 bg-stone-50 dark:bg-stone-800/50 border border-stone-200/70 dark:border-stone-700 hover:bg-white dark:hover:bg-stone-800 hover:border-stone-300 dark:hover:border-stone-600 transition-all disabled:opacity-50 disabled:pointer-events-none';
+    'inline-flex flex-col items-center justify-center gap-1.5 h-16 rounded-xl text-xs font-medium text-stone-700 dark:text-stone-200 bg-stone-50 dark:bg-stone-800/50 border border-stone-200/70 dark:border-stone-700 hover:bg-white dark:hover:bg-stone-800 hover:border-stone-300 dark:hover:border-stone-600 transition-all disabled:opacity-50 disabled:pointer-events-none';
   if (href) {
     return (
       <a

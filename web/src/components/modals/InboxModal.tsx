@@ -159,13 +159,13 @@ const ConversationCard: React.FC<{
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-3 mb-0.5">
-            <h3 className={`font-medium text-[14px] truncate ${
+            <h3 className={`font-medium text-sm truncate ${
               hasUnread ? 'text-stone-900 dark:text-stone-100' : 'text-stone-700 dark:text-stone-200'
             }`}>
               {conversation.otherUser.name}
             </h3>
             {conversation.lastMessage?.createdAt && (
-              <span className={`text-[11px] flex-shrink-0 ${
+              <span className={`text-xs flex-shrink-0 ${
                 hasUnread ? 'text-stone-500  dark:text-stone-500 font-medium' : 'text-stone-400 dark:text-stone-500'
               }`}>
                 {formatRelativeTime(conversation.lastMessage.createdAt)}
@@ -174,7 +174,7 @@ const ConversationCard: React.FC<{
           </div>
 
           <div className="flex items-center justify-between gap-3">
-            <p className={`text-[13px] truncate ${
+            <p className={`text-sm truncate ${
               hasUnread ? 'text-stone-600 dark:text-stone-300' : 'text-stone-500  dark:text-stone-500'
             }`}>
               {conversation.lastMessage?.content || (
@@ -472,7 +472,7 @@ const InboxModal = () => {
                 onFocus={() => results.length && setOpen(true)}
                 onKeyDown={onKeyDown}
                 placeholder="Search for people to message..."
-                className="flex-1 text-[14px] bg-transparent border-none outline-none text-stone-900 dark:text-stone-100 placeholder-stone-400 font-normal"
+                className="flex-1 text-sm bg-transparent border-none outline-none text-stone-900 dark:text-stone-100 placeholder-stone-400 font-normal"
               />
             </div>
           </div>
@@ -570,7 +570,7 @@ const InboxModal = () => {
               inboxModal.onClose();
               window.location.href = '/messages';
             }}
-            className="block w-full py-2.5 rounded-xl text-center text-[13px] font-medium
+            className="block w-full py-2.5 rounded-xl text-center text-sm font-medium
                        text-stone-600 dark:text-stone-300 bg-stone-100 dark:bg-stone-800
                        hover:bg-stone-200 dark:hover:bg-stone-700 hover:text-stone-900 dark:hover:text-white
                        transition-all duration-200"

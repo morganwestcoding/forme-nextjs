@@ -134,18 +134,18 @@ export default function DateRangePicker({ start, end, preset, onApply }: Props) 
           <div className="flex items-center justify-between border-b border-stone-200/70 px-4 py-3 dark:border-stone-800">
             <button
               onClick={() => setOpen(false)}
-              className="text-[13px] font-medium text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100"
+              className="text-sm font-medium text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100"
             >
               Cancel
             </button>
-            <span className="text-[13px] font-semibold text-stone-900 dark:text-stone-100">Select range</span>
+            <span className="text-sm font-semibold text-stone-900 dark:text-stone-100">Select range</span>
             <button
               disabled={!isValid}
               onClick={() => {
                 onApply(draftStart, draftEnd, draftPreset);
                 setOpen(false);
               }}
-              className={`rounded-full px-3 py-1 text-[12px] font-semibold transition-colors ${
+              className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
                 isValid
                   ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] dark:from-stone-100 dark:to-white dark:text-stone-900'
                   : 'cursor-not-allowed bg-stone-200 text-stone-400 dark:bg-stone-800 dark:text-stone-600'
@@ -158,10 +158,10 @@ export default function DateRangePicker({ start, end, preset, onApply }: Props) 
           <div className="space-y-4 px-4 py-4">
             {/* Summary */}
             <div>
-              <div className="text-[15px] font-semibold text-stone-900 dark:text-stone-100">
+              <div className="text-sm font-semibold text-stone-900 dark:text-stone-100">
                 {summaryLabel(draftStart, draftEnd)}
               </div>
-              <div className="mt-0.5 text-[11px] text-stone-500 dark:text-stone-400">
+              <div className="mt-0.5 text-xs text-stone-500 dark:text-stone-400">
                 {dayCount} day{dayCount === 1 ? '' : 's'}
               </div>
             </div>
@@ -174,7 +174,7 @@ export default function DateRangePicker({ start, end, preset, onApply }: Props) 
                   <button
                     key={p.id}
                     onClick={() => applyPreset(p.id)}
-                    className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-[11px] transition-all ${
+                    className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-xs transition-all ${
                       active
                         ? 'bg-gradient-to-br from-stone-800 to-black font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] dark:from-stone-100 dark:to-white dark:text-stone-900'
                         : 'border border-stone-200 bg-stone-50 font-medium text-stone-600 hover:bg-stone-100 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700'
@@ -201,10 +201,10 @@ export default function DateRangePicker({ start, end, preset, onApply }: Props) 
                         : 'border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-800/60'
                     }`}
                   >
-                    <div className="text-[10px] font-medium uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                    <div className="text-xs font-medium uppercase tracking-wider text-stone-500 dark:text-stone-400">
                       {ep === 'from' ? 'From' : 'To'}
                     </div>
-                    <div className="text-[13px] font-semibold text-stone-900 dark:text-stone-100">
+                    <div className="text-sm font-semibold text-stone-900 dark:text-stone-100">
                       {formatFull(d)}
                     </div>
                   </button>
@@ -223,7 +223,7 @@ export default function DateRangePicker({ start, end, preset, onApply }: Props) 
             {/* Clear */}
             <button
               onClick={() => applyPreset('last1Year')}
-              className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-[12px] font-medium text-stone-600 transition-colors hover:bg-stone-100 dark:border-stone-800 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700"
+              className="w-full rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-medium text-stone-600 transition-colors hover:bg-stone-100 dark:border-stone-800 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700"
             >
               Reset to Last 1 Year
             </button>
@@ -240,7 +240,7 @@ function CapsuleTrigger({ label, onClick }: { label: string; onClick: () => void
   return (
     <button
       onClick={onClick}
-      className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-[12px] font-semibold text-stone-900 transition-colors hover:bg-stone-100 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700"
+      className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-semibold text-stone-900 transition-colors hover:bg-stone-100 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700"
     >
       <CalendarIcon size={13} className="text-stone-500 dark:text-stone-400" />
       <span>{label}</span>
@@ -288,7 +288,7 @@ function RangeCalendar({
           direction="prev"
           onClick={() => setDisplayed((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
         />
-        <div className="text-[13px] font-semibold text-stone-900 dark:text-stone-100">
+        <div className="text-sm font-semibold text-stone-900 dark:text-stone-100">
           {displayed.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
         </div>
         <CircleNav
@@ -302,7 +302,7 @@ function RangeCalendar({
         {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((l, i) => (
           <div
             key={i}
-            className="text-center text-[10px] font-semibold text-stone-400 dark:text-stone-500"
+            className="text-center text-xs font-semibold text-stone-400 dark:text-stone-500"
           >
             {l}
           </div>
@@ -348,7 +348,7 @@ function RangeCalendar({
               )}
 
               <span
-                className={`relative text-[12px] tabular-nums ${
+                className={`relative text-xs tabular-nums ${
                   isEndpoint
                     ? 'font-semibold text-white dark:text-stone-900'
                     : isFuture

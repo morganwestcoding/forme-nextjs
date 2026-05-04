@@ -82,8 +82,8 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
               />
               <div className="absolute bottom-12 left-0 right-0 flex justify-center pointer-events-none z-20">
                 <div className="relative w-[52px] h-[26px]">
-                  <span className={`absolute inset-0 flex items-center justify-center rounded-full text-[11px] font-medium bg-white/95 text-stone-900 dark:text-stone-100 backdrop-blur-md transition-all duration-500 ease-out ${showBefore ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'}`}>Before</span>
-                  <span className={`absolute inset-0 flex items-center justify-center rounded-full text-[11px] font-medium bg-white/95 text-stone-900 dark:text-stone-100 backdrop-blur-md transition-all duration-500 ease-out ${showBefore ? 'opacity-0 blur-sm' : 'opacity-100 blur-0'}`}>After</span>
+                  <span className={`absolute inset-0 flex items-center justify-center rounded-full text-xs font-medium bg-white/95 text-stone-900 dark:text-stone-100 backdrop-blur-md transition-all duration-500 ease-out ${showBefore ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'}`}>Before</span>
+                  <span className={`absolute inset-0 flex items-center justify-center rounded-full text-xs font-medium bg-white/95 text-stone-900 dark:text-stone-100 backdrop-blur-md transition-all duration-500 ease-out ${showBefore ? 'opacity-0 blur-sm' : 'opacity-100 blur-0'}`}>After</span>
                 </div>
               </div>
             </>
@@ -121,16 +121,16 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[14px] font-semibold text-stone-900 dark:text-stone-100 truncate">
+              <p className="text-sm font-semibold text-stone-900 dark:text-stone-100 truncate">
                 {currentUser.name || 'You'}
               </p>
-              <p className="text-[11px] text-stone-400 dark:text-stone-500 mt-0.5">Just now</p>
+              <p className="text-xs text-stone-400 dark:text-stone-500 mt-0.5">Just now</p>
             </div>
           </div>
 
           {/* Caption */}
           {content && !isTextPost && (
-            <p className="text-[13px] leading-[1.7] text-stone-600 dark:text-stone-300 line-clamp-4 mb-4 break-words">
+            <p className="text-sm leading-[1.7] text-stone-600 dark:text-stone-300 line-clamp-4 mb-4 break-words">
               {content}
             </p>
           )}
@@ -139,11 +139,11 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
           <div className="flex items-center gap-1">
             <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-stone-400 dark:text-stone-500">
               <FavouriteIcon className="w-[18px] h-[18px]" />
-              <span className="text-[12px]">0</span>
+              <span className="text-xs">0</span>
             </div>
             <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-stone-400 dark:text-stone-500">
               <Comment01Icon className="w-[18px] h-[18px]" />
-              <span className="text-[12px]">0</span>
+              <span className="text-xs">0</span>
             </div>
             <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-stone-400 dark:text-stone-500">
               <Bookmark02Icon className="w-[18px] h-[18px]" />

@@ -26,7 +26,7 @@ const ResetPasswordPage = () => {
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center px-6 text-center">
       <Loading03Icon size={28} className="animate-spin text-stone-400 dark:text-stone-500 mb-3" />
-      <p className="text-[13px] text-stone-500 dark:text-stone-400">Opening password reset…</p>
+      <p className="text-sm text-stone-500 dark:text-stone-400">Opening password reset…</p>
     </div>
   );
 };

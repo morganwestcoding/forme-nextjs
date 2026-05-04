@@ -40,13 +40,13 @@ function BrandTooltip({
   if (!active || !payload || !payload.length) return null;
   return (
     <div
-      className={`rounded-xl border px-3 py-2 text-[12px] shadow-elevation-2 ${
+      className={`rounded-xl border px-3 py-2 text-xs shadow-elevation-2 ${
         isDarkMode
           ? 'border-stone-700 bg-stone-900 text-stone-100'
           : 'border-stone-200 bg-white text-stone-900'
       }`}
     >
-      <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+      <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
         {label}
       </div>
       {payload.map((entry: any) => {
@@ -259,9 +259,9 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
     return (
       <div className="group relative rounded-2xl border border-stone-200/60 p-6 transition-all duration-300 bg-white dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-[12px] text-stone-400 dark:text-stone-500">{title}</p>
+          <p className="text-xs text-stone-400 dark:text-stone-500">{title}</p>
           {growth !== undefined && (
-            <div className={`flex items-center gap-1 text-[11px] font-medium ${
+            <div className={`flex items-center gap-1 text-xs font-medium ${
               growth >= 0 ? 'text-emerald-600' : 'text-red-500'
             }`}>
               {growth >= 0 ? <TrendingUp size={12} strokeWidth={2} /> : <TrendingDown size={12} strokeWidth={2} />}
@@ -269,7 +269,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
             </div>
           )}
         </div>
-        <div className="text-[28px] font-bold tracking-tight text-stone-900 dark:text-stone-100 tabular-nums">{value}</div>
+        <div className="text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-100 tabular-nums">{value}</div>
       </div>
     );
   }
@@ -283,9 +283,9 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
       <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200/60 hover:border-stone-300 dark:border-stone-700 hover:-translate-y-0.5 hover:shadow-elevation-2 transition-all duration-300">
         <div className="mb-6 flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-[14px] font-semibold text-stone-900 dark:text-stone-100 tracking-tight">{title}</h3>
+            <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100 tracking-tight">{title}</h3>
             {subtitle && (
-              <p className="mt-0.5 text-[11px] font-medium text-stone-500 dark:text-stone-400 tabular-nums">{subtitle}</p>
+              <p className="mt-0.5 text-xs font-medium text-stone-500 dark:text-stone-400 tabular-nums">{subtitle}</p>
             )}
           </div>
         </div>
@@ -300,7 +300,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
         {items.map((item) => (
           <div key={item.label} className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
-            <span className="text-[11px] font-medium text-stone-500 dark:text-stone-400">{item.label}</span>
+            <span className="text-xs font-medium text-stone-500 dark:text-stone-400">{item.label}</span>
           </div>
         ))}
       </div>
@@ -330,7 +330,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
         <div className="mt-8">
           <div className="mb-8">
             <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Analytics</h1>
-            <p className="text-[14px] text-stone-400 dark:text-stone-500 mt-1">Welcome back, {currentUser.name}</p>
+            <p className="text-sm text-stone-400 dark:text-stone-500 mt-1">Welcome back, {currentUser.name}</p>
           </div>
 
           {/* Tab bar + range picker. Tabs scroll if they run out of
@@ -342,7 +342,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab as typeof activeTab)}
-                  className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
                     activeTab === tab
                       ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-pill-active dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-pill-active-dark'
                       : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-inset-outline'

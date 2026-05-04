@@ -324,11 +324,11 @@ const LocationModal: React.FC = () => {
           strokeWidth={1.6}
         />
         <div className="flex-1 min-w-0 flex items-baseline gap-1.5">
-          <p className="text-[13px] text-stone-900 dark:text-stone-100 truncate">
+          <p className="text-sm text-stone-900 dark:text-stone-100 truncate">
             {city}
           </p>
           {state && (
-            <p className="text-[11px] text-stone-400 dark:text-stone-500 shrink-0">
+            <p className="text-xs text-stone-400 dark:text-stone-500 shrink-0">
               {state}
             </p>
           )}
@@ -350,7 +350,7 @@ const LocationModal: React.FC = () => {
         <h2 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 leading-tight tracking-[-0.015em]">
           Choose a location
         </h2>
-        <p className="text-[14px] text-stone-500 dark:text-stone-500 mt-1.5">
+        <p className="text-sm text-stone-500 dark:text-stone-500 mt-1.5">
           Filter listings to a city near you.
         </p>
       </div>
@@ -359,14 +359,14 @@ const LocationModal: React.FC = () => {
       <div className="relative h-[240px] rounded-2xl border border-stone-200/80 dark:border-stone-800 bg-stone-100 dark:bg-stone-800 shadow-elevation-1 overflow-hidden">
         <div ref={mapContainer} className="w-full h-full" />
         {!token && (
-          <div className="absolute inset-0 flex items-center justify-center text-[12px] text-stone-400 dark:text-stone-500">
+          <div className="absolute inset-0 flex items-center justify-center text-xs text-stone-400 dark:text-stone-500">
             Map unavailable
           </div>
         )}
         {locationModal.selectedLocation && (
           <div className="absolute top-3 left-3 inline-flex items-center gap-2 px-3 h-8 rounded-full bg-white/90 dark:bg-stone-900/90 backdrop-blur border border-stone-200/70 dark:border-stone-700 shadow-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-stone-900 dark:bg-stone-100" />
-            <span className="text-[12px] font-medium text-stone-900 dark:text-stone-100">
+            <span className="text-xs font-medium text-stone-900 dark:text-stone-100">
               {locationModal.selectedLocation}
             </span>
           </div>
@@ -385,7 +385,7 @@ const LocationModal: React.FC = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-2xl pl-11 pr-10 h-12 text-[14px] text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 outline-none focus:border-stone-400 dark:focus:border-stone-500 transition-colors"
+          className="w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-2xl pl-11 pr-10 h-12 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 outline-none focus:border-stone-400 dark:focus:border-stone-500 transition-colors"
           autoFocus
         />
         {search && (
@@ -402,7 +402,7 @@ const LocationModal: React.FC = () => {
 
       {/* Section header + Use my current location pill */}
       <div className="mt-4 mb-2 flex items-center justify-between gap-3">
-        <p className="text-[11px] font-semibold text-stone-500 dark:text-stone-400">
+        <p className="text-xs font-semibold text-stone-500 dark:text-stone-400">
           {hasQuery
             ? 'Results'
             : locationModal.recentLocations.length > 0
@@ -414,7 +414,7 @@ const LocationModal: React.FC = () => {
             type="button"
             onClick={handleUseCurrentLocation}
             disabled={geoStatus === 'locating'}
-            className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full text-[11px] font-medium text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors disabled:opacity-60"
+            className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full text-xs font-medium text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors disabled:opacity-60"
           >
             {geoStatus === 'locating' ? (
               <div className="w-3 h-3 border-2 border-stone-200 dark:border-stone-700 border-t-stone-600 dark:border-t-stone-200 rounded-full animate-spin" />
@@ -439,7 +439,7 @@ const LocationModal: React.FC = () => {
         )}
         {hasQuery && !isSearching && rows.length === 0 && (
           <div className="py-8 text-center">
-            <p className="text-[13px] text-stone-500 dark:text-stone-400">
+            <p className="text-sm text-stone-500 dark:text-stone-400">
               No matches for &ldquo;{search.trim()}&rdquo;
             </p>
           </div>
@@ -454,12 +454,12 @@ const LocationModal: React.FC = () => {
       {/* Footer */}
       {locationModal.selectedLocation && (
         <div className="-mx-8 px-8 py-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
-          <p className="text-[12px] text-stone-500 dark:text-stone-400 truncate">
+          <p className="text-xs text-stone-500 dark:text-stone-400 truncate">
             Filtering · {locationModal.selectedLocation}
           </p>
           <button
             onClick={handleClear}
-            className="text-[12px] font-medium text-stone-700 dark:text-stone-200 hover:text-stone-900 dark:hover:text-stone-100 transition-colors shrink-0 ml-3"
+            className="text-xs font-medium text-stone-700 dark:text-stone-200 hover:text-stone-900 dark:hover:text-stone-100 transition-colors shrink-0 ml-3"
           >
             Clear
           </button>

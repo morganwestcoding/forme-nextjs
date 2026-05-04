@@ -50,9 +50,9 @@ const VARIANT_CLASSES: Record<Variant, string> = {
 };
 
 const SIZE_CLASSES: Record<Size, string> = {
-  sm: 'h-8 px-3 text-[12px]',
-  md: 'h-10 px-4 text-[13px]',
-  lg: 'h-12 px-5 text-[14px]',
+  sm: 'h-8 px-3 text-xs',
+  md: 'h-10 px-4 text-sm',
+  lg: 'h-12 px-5 text-sm',
 };
 
 // Gap is applied to the inner content span (not the button itself) so the

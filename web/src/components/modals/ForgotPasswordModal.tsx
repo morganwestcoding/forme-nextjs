@@ -62,8 +62,8 @@ const ForgotPasswordModal = () => {
       <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/60 dark:border-emerald-500/20 flex items-center justify-center">
         <FiCheck size={22} className="text-emerald-600 dark:text-emerald-400" />
       </div>
-      <h3 className="text-[16px] font-semibold text-stone-900 dark:text-stone-100">Check your inbox</h3>
-      <p className="text-[13px] text-stone-500 dark:text-stone-400 max-w-sm">
+      <h3 className="text-base font-semibold text-stone-900 dark:text-stone-100">Check your inbox</h3>
+      <p className="text-sm text-stone-500 dark:text-stone-400 max-w-sm">
         If an account exists for{' '}
         <span className="font-medium text-stone-700 dark:text-stone-200">{submittedEmail}</span>,
         a reset link is on its way. The link expires in 1 hour.

@@ -124,8 +124,8 @@ const CreateModal = () => {
     <div className="flex flex-col">
       {/* Header */}
       <div className="px-6 pb-5">
-        <p className="text-[16px] font-semibold text-stone-900 dark:text-stone-100">What would you like to create?</p>
-        <p className="text-[13px] text-stone-400 dark:text-stone-500 mt-0.5">Choose an option to get started</p>
+        <p className="text-base font-semibold text-stone-900 dark:text-stone-100">What would you like to create?</p>
+        <p className="text-sm text-stone-400 dark:text-stone-500 mt-0.5">Choose an option to get started</p>
       </div>
 
       <div className="px-5 pb-5">
@@ -138,8 +138,8 @@ const CreateModal = () => {
             >
               <item.icon className="w-[22px] h-[22px] text-stone-500  dark:text-stone-500" strokeWidth={1.5} />
               <div className="text-center">
-                <span className="text-[12px] font-medium text-stone-600 dark:text-stone-300 block">{item.label}</span>
-                <span className="text-[10px] text-stone-400 dark:text-stone-500 block mt-0.5">{item.description}</span>
+                <span className="text-xs font-medium text-stone-600 dark:text-stone-300 block">{item.label}</span>
+                <span className="text-xs text-stone-400 dark:text-stone-500 block mt-0.5">{item.description}</span>
               </div>
             </button>
           ))}

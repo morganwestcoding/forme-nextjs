@@ -76,7 +76,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                   <button
                     type="button"
                     onClick={() => locationModal.onOpen()}
-                    className="flex items-center gap-2 px-6 py-1.5 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors text-[13px] whitespace-nowrap"
+                    className="flex items-center gap-2 px-6 py-1.5 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors text-sm whitespace-nowrap"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" color="currentColor" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                       <path d="M10.0808 2C5.47023 2.9359 2 7.01218 2 11.899C2 17.4776 6.52238 22 12.101 22C16.9878 22 21.0641 18.5298 22 13.9192" />
@@ -109,7 +109,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                     <Notification03Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
                     {unreadNotifications > 0 && (
                       <span
-                        className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-white text-[10px] font-semibold leading-none ring-2 ring-white dark:ring-stone-950"
+                        className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-white text-xs font-semibold leading-none ring-2 ring-white dark:ring-stone-950"
                         style={{
                           background: 'linear-gradient(135deg, #2a2a2a 0%, #000 100%)',
                           boxShadow: '0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)',
@@ -128,7 +128,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                     <MessageMultiple01Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
                     {unreadMessages > 0 && (
                       <span
-                        className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-white text-[10px] font-semibold leading-none ring-2 ring-white dark:ring-stone-950"
+                        className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-white text-xs font-semibold leading-none ring-2 ring-white dark:ring-stone-950"
                         style={{
                           background: 'linear-gradient(135deg, #2a2a2a 0%, #000 100%)',
                           boxShadow: '0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)',
@@ -171,7 +171,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                   className="outline-none ml-1"
                 >
                   <div
-                    className="shrink-0 h-12 px-5 rounded-xl flex items-center justify-center cursor-pointer bg-[#F7F7F6] dark:bg-[#222225] hover:bg-[#EFEFEE] dark:hover:bg-[#2A2A2D] border border-stone-300/90 dark:border-stone-600/60 text-stone-900 dark:text-white text-[14px] font-medium whitespace-nowrap transition-colors"
+                    className="shrink-0 h-12 px-5 rounded-xl flex items-center justify-center cursor-pointer bg-[#F7F7F6] dark:bg-[#222225] hover:bg-[#EFEFEE] dark:hover:bg-[#2A2A2D] border border-stone-300/90 dark:border-stone-600/60 text-stone-900 dark:text-white text-sm font-medium whitespace-nowrap transition-colors"
                     style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)' }}
                   >
                     Get Started
@@ -187,22 +187,22 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
               <>
                 <Link
                   href="/"
-                  className="text-[14px] transition-colors duration-200 text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-300"
+                  className="text-sm transition-colors duration-200 text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-300"
                 >
                   Home
                 </Link>
-                <span className="text-stone-300 dark:text-stone-600 text-[13px]">/</span>
-                <span className="text-[14px] text-stone-900 dark:text-white font-medium">
+                <span className="text-stone-300 dark:text-stone-600 text-sm">/</span>
+                <span className="text-sm text-stone-900 dark:text-white font-medium">
                   {currentPage}
                 </span>
               </>
             ) : (
               navItems.map((item, i) => (
                 <React.Fragment key={item.label}>
-                  {i > 0 && <span className="text-stone-300 dark:text-stone-600 text-[13px]">/</span>}
+                  {i > 0 && <span className="text-stone-300 dark:text-stone-600 text-sm">/</span>}
                   <Link
                     href={item.href}
-                    className={`text-[14px] transition-colors duration-200 ${
+                    className={`text-sm transition-colors duration-200 ${
                       item.active
                         ? 'text-stone-900 dark:text-white font-medium'
                         : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-300'

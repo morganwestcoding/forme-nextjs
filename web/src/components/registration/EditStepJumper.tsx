@@ -24,7 +24,7 @@ export default function EditStepJumper({ steps, currentValue, onJump }: EditStep
                 className="group flex items-center gap-2 whitespace-nowrap transition-colors"
               >
                 <span
-                  className={`text-[11px] tabular-nums tracking-wider ${
+                  className={`text-xs tabular-nums tracking-wider ${
                     isActive ? 'text-stone-900 dark:text-stone-100' : 'text-stone-300 group-hover:text-stone-500  dark:text-stone-500'
                   }`}
                   style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}
@@ -32,7 +32,7 @@ export default function EditStepJumper({ steps, currentValue, onJump }: EditStep
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <span
-                  className={`text-[12px] tracking-tight transition-colors ${
+                  className={`text-xs tracking-tight transition-colors ${
                     isActive
                       ? 'text-stone-900 dark:text-stone-100 font-semibold'
                       : 'text-stone-400  group-hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 font-medium'

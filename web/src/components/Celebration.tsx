@@ -139,7 +139,7 @@ export default function Celebration({ onComplete, userName }: CelebrationProps) 
 
           {/* Welcome text */}
           <motion.h1
-            className="text-[28px] font-semibold text-white tracking-tight"
+            className="text-3xl font-semibold text-white tracking-tight"
             initial={{ opacity: 0, y: 16 }}
             animate={{
               opacity: phase !== 'enter' ? 1 : 0,
@@ -151,7 +151,7 @@ export default function Celebration({ onComplete, userName }: CelebrationProps) 
           </motion.h1>
 
           <motion.p
-            className="text-[14px] text-stone-500 mt-2"
+            className="text-sm text-stone-500 mt-2"
             initial={{ opacity: 0, y: 12 }}
             animate={{
               opacity: phase !== 'enter' ? 1 : 0,
@@ -171,7 +171,7 @@ export default function Celebration({ onComplete, userName }: CelebrationProps) 
           />
 
           <motion.p
-            className="text-[12px] text-stone-600 mt-4"
+            className="text-xs text-stone-600 mt-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: phase !== 'enter' ? 1 : 0 }}
             transition={{ duration: 0.4, delay: 1.2 }}

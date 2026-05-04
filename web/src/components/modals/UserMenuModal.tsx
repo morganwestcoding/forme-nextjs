@@ -113,10 +113,10 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[16px] font-semibold text-stone-900 dark:text-stone-100 truncate">
+            <p className="text-base font-semibold text-stone-900 dark:text-stone-100 truncate">
               {currentUser.name || 'User'}
             </p>
-            <p className="text-[13px] text-stone-400 dark:text-stone-500 truncate">
+            <p className="text-sm text-stone-400 dark:text-stone-500 truncate">
               {currentUser.email}
             </p>
           </div>
@@ -135,7 +135,7 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
                   className="flex flex-col items-center gap-2.5 py-5 px-2 rounded-2xl bg-stone-50  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-100 dark:border-stone-800 hover:border-stone-200  transition-all"
                 >
                   <item.icon className="w-[22px] h-[22px] text-stone-500  dark:text-stone-500" strokeWidth={1.5} />
-                  <span className="text-[12px] font-medium text-stone-600 dark:text-stone-300">{item.label}</span>
+                  <span className="text-xs font-medium text-stone-600 dark:text-stone-300">{item.label}</span>
                 </button>
               ))}
             </div>
@@ -170,7 +170,7 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
           </Button>
           <button
             onClick={() => handleNavigate('/register')}
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-stone-50  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 text-stone-700 dark:text-stone-200 border border-stone-200/60 text-[13px] font-medium transition-all"
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-stone-50  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 text-stone-700 dark:text-stone-200 border border-stone-200/60 text-sm font-medium transition-all"
           >
             <UserAdd01Icon className="w-[16px] h-[16px]" strokeWidth={1.5} />
             Sign Up

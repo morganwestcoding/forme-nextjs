@@ -176,7 +176,7 @@ const Input: React.FC<InputProps> = ({
             placeholder={placeholder}
             className={`
               peer w-full p-3 pt-6 bg-white dark:bg-stone-900 border border-stone-200/60 dark:border-stone-700 rounded-xl
-              text-[13px] text-stone-900 dark:text-stone-100
+              text-sm text-stone-900 dark:text-stone-100
               outline-none transition-all duration-200 resize-none h-[200px]
               disabled:opacity-50 disabled:cursor-not-allowed
               hover:border-stone-300 dark:hover:border-stone-600
@@ -203,7 +203,7 @@ const Input: React.FC<InputProps> = ({
             spellCheck={id === "name" || id === "bio"}
             className={`
               peer w-full p-3 pt-6 bg-white dark:bg-stone-900 border border-stone-200/60 dark:border-stone-700 rounded-xl h-[58px]
-              text-[13px] text-stone-900 dark:text-stone-100
+              text-sm text-stone-900 dark:text-stone-100
               outline-none transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed
               hover:border-stone-300 dark:hover:border-stone-600
               ${formatPrice ? 'pl-9' : 'pl-4'}

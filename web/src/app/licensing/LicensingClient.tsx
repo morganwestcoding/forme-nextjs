@@ -123,26 +123,26 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
       <div className="mt-8">
         {/* Header */}
         <div className="mb-8">
-          {isOnboarding && <p className="text-[12px] text-stone-400 dark:text-stone-500 mb-2">Step 1 of 2</p>}
+          {isOnboarding && <p className="text-xs text-stone-400 dark:text-stone-500 mb-2">Step 1 of 2</p>}
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Licensing &amp; Verification</h1>
-              <p className="text-[14px] text-stone-400 dark:text-stone-500 mt-1">Prove your expertise, win more clients</p>
+              <p className="text-sm text-stone-400 dark:text-stone-500 mt-1">Prove your expertise, win more clients</p>
             </div>
             {verificationStatus !== 'none' && (
               <div className="flex-shrink-0">
                 {verificationStatus === 'verified' && (
-                  <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 border border-emerald-200/60 dark:bg-emerald-500/10 dark:border-emerald-500/20 px-3 py-1.5 rounded-full">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 border border-emerald-200/60 dark:bg-emerald-500/10 dark:border-emerald-500/20 px-3 py-1.5 rounded-full">
                     <CheckmarkCircle02Icon size={14} strokeWidth={1.5} /> Verified
                   </span>
                 )}
                 {verificationStatus === 'pending' && (
-                  <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-amber-600 dark:text-amber-400 bg-amber-50 border border-amber-200/60 dark:bg-amber-500/10 dark:border-amber-500/20 px-3 py-1.5 rounded-full">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-400 bg-amber-50 border border-amber-200/60 dark:bg-amber-500/10 dark:border-amber-500/20 px-3 py-1.5 rounded-full">
                     <Clock01Icon size={14} strokeWidth={1.5} /> Pending
                   </span>
                 )}
                 {verificationStatus === 'rejected' && (
-                  <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-red-600 dark:text-red-400 bg-red-50 border border-red-200/60 dark:bg-red-500/10 dark:border-red-500/20 px-3 py-1.5 rounded-full">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 border border-red-200/60 dark:bg-red-500/10 dark:border-red-500/20 px-3 py-1.5 rounded-full">
                     <CheckmarkCircle02Icon size={14} strokeWidth={1.5} /> Failed
                   </span>
                 )}
@@ -155,7 +155,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
         <div className="flex items-center gap-2 mb-8">
           <button
             onClick={() => setActiveTab('upload')}
-            className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap border ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${
               activeTab === 'upload'
                 ? 'bg-stone-900 text-white border-stone-900'
                 : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border-stone-200/60'
@@ -165,7 +165,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
           </button>
           <button
             onClick={() => setActiveTab('training')}
-            className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap border ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${
               activeTab === 'training'
                 ? 'bg-stone-900 text-white border-stone-900'
                 : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border-stone-200/60'
@@ -189,8 +189,8 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                         <div className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center mb-2">
                           <Certificate01Icon size={22} color="#fff" strokeWidth={1.5} />
                         </div>
-                        <p className="text-[13px] font-medium text-white">Ready</p>
-                        <p className="text-[11px] text-stone-500  dark:text-stone-500 group-hover:text-stone-400  transition-colors mt-0.5">Click to replace</p>
+                        <p className="text-sm font-medium text-white">Ready</p>
+                        <p className="text-xs text-stone-500  dark:text-stone-500 group-hover:text-stone-400  transition-colors mt-0.5">Click to replace</p>
                       </div>
                     ) : (
                       <button
@@ -201,8 +201,8 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                         <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200  flex items-center justify-center mb-2 shadow-elevation-1 group-hover:border-stone-300 dark:border-stone-700 transition-all">
                           <Plus className="w-5 h-5 text-stone-400  group-hover:text-stone-600 dark:text-stone-300 transition-colors" />
                         </div>
-                        <span className="text-[13px] font-medium text-stone-600 dark:text-stone-300">Add file</span>
-                        <span className="text-[11px] text-stone-400 dark:text-stone-500 mt-0.5">PNG, JPG, PDF</span>
+                        <span className="text-sm font-medium text-stone-600 dark:text-stone-300">Add file</span>
+                        <span className="text-xs text-stone-400 dark:text-stone-500 mt-0.5">PNG, JPG, PDF</span>
                       </button>
                     )}
                   </div>
@@ -211,13 +211,13 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                 {/* Right half — context + actions */}
                 <div className="flex-1 p-6 flex flex-col justify-between">
                   <div>
-                    <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 tracking-tight mb-1.5">Upload your credentials</h2>
-                    <p className="text-[13px] text-stone-400 dark:text-stone-500 leading-relaxed mb-4">
+                    <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100 tracking-tight mb-1.5">Upload your credentials</h2>
+                    <p className="text-sm text-stone-400 dark:text-stone-500 leading-relaxed mb-4">
                       We accept professional licenses, industry certifications, educational diplomas, and insurance certificates. All documents are encrypted.
                     </p>
                     <div className="flex flex-wrap gap-1.5 mb-5">
                       {['State licenses', 'Certifications', 'Diplomas', 'Insurance'].map((tag) => (
-                        <span key={tag} className="text-[11px] text-stone-500  dark:text-stone-500 bg-stone-50 dark:bg-stone-900 px-2.5 py-1 rounded-full border border-stone-100 dark:border-stone-800">
+                        <span key={tag} className="text-xs text-stone-500  dark:text-stone-500 bg-stone-50 dark:bg-stone-900 px-2.5 py-1 rounded-full border border-stone-100 dark:border-stone-800">
                           {tag}
                         </span>
                       ))}
@@ -234,7 +234,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                     </Button>
                     <button
                       onClick={handleSkip}
-                      className="py-2.5 px-4 text-[13px] text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
+                      className="py-2.5 px-4 text-sm text-stone-400  hover:text-stone-600 dark:text-stone-300 transition-colors"
                     >
                       {isOnboarding ? "Skip" : "Back"}
                     </button>
@@ -245,7 +245,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
 
             {/* How it works — preserved */}
             <div className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 p-6 mb-6">
-              <h3 className="text-[12px] text-stone-400 dark:text-stone-500 mb-4">How it works</h3>
+              <h3 className="text-xs text-stone-400 dark:text-stone-500 mb-4">How it works</h3>
               <div className="flex items-start">
                 {[
                   { num: '01', title: 'Upload', desc: 'Add your license or certification' },
@@ -255,9 +255,9 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                   <div key={step.num} className="flex-1 flex items-start gap-3">
                     {idx > 0 && <div className="w-px h-10 bg-stone-100 dark:bg-stone-800 flex-shrink-0 -ml-px mr-3" />}
                     <div>
-                      <p className="text-[18px] font-bold text-stone-200 leading-none mb-1.5">{step.num}</p>
-                      <p className="text-[13px] font-medium text-stone-900 dark:text-stone-100 mb-0.5">{step.title}</p>
-                      <p className="text-[11px] text-stone-400 dark:text-stone-500 leading-snug">{step.desc}</p>
+                      <p className="text-lg font-bold text-stone-200 leading-none mb-1.5">{step.num}</p>
+                      <p className="text-sm font-medium text-stone-900 dark:text-stone-100 mb-0.5">{step.title}</p>
+                      <p className="text-xs text-stone-400 dark:text-stone-500 leading-snug">{step.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -265,7 +265,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
             </div>
 
             {/* Privacy footer */}
-            <div className="flex items-center gap-1.5 text-[11px] text-stone-400 dark:text-stone-500">
+            <div className="flex items-center gap-1.5 text-xs text-stone-400 dark:text-stone-500">
               <ShieldUserIcon size={12} color="#a8a29e" strokeWidth={1.5} />
               Documents are encrypted and never shared publicly.
             </div>
@@ -277,19 +277,19 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
           <div>
             {/* Intro */}
             <div className="mb-8">
-              <h2 className="text-[18px] font-semibold text-stone-900 dark:text-stone-100 tracking-tight mb-2">Choose from our handpicked academies</h2>
-              <p className="text-[13px] text-stone-400 dark:text-stone-500 leading-relaxed max-w-xl">
+              <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 tracking-tight mb-2">Choose from our handpicked academies</h2>
+              <p className="text-sm text-stone-400 dark:text-stone-500 leading-relaxed max-w-xl">
                 Start training with an accredited partner while building your client base on ForMe as an apprentice. Complete your program, get verified instantly, and transition straight into a full professional account.
               </p>
             </div>
 
             {/* Programs grid — 2 col */}
             {academiesLoading ? (
-              <div className="text-[13px] text-stone-400 dark:text-stone-500 py-8">Loading academies…</div>
+              <div className="text-sm text-stone-400 dark:text-stone-500 py-8">Loading academies…</div>
             ) : academiesError ? (
-              <div className="text-[13px] text-red-500 py-8">Could not load academies. {academiesError}</div>
+              <div className="text-sm text-red-500 py-8">Could not load academies. {academiesError}</div>
             ) : partnerAcademies.length === 0 ? (
-              <div className="text-[13px] text-stone-400 dark:text-stone-500 py-8">No partner academies available yet.</div>
+              <div className="text-sm text-stone-400 dark:text-stone-500 py-8">No partner academies available yet.</div>
             ) : (
             <div className="grid md:grid-cols-2 gap-5 pb-8">
               {partnerAcademies.map((academy) => {
@@ -306,21 +306,21 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                   >
                     {isSelected && (
                       <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                        <span className="bg-stone-700 text-white px-4 py-1 rounded-full text-[10px] font-medium tracking-wide">Selected</span>
+                        <span className="bg-stone-700 text-white px-4 py-1 rounded-full text-xs font-medium tracking-wide">Selected</span>
                       </div>
                     )}
 
                     {/* Header */}
                     <div className="mb-6">
-                      <h3 className="text-[12px] text-stone-400 dark:text-stone-500 mb-3">{academy.name}</h3>
+                      <h3 className="text-xs text-stone-400 dark:text-stone-500 mb-3">{academy.name}</h3>
                       {academy.priceLabel && (
                         <div className="mb-1">
-                          <span className={`text-[32px] font-bold tracking-tight ${isSelected ? 'text-white' : 'text-stone-900 dark:text-stone-100'}`}>
+                          <span className={`text-4xl font-bold tracking-tight ${isSelected ? 'text-white' : 'text-stone-900 dark:text-stone-100'}`}>
                             {academy.priceLabel}
                           </span>
                         </div>
                       )}
-                      <div className="flex items-center gap-3 text-[12px] text-stone-400 dark:text-stone-500">
+                      <div className="flex items-center gap-3 text-xs text-stone-400 dark:text-stone-500">
                         {academy.duration && (
                           <span className="flex items-center gap-1">
                             <Clock01Icon size={12} strokeWidth={1.5} />
@@ -338,7 +338,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
 
                     {/* Description */}
                     {academy.description && (
-                      <p className={`text-[13px] mb-5 ${isSelected ? 'text-stone-300' : 'text-stone-500  dark:text-stone-500'}`}>
+                      <p className={`text-sm mb-5 ${isSelected ? 'text-stone-300' : 'text-stone-500  dark:text-stone-500'}`}>
                         {academy.description}
                       </p>
                     )}
@@ -346,7 +346,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                     {/* Courses */}
                     <ul className="space-y-2.5 mb-6">
                       {academy.courses.map((course, i) => (
-                        <li key={i} className={`flex items-start text-[13px] ${isSelected ? 'text-stone-300' : 'text-stone-500  dark:text-stone-500'}`}>
+                        <li key={i} className={`flex items-start text-sm ${isSelected ? 'text-stone-300' : 'text-stone-500  dark:text-stone-500'}`}>
                           <CheckmarkCircle02Icon size={14} color="#a8a29e" className="mr-2.5 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
                           {course}
                         </li>
@@ -356,7 +356,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
                     {/* CTA */}
                     <button
                       onClick={(e) => { e.stopPropagation(); if (academy.website) window.open(academy.website, '_blank'); }}
-                      className={`w-full py-3 px-5 rounded-xl font-medium text-[13px] transition-all duration-200 flex items-center justify-center gap-2 ${
+                      className={`w-full py-3 px-5 rounded-xl font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 ${
                         isSelected
                           ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 hover:bg-stone-50 dark:hover:bg-stone-800 '
                           : 'bg-stone-900 text-white hover:bg-stone-800'
@@ -373,7 +373,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
 
             {/* Trust bar */}
             <div className="pt-8 border-t border-stone-100 dark:border-stone-800">
-              <div className="flex items-center gap-6 text-[12px] text-stone-400 dark:text-stone-500">
+              <div className="flex items-center gap-6 text-xs text-stone-400 dark:text-stone-500">
                 <span className="flex items-center gap-1.5">
                   <CheckmarkCircle02Icon size={13} color="#a8a29e" strokeWidth={1.5} />
                   Accredited partners

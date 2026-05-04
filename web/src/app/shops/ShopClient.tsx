@@ -582,10 +582,10 @@ const ShopClient: React.FC<ShopClientProps> = ({
               {filterInfo.isFiltered ? (
                 <div className="flex items-center justify-center min-h-[60vh]">
                   <div className="text-center max-w-[360px]">
-                    <h3 className="text-[20px] font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
+                    <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
                       No matches found
                     </h3>
-                    <p className="mt-2 text-[13.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
+                    <p className="mt-2 text-sm text-stone-500 dark:text-stone-400 leading-relaxed">
                       Try adjusting your search or filters to find what you&apos;re looking for.
                     </p>
                   </div>
@@ -597,10 +597,10 @@ const ShopClient: React.FC<ShopClientProps> = ({
                   className="w-full flex items-center justify-center min-h-[60vh] rounded-2xl border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/40 hover:border-stone-900 dark:hover:border-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
                 >
                   <div className="text-center max-w-[360px]">
-                    <h3 className="text-[20px] font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
+                    <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
                       No shops yet
                     </h3>
-                    <p className="mt-2 text-[13.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
+                    <p className="mt-2 text-sm text-stone-500 dark:text-stone-400 leading-relaxed">
                       {currentUser ? 'Be the first brand here — open your shop and start selling to the community.' : 'Sign in to open your shop and start selling to the community.'}
                     </p>
                   </div>

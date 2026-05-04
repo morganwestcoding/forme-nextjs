@@ -144,7 +144,7 @@ export default function MessagesClient({ currentUser }: Props) {
                 placeholder="Search conversations..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-stone-50  dark:bg-stone-800 border border-stone-200  dark:border-stone-700 rounded-xl px-4 py-2.5 text-[14px] text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 outline-none focus:border-stone-300  transition-all"
+                className="w-full bg-stone-50  dark:bg-stone-800 border border-stone-200  dark:border-stone-700 rounded-xl px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 outline-none focus:border-stone-300  transition-all"
               />
             </div>
 
@@ -170,8 +170,8 @@ export default function MessagesClient({ currentUser }: Props) {
                   <div className="w-14 h-14 rounded-2xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-stone-400 dark:text-stone-500"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                   </div>
-                  <p className="text-[14px] font-medium text-stone-700 dark:text-stone-200 mb-1">No conversations yet</p>
-                  <p className="text-[13px] text-stone-400 dark:text-stone-500">Start a conversation from a user&apos;s profile</p>
+                  <p className="text-sm font-medium text-stone-700 dark:text-stone-200 mb-1">No conversations yet</p>
+                  <p className="text-sm text-stone-400 dark:text-stone-500">Start a conversation from a user&apos;s profile</p>
                 </div>
               ) : (
                 filteredConversations.map(convo => {
@@ -188,15 +188,15 @@ export default function MessagesClient({ currentUser }: Props) {
                       <Avatar src={convo.otherUser.image} name={convo.otherUser.name} size={44} />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2 mb-0.5">
-                          <span className={`text-[14px] truncate ${hasUnread ? 'font-semibold text-stone-900 dark:text-stone-100' : 'font-medium text-stone-700 dark:text-stone-200'}`}>
+                          <span className={`text-sm truncate ${hasUnread ? 'font-semibold text-stone-900 dark:text-stone-100' : 'font-medium text-stone-700 dark:text-stone-200'}`}>
                             {convo.otherUser.name}
                           </span>
                           {convo.lastMessage?.createdAt && (
-                            <span className="text-[11px] text-stone-400 dark:text-stone-500 shrink-0">{formatRelativeTime(convo.lastMessage.createdAt)}</span>
+                            <span className="text-xs text-stone-400 dark:text-stone-500 shrink-0">{formatRelativeTime(convo.lastMessage.createdAt)}</span>
                           )}
                         </div>
                         <div className="flex items-center gap-2">
-                          <p className={`text-[13px] truncate ${hasUnread ? 'text-stone-600 dark:text-stone-300' : 'text-stone-400 dark:text-stone-500'}`}>
+                          <p className={`text-sm truncate ${hasUnread ? 'text-stone-600 dark:text-stone-300' : 'text-stone-400 dark:text-stone-500'}`}>
                             {convo.lastMessage?.content || <span className="italic">Say hello...</span>}
                           </p>
                           {hasUnread && <div className="w-2 h-2 bg-stone-500 rounded-full shrink-0" />}
@@ -223,7 +223,7 @@ export default function MessagesClient({ currentUser }: Props) {
                   </button>
                   <Avatar src={activeConvo.otherUser.image} name={activeConvo.otherUser.name} size={36} />
                   <div>
-                    <h3 className="text-[14px] font-semibold text-stone-900 dark:text-stone-100 dark:text-white">{activeConvo.otherUser.name}</h3>
+                    <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100 dark:text-white">{activeConvo.otherUser.name}</h3>
                   </div>
                 </div>
 
@@ -232,19 +232,19 @@ export default function MessagesClient({ currentUser }: Props) {
                   {groupedMessages.map(group => (
                     <div key={group.date}>
                       <div className="flex justify-center my-4">
-                        <span className="text-[11px] text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800  px-3 py-1 rounded-full">{group.date}</span>
+                        <span className="text-xs text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800  px-3 py-1 rounded-full">{group.date}</span>
                       </div>
                       {group.messages.map(msg => {
                         const isOwn = msg.senderId === currentUser.id;
                         return (
                           <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'} mb-2`}>
-                            <div className={`max-w-[70%] px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed ${
+                            <div className={`max-w-[70%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                               isOwn
                                 ? 'bg-stone-900 text-white rounded-br-md'
                                 : 'bg-stone-100 dark:bg-stone-800  text-stone-900 dark:text-stone-100 dark:text-white rounded-bl-md'
                             }`}>
                               {msg.content}
-                              <div className={`text-[10px] mt-1 ${isOwn ? 'text-stone-400 dark:text-stone-500' : 'text-stone-400 dark:text-stone-500'}`}>
+                              <div className={`text-xs mt-1 ${isOwn ? 'text-stone-400 dark:text-stone-500' : 'text-stone-400 dark:text-stone-500'}`}>
                                 {new Date(msg.createdAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                               </div>
                             </div>
@@ -265,7 +265,7 @@ export default function MessagesClient({ currentUser }: Props) {
                       value={newMessage}
                       onChange={e => setNewMessage(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-                      className="flex-1 bg-stone-50  dark:bg-stone-800 border border-stone-200  dark:border-stone-700 rounded-xl px-4 py-3 text-[14px] text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 outline-none focus:border-stone-300  transition-all"
+                      className="flex-1 bg-stone-50  dark:bg-stone-800 border border-stone-200  dark:border-stone-700 rounded-xl px-4 py-3 text-sm text-stone-900 dark:text-stone-100 dark:text-white placeholder-stone-400 outline-none focus:border-stone-300  transition-all"
                     />
                     <Button
                       onClick={sendMessage}
@@ -283,8 +283,8 @@ export default function MessagesClient({ currentUser }: Props) {
                 <div className="w-16 h-16 rounded-2xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center mb-5">
                   <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-stone-400 dark:text-stone-500"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                 </div>
-                <p className="text-[15px] font-medium text-stone-700 dark:text-stone-200 mb-1">Select a conversation</p>
-                <p className="text-[13px] text-stone-400 dark:text-stone-500 max-w-xs">Choose a conversation from the sidebar to start messaging</p>
+                <p className="text-sm font-medium text-stone-700 dark:text-stone-200 mb-1">Select a conversation</p>
+                <p className="text-sm text-stone-400 dark:text-stone-500 max-w-xs">Choose a conversation from the sidebar to start messaging</p>
               </div>
             )}
           </div>

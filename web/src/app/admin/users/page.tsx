@@ -57,14 +57,14 @@ export default async function AdminUsersPage({
     <Container>
       <div className="mt-8 mb-12">
         <div className="mb-2">
-          <Link href="/admin" className="text-[12px] text-stone-400 hover:text-stone-600 transition-colors">
+          <Link href="/admin" className="text-xs text-stone-400 hover:text-stone-600 transition-colors">
             ← Back to Admin
           </Link>
         </div>
         <div className="mb-8">
-          <p className="text-[12px] text-stone-400 mb-1">Master admin</p>
+          <p className="text-xs text-stone-400 mb-1">Master admin</p>
           <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">Users</h1>
-          <p className="text-[14px] text-stone-400 mt-1">{total} total users</p>
+          <p className="text-sm text-stone-400 mt-1">{total} total users</p>
         </div>
 
         <AdminUserList

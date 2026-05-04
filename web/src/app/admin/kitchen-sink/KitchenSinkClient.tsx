@@ -15,11 +15,11 @@ export default function KitchenSinkClient() {
       <div className="max-w-4xl mx-auto space-y-10">
         <header>
           <h1 className="text-2xl font-semibold text-stone-900">UI Kitchen Sink</h1>
-          <p className="text-[13px] text-stone-500 mt-1">Canonical primitives reference.</p>
+          <p className="text-sm text-stone-500 mt-1">Canonical primitives reference.</p>
         </header>
 
         <Card>
-          <h2 className="text-[14px] font-semibold text-stone-900 mb-4">Button — variants</h2>
+          <h2 className="text-sm font-semibold text-stone-900 mb-4">Button — variants</h2>
           <div className="flex flex-wrap gap-3">
             <Button variant="primary">Primary</Button>
             <Button variant="secondary">Secondary</Button>
@@ -30,7 +30,7 @@ export default function KitchenSinkClient() {
         </Card>
 
         <Card>
-          <h2 className="text-[14px] font-semibold text-stone-900 mb-4">Button — sizes</h2>
+          <h2 className="text-sm font-semibold text-stone-900 mb-4">Button — sizes</h2>
           <div className="flex flex-wrap items-center gap-3">
             <Button size="sm">Small</Button>
             <Button size="md">Medium</Button>
@@ -39,7 +39,7 @@ export default function KitchenSinkClient() {
         </Card>
 
         <Card>
-          <h2 className="text-[14px] font-semibold text-stone-900 mb-4">Button — states & icons</h2>
+          <h2 className="text-sm font-semibold text-stone-900 mb-4">Button — states & icons</h2>
           <div className="flex flex-wrap gap-3">
             <Button leftIcon={<PlusSignIcon size={16} />}>Create</Button>
             <Button rightIcon={<ArrowRight01Icon size={16} />}>Continue</Button>
@@ -52,7 +52,7 @@ export default function KitchenSinkClient() {
         </Card>
 
         <Card>
-          <h2 className="text-[14px] font-semibold text-stone-900 mb-4">IconButton</h2>
+          <h2 className="text-sm font-semibold text-stone-900 mb-4">IconButton</h2>
           <div className="flex items-center gap-3">
             <IconButton aria-label="favorite" variant="ghost" icon={<FavouriteIcon size={16} />} />
             <IconButton aria-label="favorite" variant="outline" icon={<FavouriteIcon size={16} />} />
@@ -65,7 +65,7 @@ export default function KitchenSinkClient() {
         </Card>
 
         <Card>
-          <h2 className="text-[14px] font-semibold text-stone-900 mb-4">Input</h2>
+          <h2 className="text-sm font-semibold text-stone-900 mb-4">Input</h2>
           <div className="grid grid-cols-2 gap-4 max-w-2xl">
             <Input label="Email" type="email" placeholder="you@example.com" />
             <Input label="Search" leftIcon={<Search01Icon size={16} />} placeholder="Search…" />
@@ -76,15 +76,15 @@ export default function KitchenSinkClient() {
         </Card>
 
         <div>
-          <h2 className="text-[14px] font-semibold text-stone-900 mb-4">Card — padding scale</h2>
+          <h2 className="text-sm font-semibold text-stone-900 mb-4">Card — padding scale</h2>
           <div className="grid grid-cols-3 gap-4">
-            <Card padding="sm"><span className="text-[12px] text-stone-500">padding=&quot;sm&quot; (p-4)</span></Card>
-            <Card padding="md"><span className="text-[12px] text-stone-500">padding=&quot;md&quot; (p-5)</span></Card>
-            <Card padding="lg"><span className="text-[12px] text-stone-500">padding=&quot;lg&quot; (p-6)</span></Card>
+            <Card padding="sm"><span className="text-xs text-stone-500">padding=&quot;sm&quot; (p-4)</span></Card>
+            <Card padding="md"><span className="text-xs text-stone-500">padding=&quot;md&quot; (p-5)</span></Card>
+            <Card padding="lg"><span className="text-xs text-stone-500">padding=&quot;lg&quot; (p-6)</span></Card>
           </div>
           <div className="mt-4">
             <Card interactive>
-              <span className="text-[12px] text-stone-500">interactive — hover me</span>
+              <span className="text-xs text-stone-500">interactive — hover me</span>
             </Card>
           </div>
         </div>

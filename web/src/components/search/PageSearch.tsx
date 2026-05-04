@@ -218,7 +218,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
           </svg>
           {activeFilterCount > 0 && (
             <span
-              className="absolute -top-0.5 -right-0.5 text-white text-[9px] font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center"
+              className="absolute -top-0.5 -right-0.5 text-white text-xs font-bold rounded-full min-w-[15px] h-[15px] flex items-center justify-center"
               style={{ backgroundColor: '#1c1917' }}
             >
               {activeFilterCount}
@@ -286,7 +286,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
               <button
                 key={item.label}
                 onClick={() => handleActionClick(item.action)}
-                className="w-full px-3 py-2.5 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors duration-150 text-left text-[13px] font-medium text-stone-700 dark:text-stone-200"
+                className="w-full px-3 py-2.5 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors duration-150 text-left text-sm font-medium text-stone-700 dark:text-stone-200"
                 type="button"
               >
                 {item.label}
