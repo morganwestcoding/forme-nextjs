@@ -57,7 +57,10 @@
       "Bash(echo \"---exit code: $?---\")",
       "Bash(git commit *)",
       "Bash(git stash *)",
-      "Bash(echo \"---exit: $?---\")"
+      "Bash(echo \"---exit: $?---\")",
+      "Bash(git ls-remote *)",
+      "Read(//Users/greg/.claude/**)",
+      "Bash(echo \"Origin main = $\\(git ls-remote origin main)"
     ],
     "additionalDirectories": [
       "/Users/greg/Desktop/forme/web/src/components/listings",
