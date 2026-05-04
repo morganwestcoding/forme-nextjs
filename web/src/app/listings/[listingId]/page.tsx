@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import getListingById from "@/app/actions/getListingById";
 import ClientProviders from "@/components/ClientProviders";
@@ -33,6 +34,15 @@ export async function generateMetadata({ params }: { params: IParams }): Promise
 
 const ListingPage = async ({ params }: { params: IParams }) => {
   const currentUser = await getCurrentUser();
+
+  // Independent providers don't have real storefronts — the Listing row is just
+  // a hidden shell auto-created so their services have somewhere to live. Anyone
+  // landing on its URL gets bounced to the worker's profile, which is the real
+  // public surface for them.
+  const listing = await getListingById(params);
+  if (listing?.employees?.some((e) => e.isIndependent)) {
+    redirect(`/profile/${listing.userId}`);
+  }
 
   return (
     <ClientProviders>

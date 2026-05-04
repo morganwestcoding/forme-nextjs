@@ -28,10 +28,16 @@ const RESERVATION_INCLUDE = {
 } as const;
 
 export async function GET(request: Request) {
+  // Auth is optional — guest checkouts must be able to verify their own
+  // session without a session cookie. We scope guest verification to the
+  // session_id (which only the booker has via the success URL Stripe redirects
+  // them to) so it's effectively a one-time bearer token for that reservation.
   const session = await getServerSession(authOptions);
-
-  if (!session?.user?.email) {
-    return apiErrorCode('UNAUTHORIZED');
+  let currentUser: Awaited<ReturnType<typeof prisma.user.findUnique>> = null;
+  if (session?.user?.email) {
+    currentUser = await prisma.user.findUnique({
+      where: { email: session.user.email as string },
+    });
   }
 
   try {
@@ -42,28 +48,33 @@ export async function GET(request: Request) {
       return apiError("Missing session ID", 400);
     }
 
-    const currentUser = await prisma.user.findUnique({
-      where: { email: session.user.email as string },
-    });
-
-    if (!currentUser) {
-      return apiErrorCode('USER_NOT_FOUND');
-    }
-
     const stripeSession = await stripe.checkout.sessions.retrieve(sessionId);
 
     if (!stripeSession || stripeSession.payment_status !== 'paid') {
       return apiError("Payment not completed", 400);
     }
 
+    const isGuestCheckout = !stripeSession.metadata?.userId;
+
+    // Logged-in users may only verify their own sessions. Guest checkouts
+    // bypass this since they have no userId; the session_id itself is the
+    // proof of ownership (only the booker reached the success URL).
+    if (!isGuestCheckout && currentUser && stripeSession.metadata?.userId !== currentUser.id) {
+      return apiErrorCode('FORBIDDEN');
+    }
+
     const paymentIntentId = stripeSession.payment_intent
       ? String(stripeSession.payment_intent)
       : null;
 
-    // 1) Look up reservation by paymentIntentId
-    let reservation = paymentIntentId
+    // 1) Look up reservation by paymentIntentId. For logged-in users we also
+    //    constrain by userId; for guest checkouts we just trust paymentIntent.
+    const baseWhere = paymentIntentId ? { paymentIntentId } : null;
+    let reservation = baseWhere
       ? await prisma.reservation.findFirst({
-          where: { paymentIntentId, userId: currentUser.id },
+          where: isGuestCheckout || !currentUser
+            ? baseWhere
+            : { ...baseWhere, userId: currentUser.id },
           include: RESERVATION_INCLUDE,
         })
       : null;
@@ -71,13 +82,20 @@ export async function GET(request: Request) {
     // 2) Webhook fallback — if the reservation hasn't been created yet
     //    (webhook delayed/undelivered), create it now so the user sees their
     //    booking immediately under "My Trips". Idempotent on paymentIntentId.
-    if (!reservation && stripeSession.metadata?.userId === currentUser.id) {
+    const ownsSession =
+      isGuestCheckout ||
+      (currentUser && stripeSession.metadata?.userId === currentUser.id);
+    if (!reservation && ownsSession) {
       const result = await createReservationFromCheckoutSession(stripeSession);
       if (result.created || result.reason === 'already_exists') {
-        reservation = await prisma.reservation.findFirst({
-          where: { paymentIntentId: paymentIntentId || undefined, userId: currentUser.id },
-          include: RESERVATION_INCLUDE,
-        });
+        reservation = paymentIntentId
+          ? await prisma.reservation.findFirst({
+              where: isGuestCheckout || !currentUser
+                ? { paymentIntentId }
+                : { paymentIntentId, userId: currentUser.id },
+              include: RESERVATION_INCLUDE,
+            })
+          : null;
       }
     }
 
@@ -88,19 +106,36 @@ export async function GET(request: Request) {
         reservation: stripeSession.metadata
           ? {
               serviceName: stripeSession.metadata.serviceName,
+              serviceCount: stripeSession.metadata.serviceIds
+                ? stripeSession.metadata.serviceIds.split(',').filter(Boolean).length
+                : 1,
               date: new Date(stripeSession.metadata.date),
               time: stripeSession.metadata.time,
               totalPrice: Number(stripeSession.amount_total! / 100),
+              subtotal: stripeSession.metadata.subtotal
+                ? Number(stripeSession.metadata.subtotal)
+                : undefined,
+              tipAmount: stripeSession.metadata.tipAmount
+                ? Number(stripeSession.metadata.tipAmount)
+                : 0,
               listing: {
                 title: stripeSession.metadata.businessName || "Your booking",
                 imageSrc: null,
               },
+              isGuest: isGuestCheckout,
             }
           : null,
       });
     }
 
-    return NextResponse.json({ success: true, reservation });
+    return NextResponse.json({
+      success: true,
+      reservation: {
+        ...reservation,
+        serviceCount: reservation.serviceIds?.length || 1,
+        isGuest: !reservation.userId,
+      },
+    });
   } catch (error: any) {
     return apiError(error.message || "Something went wrong", 500);
   }

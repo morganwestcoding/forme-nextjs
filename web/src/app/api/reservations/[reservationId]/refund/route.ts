@@ -92,8 +92,9 @@ export async function POST(
         },
       });
 
-      // Notify the customer
-      if (!isCustomer) {
+      // Notify the customer (only if there's a linked user — guests have no
+      // account to receive an in-app notification; they're notified via email).
+      if (!isCustomer && reservation.userId) {
         await prisma.notification.create({
           data: {
             type: 'REFUND_COMPLETED',

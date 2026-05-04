@@ -99,37 +99,55 @@ const StripeCheckoutModal = () => {
             
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-stone-600 dark:text-stone-300">Service:</span>
-                <span className="font-medium">{reservationData.serviceName}</span>
+                <span className="text-stone-600 dark:text-stone-300">
+                  {reservationData.serviceCount && reservationData.serviceCount > 1
+                    ? `Services (${reservationData.serviceCount}):`
+                    : 'Service:'}
+                </span>
+                <span className="font-medium text-right max-w-xs">{reservationData.serviceName}</span>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-stone-600 dark:text-stone-300">Provider:</span>
                 <span className="font-medium">{reservationData.employeeName}</span>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-stone-600 dark:text-stone-300">Date:</span>
                 <span className="font-medium">{formattedDate}</span>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-stone-600 dark:text-stone-300">Time:</span>
                 <span className="font-medium">{formattedTime}</span>
               </div>
-              
+
               {reservationData.note && (
                 <div className="flex justify-between">
                   <span className="text-stone-600 dark:text-stone-300">Note:</span>
                   <span className="font-medium text-right max-w-xs">{reservationData.note}</span>
                 </div>
               )}
-              
+
               <div className="h-px w-full bg-stone-200 dark:bg-stone-700 my-2"></div>
-              
+
+              {typeof reservationData.subtotal === 'number' && reservationData.subtotal !== reservationData.totalPrice && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-stone-500 dark:text-stone-500">Subtotal:</span>
+                  <span className="text-stone-700 dark:text-stone-200 tabular-nums">${reservationData.subtotal.toFixed(2)}</span>
+                </div>
+              )}
+
+              {typeof reservationData.tipAmount === 'number' && reservationData.tipAmount > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-stone-500 dark:text-stone-500">Tip:</span>
+                  <span className="text-stone-700 dark:text-stone-200 tabular-nums">${reservationData.tipAmount.toFixed(2)}</span>
+                </div>
+              )}
+
               <div className="flex justify-between">
                 <span className="text-stone-600 dark:text-stone-300 font-medium">Total:</span>
-                <span className="font-semibold text-lg">${reservationData.totalPrice}</span>
+                <span className="font-semibold text-lg tabular-nums">${reservationData.totalPrice.toFixed(2)}</span>
               </div>
             </div>
           </div>

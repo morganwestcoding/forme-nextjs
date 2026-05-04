@@ -9,11 +9,8 @@ interface ReservePageProps {
 }
 
 export default async function ReservePage({ params, searchParams }: ReservePageProps) {
+  // currentUser is now optional — guest checkout collects identity in-flow.
   const currentUser = await getCurrentUser();
-
-  if (!currentUser) {
-    redirect(`/`);
-  }
 
   const listing = await getListingById({ listingId: params.listingId });
 

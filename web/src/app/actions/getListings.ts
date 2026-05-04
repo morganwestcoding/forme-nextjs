@@ -66,6 +66,13 @@ export default async function getListings(params: IListingsParams = {}): Promise
       query.academyId = { isSet: false };
     }
 
+    // Hide hidden "shell" listings auto-created for independent providers.
+    // These exist only to anchor an independent's services + Employee row in
+    // Prisma — they're not real storefronts and shouldn't surface in any
+    // public list (discovery, search, map, etc.). The independent's own
+    // profile is their public face.
+    query.employees = { none: { isIndependent: true } };
+
     if (category && category !== 'all' && category !== 'featured') {
       query.category = category;
     }

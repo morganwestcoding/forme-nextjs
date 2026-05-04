@@ -207,7 +207,8 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
         r.serviceName?.toLowerCase().includes(q) ||
         l.title?.toLowerCase().includes(q) ||
         l.address?.toLowerCase().includes(q) ||
-        r.user?.name?.toLowerCase().includes(q)
+        r.user?.name?.toLowerCase().includes(q) ||
+        (r as any).guestName?.toLowerCase().includes(q)
       );
     });
   }, [upcomingAll, pastAll, timeTab, query]);
@@ -424,8 +425,16 @@ function NextTripHero({
   const employeeName = employee?.fullName as string | undefined;
   const employeeAvatar = (employee?.user?.image || employee?.user?.imageSrc) as string | undefined;
   const employeeRole = employee?.jobTitle as string | undefined;
-  const customerName = trip.user?.name || 'Customer';
+  // Guest reservations have no linked user — fall back to the guest name
+  // captured at checkout. Avatar simply isn't shown for guests.
+  const customerName = trip.user?.name || (trip as any).guestName || 'Guest customer';
   const customerAvatar = (trip.user?.image || trip.user?.imageSrc) as string | undefined;
+  const isGuestBooking = !trip.user;
+
+  // Multi-service support: render "N services" when more than one was booked.
+  const serviceCount = ((trip as any).serviceIds?.length as number) || 1;
+  const serviceLabel =
+    serviceCount > 1 ? `${serviceCount} services` : trip.serviceName;
 
   const matchedService = listing.services?.find(
     (s: any) => s.serviceName === trip.serviceName,
@@ -522,7 +531,7 @@ function NextTripHero({
                   <ChevronRight className="w-5 h-5 text-white/60 group-hover:translate-x-0.5 transition-transform shrink-0" />
                 </button>
                 <p className="text-[14px] text-white/65 leading-tight truncate mt-1">
-                  {trip.serviceName}
+                  {serviceLabel}
                 </p>
               </div>
 
@@ -1130,7 +1139,16 @@ function TripRow({
   const employeeName = listing.employees?.find(
     (e: any) => e.id === reservation.employeeId,
   )?.fullName as string | undefined;
-  const customerName = reservation.user?.name || 'Customer';
+  // Guest reservations have no linked user — fall back to guestName from
+  // checkout. The "Guest" suffix flags the row for the worker-side viewer.
+  const customerName =
+    reservation.user?.name || (reservation as any).guestName || 'Guest customer';
+  const isGuestReservation = !reservation.user;
+  const reservationServiceCount = ((reservation as any).serviceIds?.length as number) || 1;
+  const reservationServiceLabel =
+    reservationServiceCount > 1
+      ? `${reservationServiceCount} services`
+      : reservation.serviceName;
 
   const status = normalizeStatus(reservation.status);
   const refundStatus = (reservation as any).refundStatus as string | undefined;
@@ -1187,10 +1205,12 @@ function TripRow({
                   {today && !past && <span className="text-amber-600 ml-2">· Today</span>}
                 </p>
                 <h3 className="mt-1.5 text-[18px] font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.015em] leading-tight truncate">
-                  {reservation.serviceName}
+                  {reservationServiceLabel}
                 </h3>
                 <p className="text-[12px] text-stone-500  dark:text-stone-500 truncate mt-0.5">
-                  {isIncoming ? `${customerName} · ${listing.title}` : listing.title}
+                  {isIncoming
+                    ? `${customerName}${isGuestReservation ? ' (guest)' : ''} · ${listing.title}`
+                    : listing.title}
                 </p>
               </div>
 

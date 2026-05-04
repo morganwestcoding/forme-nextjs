@@ -97,12 +97,28 @@ export function welcomeEmail(name: string): SendEmailOptions & { to: '' } {
 }
 
 export function bookingConfirmationEmail(data: {
+  // For multi-service bookings this is a summary label like "3 services" — for
+  // single-service it's the actual service name. Use serviceCount to drive UX.
   serviceName: string;
+  serviceCount?: number;
   businessName: string;
   date: string;
   time: string;
+  subtotal?: number;
+  tipAmount?: number;
   totalPrice: number;
 }): SendEmailOptions & { to: '' } {
+  const tipRow =
+    typeof data.tipAmount === 'number' && data.tipAmount > 0 && typeof data.subtotal === 'number'
+      ? `
+        <tr><td style="padding: 6px 0; font-weight: 600;">Subtotal</td><td style="padding: 6px 0;">$${data.subtotal.toFixed(2)}</td></tr>
+        <tr><td style="padding: 6px 0; font-weight: 600;">Tip</td><td style="padding: 6px 0;">$${data.tipAmount.toFixed(2)}</td></tr>
+      `
+      : '';
+  const serviceLabel =
+    data.serviceCount && data.serviceCount > 1
+      ? `Services (${data.serviceCount})`
+      : 'Service';
   return {
     to: '' as any,
     subject: `Booking Confirmed — ${data.serviceName}`,
@@ -110,10 +126,11 @@ export function bookingConfirmationEmail(data: {
       <h2 style="margin: 0 0 16px;">Booking Confirmed</h2>
       <p>Your booking has been confirmed. Here are the details:</p>
       <table style="width: 100%; font-size: 14px; color: #57534e; margin: 16px 0;">
-        <tr><td style="padding: 6px 0; font-weight: 600;">Service</td><td style="padding: 6px 0;">${data.serviceName}</td></tr>
+        <tr><td style="padding: 6px 0; font-weight: 600;">${serviceLabel}</td><td style="padding: 6px 0;">${data.serviceName}</td></tr>
         <tr><td style="padding: 6px 0; font-weight: 600;">Business</td><td style="padding: 6px 0;">${data.businessName}</td></tr>
         <tr><td style="padding: 6px 0; font-weight: 600;">Date</td><td style="padding: 6px 0;">${data.date}</td></tr>
         <tr><td style="padding: 6px 0; font-weight: 600;">Time</td><td style="padding: 6px 0;">${data.time}</td></tr>
+        ${tipRow}
         <tr><td style="padding: 6px 0; font-weight: 600;">Total</td><td style="padding: 6px 0;">$${data.totalPrice.toFixed(2)}</td></tr>
       </table>
       <a href="${APP_URL}/bookings" style="display: inline-block; margin-top: 8px; padding: 12px 24px; background: #1c1917; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;">
@@ -125,11 +142,25 @@ export function bookingConfirmationEmail(data: {
 
 export function newBookingReceivedEmail(data: {
   serviceName: string;
+  serviceCount?: number;
   customerName: string;
   date: string;
   time: string;
+  subtotal?: number;
+  tipAmount?: number;
   totalPrice: number;
 }): SendEmailOptions & { to: '' } {
+  const tipRow =
+    typeof data.tipAmount === 'number' && data.tipAmount > 0 && typeof data.subtotal === 'number'
+      ? `
+        <tr><td style="padding: 6px 0; font-weight: 600;">Subtotal</td><td style="padding: 6px 0;">$${data.subtotal.toFixed(2)}</td></tr>
+        <tr><td style="padding: 6px 0; font-weight: 600;">Tip</td><td style="padding: 6px 0;">$${data.tipAmount.toFixed(2)}</td></tr>
+      `
+      : '';
+  const serviceLabel =
+    data.serviceCount && data.serviceCount > 1
+      ? `Services (${data.serviceCount})`
+      : 'Service';
   return {
     to: '' as any,
     subject: `New Booking — ${data.serviceName}`,
@@ -138,9 +169,10 @@ export function newBookingReceivedEmail(data: {
       <p>You have a new booking:</p>
       <table style="width: 100%; font-size: 14px; color: #57534e; margin: 16px 0;">
         <tr><td style="padding: 6px 0; font-weight: 600;">Customer</td><td style="padding: 6px 0;">${data.customerName}</td></tr>
-        <tr><td style="padding: 6px 0; font-weight: 600;">Service</td><td style="padding: 6px 0;">${data.serviceName}</td></tr>
+        <tr><td style="padding: 6px 0; font-weight: 600;">${serviceLabel}</td><td style="padding: 6px 0;">${data.serviceName}</td></tr>
         <tr><td style="padding: 6px 0; font-weight: 600;">Date</td><td style="padding: 6px 0;">${data.date}</td></tr>
         <tr><td style="padding: 6px 0; font-weight: 600;">Time</td><td style="padding: 6px 0;">${data.time}</td></tr>
+        ${tipRow}
         <tr><td style="padding: 6px 0; font-weight: 600;">Total</td><td style="padding: 6px 0;">$${data.totalPrice.toFixed(2)}</td></tr>
       </table>
       <a href="${APP_URL}/bookings/reservations" style="display: inline-block; margin-top: 8px; padding: 12px 24px; background: #1c1917; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;">

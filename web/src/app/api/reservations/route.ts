@@ -104,20 +104,31 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { 
+    const {
       listingId,
       date,
       time,
       note,
       totalPrice,
       serviceId,
+      serviceIds: rawServiceIds,
       serviceName,
-      employeeId
+      employeeId,
+      tipAmount: rawTipAmount,
+      subtotal: rawSubtotal,
     } = body;
 
     if (!listingId || !date || !time || !totalPrice || !serviceId || !serviceName || !employeeId) {
       return apiErrorCode('MISSING_FIELDS');
     }
+
+    const serviceIds: string[] = Array.isArray(rawServiceIds) && rawServiceIds.length > 0
+      ? rawServiceIds.map((id: any) => String(id)).filter(Boolean)
+      : [serviceId];
+    const tipAmount = Math.max(0, Math.round(Number(rawTipAmount) || 0));
+    const subtotal = typeof rawSubtotal === 'number'
+      ? rawSubtotal
+      : Math.max(0, totalPrice - tipAmount);
 
     const reservation = await prisma.reservation.create({
       data: {
@@ -127,7 +138,10 @@ export async function POST(request: Request) {
         time,
         note,
         totalPrice,
+        subtotal,
+        tipAmount,
         serviceId,
+        serviceIds,
         serviceName,
         employeeId,
         status: 'pending'

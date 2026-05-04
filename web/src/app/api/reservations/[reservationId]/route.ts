@@ -42,19 +42,22 @@ export async function POST(
      data: { status },
    });
 
-   // Notify the customer
-   const notifContent = status === 'confirmed'
-     ? `Your reservation at ${reservation.listing.title} has been accepted`
-     : `Your reservation at ${reservation.listing.title} has been declined`;
+   // Notify the customer — skipped for guests (no account to notify in-app;
+   // they're notified via email instead).
+   if (reservation.userId) {
+     const notifContent = status === 'confirmed'
+       ? `Your reservation at ${reservation.listing.title} has been accepted`
+       : `Your reservation at ${reservation.listing.title} has been declined`;
 
-   await prisma.notification.create({
-     data: {
-       type: status === 'confirmed' ? 'RESERVATION_ACCEPTED' : 'RESERVATION_DECLINED',
-       content: notifContent,
-       userId: reservation.userId,
-       relatedListingId: reservation.listingId,
-     },
-   });
+     await prisma.notification.create({
+       data: {
+         type: status === 'confirmed' ? 'RESERVATION_ACCEPTED' : 'RESERVATION_DECLINED',
+         content: notifContent,
+         userId: reservation.userId,
+         relatedListingId: reservation.listingId,
+       },
+     });
+   }
 
    return NextResponse.json(updated);
  } catch (error) {
@@ -143,15 +146,17 @@ export async function PATCH(
     }
   });
 
-   // Create notification
-   await prisma.notification.create({
-     data: {
-       type: notificationType,
-       content: notificationContent,
-       userId: reservation.userId,
-       relatedListingId: reservation.listingId
-     }
-   });
+   // Create notification — skipped for guest reservations (no account).
+   if (reservation.userId) {
+     await prisma.notification.create({
+       data: {
+         type: notificationType,
+         content: notificationContent,
+         userId: reservation.userId,
+         relatedListingId: reservation.listingId
+       }
+     });
+   }
 
    return NextResponse.json(updatedReservation);
  } catch (error) {
@@ -222,23 +227,28 @@ export async function DELETE(
      }
    });
 
-   // Create appropriate notification based on who cancelled
+   // Create appropriate notification based on who cancelled.
+   // Guest reservations: no in-app notification when business cancels (no
+   // account to deliver to — they'll be notified via email separately).
    if (isListingOwner || isAssignedEmployee || isMaster) {
-     // Business side (owner, assigned employee, or admin) cancelled the reservation
-     await prisma.notification.create({
-       data: {
-         type: 'RESERVATION_CANCELLED_BY_BUSINESS',
-         content: `Your reservation at ${reservation.listing.title} has been cancelled by the business`,
-         userId: reservation.userId,
-         relatedListingId: reservation.listingId
-       }
-     });
+     if (reservation.userId) {
+       await prisma.notification.create({
+         data: {
+           type: 'RESERVATION_CANCELLED_BY_BUSINESS',
+           content: `Your reservation at ${reservation.listing.title} has been cancelled by the business`,
+           userId: reservation.userId,
+           relatedListingId: reservation.listingId
+         }
+       });
+     }
    } else {
-     // Customer cancelled their own reservation
+     // Customer cancelled their own reservation. (Guests can't reach this
+     // branch — they have no session — so reservation.user is non-null here.)
+     const customerName = reservation.user?.name || reservation.guestName || 'Someone';
      await prisma.notification.create({
        data: {
          type: 'RESERVATION_CANCELLED_BY_USER',
-         content: `${reservation.user.name || 'Someone'} has cancelled their reservation for ${reservation.date.toLocaleDateString()}`,
+         content: `${customerName} has cancelled their reservation for ${reservation.date.toLocaleDateString()}`,
          userId: reservation.listing.userId,
          relatedListingId: reservation.listingId
        }

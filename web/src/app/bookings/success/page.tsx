@@ -13,9 +13,14 @@ import { Tick02Icon as Check, Calendar03Icon as CalendarIcon, Clock01Icon as Clo
 interface ReservationView {
   id?: string;
   serviceName?: string;
+  serviceCount?: number;
   date?: string | Date;
   time?: string;
+  subtotal?: number;
+  tipAmount?: number;
   totalPrice?: number;
+  isGuest?: boolean;
+  guestEmail?: string | null;
   listing?: {
     id?: string;
     title?: string;
@@ -156,7 +161,9 @@ export default function SuccessPage() {
                   {reservation.listing?.title || 'Your booking'}
                 </h2>
                 <p className="text-[12px] text-stone-500  dark:text-stone-500 mt-0.5 truncate">
-                  {reservation.serviceName}
+                  {reservation.serviceCount && reservation.serviceCount > 1
+                    ? `${reservation.serviceCount} services`
+                    : reservation.serviceName}
                 </p>
               </div>
             </div>
@@ -185,33 +192,52 @@ export default function SuccessPage() {
               )}
             </div>
 
-            <div className="px-5 py-4 bg-stone-50/60 border-t border-stone-100 dark:border-stone-800 flex items-baseline justify-between">
-              <span className="text-[13px] text-stone-500  dark:text-stone-500">Total paid</span>
-              <span className="text-[18px] font-semibold text-stone-900 dark:text-stone-100 tabular-nums">
-                ${reservation.totalPrice ?? 0}
-              </span>
+            <div className="px-5 py-4 bg-stone-50/60 border-t border-stone-100 dark:border-stone-800 space-y-1.5">
+              {typeof reservation.tipAmount === 'number' && reservation.tipAmount > 0 && typeof reservation.subtotal === 'number' && (
+                <>
+                  <div className="flex items-baseline justify-between text-[12px] text-stone-500 dark:text-stone-500">
+                    <span>Subtotal</span>
+                    <span className="tabular-nums">${reservation.subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-baseline justify-between text-[12px] text-stone-500 dark:text-stone-500">
+                    <span>Tip</span>
+                    <span className="tabular-nums">${reservation.tipAmount.toFixed(2)}</span>
+                  </div>
+                </>
+              )}
+              <div className="flex items-baseline justify-between">
+                <span className="text-[13px] text-stone-500 dark:text-stone-500">Total paid</span>
+                <span className="text-[18px] font-semibold text-stone-900 dark:text-stone-100 tabular-nums">
+                  ${(reservation.totalPrice ?? 0).toFixed(2)}
+                </span>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Actions */}
+        {/* Actions — guests have no account, so no "My Trips" view. They get
+            a single "Keep browsing" CTA + a hint to check their email. */}
         <div className="flex gap-2.5 mt-6">
           <Link
             href="/"
-            className="flex-1 text-center py-3.5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/70 text-stone-700 dark:text-stone-200 text-[13px] font-medium hover:border-stone-300 dark:border-stone-700 transition-colors"
+            className={`text-center py-3.5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/70 text-stone-700 dark:text-stone-200 text-[13px] font-medium hover:border-stone-300 dark:border-stone-700 transition-colors ${reservation?.isGuest ? 'flex-1' : 'flex-1'}`}
           >
             Keep browsing
           </Link>
-          <Link
-            href="/bookings/reservations"
-            className="flex-1 text-center py-3.5 rounded-2xl bg-stone-900 text-white text-[13px] font-medium hover:bg-stone-800 transition-colors"
-          >
-            View my trips
-          </Link>
+          {!reservation?.isGuest && (
+            <Link
+              href="/bookings/reservations"
+              className="flex-1 text-center py-3.5 rounded-2xl bg-stone-900 text-white text-[13px] font-medium hover:bg-stone-800 transition-colors"
+            >
+              View my trips
+            </Link>
+          )}
         </div>
 
         <p className="text-center text-[12px] text-stone-400 dark:text-stone-500 mt-5">
-          You can cancel or reschedule from My Trips.
+          {reservation?.isGuest
+            ? 'A confirmation has been sent to your email. Reply to that email to cancel or reschedule.'
+            : 'You can cancel or reschedule from My Trips.'}
         </p>
       </div>
 

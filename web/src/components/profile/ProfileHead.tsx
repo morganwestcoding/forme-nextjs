@@ -646,10 +646,11 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                           listing={stubListing}
                           currentUser={currentUser}
                           onClick={() => {
-                            if (!currentUser) {
-                              router.push(`/listings/${svc.listingId}`);
-                              return;
-                            }
+                            // Always route through /reserve. For independents the
+                            // underlying listing is a hidden shell that no user
+                            // should ever see; for everyone else the reserve flow
+                            // is the right destination from a profile click anyway.
+                            // Reserve page handles the unauthed redirect itself.
                             router.push(`/reserve/${svc.listingId}?employeeId=${svc.employeeId}&serviceId=${svc.id}`);
                           }}
                           compact

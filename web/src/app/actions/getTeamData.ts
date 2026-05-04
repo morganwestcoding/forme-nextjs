@@ -261,9 +261,11 @@ export default async function getTeamData(userId: string): Promise<TeamData> {
     totalPrice: r.totalPrice,
     status: r.status,
     note: r.note,
-    clientName: r.user.name,
-    clientImage: r.user.image || r.user.imageSrc,
-    clientEmail: r.user.email,
+    // Guest reservations have no linked user — fall back to the guest fields
+    // captured at checkout. Image isn't stored for guests.
+    clientName: r.user?.name ?? r.guestName ?? null,
+    clientImage: r.user?.image || r.user?.imageSrc || null,
+    clientEmail: r.user?.email ?? r.guestEmail ?? null,
     employeeName: r.employee?.fullName || "Unassigned",
     employeeId: r.employee?.id || "",
   });

@@ -49,7 +49,7 @@ export type SafeListing = Omit<Listing, "createdAt" | "rating" | "ratingCount" |
 };
 
 export type SafeReservation = Omit<
-  Reservation, 
+  Reservation,
   "createdAt" | "startDate" | "endDate" | "listing"
 > & {
   createdAt: string;
@@ -72,7 +72,8 @@ export type SafeReservation = Omit<
     employees: SafeEmployee[];
     storeHours: SafeStoreHours[];
   };
-  user: SafeUser;
+  // Null for guest checkouts. Consumers should fall back to guestName/guestEmail.
+  user: SafeUser | null;
   paymentIntentId?: string | null;
   paymentStatus?: string | null;
 };

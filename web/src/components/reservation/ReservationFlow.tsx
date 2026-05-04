@@ -14,9 +14,12 @@ import EmployeeStep from './steps/EmployeeStep';
 import DateStep from './steps/DateStep';
 import TimeStep from './steps/TimeStep';
 import SummaryStep from './steps/SummaryStep';
+import GuestInfoStep from './steps/GuestInfoStep';
 
 import { SafeListing, SafeUser } from '@/app/types';
 import useStripeCheckoutModal from '@/app/hooks/useStripeCheckoutModal';
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 interface SelectedService {
   value: string;
@@ -31,7 +34,9 @@ interface SelectedEmployee {
 
 interface ReservationFlowProps {
   listing: SafeListing;
-  currentUser: SafeUser;
+  // currentUser is null for guest checkout — flow then mounts GUEST_INFO
+  // before SUMMARY so we have a name + email to bill and confirm to.
+  currentUser: SafeUser | null;
   initialServiceId?: string;
   initialEmployeeId?: string;
 }
@@ -41,7 +46,8 @@ enum STEPS {
   EMPLOYEE = 1,
   DATE = 2,
   TIME = 3,
-  SUMMARY = 4,
+  GUEST_INFO = 4,
+  SUMMARY = 5,
 }
 
 export default function ReservationFlow({
@@ -65,7 +71,16 @@ export default function ReservationFlow({
   const [selectedEmployee, setSelectedEmployee] = useState<SelectedEmployee | null>(null);
   const [date, setDate] = useState<Date | null>(null);
   const [time, setTime] = useState('');
-  const [note, setNote] = useState('');
+  // Per-service notes — keyed by serviceId. Serialized into the single
+  // Reservation.note string at submit time so the worker-side render stays
+  // a simple string ("Massage: please be gentle\nHaircut: short on sides").
+  const [serviceNotes, setServiceNotes] = useState<Record<string, string>>({});
+  // Tip is in dollars (matches Service.price's unit).
+  const [tipAmount, setTipAmount] = useState(0);
+  // Guest checkout fields — only used when currentUser is null.
+  const [guestInfo, setGuestInfo] = useState({ name: '', email: '', phone: '' });
+
+  const isGuest = !currentUser;
 
   // Build options from listing
   const serviceOptions: SelectedService[] = useMemo(() => {
@@ -124,13 +139,17 @@ export default function ReservationFlow({
     return slotTime <= currentTimeWithBuffer;
   }, [date]);
 
-  // Flow path — omit EMPLOYEE when the professional is pre-assigned.
+  // Flow path — omit EMPLOYEE when the professional is pre-assigned, and
+  // insert GUEST_INFO right before SUMMARY for guest checkouts so we have
+  // a name/email to bill and confirm to.
   const getFlowPath = useCallback((): STEPS[] => {
-    if (skipEmployeeStep) {
-      return [STEPS.SERVICES, STEPS.DATE, STEPS.TIME, STEPS.SUMMARY];
-    }
-    return [STEPS.SERVICES, STEPS.EMPLOYEE, STEPS.DATE, STEPS.TIME, STEPS.SUMMARY];
-  }, [skipEmployeeStep]);
+    const path: STEPS[] = skipEmployeeStep
+      ? [STEPS.SERVICES, STEPS.DATE, STEPS.TIME]
+      : [STEPS.SERVICES, STEPS.EMPLOYEE, STEPS.DATE, STEPS.TIME];
+    if (isGuest) path.push(STEPS.GUEST_INFO);
+    path.push(STEPS.SUMMARY);
+    return path;
+  }, [skipEmployeeStep, isGuest]);
 
   const canProceed = useCallback((): boolean => {
     switch (step) {
@@ -142,12 +161,18 @@ export default function ReservationFlow({
         return date !== null;
       case STEPS.TIME:
         return time !== '';
+      case STEPS.GUEST_INFO:
+        return Boolean(
+          guestInfo.name.trim() &&
+            guestInfo.email.trim() &&
+            EMAIL_REGEX.test(guestInfo.email.trim())
+        );
       case STEPS.SUMMARY:
         return true;
       default:
         return true;
     }
-  }, [step, selectedServices, selectedEmployee, date, time]);
+  }, [step, selectedServices, selectedEmployee, date, time, guestInfo]);
 
   const getNextStep = useCallback((): STEPS | null => {
     const flowPath = getFlowPath();
@@ -177,6 +202,9 @@ export default function ReservationFlow({
           break;
         case STEPS.TIME:
           toast.error('Please select a time');
+          break;
+        case STEPS.GUEST_INFO:
+          toast.error('Please enter your name and a valid email');
           break;
       }
       return;
@@ -208,6 +236,7 @@ export default function ReservationFlow({
 
       if (e.key === 'Enter' && !e.shiftKey) {
         if (isInput && target.tagName === 'TEXTAREA') return;
+        if (isInput && step === STEPS.GUEST_INFO) return;
         if (canProceed() && !isLoading) {
           e.preventDefault();
           if (step === STEPS.SUMMARY) {
@@ -233,33 +262,70 @@ export default function ReservationFlow({
       toast.error('Please fill in all required fields');
       return;
     }
+    if (isGuest) {
+      const trimmedName = guestInfo.name.trim();
+      const trimmedEmail = guestInfo.email.trim();
+      if (!trimmedName || !trimmedEmail || !EMAIL_REGEX.test(trimmedEmail)) {
+        toast.error('Please enter your name and a valid email');
+        return;
+      }
+    }
 
     setIsLoading(true);
 
     try {
+      const subtotal = totalPrice; // totalPrice is the services subtotal here
+      const total = subtotal + tipAmount;
+      const leadServiceLabel =
+        selectedServices.length > 1
+          ? `${selectedServices.length} services`
+          : selectedServices[0].label.split(' - ')[0];
+
+      // Flatten per-service notes into a single readable string for the
+      // worker. Skipped services with empty notes drop out.
+      const note = selectedServices
+        .map((s) => {
+          const trimmed = (serviceNotes[s.value] || '').trim();
+          if (!trimmed) return null;
+          const name = s.label.split(' - ')[0];
+          return `${name}: ${trimmed}`;
+        })
+        .filter(Boolean)
+        .join('\n');
+
       // Prepare Stripe data — reservation is created by the webhook after payment
       const stripeData = {
-        totalPrice,
+        totalPrice: total,
+        subtotal,
+        tipAmount,
         date: date.toISOString(),
         time,
         listingId: listing.id,
         serviceId: selectedServices[0].value,
-        serviceName: selectedServices[0].label.split(' - ')[0],
+        serviceIds: selectedServices.map((s) => s.value),
+        serviceName: leadServiceLabel,
+        serviceCount: selectedServices.length,
         employeeId: selectedEmployee.value,
         employeeName: selectedEmployee.label,
         note,
         businessName: listing.title || 'Business',
-        services: selectedServices.map(service => ({
-          serviceId: service.value,
-          serviceName: service.label.split(' - ')[0],
-          price: service.price,
-        })),
-        customerName: currentUser.name || '',
-        customerEmail: currentUser.email || '',
+        // Customer identity — currentUser when signed-in, guest fields otherwise.
+        ...(isGuest
+          ? {
+              guestName: guestInfo.name.trim(),
+              guestEmail: guestInfo.email.trim(),
+              guestPhone: guestInfo.phone.trim(),
+            }
+          : {
+              userId: currentUser?.id,
+            }),
       };
 
-      // Replace so the bookings page's back button doesn't return to /reserve.
-      router.replace(`/bookings/reservations`);
+      // Guests have no /bookings page to return to; signed-in users get
+      // pre-routed there so the post-payment back-arrow lands in the right place.
+      if (!isGuest) {
+        router.replace(`/bookings/reservations`);
+      }
 
       setTimeout(() => {
         stripeCheckoutModal.onOpen(stripeData);
@@ -273,7 +339,21 @@ export default function ReservationFlow({
     } finally {
       setIsLoading(false);
     }
-  }, [date, time, selectedServices, selectedEmployee, listing, note, totalPrice, currentUser, router, stripeCheckoutModal]);
+  }, [
+    date,
+    time,
+    selectedServices,
+    selectedEmployee,
+    listing,
+    serviceNotes,
+    totalPrice,
+    tipAmount,
+    currentUser,
+    isGuest,
+    guestInfo,
+    router,
+    stripeCheckoutModal,
+  ]);
 
   const flowPath = getFlowPath();
   const currentIndex = flowPath.indexOf(step);
@@ -328,6 +408,13 @@ export default function ReservationFlow({
             isToday={date ? isSameDay(date, new Date()) : false}
           />
         );
+      case STEPS.GUEST_INFO:
+        return (
+          <GuestInfoStep
+            guestInfo={guestInfo}
+            onChange={setGuestInfo}
+          />
+        );
       case STEPS.SUMMARY:
         return (
           <SummaryStep
@@ -335,9 +422,11 @@ export default function ReservationFlow({
             selectedEmployee={selectedEmployee}
             date={date}
             time={time}
-            totalPrice={totalPrice}
-            note={note}
-            onNoteChange={setNote}
+            subtotal={totalPrice}
+            tipAmount={tipAmount}
+            onTipChange={setTipAmount}
+            serviceNotes={serviceNotes}
+            onServiceNotesChange={setServiceNotes}
             businessName={listing.title || 'Business'}
           />
         );
@@ -354,8 +443,9 @@ export default function ReservationFlow({
         totalSteps={totalSteps}
       />
 
-      {/* Main content */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
+      {/* Main content — extra bottom padding so the last element on tall
+          steps (e.g. Summary's note textarea) clears the fixed bottom nav. */}
+      <div className="flex-1 flex items-center justify-center px-6 pt-12 pb-32">
         <div className="w-full max-w-xl">
           <AnimatePresence initial={false} mode="wait" custom={direction}>
             <motion.div

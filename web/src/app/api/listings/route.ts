@@ -53,6 +53,10 @@ export async function GET(request: Request) {
   // (See getListings.ts for the Mongo `isSet: false` rationale.)
   if (!includeAcademy) where.academyId = { isSet: false };
 
+  // Hide hidden "shell" listings auto-created for independent providers —
+  // they're internal containers, not real storefronts. (See getListings.ts.)
+  where.employees = { none: { isIndependent: true } };
+
   try {
     const [listings, totalCount] = await Promise.all([
       prisma.listing.findMany({

@@ -65,9 +65,9 @@ export async function POST(request: Request) {
     }
   }
 
-  if (!currentUser) {
-    return apiErrorCode('UNAUTHORIZED');
-  }
+  // Auth is no longer hard-required — guest checkout is supported. Identity
+  // resolves from currentUser when signed-in, otherwise from guestEmail/guestName
+  // in the request body. One of the two must be present.
 
   try {
     const body = await request.json();
@@ -77,17 +77,39 @@ export async function POST(request: Request) {
       time,
       listingId,
       serviceId,
+      serviceIds: rawServiceIds,
       serviceName,
       employeeId,
       employeeName,
       note,
-      businessName
+      businessName,
+      // Tip — passed in dollars to match totalPrice's unit. May be 0/undefined.
+      tipAmount: rawTipAmount,
+      // Guest checkout fields. Required iff currentUser is null.
+      guestName,
+      guestEmail,
+      guestPhone,
     } = body;
+
+    if (!currentUser) {
+      if (!guestEmail?.trim() || !guestName?.trim()) {
+        return apiError('Name and email are required for guest checkout', 400);
+      }
+    }
 
     // Validate the required fields
     if (!totalPrice || !date || !time || !listingId || !serviceId || !employeeId) {
       return apiErrorCode('MISSING_FIELDS');
     }
+
+    // Multi-service support: serviceIds is the canonical list; serviceId stays
+    // for legacy compatibility and as the "lead" service.
+    const serviceIds: string[] = Array.isArray(rawServiceIds) && rawServiceIds.length > 0
+      ? rawServiceIds.map((id: any) => String(id)).filter(Boolean)
+      : [serviceId];
+
+    const tipAmount: number = Math.max(0, Math.round(Number(rawTipAmount) || 0));
+    const subtotal: number = Math.max(0, totalPrice - tipAmount);
 
     // ====== BOOKING RELIABILITY CHECKS ======
 
@@ -260,29 +282,55 @@ export async function POST(request: Request) {
       : businessOwner?.stripeConnectChargesEnabled;
     const hasStripeConnect = destinationStripeAccountId && destinationChargesEnabled;
 
-    // Calculate amounts — platform fee (ForMe's cut) + transaction fee (tier-based)
+    // Calculate amounts — platform fee (ForMe's cut) + transaction fee (tier-based).
+    // Tips bypass both fees: 100% of tips pass through to the worker.
+    const subtotalCents = subtotal * 100;
+    const tipCents = tipAmount * 100;
     const totalAmountCents = totalPrice * 100;
-    const platformFeeCents = Math.round(totalAmountCents * (PLATFORM_FEE_PERCENT / 100));
-    const transactionFeePercent = getTransactionFeePercent(currentUser, totalAmountCents);
-    const transactionFeeCents = Math.round(totalAmountCents * (transactionFeePercent / 100));
+    const platformFeeCents = Math.round(subtotalCents * (PLATFORM_FEE_PERCENT / 100));
+    // Guests have no subscription, so they pay the unsubscribed transaction
+    // fee tier. Pass a synthetic empty-sub user when currentUser is null.
+    const transactionFeePercent = getTransactionFeePercent(
+      currentUser ?? { isSubscribed: false },
+      totalAmountCents,
+    );
+    const transactionFeeCents = Math.round(subtotalCents * (transactionFeePercent / 100));
     const applicationFeeCents = platformFeeCents + transactionFeeCents;
+
+    // Build line items — services as one line, tip as a separate line so
+    // Stripe receipts show the breakdown the customer expects.
+    const serviceLineName =
+      serviceIds.length > 1
+        ? `${serviceIds.length} services at ${businessName || 'Business'}`
+        : serviceName || 'Service booking';
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: serviceLineName,
+            description: `Booking with ${employee?.fullName || employeeName || 'Any Available'} at ${businessName || 'Business'} on ${new Date(date).toLocaleDateString()} at ${time}`,
+          },
+          unit_amount: subtotalCents,
+        },
+        quantity: 1,
+      },
+    ];
+    if (tipCents > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: { name: 'Tip' },
+          unit_amount: tipCents,
+        },
+        quantity: 1,
+      });
+    }
 
     // Build checkout session config
     const sessionConfig: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: serviceName || 'Service booking',
-              description: `Booking with ${employee?.fullName || employeeName || 'Any Available'} at ${businessName || 'Business'} on ${new Date(date).toLocaleDateString()} at ${time}`,
-            },
-            unit_amount: totalAmountCents,
-          },
-          quantity: 1,
-        },
-      ],
+      line_items: lineItems,
       mode: 'payment',
       success_url: body.platform === 'ios'
         ? `formesizzle://booking-success?session_id={CHECKOUT_SESSION_ID}`
@@ -291,9 +339,13 @@ export async function POST(request: Request) {
         ? `formesizzle://booking-cancelled`
         : `${process.env.NEXT_PUBLIC_APP_URL}/listings/${listingId}`,
       metadata: {
-        userId: currentUser.id,
+        // userId is empty string for guest checkouts — the webhook treats
+        // empty as "no linked user" and falls back to guestEmail/guestName.
+        userId: currentUser?.id || '',
         listingId,
         serviceId,
+        // Comma-separated to stay within Stripe's 500-char per-value limit.
+        serviceIds: serviceIds.join(','),
         serviceName: serviceName || '',
         employeeId,
         employeeName: employeeName || employee?.fullName || 'Any Available',
@@ -305,11 +357,21 @@ export async function POST(request: Request) {
         employeeUserId: employee?.userId || '',
         platformFeePercent: String(PLATFORM_FEE_PERCENT),
         transactionFeePercent: String(transactionFeePercent),
+        subtotal: String(subtotal),
+        tipAmount: String(tipAmount),
+        guestName: guestName?.trim() || '',
+        guestEmail: guestEmail?.trim() || '',
+        guestPhone: guestPhone?.trim() || '',
         // When set, the booking is for an academy-owned listing (e.g. a student).
         // Funds were routed to the academy's Connect account, not the listing owner.
         academyId: listingAcademy?.id ?? '',
       },
     };
+
+    // For guest checkouts, prefill the receipt email so Stripe sends a copy.
+    if (!currentUser && guestEmail?.trim()) {
+      sessionConfig.customer_email = guestEmail.trim();
+    }
 
     // Payment goes to the destination Connect account — academy if the listing
     // belongs to one, otherwise the business owner.

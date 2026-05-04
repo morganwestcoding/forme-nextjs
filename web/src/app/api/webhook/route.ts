@@ -393,23 +393,33 @@ export async function POST(req: Request) {
             },
           });
 
-          // Notify the customer
-          await prisma.notification.create({
-            data: {
-              type: 'REFUND_COMPLETED',
-              content: `Your payment for ${reservation.serviceName} has been refunded.`,
-              userId: reservation.userId,
-            },
-          });
+          // Notify the customer in-app (only for logged-in bookings — guests
+          // have no account, so they're notified via email below instead).
+          if (reservation.userId) {
+            await prisma.notification.create({
+              data: {
+                type: 'REFUND_COMPLETED',
+                content: `Your payment for ${reservation.serviceName} has been refunded.`,
+                userId: reservation.userId,
+              },
+            });
+          }
 
-          // Email: refund notification
-          const refundUser = await prisma.user.findUnique({
-            where: { id: reservation.userId },
-            select: { email: true },
-          });
-          if (refundUser?.email) {
+          // Email: refund notification — resolved from the linked user when
+          // present, otherwise from the guestEmail captured at checkout.
+          let refundEmailAddr: string | null = null;
+          if (reservation.userId) {
+            const refundUser = await prisma.user.findUnique({
+              where: { id: reservation.userId },
+              select: { email: true },
+            });
+            refundEmailAddr = refundUser?.email || null;
+          } else if (reservation.guestEmail) {
+            refundEmailAddr = reservation.guestEmail;
+          }
+          if (refundEmailAddr) {
             const tpl = refundEmail(reservation.serviceName, charge.amount_refunded);
-            sendEmail({ ...tpl, to: refundUser.email }).catch(() => {});
+            sendEmail({ ...tpl, to: refundEmailAddr }).catch(() => {});
           }
         }
       }

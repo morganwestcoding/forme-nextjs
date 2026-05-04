@@ -50,18 +50,24 @@ export async function GET(request: Request) {
       orderBy: { date: "desc" },
     });
 
-    // Group reservations by client
-    const clientMap = new Map<string, {
+    // Group reservations by client. Guest bookings (userId === null) are
+    // grouped by their guestEmail so repeat guests collapse into one client
+    // record. Only logged-in clients get linked to a real user row.
+    type GroupedClient = {
       user: typeof reservations[number]["user"];
+      guestName: string | null;
+      guestEmail: string | null;
       bookings: typeof reservations;
       totalSpent: number;
       lastVisit: Date;
       firstVisit: Date;
       visitCount: number;
-    }>();
+    };
+    const clientMap = new Map<string, GroupedClient>();
 
     for (const res of reservations) {
-      const existing = clientMap.get(res.userId);
+      const groupKey = res.userId ?? `guest:${res.guestEmail ?? res.id}`;
+      const existing = clientMap.get(groupKey);
       if (existing) {
         existing.bookings.push(res);
         existing.totalSpent += res.totalPrice;
@@ -69,8 +75,10 @@ export async function GET(request: Request) {
         if (res.date > existing.lastVisit) existing.lastVisit = res.date;
         if (res.date < existing.firstVisit) existing.firstVisit = res.date;
       } else {
-        clientMap.set(res.userId, {
+        clientMap.set(groupKey, {
           user: res.user,
+          guestName: res.guestName ?? null,
+          guestEmail: res.guestEmail ?? null,
           bookings: [res],
           totalSpent: res.totalPrice,
           lastVisit: res.date,
@@ -80,20 +88,22 @@ export async function GET(request: Request) {
       }
     }
 
-    // Get client records (notes/tags)
+    // Get client records (notes/tags) — only ever apply to logged-in users.
     const clientRecords = await prisma.clientRecord.findMany({
       where: { listingId },
     });
     const recordMap = new Map(clientRecords.map((cr) => [cr.userId, cr]));
 
     // Build client list
-    let clients = Array.from(clientMap.entries()).map(([userId, data]) => {
-      const record = recordMap.get(userId);
+    let clients = Array.from(clientMap.entries()).map(([groupKey, data]) => {
+      const linkedUserId = data.user?.id ?? null;
+      const record = linkedUserId ? recordMap.get(linkedUserId) : undefined;
       return {
-        userId,
-        name: data.user.name,
-        email: data.user.email,
-        image: data.user.image || data.user.imageSrc,
+        userId: linkedUserId,
+        isGuest: !data.user,
+        name: data.user?.name ?? data.guestName ?? null,
+        email: data.user?.email ?? data.guestEmail ?? null,
+        image: data.user ? data.user.image || data.user.imageSrc : null,
         totalSpent: data.totalSpent,
         visitCount: data.visitCount,
         lastVisit: data.lastVisit.toISOString(),

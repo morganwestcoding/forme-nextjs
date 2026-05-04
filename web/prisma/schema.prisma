@@ -196,7 +196,9 @@ model Academy {
 
 model Reservation {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @db.ObjectId
+  // Optional so guest checkouts (no account) can persist a Reservation.
+  // Either userId OR guestEmail+guestName must be set — enforced in the API.
+  userId     String?  @db.ObjectId
   listingId  String   @db.ObjectId
   employeeId   String  @db.ObjectId
   date       DateTime
@@ -205,10 +207,27 @@ model Reservation {
   totalPrice Int
   status     String   @default("pending")
   createdAt  DateTime @default(now())
-  serviceId   String   @db.ObjectId 
+  // Legacy single-service field — kept for back-compat with rows written before
+  // multi-service support. New writes populate both serviceId (= serviceIds[0])
+  // and serviceIds. Read paths should prefer serviceIds and fall back to [serviceId].
+  serviceId   String   @db.ObjectId
   serviceName String
+  // All services included on this reservation (populated for new rows).
+  serviceIds  String[] @db.ObjectId
   paymentIntentId String?
   paymentStatus   String?  @default("pending")
+
+  // Pricing breakdown — totalPrice = subtotal + tipAmount.
+  // subtotal is null on legacy rows; consumers should fall back to totalPrice.
+  subtotal   Int?
+  tipAmount  Int?     @default(0)
+
+  // Guest checkout — populated when userId is null. The Reservation still
+  // belongs to the guest (their email is the identity); the worker dashboards
+  // display these fields in lieu of a linked user.
+  guestName  String?
+  guestEmail String?
+  guestPhone String?
 
   // Refund fields
   refundStatus    String?   // "requested" | "approved" | "completed" | "declined"
@@ -217,7 +236,7 @@ model Reservation {
   refundId        String?   // Stripe refund ID
   refundedAt      DateTime?
 
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
   service     Service @relation(fields: [serviceId], references: [id])
   employee  Employee  @relation(fields: [employeeId], references: [id])
