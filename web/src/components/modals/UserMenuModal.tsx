@@ -11,7 +11,6 @@ import {
   FavouriteIcon,
   CreditCardIcon,
   UserMultipleIcon,
-  Logout01Icon,
   Login01Icon,
   UserAdd01Icon,
   ShieldUserIcon,
@@ -151,7 +150,6 @@ const UserMenuModal: React.FC<UserMenuModalProps> = ({ currentUser }) => {
               }}
               fullWidth
               size="lg"
-              leftIcon={<Logout01Icon className="w-[16px] h-[16px]" strokeWidth={1.5} />}
             >
               Sign Out
             </Button>
