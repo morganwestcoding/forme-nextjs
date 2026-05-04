@@ -4,7 +4,6 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/app/libs/prismadb";
 import Container from "@/components/Container";
 
-export const dynamic = "force-dynamic";
 
 export default async function AdminDisputesPage() {
   const currentUser = await getCurrentUser();

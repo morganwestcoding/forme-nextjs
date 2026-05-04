@@ -7,7 +7,6 @@ interface IParams {
   listingId: string;
 }
 
-export const dynamic = 'force-dynamic';
 
 export default async function EditListingPage({ params }: { params: IParams }) {
   const currentUser = await getCurrentUser();

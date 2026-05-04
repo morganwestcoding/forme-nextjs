@@ -7,7 +7,7 @@ import Card from '@/components/ui/Card';
 import IconButton from '@/components/ui/IconButton';
 import Input from '@/components/ui/Input';
 
-export default function KitchenSink() {
+export default function KitchenSinkClient() {
   const [loading, setLoading] = useState(false);
 
   return (

@@ -1,15 +1,5 @@
-import { create } from "zustand";
+import createBooleanModalStore from './createBooleanModalStore';
 
-interface WelcomeModalStore {
-  isOpen: boolean;
-  onOpen: () => void;
-  onClose: () => void;
-}
-
-const useWelcomeModal = create<WelcomeModalStore>((set) => ({
-  isOpen: false,
-  onOpen: () => set({ isOpen: true }),
-  onClose: () => set({ isOpen: false }),
-}));
+const useWelcomeModal = createBooleanModalStore();
 
 export default useWelcomeModal;

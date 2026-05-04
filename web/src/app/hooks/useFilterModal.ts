@@ -1,16 +1,5 @@
-// hooks/useFilterModal.ts
-import { create } from 'zustand';
+import createBooleanModalStore from './createBooleanModalStore';
 
-interface FilterModalStore {
-  isOpen: boolean;
-  onOpen: () => void;
-  onClose: () => void;
-}
-
-const useFilterModal = create<FilterModalStore>((set) => ({
-  isOpen: false,
-  onOpen: () => set({ isOpen: true }),
-  onClose: () => set({ isOpen: false })
-}));
+const useFilterModal = createBooleanModalStore();
 
 export default useFilterModal;

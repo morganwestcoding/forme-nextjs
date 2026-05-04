@@ -5,7 +5,6 @@ import prisma from "@/app/libs/prismadb";
 import Container from "@/components/Container";
 import AdminUserList from "./AdminUserList";
 
-export const dynamic = "force-dynamic";
 
 export default async function AdminUsersPage({
   searchParams,

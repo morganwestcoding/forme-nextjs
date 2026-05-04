@@ -4,7 +4,6 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import getAcademies from "@/app/actions/getAcademies";
 import Container from "@/components/Container";
 
-export const dynamic = "force-dynamic";
 
 export default async function AdminAcademiesPage() {
   const currentUser = await getCurrentUser();

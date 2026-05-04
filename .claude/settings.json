@@ -12,7 +12,17 @@
       "Bash(ps -p 866 -o command=)",
       "Bash(ps -p 72003 -o command=)",
       "Bash(grep -E \"\\\\.\\(tsx?|graphql|gql\\)$\")",
-      "Bash(awk 'NR==421,NR==563' /Users/greg/Desktop/forme/web/src/components/DiscoverClient.tsx)"
+      "Bash(awk 'NR==421,NR==563' /Users/greg/Desktop/forme/web/src/components/DiscoverClient.tsx)",
+      "Bash(sort -t: -k3 -rn)",
+      "Bash(sort -t: -k2 -rn)",
+      "Bash(sed -n '55,75p' ios/ForMeSizzle/ForMeSizzle/Models/Listing.swift)",
+      "Bash(sed -n '67,75p' ios/ForMe/Models/Listing.swift)",
+      "Bash(sed -n '150,170p' ios/ForMe/Services/APIService.swift)",
+      "Bash(sed -n '575,600p' ios/ForMeSizzle/ForMeSizzle/Services/APIService.swift)"
+    ],
+    "additionalDirectories": [
+      "/Users/greg/Desktop/forme/web/src/components/listings",
+      "/Users/greg/Desktop/forme/web/src/app/api/academies/[academyId]/services"
     ]
   }
 }

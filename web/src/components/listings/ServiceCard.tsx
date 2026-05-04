@@ -373,7 +373,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                       <span className="line-clamp-1">{service.category} · {durationDisplay}</span>
                     </div>
 
-                    {/* SmartBadgePrice - using dark variant for image background */}
                     <div className="flex items-center">
                       <SmartBadgePrice
                         price={priceNum}

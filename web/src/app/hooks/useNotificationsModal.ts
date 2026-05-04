@@ -1,16 +1,5 @@
-// app/hooks/useNotificationsModal.ts
-import { create } from 'zustand';
+import createBooleanModalStore from './createBooleanModalStore';
 
-interface NotificationsModalStore {
-  isOpen: boolean;
-  onOpen: () => void;
-  onClose: () => void;
-}
-
-const useNotificationsModal = create<NotificationsModalStore>((set) => ({
-  isOpen: false,
-  onOpen: () => set({ isOpen: true }),
-  onClose: () => set({ isOpen: false }),
-}));
+const useNotificationsModal = createBooleanModalStore();
 
 export default useNotificationsModal;

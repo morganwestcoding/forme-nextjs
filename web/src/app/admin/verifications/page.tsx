@@ -5,7 +5,6 @@ import prisma from "@/app/libs/prismadb";
 import Container from "@/components/Container";
 import VerificationQueue from "./VerificationQueue";
 
-export const dynamic = "force-dynamic";
 
 export default async function AdminVerificationsPage() {
   const currentUser = await getCurrentUser();

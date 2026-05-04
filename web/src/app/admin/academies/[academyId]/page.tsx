@@ -5,7 +5,6 @@ import { getAcademyById } from "@/app/actions/getAcademies";
 import Container from "@/components/Container";
 import AcademyDetailClient from "./AcademyDetailClient";
 
-export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: { academyId: string };

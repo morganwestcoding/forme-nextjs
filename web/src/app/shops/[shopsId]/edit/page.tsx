@@ -7,7 +7,6 @@ interface IParams {
   shopsId: string;
 }
 
-export const dynamic = 'force-dynamic';
 
 export default async function EditShopPage({ params }: { params: IParams }) {
   const currentUser = await getCurrentUser();

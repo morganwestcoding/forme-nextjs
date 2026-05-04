@@ -6,7 +6,6 @@ import AnalyticsClient from "./AnalyticsClient";
 import { redirect } from "next/navigation";
 import { hasFeature } from "@/app/utils/subscription";
 
-export const dynamic = 'force-dynamic';
 
 const AnalyticsPage = async () => {
   const currentUser = await getCurrentUser();

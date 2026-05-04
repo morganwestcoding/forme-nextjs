@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import { apiError } from "@/app/utils/api";
 
-export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   try {

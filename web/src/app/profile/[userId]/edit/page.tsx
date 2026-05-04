@@ -8,7 +8,6 @@ interface IParams {
   userId: string;
 }
 
-export const dynamic = 'force-dynamic';
 
 export default async function EditProfilePage({ params }: { params: IParams }) {
   const currentUser = await getCurrentUser();

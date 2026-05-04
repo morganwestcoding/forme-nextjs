@@ -8,7 +8,6 @@ import Stripe from "stripe";
 import { createRateLimiter, getIP } from "@/app/libs/rateLimit";
 import { sendEmail, subscriptionCancelledEmail } from "@/app/libs/email";
 
-export const dynamic = "force-dynamic";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-02-24.acacia",

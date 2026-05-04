@@ -1,11 +1,9 @@
 // app/api/waitlist/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/app/libs/prismadb';
 import { apiError, apiErrorCode } from '@/app/utils/api';
 import { createRateLimiter, getIP } from '@/app/libs/rateLimit';
-
-const prisma = new PrismaClient();
 
 const limiter = createRateLimiter("waitlist", { limit: 3, windowSeconds: 3600 });
 
@@ -73,8 +71,6 @@ export async function POST(request: NextRequest) {
     }
 
     return apiError('Failed to add email to waitlist', 500);
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -92,7 +88,5 @@ export async function GET() {
 
   } catch (error) {
     return apiError('Failed to get waitlist count', 500);
-  } finally {
-    await prisma.$disconnect();
   }
 }

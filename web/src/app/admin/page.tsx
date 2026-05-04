@@ -11,12 +11,12 @@ import {
   Mortarboard01Icon,
   ArrowUpRight01Icon,
   Flag03Icon,
+  PaintBrush01Icon,
 } from "hugeicons-react";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import getAdminStats from "@/app/actions/getAdminStats";
 import Container from "@/components/Container";
 
-export const dynamic = "force-dynamic";
 
 const PILL_STYLE = {
   background: "linear-gradient(135deg, #2a2a2a 0%, #000 100%)",
@@ -82,6 +82,12 @@ export default async function AdminPage() {
       description: "Partner programs & payouts",
       href: "/admin/academies",
       icon: Mortarboard01Icon,
+    },
+    {
+      label: "Kitchen sink",
+      description: "UI primitives reference",
+      href: "/admin/kitchen-sink",
+      icon: PaintBrush01Icon,
     },
   ];
 

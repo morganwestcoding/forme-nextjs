@@ -1,35 +1,38 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
+import dynamic from 'next/dynamic'
 import './globals.css'
 import { validateEnv } from './utils/env'
 
 validateEnv();
-import NotificationsModal from '@/components/modals/NotificationModal';
 import ToasterProvider from './providers/ToasterProvider';
 import RefreshOnEditSave from '@/components/RefreshOnEditSave';
-import LoginModal from '@/components/modals/LoginModal';
 import getCurrentUser from './actions/getCurrentUser';
 import ClientProviders from '@/components/ClientProviders';
-import MessageModal from '@/components/modals/MessageModal';
 import { CategoryProvider } from '@/CategoryContext';
 import { FilterProvider } from '@/FilterContext';
-import FilterModal from '@/components/modals/FilterModal';
-import ForgotPasswordModal from '@/components/modals/ForgotPasswordModal';
-import ResetPasswordModal from '@/components/modals/ResetPasswordModal';
-import InboxModal from '@/components/modals/InboxModal';
 import { ThemeProvider } from './context/ThemeContext';
-import StripeCheckoutModal from '@/components/modals/StripeCheckoutModal';
-import ReviewModal from '@/components/modals/ReviewModal';
 import ComingSoonGate from '@/ComingSoonGate';
 import LayoutContent from '@/LayoutContent';
-import UserMenuModal from '@/components/modals/UserMenuModal';
-import CreateModal from '@/components/modals/CreateModal';
-import LocationModal from '@/components/modals/LocationModal';
-import WelcomeModal from '@/components/modals/WelcomeModal';
-import WalkthroughOverlay from '@/components/walkthrough/WalkthroughOverlay';
-import UpgradeModal from '@/components/modals/UpgradeModal';
 import UnreadBadgeProvider from '@/components/UnreadBadgeProvider';
 import NavigationProgress from '@/components/NavigationProgress';
+
+// Modals are lazy-loaded — they're hidden by default, no need in the initial bundle.
+const LoginModal = dynamic(() => import('@/components/modals/LoginModal'), { ssr: false });
+const NotificationsModal = dynamic(() => import('@/components/modals/NotificationModal'), { ssr: false });
+const MessageModal = dynamic(() => import('@/components/modals/MessageModal'), { ssr: false });
+const FilterModal = dynamic(() => import('@/components/modals/FilterModal'), { ssr: false });
+const ForgotPasswordModal = dynamic(() => import('@/components/modals/ForgotPasswordModal'), { ssr: false });
+const ResetPasswordModal = dynamic(() => import('@/components/modals/ResetPasswordModal'), { ssr: false });
+const InboxModal = dynamic(() => import('@/components/modals/InboxModal'), { ssr: false });
+const StripeCheckoutModal = dynamic(() => import('@/components/modals/StripeCheckoutModal'), { ssr: false });
+const ReviewModal = dynamic(() => import('@/components/modals/ReviewModal'), { ssr: false });
+const UserMenuModal = dynamic(() => import('@/components/modals/UserMenuModal'), { ssr: false });
+const CreateModal = dynamic(() => import('@/components/modals/CreateModal'), { ssr: false });
+const LocationModal = dynamic(() => import('@/components/modals/LocationModal'), { ssr: false });
+const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), { ssr: false });
+const UpgradeModal = dynamic(() => import('@/components/modals/UpgradeModal'), { ssr: false });
+const WalkthroughOverlay = dynamic(() => import('@/components/walkthrough/WalkthroughOverlay'), { ssr: false });
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -75,7 +78,6 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://forme.app'),
 }
 
-export const dynamic = 'force-dynamic';
 
 const inter = Inter({
   subsets: ['latin'],

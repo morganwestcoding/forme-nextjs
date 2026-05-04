@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
+import getListings, { IListingsParams } from "@/app/actions/getListings";
 import { apiError, apiErrorCode } from "@/app/utils/api";
 import { sanitizeText } from "@/app/utils/sanitize";
 import { validateBody, createListingSchema } from "@/app/utils/validations";
@@ -24,133 +25,20 @@ async function geocodeAddress(address: string): Promise<{ lat: number; lng: numb
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const category = searchParams.get('category');
-  const location = searchParams.get('location');
-  const userId = searchParams.get('userId');
-  const includeAcademy = searchParams.get('includeAcademy') === 'true';
-  // When true and userId is set, also return listings where the user is an
-  // employee (not just the owner). Used by the Team view so employees see
-  // the listing they work at.
-  const includeEmployed = searchParams.get('includeEmployed') === 'true';
-  const page = parseInt(searchParams.get('page') || '1');
-  const limit = parseInt(searchParams.get('limit') || '20');
-  const skip = (page - 1) * limit;
 
-  const where: any = {};
-  if (category) where.category = category;
-  if (location) where.location = { contains: location, mode: 'insensitive' };
-  if (userId) {
-    if (includeEmployed) {
-      where.OR = [
-        { userId },
-        { employees: { some: { userId } } },
-      ];
-    } else {
-      where.userId = userId;
-    }
-  }
-  // Hide academy-owned listings from public discovery by default.
-  // (See getListings.ts for the Mongo `isSet: false` rationale.)
-  if (!includeAcademy) where.academyId = { isSet: false };
-
-  // Hide hidden "shell" listings auto-created for independent providers —
-  // they're internal containers, not real storefronts. (See getListings.ts.)
-  where.employees = { none: { isIndependent: true } };
-
-  // Shell listings for independents — fetched separately so we can surface the
-  // *worker* without ever exposing the shell listing itself to the client.
-  // Category filter intentionally not applied here: independents have no listing
-  // category to match against, and the Discover page filters by category client-side.
-  const workerWhere: any = {
-    academyId: { isSet: false },
-    employees: { some: { isIndependent: true, isActive: true } },
+  const params: IListingsParams = {
+    userId: searchParams.get('userId') ?? undefined,
+    category: searchParams.get('category') ?? undefined,
+    locationValue: searchParams.get('location') ?? undefined,
+    includeAcademy: searchParams.get('includeAcademy') === 'true',
+    includeEmployedBy: searchParams.get('includeEmployed') === 'true',
+    page: parseInt(searchParams.get('page') || '1'),
+    limit: parseInt(searchParams.get('limit') || '20'),
   };
 
   try {
-    const [listings, totalCount, workerListings] = await Promise.all([
-      prisma.listing.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          services: true,
-          employees: { include: { user: { select: { id: true, name: true, image: true, userType: true, academy: { select: { name: true } } } } } },
-          storeHours: true,
-          user: { select: { id: true, name: true, image: true, verificationStatus: true } },
-        },
-      }),
-      prisma.listing.count({ where }),
-      prisma.listing.findMany({
-        where: workerWhere,
-        select: {
-          employees: {
-            where: { isIndependent: true, isActive: true },
-            select: {
-              id: true, fullName: true, jobTitle: true, listingId: true,
-              userId: true, serviceIds: true, isActive: true, isIndependent: true,
-              createdAt: true,
-              user: {
-                select: {
-                  id: true, name: true, image: true, imageSrc: true,
-                  backgroundImage: true, userType: true, jobTitle: true,
-                  academy: { select: { name: true } },
-                },
-              },
-            },
-          },
-        },
-      }),
-    ]);
-
-    // Map employee.user.academy.name → employee.user.academyName so WorkerCard can read it
-    const mapped = listings.map((l: any) => ({
-      ...l,
-      employees: (l.employees || []).map((e: any) => ({
-        ...e,
-        user: {
-          ...e.user,
-          academyName: e.user?.academy?.name ?? null,
-        },
-      })),
-    }));
-
-    // Flatten independents into a SafeEmployee-shaped array. listingTitle/
-    // listingCategory are intentionally blank — the shell listing must never
-    // surface client-side, even as a label.
-    const workers = workerListings.flatMap((l: any) =>
-      (l.employees || []).map((e: any) => ({
-        id: e.id,
-        fullName: e.fullName,
-        jobTitle: e.jobTitle || null,
-        listingId: e.listingId,
-        userId: e.userId,
-        serviceIds: e.serviceIds || [],
-        isActive: e.isActive,
-        isIndependent: true,
-        createdAt: e.createdAt.toISOString(),
-        listingTitle: '',
-        listingCategory: '',
-        rating: null,
-        user: {
-          id: e.user?.id,
-          name: e.user?.name ?? null,
-          image: e.user?.image ?? null,
-          imageSrc: e.user?.imageSrc ?? null,
-          backgroundImage: e.user?.backgroundImage ?? null,
-          userType: e.user?.userType ?? null,
-          jobTitle: e.user?.jobTitle ?? null,
-          academyName: e.user?.academy?.name ?? null,
-        },
-      }))
-    );
-
-    return NextResponse.json({
-      listings: mapped,
-      workers,
-      totalCount,
-      hasMore: skip + listings.length < totalCount,
-    });
+    const listings = await getListings(params);
+    return NextResponse.json({ listings });
   } catch (error) {
     return new Response('Internal Server Error', { status: 500 });
   }

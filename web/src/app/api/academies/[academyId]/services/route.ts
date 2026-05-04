@@ -4,7 +4,6 @@ import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import prisma from "@/app/libs/prismadb";
 import { apiError, apiErrorCode } from "@/app/utils/api";
 
-export const dynamic = "force-dynamic";
 
 // Master-only helper. Returns the current master user or a NextResponse error.
 async function requireMaster() {
