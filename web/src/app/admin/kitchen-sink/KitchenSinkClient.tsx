@@ -11,8 +11,8 @@ export default function KitchenSinkClient() {
   const [loading, setLoading] = useState(false);
 
   return (
-    <div className="min-h-screen bg-stone-50 p-8">
-      <div className="max-w-4xl mx-auto space-y-10">
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-950 px-4 py-6 md:px-8 md:py-8">
+      <div className="max-w-4xl mx-auto space-y-8 md:space-y-10">
         <header>
           <h1 className="text-2xl font-semibold text-stone-900">UI Kitchen Sink</h1>
           <p className="text-[13px] text-stone-500 mt-1">Canonical primitives reference.</p>
@@ -66,7 +66,7 @@ export default function KitchenSinkClient() {
 
         <Card>
           <h2 className="text-[14px] font-semibold text-stone-900 mb-4">Input</h2>
-          <div className="grid grid-cols-2 gap-4 max-w-2xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
             <Input label="Email" type="email" placeholder="you@example.com" />
             <Input label="Search" leftIcon={<Search01Icon size={16} />} placeholder="Search…" />
             <Input label="Helper" helper="We'll never share your email." placeholder="Type here" />
@@ -77,7 +77,7 @@ export default function KitchenSinkClient() {
 
         <div>
           <h2 className="text-[14px] font-semibold text-stone-900 mb-4">Card — padding scale</h2>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Card padding="sm"><span className="text-[12px] text-stone-500">padding=&quot;sm&quot; (p-4)</span></Card>
             <Card padding="md"><span className="text-[12px] text-stone-500">padding=&quot;md&quot; (p-5)</span></Card>
             <Card padding="lg"><span className="text-[12px] text-stone-500">padding=&quot;lg&quot; (p-6)</span></Card>
