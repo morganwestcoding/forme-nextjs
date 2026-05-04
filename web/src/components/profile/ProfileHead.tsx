@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { SafeListing, SafePost, SafeUser, SafeReview } from '@/app/types';
@@ -11,7 +12,8 @@ import PostCard from '@/components/feed/PostCard';
 import ListingCard from '@/components/listings/ListingCard';
 import ServiceCard from '@/components/listings/ServiceCard';
 import QRModal from '@/components/modals/QRModal';
-import { ShieldUserIcon, Cancel01Icon } from 'hugeicons-react';
+import Modal from '@/components/modals/Modal';
+import { ShieldUserIcon, Cancel01Icon, Delete02Icon } from 'hugeicons-react';
 import { categories } from '@/components/Categories';
 import { placeholderDataUri } from '@/lib/placeholders';
 import useReviewModal from '@/app/hooks/useReviewModal';
@@ -71,6 +73,8 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
   const [showDropdown, setShowDropdown] = useState(false);
   const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number } | null>(null);
   const [showQRModal, setShowQRModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Extract dominant color from profile image
   const profileImage = image || imageSrc || placeholderDataUri(name || 'User');
@@ -160,6 +164,30 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
   const isMasterUser = currentUser?.role === 'master' || currentUser?.role === 'admin';
   const isOwner = !!currentUser?.id && currentUser.id === id;
   const canEdit = isOwner || isMasterUser;
+  // Master accounts are protected by the API — don't dangle a delete CTA
+  // that will 403 anyway.
+  const targetIsMaster = (user as any).role === 'master';
+  const canDelete = (isOwner || isMasterUser) && !targetIsMaster;
+
+  const handleDeleteUser = async () => {
+    if (isDeleting) return;
+    try {
+      setIsDeleting(true);
+      await axios.delete(`/api/users/${id}`);
+      toast.success(isOwner ? 'Your account has been deleted.' : 'User deleted.');
+      setShowDeleteConfirm(false);
+      if (isOwner) {
+        // Drop the session, then bounce home.
+        signOut({ callbackUrl: '/' });
+      } else {
+        router.push('/admin/users');
+        router.refresh();
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error || 'Failed to delete account.');
+      setIsDeleting(false);
+    }
+  };
 
   const firstName = useMemo(() => {
     if (!name) return 'User';
@@ -275,8 +303,53 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
           </button>
         </>
       )}
+      {canDelete && (
+        <>
+          <hr className="my-1 border-stone-200 dark:border-stone-800" />
+          <button
+            onClick={() => { setShowDropdown(false); setShowDeleteConfirm(true); }}
+            className="w-full text-left px-4 py-2 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-4 transition-colors duration-150"
+            type="button"
+          >
+            <Delete02Icon className="w-4 h-4 text-rose-500 dark:text-rose-400" strokeWidth={1.75} />
+            {isOwner ? 'Delete account' : 'Delete user'}
+          </button>
+        </>
+      )}
     </div>
   ) : null;
+
+  const deleteConfirmBody = (
+    <div className="pt-1">
+      <h2 className="text-[20px] font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.015em] mb-2">
+        {isOwner ? 'Delete your account?' : `Delete ${name || 'this user'}?`}
+      </h2>
+      <p className="text-[13.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
+        This permanently removes the {isOwner ? 'account' : 'user'} and all associated profile data,
+        listings, posts, services, and reservations. This action can&apos;t be undone.
+      </p>
+      <div className="mt-6 flex flex-row items-center gap-3 w-full">
+        <Button
+          variant="outline"
+          size="lg"
+          fullWidth
+          disabled={isDeleting}
+          onClick={() => setShowDeleteConfirm(false)}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="destructive"
+          size="lg"
+          fullWidth
+          disabled={isDeleting}
+          onClick={handleDeleteUser}
+        >
+          {isDeleting ? 'Deleting…' : isOwner ? 'Delete account' : 'Delete user'}
+        </Button>
+      </div>
+    </div>
+  );
 
   const profileUrl = typeof window !== 'undefined' ? `${window.location.origin}/profile/${id}` : '';
 
@@ -291,6 +364,17 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
         subtitle={jobTitle || (location ? `${city}${state ? `, ${state}` : ''}` : undefined)}
         headerTitle={isOwner ? 'Share Your Profile' : 'Share This Profile'}
         headerSubtitle="Let others easily find this profile"
+      />
+
+      {/* Delete confirmation */}
+      <Modal
+        isOpen={showDeleteConfirm}
+        onClose={() => { if (!isDeleting) setShowDeleteConfirm(false); }}
+        onSubmit={handleDeleteUser}
+        title={isOwner ? 'Delete account' : 'Delete user'}
+        body={deleteConfirmBody}
+        disabled={isDeleting}
+        className="w-full md:w-[440px]"
       />
 
       {/* Dropdown backdrop */}

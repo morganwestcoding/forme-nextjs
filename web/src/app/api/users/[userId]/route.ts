@@ -68,6 +68,7 @@ export async function PUT(
       backgroundImage,
       jobTitle,
       hideWelcomeModal,
+      interests,
     } = body || {};
 
     const sanitizedName = typeof name === "string" ? titleCaseName(sanitizeText(name)) : undefined;
@@ -85,6 +86,9 @@ export async function PUT(
         ...(typeof backgroundImage === "string" ? { backgroundImage } : {}),
         ...(sanitizedJobTitle !== undefined ? { jobTitle: sanitizedJobTitle } : {}),
         ...(typeof hideWelcomeModal === "boolean" ? { hideWelcomeModal } : {}),
+        ...(Array.isArray(interests)
+          ? { interests: interests.filter((i): i is string => typeof i === "string") }
+          : {}),
       },
     });
 

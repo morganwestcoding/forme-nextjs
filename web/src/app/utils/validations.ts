@@ -21,6 +21,7 @@ export const registerSchema = z.object({
   jobTitle: z.string().optional(),
   isOwnerManager: z.boolean().optional(),
   selectedServices: z.array(z.string()).optional(),
+  interests: z.array(z.string()).optional(),
 });
 
 // Listing creation schema

@@ -83,6 +83,11 @@ model User {
   // UI preferences
   hideWelcomeModal   Boolean    @default(false)
 
+  // Categories the user picks during the welcome flow — drives feed
+  // personalization and recommendations. Free-form list of category labels
+  // (matches Categories.tsx labels: "Wellness", "Salon", etc.).
+  interests          String[]   @default([])
+
   // Role field for access control
   role            String        @default("user") // "user" | "admin" | "master"
 

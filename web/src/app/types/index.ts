@@ -80,7 +80,7 @@ export type SafeReservation = Omit<
 
 export type SafeUser = Omit<
   User,
-  'favoriteIds'|'hashedPassword'|"createdAt" | "updatedAt" | "emailVerified" | "userType" | "academyId" | "hideWelcomeModal"
+  'favoriteIds'|'hashedPassword'|"createdAt" | "updatedAt" | "emailVerified" | "userType" | "academyId" | "hideWelcomeModal" | "interests"
 > & {
   id: string; 
   createdAt: string;
@@ -148,6 +148,9 @@ export type SafeUser = Omit<
 
   // UI preferences
   hideWelcomeModal?: boolean;
+
+  // Categories the user picks during welcome flow (drives feed personalization).
+  interests?: string[];
 
   // User type + student fields
   userType?: string | null; // "customer" | "individual" | "team" | "student"

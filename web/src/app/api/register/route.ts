@@ -57,6 +57,7 @@ export async function POST(request: Request) {
       jobTitle,
       isOwnerManager,
       selectedServices,
+      interests,
       // Student fields
       academyId,
     } = validation.data;
@@ -158,6 +159,7 @@ export async function POST(request: Request) {
         subscriptionTier: isStudent ? 'student' : (subscription ?? 'bronze (customer)'),
         isSubscribed: isStudent ? false : isSubscribed,
         managedListings: [], // Initialize as empty array
+        interests: Array.isArray(interests) ? interests : [],
         jobTitle: jobTitle?.trim() || null,
         // Student fields
         userType: userType ?? null,

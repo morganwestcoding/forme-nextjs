@@ -31,7 +31,6 @@ const ReservationModal = dynamic(() => import('@/components/modals/ReservationMo
 const UserMenuModal = dynamic(() => import('@/components/modals/UserMenuModal'), { ssr: false });
 const CreateModal = dynamic(() => import('@/components/modals/CreateModal'), { ssr: false });
 const LocationModal = dynamic(() => import('@/components/modals/LocationModal'), { ssr: false });
-const WelcomeModal = dynamic(() => import('@/components/modals/WelcomeModal'), { ssr: false });
 const UpgradeModal = dynamic(() => import('@/components/modals/UpgradeModal'), { ssr: false });
 const WalkthroughOverlay = dynamic(() => import('@/components/walkthrough/WalkthroughOverlay'), { ssr: false });
 
@@ -92,10 +91,6 @@ export default async function RootLayout({
 }) {
   const currentUser = await getCurrentUser();
 
-  const isFirstTimeUser =
-    currentUser &&
-    new Date().getTime() - new Date(currentUser.createdAt).getTime() < 5 * 60 * 1000;
-
   return (
     <FilterProvider>
       <CategoryProvider>
@@ -135,7 +130,6 @@ export default async function RootLayout({
                 <UserMenuModal currentUser={currentUser} />
                 <CreateModal />
                 <LocationModal />
-                <WelcomeModal currentUser={currentUser} />
                 <UpgradeModal />
                 <WalkthroughOverlay />
                 <UnreadBadgeProvider />
