@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
-import dynamic from 'next/dynamic'
+import dynamicImport from 'next/dynamic'
 import './globals.css'
 import { validateEnv } from './utils/env'
 
@@ -18,21 +18,29 @@ import UnreadBadgeProvider from '@/components/UnreadBadgeProvider';
 import NavigationProgress from '@/components/NavigationProgress';
 
 // Modals are lazy-loaded — they're hidden by default, no need in the initial bundle.
-const LoginModal = dynamic(() => import('@/components/modals/LoginModal'), { ssr: false });
-const NotificationsModal = dynamic(() => import('@/components/modals/NotificationModal'), { ssr: false });
-const MessageModal = dynamic(() => import('@/components/modals/MessageModal'), { ssr: false });
-const FilterModal = dynamic(() => import('@/components/modals/FilterModal'), { ssr: false });
-const ForgotPasswordModal = dynamic(() => import('@/components/modals/ForgotPasswordModal'), { ssr: false });
-const ResetPasswordModal = dynamic(() => import('@/components/modals/ResetPasswordModal'), { ssr: false });
-const InboxModal = dynamic(() => import('@/components/modals/InboxModal'), { ssr: false });
-const StripeCheckoutModal = dynamic(() => import('@/components/modals/StripeCheckoutModal'), { ssr: false });
-const ReviewModal = dynamic(() => import('@/components/modals/ReviewModal'), { ssr: false });
-const ReservationModal = dynamic(() => import('@/components/modals/ReservationModal'), { ssr: false });
-const UserMenuModal = dynamic(() => import('@/components/modals/UserMenuModal'), { ssr: false });
-const CreateModal = dynamic(() => import('@/components/modals/CreateModal'), { ssr: false });
-const LocationModal = dynamic(() => import('@/components/modals/LocationModal'), { ssr: false });
-const UpgradeModal = dynamic(() => import('@/components/modals/UpgradeModal'), { ssr: false });
-const WalkthroughOverlay = dynamic(() => import('@/components/walkthrough/WalkthroughOverlay'), { ssr: false });
+const LoginModal = dynamicImport(() => import('@/components/modals/LoginModal'), { ssr: false });
+const NotificationsModal = dynamicImport(() => import('@/components/modals/NotificationModal'), { ssr: false });
+const MessageModal = dynamicImport(() => import('@/components/modals/MessageModal'), { ssr: false });
+const FilterModal = dynamicImport(() => import('@/components/modals/FilterModal'), { ssr: false });
+const ForgotPasswordModal = dynamicImport(() => import('@/components/modals/ForgotPasswordModal'), { ssr: false });
+const ResetPasswordModal = dynamicImport(() => import('@/components/modals/ResetPasswordModal'), { ssr: false });
+const InboxModal = dynamicImport(() => import('@/components/modals/InboxModal'), { ssr: false });
+const StripeCheckoutModal = dynamicImport(() => import('@/components/modals/StripeCheckoutModal'), { ssr: false });
+const ReviewModal = dynamicImport(() => import('@/components/modals/ReviewModal'), { ssr: false });
+const ReservationModal = dynamicImport(() => import('@/components/modals/ReservationModal'), { ssr: false });
+const UserMenuModal = dynamicImport(() => import('@/components/modals/UserMenuModal'), { ssr: false });
+const CreateModal = dynamicImport(() => import('@/components/modals/CreateModal'), { ssr: false });
+const LocationModal = dynamicImport(() => import('@/components/modals/LocationModal'), { ssr: false });
+const UpgradeModal = dynamicImport(() => import('@/components/modals/UpgradeModal'), { ssr: false });
+const WalkthroughOverlay = dynamicImport(() => import('@/components/walkthrough/WalkthroughOverlay'), { ssr: false });
+
+// Every meaningful surface in the app reads cookies via getCurrentUser and
+// the global FilterContext / Categories tree calls useSearchParams during
+// render — there is no page that can be safely prerendered. Forcing dynamic
+// at the root prevents Next from attempting to statically prerender any
+// route, which was failing the production build with "useSearchParams()
+// should be wrapped in a suspense boundary".
+export const dynamic = 'force-dynamic';
 
 export const viewport: Viewport = {
   width: 'device-width',
