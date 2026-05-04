@@ -189,7 +189,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onMar
             )}
           </div>
         ) : notification.relatedUser ? (
-          <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 font-medium text-[12px]">
+          <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 font-medium text-xs">
             {notification.relatedUser.image ? (
               <Image
                 src={notification.relatedUser.image}
@@ -211,14 +211,14 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onMar
 
       {/* Content */}
       <div className="flex-1 min-w-0 pr-4">
-        <p className={`text-[13.5px] leading-[1.55] tracking-[-0.005em] ${
+        <p className={`text-sm leading-[1.55] tracking-[-0.005em] ${
           isUnread
             ? 'text-stone-900 dark:text-stone-50'
             : 'text-stone-500 dark:text-stone-400'
         }`}>
           {notification.content}
         </p>
-        <p className="mt-1 text-[11.5px] text-stone-400 dark:text-stone-500 tabular-nums">
+        <p className="mt-1 text-xs text-stone-400 dark:text-stone-500 tabular-nums">
           {formatTimeAgo(notification.createdAt)}
         </p>
       </div>
@@ -358,7 +358,7 @@ const NotificationsModal = () => {
 
       {/* Header */}
       <div className="px-6 pt-1 pb-5">
-        <h2 className="text-[22px] font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-none pr-12">
+        <h2 className="text-2xl font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-none pr-12">
           Notifications
         </h2>
 
@@ -373,7 +373,7 @@ const NotificationsModal = () => {
                 <button
                   key={t}
                   onClick={() => setTab(t)}
-                  className={`relative pb-3 text-[13px] tracking-tight transition-colors duration-150
+                  className={`relative pb-3 text-sm tracking-tight transition-colors duration-150
                              ${isActive
                                ? 'text-stone-900 dark:text-stone-50 font-medium'
                                : 'text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300'
@@ -382,7 +382,7 @@ const NotificationsModal = () => {
                   <span className="flex items-center gap-1.5">
                     {label}
                     {count > 0 && (
-                      <span className={`text-[11px] tabular-nums ${
+                      <span className={`text-xs tabular-nums ${
                         isActive
                           ? 'text-stone-400 dark:text-stone-500'
                           : 'text-stone-300 dark:text-stone-600'
@@ -402,7 +402,7 @@ const NotificationsModal = () => {
           {unreadCount > 0 && (
             <button
               onClick={handleMarkAllAsRead}
-              className="pb-3 text-[12px] text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors duration-150 tracking-tight"
+              className="pb-3 text-xs text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors duration-150 tracking-tight"
             >
               Mark all as read
             </button>
@@ -424,10 +424,10 @@ const NotificationsModal = () => {
               className="w-6 h-6 text-stone-300 dark:text-stone-600"
               strokeWidth={1.25}
             />
-            <h3 className="mt-4 text-[14px] font-medium text-stone-700 dark:text-stone-200 tracking-tight">
+            <h3 className="mt-4 text-sm font-medium text-stone-700 dark:text-stone-200 tracking-tight">
               {tab === 'unread' ? 'You’re all caught up' : 'Nothing here yet'}
             </h3>
-            <p className="mt-1.5 text-[12.5px] text-stone-400 dark:text-stone-500 max-w-[260px] leading-relaxed">
+            <p className="mt-1.5 text-xs text-stone-400 dark:text-stone-500 max-w-[260px] leading-relaxed">
               {tab === 'unread'
                 ? 'Nothing new — we’ll let you know when something arrives.'
                 : 'Activity from bookings, follows, and messages will show up here.'}
@@ -437,7 +437,7 @@ const NotificationsModal = () => {
           <div>
             {groupedNotifications.map((group, groupIdx) => (
               <div key={group.label} className={groupIdx === 0 ? 'pt-3' : 'pt-5'}>
-                <h3 className="text-[12px] font-medium text-stone-500 dark:text-stone-400 tracking-tight mb-1 px-4">
+                <h3 className="text-xs font-medium text-stone-500 dark:text-stone-400 tracking-tight mb-1 px-4">
                   {group.label}
                 </h3>
                 <div>

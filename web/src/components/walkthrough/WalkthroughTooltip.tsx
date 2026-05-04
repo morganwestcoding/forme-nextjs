@@ -116,22 +116,22 @@ const WalkthroughTooltip: React.FC<WalkthroughTooltipProps> = ({
       <div className="bg-white dark:bg-stone-900 border border-stone-200/60 dark:border-stone-700/60 rounded-2xl shadow-elevation-4 p-5 backdrop-blur-xl">
         {/* Step counter */}
         <div className="flex items-center justify-between mb-3">
-          <span className="text-[11px] font-medium text-stone-400 dark:text-stone-500 uppercase tracking-wider">
+          <span className="text-xs font-medium text-stone-400 dark:text-stone-500 uppercase tracking-wider">
             Step {currentStep + 1} of {totalSteps}
           </span>
           <button
             onClick={onSkip}
-            className="text-[12px] text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
+            className="text-xs text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
           >
             Skip tour
           </button>
         </div>
 
         {/* Content */}
-        <h3 className="text-[16px] font-semibold text-stone-900 dark:text-white mb-1.5">
+        <h3 className="text-base font-semibold text-stone-900 dark:text-white mb-1.5">
           {step.title}
         </h3>
-        <p className="text-[13px] text-stone-500 dark:text-stone-400 leading-relaxed mb-4">
+        <p className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed mb-4">
           {step.description}
         </p>
 
@@ -140,7 +140,7 @@ const WalkthroughTooltip: React.FC<WalkthroughTooltipProps> = ({
           {!isFirst && (
             <button
               onClick={onPrev}
-              className="flex-1 py-2.5 px-4 rounded-xl text-[13px] font-medium bg-transparent border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800 transition-all duration-200 active:scale-[0.98]"
+              className="flex-1 py-2.5 px-4 rounded-xl text-sm font-medium bg-transparent border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800 transition-all duration-200 active:scale-[0.98]"
             >
               Back
             </button>

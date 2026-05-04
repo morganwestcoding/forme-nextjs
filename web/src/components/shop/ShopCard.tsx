@@ -42,18 +42,18 @@ const ShopCard: React.FC<ShopCardProps> = ({ data }) => {
         <div className="flex flex-col justify-center min-w-0">
           {/* Category — editorial cursive */}
           {(data.category || isSample) && (
-            <p className="text-[11px] text-stone-400 dark:text-stone-400 leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
+            <p className="text-xs text-stone-400 dark:text-stone-400 leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
               {data.category}
               {isSample && <span className="text-amber-600 dark:text-amber-500">{data.category ? ' · sample' : 'sample'}</span>}
             </p>
           )}
-          <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100   tracking-[-0.01em] leading-tight truncate mt-1.5">
+          <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100   tracking-[-0.01em] leading-tight truncate mt-1.5">
             {data.name}
           </h2>
-          <p className="text-[11px] text-stone-400   dark:text-stone-400          leading-none mt-1">
+          <p className="text-xs text-stone-400   dark:text-stone-400          leading-none mt-1">
             {city && state ? `${city}, ${state}` : city || state || 'Location'}
           </p>
-          <div className="flex items-center text-[11px] text-stone-400   dark:text-stone-400          leading-none mt-1.5 tabular-nums">
+          <div className="flex items-center text-xs text-stone-400   dark:text-stone-400          leading-none mt-1.5 tabular-nums">
             <svg width="11" height="11" viewBox="0 0 24 24" className="mr-1 -mt-px flex-shrink-0">
               <defs>
                 <linearGradient id={`shopStar-${data.id}`} x1="0%" y1="0%" x2="100%" y2="100%">

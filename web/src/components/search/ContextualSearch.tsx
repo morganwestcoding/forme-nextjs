@@ -273,7 +273,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
             onFocus={() => results.length && setOpen(true)}
             onKeyDown={onKeyDown}
             placeholder={placeholder}
-            className={`flex-1 pl-1.5 text-[14px] bg-transparent border-none outline-none ${
+            className={`flex-1 pl-1.5 text-sm bg-transparent border-none outline-none ${
               isDarkMode
                 ? 'text-white placeholder-stone-400'
                 : 'text-stone-900 placeholder-stone-500'
@@ -334,7 +334,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                     return (
                       <div key={typeKey}>
                         <div className="px-4 pt-3 pb-2">
-                          <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+                          <span className="text-xs font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
                             {typeLabel[typeKey as ItemType]}
                           </span>
                         </div>
@@ -372,7 +372,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                                       className="w-full h-full object-cover"
                                     />
                                   ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-stone-100 to-stone-50 dark:from-stone-700 dark:to-stone-800 flex items-center justify-center text-[10px] font-medium text-stone-400 dark:text-stone-500 uppercase">
+                                    <div className="w-full h-full bg-gradient-to-br from-stone-100 to-stone-50 dark:from-stone-700 dark:to-stone-800 flex items-center justify-center text-xs font-medium text-stone-400 dark:text-stone-500 uppercase">
                                       {typeKey.slice(0, 2)}
                                     </div>
                                   )}
@@ -391,7 +391,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                                   )}
                                 </div>
                                 {/* Type badge */}
-                                <div className={`text-[10px] uppercase tracking-wider font-medium px-2 py-0.5 rounded-xl transition-all duration-150 ${
+                                <div className={`text-xs uppercase tracking-wider font-medium px-2 py-0.5 rounded-xl transition-all duration-150 ${
                                   active ? "text-stone-600 dark:text-stone-300 bg-stone-200 dark:bg-stone-600" : "text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-700"
                                 }`}>
                                   {typeKey}

@@ -59,7 +59,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ data, currentUser, disabled =
         {/* Out of stock */}
         {!inStock && (
           <div className="absolute top-3 left-3 z-20">
-            <span className="text-[10px] font-medium text-white bg-black/50 backdrop-blur-sm rounded-full px-2.5 py-1">Sold out</span>
+            <span className="text-xs font-medium text-white bg-black/50 backdrop-blur-sm rounded-full px-2.5 py-1">Sold out</span>
           </div>
         )}
       </div>
@@ -67,21 +67,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ data, currentUser, disabled =
       {/* Info — always visible */}
       <div className="mt-2">
         {(categoryName || shopName) && (
-          <p className="text-[11px] text-stone-400   dark:text-stone-400          leading-none truncate" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
+          <p className="text-xs text-stone-400   dark:text-stone-400          leading-none truncate" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
             {categoryName || shopName}
           </p>
         )}
 
-        <h2 className="text-[13px] font-semibold text-stone-900 dark:text-stone-100   tracking-[-0.01em] leading-snug line-clamp-2 mt-0.5">
+        <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100   tracking-[-0.01em] leading-snug line-clamp-2 mt-0.5">
           {data.name}
         </h2>
 
         <div className="flex items-center gap-1.5 mt-1">
-          <span className="text-[12px] font-medium text-stone-900 dark:text-stone-100   tabular-nums">{priceLabel}</span>
+          <span className="text-xs font-medium text-stone-900 dark:text-stone-100   tabular-nums">{priceLabel}</span>
           {shopName && categoryName && (
             <>
               <span className="text-stone-300  dark:text-stone-300 ">·</span>
-              <span className="text-[11px] text-stone-400   dark:text-stone-400          truncate">{shopName}</span>
+              <span className="text-xs text-stone-400   dark:text-stone-400          truncate">{shopName}</span>
             </>
           )}
         </div>

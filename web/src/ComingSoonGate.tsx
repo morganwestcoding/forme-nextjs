@@ -263,7 +263,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
             />
             <button
               onClick={() => setShowPassword(!showPassword)}
-              className="text-[11px] text-stone-500 hover:text-white transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-stone-800 hover:border-stone-700"
+              className="text-xs text-stone-500 hover:text-white transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-stone-800 hover:border-stone-700"
             >
               <Lock className="w-3 h-3" />
               Early Access
@@ -275,7 +275,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
             {/* Badge */}
             <div className="inline-flex items-center gap-2.5 mb-10 px-3 py-1.5 rounded-full border border-stone-800 bg-stone-900/50">
               <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-              <span className="text-[11px] text-stone-300 uppercase tracking-wider font-medium">Launching Early 2026</span>
+              <span className="text-xs text-stone-300 uppercase tracking-wider font-medium">Launching Early 2026</span>
             </div>
 
             {/* Main headline */}
@@ -448,7 +448,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                     <feature.icon className="w-[18px] h-[18px] text-stone-300" />
                   </div>
                   <h3 className="text-sm font-medium text-white mb-1.5">{feature.label}</h3>
-                  <p className="text-[13px] text-stone-500 leading-relaxed">{feature.desc}</p>
+                  <p className="text-sm text-stone-500 leading-relaxed">{feature.desc}</p>
                 </div>
               ))}
             </div>
@@ -480,9 +480,9 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                 }
               ].map((prop, i) => (
                 <div key={i} className="relative">
-                  <span className="text-[10px] text-stone-700 font-mono tracking-wider">{prop.num}</span>
-                  <h3 className="text-[15px] font-medium text-white mt-3 mb-2">{prop.title}</h3>
-                  <p className="text-[13px] text-stone-500 leading-relaxed">{prop.desc}</p>
+                  <span className="text-xs text-stone-700 font-mono tracking-wider">{prop.num}</span>
+                  <h3 className="text-sm font-medium text-white mt-3 mb-2">{prop.title}</h3>
+                  <p className="text-sm text-stone-500 leading-relaxed">{prop.desc}</p>
                 </div>
               ))}
             </div>
@@ -522,7 +522,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
           {/* Footer */}
           <footer className="px-6 py-10 border-t border-stone-900/50">
             <div className="max-w-5xl mx-auto flex items-center justify-between">
-              <p className="text-[11px] text-stone-600">&copy; 2025 ForMe. All rights reserved.</p>
+              <p className="text-xs text-stone-600">&copy; 2025 ForMe. All rights reserved.</p>
               <img
                 src="/logos/logo-white.svg"
                 alt="ForMe"

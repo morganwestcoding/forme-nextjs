@@ -349,7 +349,7 @@ const ShopHead: React.FC<ShopHeadProps> = ({
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="text-[13px] text-stone-400     mt-1 hover:text-stone-600 dark:text-stone-300  transition-colors"
+                      className="text-sm text-stone-400     mt-1 hover:text-stone-600 dark:text-stone-300  transition-colors"
                     >
                       {address || location}
                     </a>
@@ -399,25 +399,25 @@ const ShopHead: React.FC<ShopHeadProps> = ({
             <div className="px-6 py-5">
               <div className="flex items-center justify-between text-center">
                 <div className="flex-1">
-                  <p className="text-[18px] font-bold text-stone-900 dark:text-stone-100  tabular-nums">{validProducts.length}</p>
-                  <p className="text-[12px] text-stone-400   dark:text-stone-400  mt-0.5">products</p>
+                  <p className="text-lg font-bold text-stone-900 dark:text-stone-100  tabular-nums">{validProducts.length}</p>
+                  <p className="text-xs text-stone-400   dark:text-stone-400  mt-0.5">products</p>
                 </div>
                 <div className="w-px h-10 bg-stone-100 dark:bg-stone-800 " />
                 <div className="flex-1">
-                  <p className="text-[18px] font-bold text-stone-900 dark:text-stone-100  tabular-nums">{followers.length}</p>
-                  <p className="text-[12px] text-stone-400   dark:text-stone-400  mt-0.5">followers</p>
+                  <p className="text-lg font-bold text-stone-900 dark:text-stone-100  tabular-nums">{followers.length}</p>
+                  <p className="text-xs text-stone-400   dark:text-stone-400  mt-0.5">followers</p>
                 </div>
                 <div className="w-px h-10 bg-stone-100 dark:bg-stone-800 " />
                 <div className="flex-1">
-                  <p className="text-[18px] font-bold text-stone-900 dark:text-stone-100  tabular-nums">{posts.length}</p>
-                  <p className="text-[12px] text-stone-400   dark:text-stone-400  mt-0.5">posts</p>
+                  <p className="text-lg font-bold text-stone-900 dark:text-stone-100  tabular-nums">{posts.length}</p>
+                  <p className="text-xs text-stone-400   dark:text-stone-400  mt-0.5">posts</p>
                 </div>
               </div>
             </div>
 
             {/* Description */}
             <div className="px-6 py-5">
-              <p className={`text-[13px] leading-[1.7] whitespace-pre-wrap ${description && description.trim() ? 'text-stone-700 dark:text-stone-200 ' : 'text-stone-400   dark:text-stone-400  italic'}`}>
+              <p className={`text-sm leading-[1.7] whitespace-pre-wrap ${description && description.trim() ? 'text-stone-700 dark:text-stone-200 ' : 'text-stone-400   dark:text-stone-400  italic'}`}>
                 {description && description.trim() ? description : 'No description yet.'}
               </p>
             </div>
@@ -433,7 +433,7 @@ const ShopHead: React.FC<ShopHeadProps> = ({
                   )}
                   <button
                     onClick={handleToggleFollow}
-                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-[13px] font-medium transition-all ${
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                       listingId
                         ? 'bg-stone-50   hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800   text-stone-700 dark:text-stone-200  border border-stone-200/60'
                         : 'bg-stone-900 hover:bg-stone-800 text-white'
@@ -506,7 +506,7 @@ const ShopHead: React.FC<ShopHeadProps> = ({
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-100  tracking-tight">Products</h3>
-                  <span className="text-[11px] font-medium text-stone-500  dark:text-stone-500      bg-stone-100 dark:bg-stone-800  px-2.5 py-1 rounded-full tabular-nums">{validProducts.length}</span>
+                  <span className="text-xs font-medium text-stone-500  dark:text-stone-500      bg-stone-100 dark:bg-stone-800  px-2.5 py-1 rounded-full tabular-nums">{validProducts.length}</span>
                 </div>
                 {validProducts.length > 8 && (
                   <button className="text-xs font-medium text-stone-500        hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200   transition-colors">View all</button>
@@ -544,7 +544,7 @@ const ShopHead: React.FC<ShopHeadProps> = ({
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-4">
                   <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-100  tracking-tight">Professionals</h3>
-                  <span className="text-[11px] font-medium text-stone-500  dark:text-stone-500      bg-stone-100 dark:bg-stone-800  px-2.5 py-1 rounded-full tabular-nums">{employees.length}</span>
+                  <span className="text-xs font-medium text-stone-500  dark:text-stone-500      bg-stone-100 dark:bg-stone-800  px-2.5 py-1 rounded-full tabular-nums">{employees.length}</span>
                 </div>
                 {employees.length > 8 && (
                   <button className="text-xs font-medium text-stone-500        hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200   transition-colors">View all</button>
@@ -603,7 +603,7 @@ const ShopHead: React.FC<ShopHeadProps> = ({
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-4">
                   <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-100  tracking-tight">Gallery</h3>
-                  <span className="text-[11px] font-medium text-stone-500  dark:text-stone-500      bg-stone-100 dark:bg-stone-800  px-2.5 py-1 rounded-full tabular-nums">{(galleryImages?.length || 0) + posts.length}</span>
+                  <span className="text-xs font-medium text-stone-500  dark:text-stone-500      bg-stone-100 dark:bg-stone-800  px-2.5 py-1 rounded-full tabular-nums">{(galleryImages?.length || 0) + posts.length}</span>
                 </div>
                 {((galleryImages?.length || 0) + posts.length) > 8 && (
                   <button className="text-xs font-medium text-stone-500        hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200   transition-colors">View all</button>
@@ -706,10 +706,10 @@ const ShopHead: React.FC<ShopHeadProps> = ({
                                 isToday ? 'bg-stone-900' : 'bg-stone-50 dark:bg-stone-900 '
                               }`}
                             >
-                              <span className={`text-[11px] font-medium ${isToday ? 'text-white' : hours.isClosed ? 'text-stone-300' : 'text-stone-500  dark:text-stone-500     '}`}>
+                              <span className={`text-xs font-medium ${isToday ? 'text-white' : hours.isClosed ? 'text-stone-300' : 'text-stone-500  dark:text-stone-500     '}`}>
                                 {dayAbbrev}
                               </span>
-                              <span className={`text-[10px] mt-1 ${isToday ? 'text-white/60' : hours.isClosed ? 'text-stone-300' : 'text-stone-400   dark:text-stone-400 '}`}>
+                              <span className={`text-xs mt-1 ${isToday ? 'text-white/60' : hours.isClosed ? 'text-stone-300' : 'text-stone-400   dark:text-stone-400 '}`}>
                                 {hours.isClosed ? '—' : hours.openTime?.replace(':00', '').replace(' ', '')}
                               </span>
                             </div>

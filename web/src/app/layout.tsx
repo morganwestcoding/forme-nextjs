@@ -101,7 +101,7 @@ export default async function RootLayout({
               <ComingSoonGate>
                 <a
                   href="#main-content"
-                  className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[10000] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-stone-900 focus:text-white dark:focus:bg-white dark:focus:text-stone-900 focus:shadow-elevation-2 focus:text-[13px] focus:font-medium"
+                  className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[10000] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-stone-900 focus:text-white dark:focus:bg-white dark:focus:text-stone-900 focus:shadow-elevation-2 focus:text-sm focus:font-medium"
                 >
                   Skip to main content
                 </a>

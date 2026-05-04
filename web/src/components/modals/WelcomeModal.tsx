@@ -430,15 +430,15 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
         transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 0.9, 0.3, 1] }}
         className="relative"
       >
-        <p className="text-[13px] font-medium text-stone-400 dark:text-stone-500 mb-2.5">
+        <p className="text-sm font-medium text-stone-400 dark:text-stone-500 mb-2.5">
           Welcome{currentUser?.name ? `, ${currentUser.name.split(' ')[0]}` : ''}
         </p>
-        <h2 className="text-[28px] sm:text-[32px] font-semibold text-stone-900 dark:text-stone-100 leading-[1.05] tracking-[-0.02em] mb-3 max-w-md">
+        <h2 className="text-3xl sm:text-4xl font-semibold text-stone-900 dark:text-stone-100 leading-[1.05] tracking-[-0.02em] mb-3 max-w-md">
           Your local world,
           <br />
           curated for you.
         </h2>
-        <p className="text-[14px] text-stone-500 dark:text-stone-400 leading-relaxed max-w-sm mx-auto">
+        <p className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed max-w-sm mx-auto">
           Discover trusted professionals, book services, shop products, and connect with your community — all in one place.
         </p>
       </motion.div>
@@ -450,7 +450,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
         className="relative mt-5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-100/70 dark:bg-stone-800/70 border border-stone-200/70 dark:border-stone-700/70"
       >
         <SparklesIcon className="w-3 h-3 text-stone-500 dark:text-stone-400" strokeWidth={1.8} />
-        <span className="text-[11px] font-medium text-stone-600 dark:text-stone-400">
+        <span className="text-xs font-medium text-stone-600 dark:text-stone-400">
           A 60-second setup, then you&apos;re in.
         </span>
       </motion.div>
@@ -460,10 +460,10 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
   const interestsBody = (
     <div className="py-1">
       <ProgressDots />
-      <h2 className="text-[22px] font-semibold text-stone-900 dark:text-stone-100 mb-1.5 text-center tracking-[-0.015em]">
+      <h2 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 mb-1.5 text-center tracking-[-0.015em]">
         What moves you?
       </h2>
-      <p className="text-[13px] text-stone-500 dark:text-stone-500 mb-6 text-center max-w-xs mx-auto">
+      <p className="text-sm text-stone-500 dark:text-stone-500 mb-6 text-center max-w-xs mx-auto">
         Pick a few categories so we can shape your feed around what you love.
       </p>
 
@@ -483,7 +483,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
                   : 'border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 hover:border-stone-300 dark:hover:border-stone-600'
               }`}
             >
-              <span className={`block text-[13px] font-medium ${isSelected ? '' : ''}`}>
+              <span className={`block text-sm font-medium ${isSelected ? '' : ''}`}>
                 {category.label}
               </span>
             </motion.button>
@@ -491,7 +491,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
         })}
       </div>
 
-      <p className="text-[11px] text-stone-400 dark:text-stone-500 text-center mt-5">
+      <p className="text-xs text-stone-400 dark:text-stone-500 text-center mt-5">
         {selectedInterests.length > 0
           ? `${selectedInterests.length} selected`
           : 'Optional · pick any time later'}
@@ -514,9 +514,9 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
         }`}
       >
         <div className="flex-1 min-w-0 flex items-baseline gap-1.5">
-          <p className="text-[13px] text-stone-900 dark:text-stone-100 truncate">{city}</p>
+          <p className="text-sm text-stone-900 dark:text-stone-100 truncate">{city}</p>
           {state && (
-            <p className="text-[11px] text-stone-400 dark:text-stone-500 shrink-0">{state}</p>
+            <p className="text-xs text-stone-400 dark:text-stone-500 shrink-0">{state}</p>
           )}
         </div>
         {selected && (
@@ -529,10 +529,10 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
   const locationBody = (
     <div className="py-1">
       <ProgressDots />
-      <h2 className="text-[22px] font-semibold text-stone-900 dark:text-stone-100 mb-1.5 text-center tracking-[-0.015em]">
+      <h2 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 mb-1.5 text-center tracking-[-0.015em]">
         Where are you based?
       </h2>
-      <p className="text-[13px] text-stone-500 dark:text-stone-500 mb-5 text-center max-w-xs mx-auto">
+      <p className="text-sm text-stone-500 dark:text-stone-500 mb-5 text-center max-w-xs mx-auto">
         We&apos;ll surface businesses, professionals, and shops near you first.
       </p>
 
@@ -540,17 +540,17 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
       {location && (
         <div className="mb-4 flex items-center gap-3 px-4 h-14 rounded-2xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900">
           <div className="flex-1 min-w-0">
-            <p className="text-[12px] font-medium text-stone-400 dark:text-stone-500">
+            <p className="text-xs font-medium text-stone-400 dark:text-stone-500">
               Selected
             </p>
-            <p className="text-[14px] font-medium text-stone-900 dark:text-stone-100 truncate">
+            <p className="text-sm font-medium text-stone-900 dark:text-stone-100 truncate">
               {location}
             </p>
           </div>
           <button
             type="button"
             onClick={() => setLocation('')}
-            className="text-[12px] font-medium text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
+            className="text-xs font-medium text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
           >
             Change
           </button>
@@ -568,7 +568,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
           placeholder="Search any U.S. city"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-2xl pl-11 pr-10 h-12 text-[14px] text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 outline-none focus:border-stone-400 dark:focus:border-stone-500 transition-colors"
+          className="w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-2xl pl-11 pr-10 h-12 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 outline-none focus:border-stone-400 dark:focus:border-stone-500 transition-colors"
         />
         {search && (
           <button
@@ -584,7 +584,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
 
       {/* Section header + use my location */}
       <div className="mt-4 mb-2 flex items-center justify-between gap-3">
-        <p className="text-[12px] font-medium text-stone-500 dark:text-stone-400">
+        <p className="text-xs font-medium text-stone-500 dark:text-stone-400">
           {hasQuery ? 'Results' : 'Popular cities'}
         </p>
         {!hasQuery && (
@@ -592,7 +592,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
             type="button"
             onClick={handleUseCurrentLocation}
             disabled={geoStatus === 'locating'}
-            className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full text-[11px] font-medium text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors disabled:opacity-60"
+            className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full text-xs font-medium text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors disabled:opacity-60"
           >
             {geoStatus === 'locating' ? (
               <div className="w-3 h-3 border-2 border-stone-200 dark:border-stone-700 border-t-stone-600 dark:border-t-stone-200 rounded-full animate-spin" />
@@ -617,7 +617,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
         )}
         {hasQuery && !isSearching && suggestions.length === 0 && (
           <div className="py-8 text-center">
-            <p className="text-[13px] text-stone-500 dark:text-stone-400">
+            <p className="text-sm text-stone-500 dark:text-stone-400">
               No matches for &ldquo;{search.trim()}&rdquo;
             </p>
           </div>
@@ -639,10 +639,10 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
   const startedBody = (
     <div className="py-1">
       <ProgressDots />
-      <h2 className="text-[22px] font-semibold text-stone-900 dark:text-stone-100 mb-1.5 text-center tracking-[-0.015em]">
+      <h2 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 mb-1.5 text-center tracking-[-0.015em]">
         {startedHeading.title}
       </h2>
-      <p className="text-[13px] text-stone-500 dark:text-stone-500 mb-6 text-center max-w-sm mx-auto">
+      <p className="text-sm text-stone-500 dark:text-stone-500 mb-6 text-center max-w-sm mx-auto">
         {startedHeading.sub}
       </p>
 
@@ -662,10 +662,10 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
               <Icon className="w-[18px] h-[18px]" />
             </div>
             <div className="relative min-w-0 flex-1">
-              <p className="text-[13.5px] font-semibold text-stone-900 dark:text-stone-100 leading-tight">
+              <p className="text-sm font-semibold text-stone-900 dark:text-stone-100 leading-tight">
                 {label}
               </p>
-              <p className="text-[12px] text-stone-500 dark:text-stone-400 leading-snug mt-0.5">
+              <p className="text-xs text-stone-500 dark:text-stone-400 leading-snug mt-0.5">
                 {description}
               </p>
             </div>
@@ -683,7 +683,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
         className="mt-4 w-full flex items-center justify-center gap-2 h-12 rounded-2xl bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-white transition-colors"
       >
         <Route01Icon className="w-4 h-4" strokeWidth={1.8} />
-        <span className="text-[13.5px] font-semibold tracking-[-0.01em]">
+        <span className="text-sm font-semibold tracking-[-0.01em]">
           Take the 60-second tour
         </span>
       </button>
@@ -691,7 +691,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
       <button
         type="button"
         onClick={closeAndComplete}
-        className="mt-2 w-full text-[12px] font-medium text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 transition-colors py-2"
+        className="mt-2 w-full text-xs font-medium text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 transition-colors py-2"
       >
         I&apos;ll explore on my own
       </button>

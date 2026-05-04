@@ -54,34 +54,34 @@ function renderCell(value: Cell) {
   if (value === false) {
     return <Cancel01Icon size={14} className="mx-auto text-stone-200 dark:text-stone-700" strokeWidth={1.5} />;
   }
-  return <span className="text-[12px] font-medium text-stone-700 dark:text-stone-200 tabular-nums">{value}</span>;
+  return <span className="text-xs font-medium text-stone-700 dark:text-stone-200 tabular-nums">{value}</span>;
 }
 
 const FeatureComparison: React.FC = () => {
   return (
     <div>
       <div className="mb-6">
-        <p className="text-[12px] text-stone-400 dark:text-stone-500 mb-1">Compare plans</p>
+        <p className="text-xs text-stone-400 dark:text-stone-500 mb-1">Compare plans</p>
         <h2 className="text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Everything in detail</h2>
       </div>
 
       <div className="rounded-2xl border border-stone-200/60 dark:border-stone-800 bg-white dark:bg-stone-900 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-[13px]">
+          <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-stone-100 dark:border-stone-800">
-                <th className="text-left py-4 px-6 text-[11px] font-medium uppercase tracking-wide text-stone-400 dark:text-stone-500">Feature</th>
+                <th className="text-left py-4 px-6 text-xs font-medium uppercase tracking-wide text-stone-400 dark:text-stone-500">Feature</th>
                 <th className="py-4 px-4 min-w-[110px] text-center">
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-stone-400 dark:text-stone-500">Freemium</p>
-                  <p className="text-[14px] font-semibold text-stone-900 dark:text-stone-100 tabular-nums mt-1">Free</p>
+                  <p className="text-xs font-medium uppercase tracking-wide text-stone-400 dark:text-stone-500">Freemium</p>
+                  <p className="text-sm font-semibold text-stone-900 dark:text-stone-100 tabular-nums mt-1">Free</p>
                 </th>
                 <th className="py-4 px-4 min-w-[110px] text-center bg-stone-50/60 dark:bg-stone-950/40">
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-stone-400 dark:text-stone-500">Gold</p>
-                  <p className="text-[14px] font-semibold text-stone-900 dark:text-stone-100 tabular-nums mt-1">$30<span className="text-[11px] font-normal text-stone-400 dark:text-stone-500">/mo</span></p>
+                  <p className="text-xs font-medium uppercase tracking-wide text-stone-400 dark:text-stone-500">Gold</p>
+                  <p className="text-sm font-semibold text-stone-900 dark:text-stone-100 tabular-nums mt-1">$30<span className="text-xs font-normal text-stone-400 dark:text-stone-500">/mo</span></p>
                 </th>
                 <th className="py-4 px-4 min-w-[110px] text-center">
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-stone-400 dark:text-stone-500">Platinum</p>
-                  <p className="text-[14px] font-semibold text-stone-900 dark:text-stone-100 tabular-nums mt-1">$100<span className="text-[11px] font-normal text-stone-400 dark:text-stone-500">/mo</span></p>
+                  <p className="text-xs font-medium uppercase tracking-wide text-stone-400 dark:text-stone-500">Platinum</p>
+                  <p className="text-sm font-semibold text-stone-900 dark:text-stone-100 tabular-nums mt-1">$100<span className="text-xs font-normal text-stone-400 dark:text-stone-500">/mo</span></p>
                 </th>
               </tr>
             </thead>
@@ -113,7 +113,7 @@ const FeatureComparison: React.FC = () => {
         </div>
       </div>
 
-      <p className="text-[11px] text-stone-400 dark:text-stone-500 mt-4">
+      <p className="text-xs text-stone-400 dark:text-stone-500 mt-4">
         Freemium tiered fees: $0–$100 → 7%, $101–$199 → 5%, $200+ → 3%. Gold and Platinum waive transaction fees.
       </p>
     </div>

@@ -275,7 +275,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
       <div className="mt-8 pb-20">
         <div className="mb-8">
           <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Bookings</h1>
-          <p className="text-[14px] text-stone-400 dark:text-stone-500 mt-1">
+          <p className="text-sm text-stone-400 dark:text-stone-500 mt-1">
             {directionTab === 'outgoing'
               ? 'Your trips and appointments'
               : 'Requests from your customers'}
@@ -302,7 +302,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                     setDirectionTab(tab.dir);
                     setTimeTab(tab.time);
                   }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
                     active
                       ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-pill-active dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-pill-active-dark'
                       : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-inset-outline'
@@ -311,7 +311,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                   {tab.label}
                   {tab.count > 0 && (
                     <span
-                      className={`text-[11px] tabular-nums ${
+                      className={`text-xs tabular-nums ${
                         active ? 'text-white/60' : tab.attention ? 'text-amber-600' : 'text-stone-400 dark:text-stone-500'
                       }`}
                     >
@@ -333,7 +333,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                   ? 'Search by service, customer, place…'
                   : 'Search trips, shops, places…'
               }
-              className="w-full bg-stone-50  dark:bg-stone-800/50 border border-stone-200   rounded-xl px-4 py-2.5 pr-11 text-[13px] text-stone-800 dark:text-stone-200 dark:text-white placeholder-stone-400 dark:placeholder-stone-500 outline-none focus:border-stone-300 dark:border-stone-700 dark:focus:border-stone-600 focus:bg-white  dark:focus:bg-stone-800 transition-all"
+              className="w-full bg-stone-50  dark:bg-stone-800/50 border border-stone-200   rounded-xl px-4 py-2.5 pr-11 text-sm text-stone-800 dark:text-stone-200 dark:text-white placeholder-stone-400 dark:placeholder-stone-500 outline-none focus:border-stone-300 dark:border-stone-700 dark:focus:border-stone-600 focus:bg-white  dark:focus:bg-stone-800 transition-all"
             />
             <div className="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-xl flex items-center justify-center text-stone-400 dark:text-stone-500">
               <Search className="w-4 h-4" strokeWidth={2} />
@@ -516,18 +516,18 @@ function NextTripHero({
               </button>
               <div className="flex items-baseline justify-between gap-2">
                 <div className="flex items-baseline gap-2">
-                  <div className="text-[11px] font-medium text-amber-300/90">
+                  <div className="text-xs font-medium text-amber-300/90">
                     {format(date, 'EEE, MMM')}
                   </div>
-                  <div className="text-[18px] font-bold tabular-nums tracking-tight">
+                  <div className="text-lg font-bold tabular-nums tracking-tight">
                     {format(date, 'd')}
                   </div>
                 </div>
                 <div className="flex items-baseline gap-2 text-right">
-                  <div className="text-[11px] font-medium text-white/45">
+                  <div className="text-xs font-medium text-white/45">
                     Time
                   </div>
-                  <div className="text-[18px] font-semibold text-white tabular-nums">
+                  <div className="text-lg font-semibold text-white tabular-nums">
                     {formatTime(trip.time)}
                   </div>
                 </div>
@@ -543,12 +543,12 @@ function NextTripHero({
                   onClick={onOpen}
                   className="group inline-flex items-center gap-2 text-left min-w-0 w-full"
                 >
-                  <span className="text-[26px] font-semibold leading-[1.05] truncate tracking-tight text-white">
+                  <span className="text-3xl font-semibold leading-[1.05] truncate tracking-tight text-white">
                     {listing.title}
                   </span>
                   <ChevronRight className="w-5 h-5 text-white/60 group-hover:translate-x-0.5 transition-transform shrink-0" />
                 </button>
-                <p className="text-[14px] text-white/65 leading-tight truncate mt-1">
+                <p className="text-sm text-white/65 leading-tight truncate mt-1">
                   {serviceLabel}
                 </p>
               </div>
@@ -571,14 +571,14 @@ function NextTripHero({
                     )}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[12px] font-medium text-white/55 leading-none">
+                    <p className="text-xs font-medium text-white/55 leading-none">
                       {isIncoming ? 'Customer' : 'With'}
                     </p>
-                    <p className="text-[15px] text-white font-semibold leading-tight truncate mt-1">
+                    <p className="text-sm text-white font-semibold leading-tight truncate mt-1">
                       {isIncoming ? customerName : employeeName || 'Unassigned'}
                     </p>
                     {!isIncoming && employeeRole && (
-                      <p className="text-[11px] text-white/50 leading-tight truncate mt-0.5">
+                      <p className="text-xs text-white/50 leading-tight truncate mt-0.5">
                         {employeeRole}
                       </p>
                     )}
@@ -588,18 +588,18 @@ function NextTripHero({
 
               <div className="mt-auto flex items-baseline justify-center gap-6 min-w-0">
                 <div className="flex items-baseline gap-2 min-w-0">
-                  <div className="text-[11px] font-medium text-white/45 shrink-0">
+                  <div className="text-xs font-medium text-white/45 shrink-0">
                     Place
                   </div>
-                  <div className="text-[18px] font-semibold text-white truncate">
+                  <div className="text-lg font-semibold text-white truncate">
                     {!isIncoming && listing.address ? listing.address : '—'}
                   </div>
                 </div>
                 <div className="flex items-baseline gap-2 shrink-0">
-                  <div className="text-[11px] font-medium text-white/45">
+                  <div className="text-xs font-medium text-white/45">
                     Booking
                   </div>
-                  <div className="text-[18px] font-semibold text-white tabular-nums">
+                  <div className="text-lg font-semibold text-white tabular-nums">
                     #{bookingShortId}
                   </div>
                 </div>
@@ -611,7 +611,7 @@ function NextTripHero({
           <Quadrant>
             <div className="h-full flex flex-col justify-center items-center gap-3 text-center">
               {/* Total label */}
-              <span className="text-[12px] font-medium text-white/55">
+              <span className="text-xs font-medium text-white/55">
                 {isIncoming
                   ? `Earnings${paymentStatus === 'paid' ? ' · Paid' : ''}`
                   : `Total${paymentStatus === 'paid' ? ' · Paid' : paymentStatus === 'refunded' ? ' · Refunded' : ''}`}
@@ -619,7 +619,7 @@ function NextTripHero({
 
               {/* Big price */}
               <div className="relative text-[64px] font-bold tabular-nums tracking-tight leading-none text-white">
-                <span className="absolute -left-5 top-2 text-[24px] font-semibold text-white/50">$</span>
+                <span className="absolute -left-5 top-2 text-2xl font-semibold text-white/50">$</span>
                 {trip.totalPrice}
               </div>
             </div>
@@ -633,7 +633,7 @@ function NextTripHero({
                 <button
                   onClick={onAccept}
                   disabled={disabled}
-                  className="inline-flex flex-col items-center justify-center gap-1.5 rounded-xl text-[13px] font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-400/60 shadow-[0_4px_14px_-2px_rgba(16,185,129,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] hover:from-emerald-400 hover:to-emerald-500 transition-all disabled:opacity-50"
+                  className="inline-flex flex-col items-center justify-center gap-1.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-400/60 shadow-[0_4px_14px_-2px_rgba(16,185,129,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] hover:from-emerald-400 hover:to-emerald-500 transition-all disabled:opacity-50"
                 >
                   <Tick02Icon size={22} strokeWidth={2.2} />
                   Accept
@@ -641,7 +641,7 @@ function NextTripHero({
                 <button
                   onClick={onDecline}
                   disabled={disabled}
-                  className="inline-flex flex-col items-center justify-center gap-1.5 rounded-xl text-[13px] font-semibold text-white/85 bg-white/5 border border-white/15 hover:bg-red-500/20 hover:text-red-100 hover:border-red-400/40 transition-all disabled:opacity-50"
+                  className="inline-flex flex-col items-center justify-center gap-1.5 rounded-xl text-sm font-semibold text-white/85 bg-white/5 border border-white/15 hover:bg-red-500/20 hover:text-red-100 hover:border-red-400/40 transition-all disabled:opacity-50"
                 >
                   <Cancel01Icon size={22} strokeWidth={2} />
                   Decline
@@ -686,11 +686,11 @@ function NextTripHero({
               </div>
             )}
             <div className="shrink-0 flex items-baseline justify-center gap-2">
-              <span className="text-[11px] font-medium text-white/45">
+              <span className="text-xs font-medium text-white/45">
                 Status
               </span>
               <span
-                className={`text-[18px] font-semibold tabular-nums ${
+                className={`text-lg font-semibold tabular-nums ${
                   status === 'pending'
                     ? 'text-amber-200/85'
                     : status === 'accepted'
@@ -715,7 +715,7 @@ function NextTripHero({
                   <button
                     onClick={onAccept}
                     disabled={disabled}
-                    className="inline-flex items-center gap-1.5 px-4 h-9 rounded-full text-[12px] font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-400/60 disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-4 h-9 rounded-full text-xs font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-400/60 disabled:opacity-50"
                   >
                     <Check className="w-3.5 h-3.5" strokeWidth={2.8} />
                     Accept
@@ -723,7 +723,7 @@ function NextTripHero({
                   <button
                     onClick={onDecline}
                     disabled={disabled}
-                    className="inline-flex items-center gap-1.5 px-4 h-9 rounded-full text-[12px] font-semibold text-white/85 bg-white/5 border border-white/15 disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-4 h-9 rounded-full text-xs font-semibold text-white/85 bg-white/5 border border-white/15 disabled:opacity-50"
                   >
                     <X className="w-3.5 h-3.5" strokeWidth={2.8} />
                     Decline
@@ -789,7 +789,7 @@ function BigAction({
   disabled?: boolean;
   primary?: boolean;
 }) {
-  const cls = `inline-flex flex-col items-center justify-center gap-1.5 rounded-xl text-[13px] font-semibold transition-all border ${
+  const cls = `inline-flex flex-col items-center justify-center gap-1.5 rounded-xl text-sm font-semibold transition-all border ${
     primary
       ? 'bg-white  text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
       : 'bg-white/[0.04] text-white border-white/10 hover:bg-white/10 hover:border-white/20'
@@ -860,8 +860,8 @@ function StatusInline({
         <span className={`relative inline-flex w-2 h-2 rounded-full ${c.dot}`} />
       </span>
       <div className="min-w-0">
-        <p className={`text-[18px] font-semibold leading-tight ${c.text}`}>{c.label}</p>
-        <p className="text-[12px] text-white/55 leading-tight mt-0.5">{c.sub}</p>
+        <p className={`text-lg font-semibold leading-tight ${c.text}`}>{c.label}</p>
+        <p className="text-xs text-white/55 leading-tight mt-0.5">{c.sub}</p>
       </div>
     </div>
   );
@@ -935,8 +935,8 @@ function LifecycleLine({
         />
         <span className={`relative inline-flex w-2 h-2 rounded-full ${dotColor}`} />
       </span>
-      <p className="text-[15px] font-semibold text-white/85 leading-none">{label}</p>
-      {sub && <span className="text-[13px] text-white/45 leading-none">· {sub}</span>}
+      <p className="text-sm font-semibold text-white/85 leading-none">{label}</p>
+      {sub && <span className="text-sm text-white/45 leading-none">· {sub}</span>}
     </div>
   );
 }
@@ -949,7 +949,7 @@ function InfoChip({
   children: React.ReactNode;
 }) {
   return (
-    <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white/55">
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-white/55">
       {icon}
       {children}
     </span>
@@ -977,7 +977,7 @@ function StackedAction({
   danger?: boolean;
   compact?: boolean;
 }) {
-  const cls = `w-full inline-flex items-center ${compact ? 'justify-center' : 'justify-start'} gap-2 px-3.5 h-11 rounded-xl text-[13px] font-semibold whitespace-nowrap transition-all border ${
+  const cls = `w-full inline-flex items-center ${compact ? 'justify-center' : 'justify-start'} gap-2 px-3.5 h-11 rounded-xl text-sm font-semibold whitespace-nowrap transition-all border ${
     primary
       ? 'bg-white  text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
       : danger
@@ -1025,13 +1025,13 @@ function NoUpcomingHero({
       <div aria-hidden className="absolute -top-24 -right-20 w-72 h-72 rounded-full bg-amber-400/15 blur-3xl" />
       <div aria-hidden className="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white/5 blur-3xl" />
       <div className="relative max-w-xl">
-        <p className="text-[15px] font-semibold text-white/50">
+        <p className="text-sm font-semibold text-white/50">
           {isIncoming ? 'Incoming' : 'My bookings'}
         </p>
-        <h1 className="mt-3 text-[36px] sm:text-[44px] font-semibold tracking-tight leading-[1.02]">
+        <h1 className="mt-3 text-4xl sm:text-[44px] font-semibold tracking-tight leading-[1.02]">
           {isIncoming ? 'No requests right now.' : 'Nothing on the calendar.'}
         </h1>
-        <p className="mt-3 text-[14px] text-white/60 max-w-md">
+        <p className="mt-3 text-sm text-white/60 max-w-md">
           {isIncoming
             ? "When clients book your services, they'll appear here for you to accept or decline."
             : lifetime > 0
@@ -1041,7 +1041,7 @@ function NoUpcomingHero({
         {!isIncoming && (
           <button
             onClick={onBrowse}
-            className="mt-7 inline-flex items-center gap-2 px-5 h-11 rounded-full bg-white  text-stone-900 dark:text-stone-100 text-[13px] font-semibold hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-colors"
+            className="mt-7 inline-flex items-center gap-2 px-5 h-11 rounded-full bg-white  text-stone-900 dark:text-stone-100 text-sm font-semibold hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 transition-colors"
           >
             <Sparkles className="w-4 h-4" strokeWidth={2.2} />
             Discover services
@@ -1074,10 +1074,10 @@ function StatCard({
         <div aria-hidden className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-amber-200/30 blur-2xl" />
       )}
       <div className="relative flex items-center gap-2">
-        <p className="text-[13px] font-semibold tracking-wider text-stone-400 dark:text-stone-500 uppercase">
+        <p className="text-sm font-semibold tracking-wider text-stone-400 dark:text-stone-500 uppercase">
           {label}
         </p>
-        <p className="text-[18px] sm:text-[20px] font-semibold text-stone-900 dark:text-stone-100 tabular-nums tracking-tight leading-none">
+        <p className="text-lg sm:text-xl font-semibold text-stone-900 dark:text-stone-100 tabular-nums tracking-tight leading-none">
           {value}
         </p>
       </div>
@@ -1101,10 +1101,10 @@ function TimelineGroup({
   return (
     <section>
       <div className="flex items-baseline gap-3 mb-5">
-        <h2 className="text-[18px] font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.015em]">{label}</h2>
+        <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.015em]">{label}</h2>
         {sublabel && (
           <span
-            className="text-[12px] text-stone-400 dark:text-stone-500"
+            className="text-xs text-stone-400 dark:text-stone-500"
             style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}
           >
             {sublabel}
@@ -1200,13 +1200,13 @@ function TripRow({
         <div className="relative flex items-stretch">
           {/* Date — keep as-is, on soft bg */}
           <div className="relative flex-shrink-0 w-[96px] flex flex-col items-center justify-center py-6 bg-gradient-to-b from-stone-50/80 to-white dark:from-stone-900 dark:to-stone-900">
-            <div className="text-[11px] font-medium text-stone-400 dark:text-stone-500">
+            <div className="text-xs font-medium text-stone-400 dark:text-stone-500">
               {format(date, 'MMM')}
             </div>
-            <div className="text-[34px] font-semibold text-stone-900 dark:text-stone-100 tabular-nums leading-none mt-1.5">
+            <div className="text-4xl font-semibold text-stone-900 dark:text-stone-100 tabular-nums leading-none mt-1.5">
               {format(date, 'd')}
             </div>
-            <div className="text-[11px] font-medium text-stone-400 dark:text-stone-500 mt-2">
+            <div className="text-xs font-medium text-stone-400 dark:text-stone-500 mt-2">
               {format(date, 'EEE')}
             </div>
           </div>
@@ -1218,14 +1218,14 @@ function TripRow({
           <div className="flex-1 min-w-0 px-5 py-5 flex flex-col justify-center gap-3">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <p className={`text-[11px] leading-none ${ROW_TEXT_COLORS[status]}`} style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
+                <p className={`text-xs leading-none ${ROW_TEXT_COLORS[status]}`} style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
                   {STATUS_LABELS[status]}
                   {today && !past && <span className="text-amber-600 ml-2">· Today</span>}
                 </p>
-                <h3 className="mt-1.5 text-[18px] font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.015em] leading-tight truncate">
+                <h3 className="mt-1.5 text-lg font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.015em] leading-tight truncate">
                   {reservationServiceLabel}
                 </h3>
-                <p className="text-[12px] text-stone-500  dark:text-stone-500 truncate mt-0.5">
+                <p className="text-xs text-stone-500  dark:text-stone-500 truncate mt-0.5">
                   {isIncoming
                     ? `${customerName}${isGuestReservation ? ' (guest)' : ''} · ${listing.title}`
                     : listing.title}
@@ -1234,13 +1234,13 @@ function TripRow({
 
               <div className="shrink-0 text-right">
                 <div
-                  className={`text-[26px] font-black tabular-nums tracking-tight leading-none ${
+                  className={`text-3xl font-black tabular-nums tracking-tight leading-none ${
                     isRefunded ? 'text-stone-400 dark:text-stone-500 line-through' : 'text-stone-900 dark:text-stone-100'
                   }`}
                 >
                   ${reservation.totalPrice}
                 </div>
-                <div className="text-[11px] font-medium text-stone-400 dark:text-stone-500 mt-1">
+                <div className="text-xs font-medium text-stone-400 dark:text-stone-500 mt-1">
                   {formatTime(reservation.time)}
                 </div>
               </div>
@@ -1256,7 +1256,7 @@ function TripRow({
                   className={`object-cover ${past ? 'grayscale-[35%]' : ''}`}
                 />
               </div>
-              <div className="min-w-0 text-[12px] text-stone-500  dark:text-stone-500 truncate">
+              <div className="min-w-0 text-xs text-stone-500  dark:text-stone-500 truncate">
                 {!isIncoming && employeeName
                   ? <>with <span className="text-stone-700 dark:text-stone-200 font-medium">{employeeName}</span></>
                   : !isIncoming && listing.address
@@ -1274,7 +1274,7 @@ function TripRow({
             <button
               onClick={(e) => { e.stopPropagation(); onDecline(); }}
               disabled={disabled}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 h-8 rounded-full text-[12px] font-semibold text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-all disabled:opacity-50"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 h-8 rounded-full text-xs font-semibold text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-all disabled:opacity-50"
             >
               <X className="w-3.5 h-3.5" strokeWidth={2.6} />
               Decline
@@ -1282,7 +1282,7 @@ function TripRow({
             <button
               onClick={(e) => { e.stopPropagation(); onAccept(); }}
               disabled={disabled}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 h-8 rounded-full text-[12px] font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-400/60 shadow-[0_2px_8px_-1px_rgba(16,185,129,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] hover:from-emerald-400 hover:to-emerald-500 transition-all disabled:opacity-50"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 h-8 rounded-full text-xs font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-400/60 shadow-[0_2px_8px_-1px_rgba(16,185,129,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] hover:from-emerald-400 hover:to-emerald-500 transition-all disabled:opacity-50"
             >
               <Check className="w-3.5 h-3.5" strokeWidth={2.8} />
               Accept
@@ -1315,7 +1315,7 @@ function ActionChip({
   primary?: boolean;
   danger?: boolean;
 }) {
-  const cls = `inline-flex items-center gap-1.5 px-3.5 h-9 rounded-full text-[12px] font-semibold whitespace-nowrap transition-all backdrop-blur-md border ${
+  const cls = `inline-flex items-center gap-1.5 px-3.5 h-9 rounded-full text-xs font-semibold whitespace-nowrap transition-all backdrop-blur-md border ${
     primary
       ? 'bg-white  text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
       : danger
@@ -1364,7 +1364,7 @@ function RowAction({
   danger?: boolean;
   accent?: boolean;
 }) {
-  const cls = `inline-flex items-center gap-1 px-2.5 h-7 rounded-full text-[11px] font-medium border transition-colors ${
+  const cls = `inline-flex items-center gap-1 px-2.5 h-7 rounded-full text-xs font-medium border transition-colors ${
     accent
       ? 'border-stone-900 bg-stone-900 text-white hover:bg-stone-800'
       : danger
@@ -1414,12 +1414,12 @@ function EmptyState({
       <div className="w-14 h-14 rounded-2xl bg-stone-100 dark:bg-stone-800 mx-auto flex items-center justify-center mb-5">
         <Inbox className="w-6 h-6 text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
       </div>
-      <p className="text-[15px] font-medium text-stone-800 dark:text-stone-200">
+      <p className="text-sm font-medium text-stone-800 dark:text-stone-200">
         {hasQuery
           ? 'No matches'
           : `No ${timeTab} ${isIncoming ? 'requests' : 'bookings'}`}
       </p>
-      <p className="text-[13px] text-stone-400 dark:text-stone-500 mt-1.5 max-w-xs mx-auto">
+      <p className="text-sm text-stone-400 dark:text-stone-500 mt-1.5 max-w-xs mx-auto">
         {hasQuery
           ? 'Try a different search term.'
           : timeTab === 'upcoming'
@@ -1431,7 +1431,7 @@ function EmptyState({
       {hasQuery ? (
         <button
           onClick={onClear}
-          className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-stone-100  text-stone-700 dark:text-stone-200 text-[13px] font-medium hover:bg-stone-200 dark:bg-stone-700 transition-colors"
+          className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-stone-100  text-stone-700 dark:text-stone-200 text-sm font-medium hover:bg-stone-200 dark:bg-stone-700 transition-colors"
         >
           Clear search
         </button>
@@ -1486,7 +1486,7 @@ const HERO_TEXT_COLORS: Record<UiStatus, string> = {
 
 function StatusPill({ status }: { status: UiStatus }) {
   return (
-    <span className={`text-[15px] font-semibold ${ROW_TEXT_COLORS[status]}`}>
+    <span className={`text-sm font-semibold ${ROW_TEXT_COLORS[status]}`}>
       {STATUS_LABELS[status]}
     </span>
   );
@@ -1494,7 +1494,7 @@ function StatusPill({ status }: { status: UiStatus }) {
 
 function HeroStatusPill({ status }: { status: UiStatus }) {
   return (
-    <span className={`text-[15px] font-semibold ${HERO_TEXT_COLORS[status]}`}>
+    <span className={`text-sm font-semibold ${HERO_TEXT_COLORS[status]}`}>
       {STATUS_LABELS[status]}
     </span>
   );

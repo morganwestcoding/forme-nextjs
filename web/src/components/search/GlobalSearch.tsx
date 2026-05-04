@@ -253,7 +253,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
       {/* Keyboard shortcut hint */}
       {showShortcut && !q && (
         <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-          <kbd className={`hidden sm:inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-xl border transition-all duration-200 ${
+          <kbd className={`hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-xl border transition-all duration-200 ${
             isHeroMode
               ? "bg-white/10 border-white/20 text-white/60"
               : "bg-transparent border-stone-300 text-stone-400 group-focus-within:border-stone-900 group-focus-within:text-stone-900"
@@ -292,7 +292,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
               <p className="text-sm text-stone-500 dark:text-stone-400">
                 No results for <span className="font-medium text-stone-700 dark:text-stone-200">&ldquo;{debouncedQ}&rdquo;</span>
               </p>
-              <p className="mt-1 text-[12px] text-stone-400 dark:text-stone-500">
+              <p className="mt-1 text-xs text-stone-400 dark:text-stone-500">
                 Try a different keyword or check the spelling.
               </p>
             </div>
@@ -308,7 +308,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
                   return (
                     <div key={typeKey}>
                       <div className="px-4 pt-3 pb-1.5">
-                        <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-400">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-stone-400">
                           {typeLabel[typeKey as ItemType]}
                         </span>
                       </div>
@@ -346,7 +346,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
                                     className="w-full h-full object-cover"
                                   />
                                 ) : (
-                                  <div className="w-full h-full bg-gradient-to-br from-stone-100 to-stone-50 flex items-center justify-center text-[10px] font-medium text-stone-400 uppercase">
+                                  <div className="w-full h-full bg-gradient-to-br from-stone-100 to-stone-50 flex items-center justify-center text-xs font-medium text-stone-400 uppercase">
                                     {typeKey.slice(0, 2)}
                                   </div>
                                 )}
@@ -364,7 +364,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
                                   </div>
                                 )}
                               </div>
-                              <div className={`text-[10px] uppercase tracking-wider font-medium px-2 py-0.5 rounded-xl transition-all duration-200 ${
+                              <div className={`text-xs uppercase tracking-wider font-medium px-2 py-0.5 rounded-xl transition-all duration-200 ${
                                 active ? "text-stone-900 bg-stone-900/10" : "text-stone-400 bg-stone-50"
                               }`}>
                                 {typeKey}

@@ -662,8 +662,8 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
     return (
       <Container>
         <div className="mt-4 rounded-2xl border border-stone-200/80 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-elevation-1 px-6 py-16 text-center">
-          <p className="text-[15px] font-medium text-stone-900 dark:text-stone-100 mb-1">Map unavailable</p>
-          <p className="text-[12px] text-stone-500 dark:text-stone-400">
+          <p className="text-sm font-medium text-stone-900 dark:text-stone-100 mb-1">Map unavailable</p>
+          <p className="text-xs text-stone-500 dark:text-stone-400">
             <code>NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN</code> isn&apos;t set. Add it to your environment to enable the map.
           </p>
         </div>
@@ -726,7 +726,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 aria-label="Search listings"
-                className="w-full bg-[#F7F7F6] dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700/60 rounded-xl pl-3.5 pr-9 py-2.5 text-[13px] text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-colors"
+                className="w-full bg-[#F7F7F6] dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700/60 rounded-xl pl-3.5 pr-9 py-2.5 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-stone-400 transition-colors"
               />
               <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 dark:text-stone-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <circle cx="11" cy="11" r="8"/>
@@ -740,7 +740,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
-                      className="w-full flex items-center justify-between gap-1 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-4 py-2 text-[13px] text-stone-900 dark:text-stone-100 hover:border-stone-300 dark:hover:border-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-300 dark:focus:ring-stone-600 transition-colors"
+                      className="w-full flex items-center justify-between gap-1 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-4 py-2 text-sm text-stone-900 dark:text-stone-100 hover:border-stone-300 dark:hover:border-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-300 dark:focus:ring-stone-600 transition-colors"
                     >
                       <span>{sort === 'nearest' ? 'Nearest' : 'Name'}</span>
                       <svg className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -768,7 +768,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
               <button
                 onClick={() => setFiltersOpen((o) => !o)}
                 aria-expanded={filtersOpen}
-                className={`w-full flex items-center justify-between gap-1 appearance-none border rounded-xl px-4 py-2 text-[13px] text-left transition-colors focus:outline-none ${
+                className={`w-full flex items-center justify-between gap-1 appearance-none border rounded-xl px-4 py-2 text-sm text-left transition-colors focus:outline-none ${
                   activeFilterCount > 0 || filtersOpen
                     ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100'
                     : 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700'
@@ -790,7 +790,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
            <div className="overflow-hidden">
             <div className={`px-5 py-4 border-b border-stone-200/70 dark:border-stone-800 bg-[#FAFAF9] dark:bg-stone-950/30 flex flex-col gap-4 transition-[opacity,transform] ease-out motion-reduce:transition-none ${filtersOpen ? 'opacity-100 translate-y-0 duration-500 delay-200' : 'opacity-0 -translate-y-1 duration-150 pointer-events-none'}`}>
               <div>
-                <p className="text-[11px] text-stone-500 dark:text-stone-400 font-semibold mb-2">Category</p>
+                <p className="text-xs text-stone-500 dark:text-stone-400 font-semibold mb-2">Category</p>
                 <div className="flex flex-wrap gap-1.5">
                   {ALL_CATEGORIES.map((c) => {
                     const on = filterCategories.includes(c.label);
@@ -800,7 +800,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
                         onClick={() => setFilterCategories(
                           on ? filterCategories.filter((x) => x !== c.label) : [...filterCategories, c.label]
                         )}
-                        className={`px-3 py-1.5 rounded-full text-[12px] font-medium border transition-all duration-150 active:scale-[0.97] ${
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-150 active:scale-[0.97] ${
                           on
                             ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]'
                             : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600 hover:bg-stone-50 dark:hover:bg-stone-800/60'
@@ -815,9 +815,9 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
 
               <div>
                 <div className="flex items-baseline justify-between mb-2">
-                  <p className="text-[11px] text-stone-500 dark:text-stone-400 font-semibold">Distance</p>
+                  <p className="text-xs text-stone-500 dark:text-stone-400 font-semibold">Distance</p>
                   {!userLoc && (
-                    <button onClick={handleUseMyLocation} className="text-[10px] text-stone-500 dark:text-stone-400 underline hover:text-stone-700 dark:hover:text-stone-200 transition-colors">
+                    <button onClick={handleUseMyLocation} className="text-xs text-stone-500 dark:text-stone-400 underline hover:text-stone-700 dark:hover:text-stone-200 transition-colors">
                       Set location
                     </button>
                   )}
@@ -831,7 +831,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
                         disabled={!userLoc}
                         onClick={() => setFilterRadius(on ? null : r)}
                         title={!userLoc ? 'Set your location first' : undefined}
-                        className={`px-2 py-1.5 rounded-lg text-[11px] font-medium border transition-all duration-150 active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 ${
+                        className={`px-2 py-1.5 rounded-lg text-xs font-medium border transition-all duration-150 active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 ${
                           on
                             ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900 dark:border-stone-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]'
                             : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600 hover:bg-stone-50 dark:hover:bg-stone-800/60'
@@ -846,8 +846,8 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
 
               <div>
                 <div className="flex items-baseline justify-between mb-2">
-                  <p className="text-[11px] text-stone-500 dark:text-stone-400 font-semibold">Min rating</p>
-                  <span className="text-[11px] text-stone-500 dark:text-stone-400 tabular-nums">
+                  <p className="text-xs text-stone-500 dark:text-stone-400 font-semibold">Min rating</p>
+                  <span className="text-xs text-stone-500 dark:text-stone-400 tabular-nums">
                     {filterMinRating == null ? 'Any' : `${filterMinRating.toFixed(1)} & up`}
                   </span>
                 </div>
@@ -895,7 +895,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
               {activeFilterCount > 0 && (
                 <button
                   onClick={clearFilters}
-                  className="self-start text-[12px] font-medium text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors"
+                  className="self-start text-xs font-medium text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors"
                 >
                   Clear all filters
                 </button>
@@ -912,18 +912,18 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
           >
             {fetchError ? (
               <div className="flex flex-col items-center justify-center py-16 gap-3 text-center px-6">
-                <p className="text-[13px] text-stone-700 dark:text-stone-300 font-medium">Couldn&apos;t load the map</p>
-                <p className="text-[12px] text-stone-400 dark:text-stone-500">{fetchError}</p>
+                <p className="text-sm text-stone-700 dark:text-stone-300 font-medium">Couldn&apos;t load the map</p>
+                <p className="text-xs text-stone-400 dark:text-stone-500">{fetchError}</p>
                 <button
                   onClick={() => window.location.reload()}
-                  className="mt-1 px-4 py-1.5 rounded-full bg-stone-100 dark:bg-stone-800 text-[12px] text-stone-700 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
+                  className="mt-1 px-4 py-1.5 rounded-full bg-stone-100 dark:bg-stone-800 text-xs text-stone-700 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
                 >
                   Try again
                 </button>
               </div>
             ) : searchFiltered.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
-                <p className="text-[13px] text-stone-400 dark:text-stone-500">
+                <p className="text-sm text-stone-400 dark:text-stone-500">
                   {search.trim() ? 'No matches for your search' : 'No nearby listings yet'}
                 </p>
               </div>
@@ -948,19 +948,19 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-[13px] font-medium text-stone-500 dark:text-stone-400">
+                      <span className="text-sm font-medium text-stone-500 dark:text-stone-400">
                         {item.title.charAt(0).toUpperCase()}
                       </span>
                     )}
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-medium text-stone-800 dark:text-stone-200 truncate">{item.title}</p>
-                    <p className="text-[12px] text-stone-500 dark:text-stone-500 truncate">{item.category}</p>
-                    <p className="text-[11px] text-stone-400 dark:text-stone-500 truncate">{item.location}</p>
+                    <p className="text-sm font-medium text-stone-800 dark:text-stone-200 truncate">{item.title}</p>
+                    <p className="text-xs text-stone-500 dark:text-stone-500 truncate">{item.category}</p>
+                    <p className="text-xs text-stone-400 dark:text-stone-500 truncate">{item.location}</p>
                   </div>
 
-                  <span className="text-[11px] text-stone-400 dark:text-stone-500 shrink-0">
+                  <span className="text-xs text-stone-400 dark:text-stone-500 shrink-0">
                     {item.distance != null ? `${item.distance} mi` : '—'}
                   </span>
                 </button>
@@ -971,7 +971,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
           {/* Footer count */}
           {!fetchError && (
             <div className="px-5 py-3 border-t border-stone-200/70 dark:border-stone-800">
-              <p className="text-[11px] text-stone-400 dark:text-stone-500">
+              <p className="text-xs text-stone-400 dark:text-stone-500">
                 {searchFiltered.length} {searchFiltered.length === 1 ? 'result' : 'results'}
               </p>
             </div>
@@ -997,12 +997,12 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
                   <path d="M12 2 4 6v6c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V6l-8-4z"/>
                   <path d="m9 12 2 2 4-4"/>
                 </svg>
-                <p className="flex-1 text-[12px] text-stone-600 dark:text-stone-300 leading-snug">
+                <p className="flex-1 text-xs text-stone-600 dark:text-stone-300 leading-snug">
                   Allow location access in your browser to see places near you.
                 </p>
                 <button
                   onClick={handleUseMyLocation}
-                  className="text-[12px] font-medium text-stone-900 dark:text-stone-100 hover:underline shrink-0"
+                  className="text-xs font-medium text-stone-900 dark:text-stone-100 hover:underline shrink-0"
                 >
                   Try again
                 </button>
@@ -1033,7 +1033,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
               <button
                 onClick={handleSearchArea}
                 disabled={refetching}
-                className="pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-elevation-2 text-[13px] font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-60 disabled:cursor-wait transition-colors"
+                className="pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-elevation-2 text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-60 disabled:cursor-wait transition-colors"
               >
                 {refetching ? (
                   <div className="w-3.5 h-3.5 border-2 border-stone-300 dark:border-stone-700 border-t-stone-600 dark:border-t-stone-300 rounded-full animate-spin" />
@@ -1067,20 +1067,20 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-[15px] font-medium text-stone-300">
+                      <span className="text-sm font-medium text-stone-300">
                         {selected.title.charAt(0).toUpperCase()}
                       </span>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-[14px] font-semibold text-white truncate">{selected.title}</h3>
-                    <p className="text-[12px] text-stone-400 dark:text-stone-500 truncate">
+                    <h3 className="text-sm font-semibold text-white truncate">{selected.title}</h3>
+                    <p className="text-xs text-stone-400 dark:text-stone-500 truncate">
                       {selected.category}
                       {selected.rating != null && (
                         <span className="ml-1.5">· {selected.rating.toFixed(1)}★{selected.ratingCount ? ` (${selected.ratingCount})` : ''}</span>
                       )}
                     </p>
-                    <p className="text-[11px] text-stone-500 truncate">{selected.location}</p>
+                    <p className="text-xs text-stone-500 truncate">{selected.location}</p>
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); setSelected(null); }}
@@ -1105,22 +1105,22 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
                               {w.image ? (
                                 <Image src={w.image} alt={w.fullName} width={36} height={36} className="w-full h-full object-cover" />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center text-[12px] font-medium text-stone-300">
+                                <div className="w-full h-full flex items-center justify-center text-xs font-medium text-stone-300">
                                   {w.fullName.charAt(0)}
                                 </div>
                               )}
                             </div>
                             <div className="flex-1 min-w-0 leading-tight">
-                              <p className="text-[12px] font-medium text-stone-100 truncate">{w.fullName}</p>
+                              <p className="text-xs font-medium text-stone-100 truncate">{w.fullName}</p>
                               {w.jobTitle && (
-                                <p className="text-[11px] text-stone-400 truncate">{w.jobTitle}</p>
+                                <p className="text-xs text-stone-400 truncate">{w.jobTitle}</p>
                               )}
                             </div>
                           </div>
                         ))}
                       </div>
                       {overflow > 0 && (
-                        <p className="mt-2 text-[11px] text-stone-500 pl-1">+{overflow} more</p>
+                        <p className="mt-2 text-xs text-stone-500 pl-1">+{overflow} more</p>
                       )}
                     </div>
                   );
@@ -1132,7 +1132,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="flex-1 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-[13px] font-medium text-stone-200 transition-colors text-center inline-flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-sm font-medium text-stone-200 transition-colors text-center inline-flex items-center justify-center gap-1.5"
                     aria-label={`Get directions to ${selected.title}`}
                   >
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1148,7 +1148,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
                         : `/listings/${selected.id}`;
                       router.push(href);
                     }}
-                    className="flex-1 py-2 rounded-xl bg-white text-stone-900 hover:bg-stone-100 text-[13px] font-medium transition-colors"
+                    className="flex-1 py-2 rounded-xl bg-white text-stone-900 hover:bg-stone-100 text-sm font-medium transition-colors"
                     aria-label={`View details for ${selected.title}`}
                   >
                     View details

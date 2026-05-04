@@ -55,7 +55,7 @@ export const PageHeaderSkeleton: React.FC<{ embedded?: boolean }> = ({ embedded 
       >
         {['h-4 w-10', 'h-4 w-16', 'h-4 w-10', 'h-4 w-12', 'h-4 w-16', 'h-4 w-14'].map((cls, i) => (
           <React.Fragment key={i}>
-            {i > 0 && <span className="text-stone-300 dark:text-stone-600 text-[13px]">/</span>}
+            {i > 0 && <span className="text-stone-300 dark:text-stone-600 text-sm">/</span>}
             <Skeleton className={cls} />
           </React.Fragment>
         ))}

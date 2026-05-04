@@ -174,7 +174,7 @@ export default function SummaryStep({
                       <button
                         type="button"
                         onClick={() => openNoteEditor(sid)}
-                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors ${
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium transition-colors ${
                           hasNote
                             ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200'
                             : 'bg-stone-100 text-stone-500 dark:bg-stone-800 dark:text-stone-400 hover:bg-stone-200 hover:text-stone-700 dark:hover:bg-stone-700 dark:hover:text-stone-200'
@@ -234,14 +234,14 @@ export default function SummaryStep({
                           <button
                             type="button"
                             onClick={cancelNoteEditor}
-                            className="px-3 py-1 rounded-full text-[12px] font-medium text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
+                            className="px-3 py-1 rounded-full text-xs font-medium text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
                           >
                             Cancel
                           </button>
                           <button
                             type="button"
                             onClick={saveNoteEditor}
-                            className="px-3 py-1 rounded-full text-[12px] font-medium bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors"
+                            className="px-3 py-1 rounded-full text-xs font-medium bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors"
                           >
                             Save
                           </button>
@@ -275,7 +275,7 @@ export default function SummaryStep({
                 }`}
               >
                 <span className="block text-sm font-semibold text-stone-900 dark:text-stone-100">{pct}%</span>
-                <span className="block text-[11px] text-stone-500 dark:text-stone-500 tabular-nums">
+                <span className="block text-xs text-stone-500 dark:text-stone-500 tabular-nums">
                   ${amount}
                 </span>
               </button>
@@ -291,7 +291,7 @@ export default function SummaryStep({
             }`}
           >
             <span className="block text-sm font-semibold text-stone-900 dark:text-stone-100">Custom</span>
-            <span className="block text-[11px] text-stone-500 dark:text-stone-500">$</span>
+            <span className="block text-xs text-stone-500 dark:text-stone-500">$</span>
           </button>
           <button
             type="button"
@@ -303,7 +303,7 @@ export default function SummaryStep({
             }`}
           >
             <span className="block text-sm font-semibold text-stone-900 dark:text-stone-100">No tip</span>
-            <span className="block text-[11px] text-stone-500 dark:text-stone-500">—</span>
+            <span className="block text-xs text-stone-500 dark:text-stone-500">—</span>
           </button>
         </div>
 

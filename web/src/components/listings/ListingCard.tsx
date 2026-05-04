@@ -157,17 +157,17 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
                 <h3
                   className={`font-black text-stone-900 dark:text-stone-100 leading-[1.15] truncate tracking-tight pr-8 ${
                     (data.title?.length ?? 0) <= 14
-                      ? 'text-[17px]'
+                      ? 'text-lg'
                       : (data.title?.length ?? 0) <= 22
-                      ? 'text-[14px]'
-                      : 'text-[12px]'
+                      ? 'text-sm'
+                      : 'text-xs'
                   }`}
                 >
                   {data.title}
                 </h3>
 
                 {/* Location */}
-                <p className="mt-1.5 text-[11px] text-stone-400 dark:text-stone-500 font-medium">
+                <p className="mt-1.5 text-xs text-stone-400 dark:text-stone-500 font-medium">
                   {city && state ? `${city}, ${state}` : city || state || 'Location'}
                 </p>
 
@@ -255,22 +255,22 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
             <div className="absolute bottom-4 left-4 right-4 z-20">
               {/* Category */}
               {data.category && (
-                <span className="text-[9px] uppercase tracking-[0.1em] text-white/70 font-medium drop-shadow-sm">
+                <span className="text-xs uppercase tracking-[0.1em] text-white/70 font-medium drop-shadow-sm">
                   {data.category}
                 </span>
               )}
               {/* Title */}
-              <h1 className="text-white text-[17px] leading-snug font-semibold tracking-[-0.02em] drop-shadow line-clamp-2">
+              <h1 className="text-white text-lg leading-snug font-semibold tracking-[-0.02em] drop-shadow line-clamp-2">
                 {data.title}
               </h1>
 
               {/* Location */}
-              <p className="text-white/80 text-[12px] line-clamp-1 drop-shadow-sm">
+              <p className="text-white/80 text-xs line-clamp-1 drop-shadow-sm">
                 {city && state ? `${city}, ${state}` : city || state || 'Location'}
               </p>
 
               {/* Rating + price */}
-              <div className="mt-2 flex items-baseline gap-2 text-[12px]">
+              <div className="mt-2 flex items-baseline gap-2 text-xs">
                 <span className="font-semibold text-white tabular-nums drop-shadow-sm">{Number(data.rating ?? 5.0).toFixed(1)}</span>
                 {priceRange && (
                   <>
@@ -311,24 +311,24 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
       <div className="flex flex-col justify-center min-w-0 flex-1">
         {/* Category — editorial cursive */}
         {data.category && (
-          <p className="text-[11px] text-stone-400   dark:text-stone-400  leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
+          <p className="text-xs text-stone-400   dark:text-stone-400  leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
             {data.category}
             {isSample && <span className="text-amber-600 dark:text-amber-500"> · sample</span>}
           </p>
         )}
 
         {/* Title */}
-        <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100  tracking-[-0.01em] leading-tight line-clamp-2 mt-1.5">
+        <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100  tracking-[-0.01em] leading-tight line-clamp-2 mt-1.5">
           {data.title}
         </h2>
 
         {/* Location */}
-        <p className="text-[11px] text-stone-400   dark:text-stone-400  leading-none mt-1.5">
+        <p className="text-xs text-stone-400   dark:text-stone-400  leading-none mt-1.5">
           {city && state ? `${city}, ${state}` : city || state || 'Location'}
         </p>
 
         {/* Rating | Price */}
-        <div className="flex items-center text-[11px] text-stone-400   dark:text-stone-400  leading-none mt-2.5 tabular-nums">
+        <div className="flex items-center text-xs text-stone-400   dark:text-stone-400  leading-none mt-2.5 tabular-nums">
           <svg width="11" height="11" viewBox="0 0 24 24" className="text-stone-400   dark:text-stone-400  mr-1 -mt-px flex-shrink-0">
             <defs>
               <linearGradient id="listingStarGold" x1="0%" y1="0%" x2="100%" y2="100%">

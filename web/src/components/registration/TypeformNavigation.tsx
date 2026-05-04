@@ -64,7 +64,7 @@ export default function TypeformNavigation({
       {!hideBottomBar && (
       <div className="fixed bottom-6 left-0 right-0 bg-white dark:bg-stone-900 border-t border-stone-100 dark:border-stone-800 px-6 py-4 safe-bottom">
         {termsNotice && isLastStep && (
-          <p className="text-center text-[11px] text-stone-400 dark:text-stone-500 mb-2 max-w-xl mx-auto">
+          <p className="text-center text-xs text-stone-400 dark:text-stone-500 mb-2 max-w-xl mx-auto">
             By continuing, you agree to the ForMe{' '}
             <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-stone-600 dark:text-stone-300">Terms of Service</a>
             {' '}and{' '}

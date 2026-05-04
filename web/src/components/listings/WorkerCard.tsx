@@ -211,12 +211,12 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
                 </div>
 
                 {/* Name - large and bold */}
-                <h3 className="text-[17px] font-black text-stone-900 dark:text-stone-100 leading-[1.15] line-clamp-2 tracking-tight pr-8">
+                <h3 className="text-lg font-black text-stone-900 dark:text-stone-100 leading-[1.15] line-clamp-2 tracking-tight pr-8">
                   {employee.fullName}
                 </h3>
 
                 {/* Job title - understated */}
-                <p className="mt-1.5 text-[11px] text-stone-400 dark:text-stone-500 font-medium">
+                <p className="mt-1.5 text-xs text-stone-400 dark:text-stone-500 font-medium">
                   {employee.jobTitle || employee.user?.jobTitle || 'Specialist'}
                 </p>
 
@@ -303,7 +303,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
           const label = employee.jobTitle || employee.user?.jobTitle || fallbackCategory;
           if (!label) return null;
           return (
-            <p className="text-[11px] text-stone-400 dark:text-stone-500 leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
+            <p className="text-xs text-stone-400 dark:text-stone-500 leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
               {label}
               {isSample && <span className="text-amber-600 dark:text-amber-500"> · sample</span>}
             </p>
@@ -311,23 +311,23 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
         })()}
 
         {/* Name */}
-        <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.01em] leading-tight line-clamp-2 mt-1.5">
+        <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.01em] leading-tight line-clamp-2 mt-1.5">
           {employee.fullName}
         </h2>
 
         {/* Storefront slot — listing title, or "Independent" badge for solo providers */}
         {employee.isIndependent ? (
-          <p className="text-[11px] text-stone-400 dark:text-stone-500 leading-none mt-1.5">
+          <p className="text-xs text-stone-400 dark:text-stone-500 leading-none mt-1.5">
             Independent
           </p>
         ) : (
-          <p className="text-[11px] text-stone-400 dark:text-stone-500 leading-none mt-1.5">
+          <p className="text-xs text-stone-400 dark:text-stone-500 leading-none mt-1.5">
             {listingTitle}
           </p>
         )}
 
         {/* Rating | Price */}
-        <div className="flex items-center text-[11px] text-stone-400 dark:text-stone-500 leading-none mt-2.5 tabular-nums">
+        <div className="flex items-center text-xs text-stone-400 dark:text-stone-500 leading-none mt-2.5 tabular-nums">
           <svg width="11" height="11" viewBox="0 0 24 24" className="text-stone-400 dark:text-stone-500 mr-1 -mt-px flex-shrink-0">
             <defs>
               <linearGradient id="workerStarGold" x1="0%" y1="0%" x2="100%" y2="100%">

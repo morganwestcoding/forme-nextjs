@@ -14,13 +14,13 @@ const AcademySelect = ({ value, onChange }: AcademySelectProps) => {
 
   if (isLoading) {
     return (
-      <div className="text-[13px] text-stone-400 py-4">Loading academies…</div>
+      <div className="text-sm text-stone-400 py-4">Loading academies…</div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-[13px] text-red-500 py-4">
+      <div className="text-sm text-red-500 py-4">
         Could not load academies. {error}
       </div>
     );
@@ -28,7 +28,7 @@ const AcademySelect = ({ value, onChange }: AcademySelectProps) => {
 
   if (academies.length === 0) {
     return (
-      <div className="text-[13px] text-stone-400 py-4">
+      <div className="text-sm text-stone-400 py-4">
         No partner academies available yet.
       </div>
     );

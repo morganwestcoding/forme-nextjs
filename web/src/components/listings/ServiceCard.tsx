@@ -276,12 +276,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 <div className={compact ? 'mb-2 h-8' : 'mb-3 h-12'} />
 
                 {/* Service name - large and bold */}
-                <h3 className="text-[17px] font-black text-stone-900 dark:text-stone-100 leading-[1.2] line-clamp-2 tracking-tight pr-8">
+                <h3 className="text-lg font-black text-stone-900 dark:text-stone-100 leading-[1.2] line-clamp-2 tracking-tight pr-8">
                   {service.serviceName || 'Untitled Service'}
                 </h3>
 
                 {/* Duration - understated */}
-                <p className="mt-1.5 text-[11px] text-stone-400 dark:text-stone-500 font-medium">
+                <p className="mt-1.5 text-xs text-stone-400 dark:text-stone-500 font-medium">
                   {durationDisplay}
                 </p>
 
@@ -309,12 +309,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               {(service.popular || service.isNew) && (
                 <div className="absolute left-3 top-3 flex items-center gap-1.5 z-20">
                   {service.popular && (
-                    <span className="px-2 py-0.5 text-[9px] font-medium rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30">
+                    <span className="px-2 py-0.5 text-xs font-medium rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30">
                       Popular
                     </span>
                   )}
                   {service.isNew && (
-                    <span className="px-2 py-0.5 text-[9px] font-medium rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30">
+                    <span className="px-2 py-0.5 text-xs font-medium rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30">
                       New
                     </span>
                   )}

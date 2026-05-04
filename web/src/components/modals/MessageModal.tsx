@@ -260,7 +260,7 @@ const MessageModal: React.FC = () => {
     return (
       <div className="relative flex items-center my-5">
         <div className="flex-grow border-t border-stone-100 dark:border-stone-800" />
-        <span className="mx-3 text-stone-400 dark:text-stone-500 font-medium text-[10px] px-2.5 py-0.5 rounded-full bg-stone-50 dark:bg-stone-900">
+        <span className="mx-3 text-stone-400 dark:text-stone-500 font-medium text-xs px-2.5 py-0.5 rounded-full bg-stone-50 dark:bg-stone-900">
           {formatted}
         </span>
         <div className="flex-grow border-t border-stone-100 dark:border-stone-800" />
@@ -366,7 +366,7 @@ const MessageModal: React.FC = () => {
                             } ${!isOther && showTime ? 'rounded-br-sm' : ''} ${isOther && showTime ? 'rounded-bl-sm' : ''}`}
                             style={!isOther ? { background: '#1c1917' } : undefined}
                           >
-                            <p className="whitespace-pre-wrap break-words text-[13px] leading-relaxed">
+                            <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
                               {message.content}
                             </p>
                           </div>
@@ -375,7 +375,7 @@ const MessageModal: React.FC = () => {
 
                       {showTime && (
                         <div className={`mt-1 flex ${isOther ? 'justify-start' : 'justify-end'} ${isOther ? 'ml-2' : 'mr-2'}`}>
-                          <span className="text-[11px] text-stone-500  dark:text-stone-500">
+                          <span className="text-xs text-stone-500  dark:text-stone-500">
                             {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
@@ -409,7 +409,7 @@ const MessageModal: React.FC = () => {
                   onChange={(e) => { setNewMessage(e.target.value); emitTyping(); }}
                   onKeyPress={handleKeyPress}
                   placeholder="Type a message..."
-                  className="w-full pl-4 pr-12 py-2.5 text-[14px] bg-transparent border-none outline-none
+                  className="w-full pl-4 pr-12 py-2.5 text-sm bg-transparent border-none outline-none
                              text-stone-900 dark:text-stone-100 placeholder-stone-400"
                 />
                 <button

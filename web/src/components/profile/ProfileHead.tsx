@@ -321,10 +321,10 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
 
   const deleteConfirmBody = (
     <div className="pt-1">
-      <h2 className="text-[20px] font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.015em] mb-2">
+      <h2 className="text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.015em] mb-2">
         {isOwner ? 'Delete your account?' : `Delete ${name || 'this user'}?`}
       </h2>
-      <p className="text-[13.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
+      <p className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">
         This permanently removes the {isOwner ? 'account' : 'user'} and all associated profile data,
         listings, posts, services, and reservations. This action can&apos;t be undone.
       </p>
@@ -472,7 +472,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   {name ?? 'User'}
                 </h1>
                 {!isCustomer && (
-                  <p className="text-[13px] text-stone-400 dark:text-stone-500 mt-1">{jobTitle || (isStudent ? 'Student' : 'Member')}</p>
+                  <p className="text-sm text-stone-400 dark:text-stone-500 mt-1">{jobTitle || (isStudent ? 'Student' : 'Member')}</p>
                 )}
                 {location && (
                   <a
@@ -480,7 +480,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="text-[13px] text-stone-400  mt-1 hover:text-stone-600 dark:text-stone-300 transition-colors"
+                    className="text-sm text-stone-400  mt-1 hover:text-stone-600 dark:text-stone-300 transition-colors"
                   >
                     {city}{state ? `, ${state}` : ''}
                   </a>
@@ -518,18 +518,18 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
             <div className="px-6 py-5">
               <div className="flex items-center justify-between text-center">
                 <div className="flex-1">
-                  <p className="text-[18px] font-bold text-stone-900 dark:text-stone-100 tabular-nums">{followersCount}</p>
-                  <p className="text-[12px] text-stone-400 dark:text-stone-500 mt-0.5">followers</p>
+                  <p className="text-lg font-bold text-stone-900 dark:text-stone-100 tabular-nums">{followersCount}</p>
+                  <p className="text-xs text-stone-400 dark:text-stone-500 mt-0.5">followers</p>
                 </div>
                 <div className="w-px h-10 bg-stone-100 dark:bg-stone-800" />
                 <div className="flex-1">
-                  <p className="text-[18px] font-bold text-stone-900 dark:text-stone-100 tabular-nums">{posts.length}</p>
-                  <p className="text-[12px] text-stone-400 dark:text-stone-500 mt-0.5">posts</p>
+                  <p className="text-lg font-bold text-stone-900 dark:text-stone-100 tabular-nums">{posts.length}</p>
+                  <p className="text-xs text-stone-400 dark:text-stone-500 mt-0.5">posts</p>
                 </div>
                 <div className="w-px h-10 bg-stone-100 dark:bg-stone-800" />
                 <div className="flex-1">
-                  <p className="text-[18px] font-bold text-stone-900 dark:text-stone-100 tabular-nums">{reviewStats?.totalCount || 0}</p>
-                  <p className="text-[12px] text-stone-400 dark:text-stone-500 mt-0.5">reviews</p>
+                  <p className="text-lg font-bold text-stone-900 dark:text-stone-100 tabular-nums">{reviewStats?.totalCount || 0}</p>
+                  <p className="text-xs text-stone-400 dark:text-stone-500 mt-0.5">reviews</p>
                 </div>
               </div>
             </div>
@@ -539,7 +539,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 string "No Bio Provided Yet.." as a fallback, so treat that
                 as empty for placeholder purposes. */}
             <div className="px-6 py-5">
-              <p className={`text-[13px] leading-[1.7] whitespace-pre-wrap ${bio && bio.trim() && bio !== 'No Bio Provided Yet..' ? 'text-stone-700 dark:text-stone-200' : 'text-stone-400 dark:text-stone-500 italic'}`}>
+              <p className={`text-sm leading-[1.7] whitespace-pre-wrap ${bio && bio.trim() && bio !== 'No Bio Provided Yet..' ? 'text-stone-700 dark:text-stone-200' : 'text-stone-400 dark:text-stone-500 italic'}`}>
                 {bio && bio.trim() && bio !== 'No Bio Provided Yet..'
                   ? bio
                   : `${firstName} hasn't added a bio yet.`}
@@ -570,7 +570,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   </Button>
                   <button
                     onClick={handleFollow}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-stone-50  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 text-stone-700 dark:text-stone-200 rounded-xl text-[13px] font-medium transition-all border border-stone-200/60"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-stone-50  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 text-stone-700 dark:text-stone-200 rounded-xl text-sm font-medium transition-all border border-stone-200/60"
                     type="button"
                   >
                     {isFollowing ? 'Following' : 'Follow'}
@@ -641,7 +641,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-4">
                   <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Posts</h3>
-                  <span className="text-[11px] font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{posts.length}</span>
+                  <span className="text-xs font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{posts.length}</span>
                 </div>
                 <button className="text-xs font-medium text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
               </div>
@@ -699,7 +699,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-4">
                   <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Services</h3>
-                  <span className="text-[11px] font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{services.length}</span>
+                  <span className="text-xs font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{services.length}</span>
                 </div>
               </div>
               {services.length > 0 ? (
@@ -765,7 +765,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-4">
                     <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Businesses</h3>
-                    <span className="text-[11px] font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{visibleListings.length}</span>
+                    <span className="text-xs font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{visibleListings.length}</span>
                   </div>
                   <button className="text-xs font-medium text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
                 </div>
@@ -805,7 +805,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-4">
                   <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Gallery</h3>
-                  <span className="text-[11px] font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{galleryImages.length}</span>
+                  <span className="text-xs font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{galleryImages.length}</span>
                 </div>
                 <button className="text-xs font-medium text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
               </div>
@@ -843,7 +843,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-4">
                   <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Reviews</h3>
-                  <span className="text-[11px] font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{reviews.length}</span>
+                  <span className="text-xs font-medium text-stone-500  dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-full tabular-nums">{reviews.length}</span>
                 </div>
                 <button className="text-xs font-medium text-stone-500   hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 transition-colors">View all</button>
               </div>

@@ -22,8 +22,8 @@ export default function NewShopError({
           <path d="M12 8v4M12 16h.01" />
         </svg>
       </div>
-      <h2 className="text-[16px] font-semibold text-stone-900 dark:text-stone-100 mb-1">Couldn&apos;t load shop editor</h2>
-      <p className="text-[13px] text-stone-500 dark:text-stone-500 max-w-sm mb-6">
+      <h2 className="text-base font-semibold text-stone-900 dark:text-stone-100 mb-1">Couldn&apos;t load shop editor</h2>
+      <p className="text-sm text-stone-500 dark:text-stone-500 max-w-sm mb-6">
         Something went wrong loading this page. Try again or head back home.
       </p>
       <div className="flex gap-2.5">

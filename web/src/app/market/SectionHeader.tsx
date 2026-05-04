@@ -45,7 +45,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
           {onViewAll && (
             <button
               onClick={onViewAll}
-              className="text-[13px] font-medium text-stone-400 hover:text-stone-500 dark:text-stone-500 dark:hover:text-stone-400 transition-colors duration-300"
+              className="text-sm font-medium text-stone-400 hover:text-stone-500 dark:text-stone-500 dark:hover:text-stone-400 transition-colors duration-300"
               aria-label={viewAllLabel}
             >
               {viewAllLabel}

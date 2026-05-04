@@ -59,7 +59,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ searchParams, basePath = '/ma
               key={category.label}
               onClick={() => handleCategorySelect(category.label)}
               className={`
-                relative px-3 sm:px-4 h-9 flex items-center text-[12px] sm:text-[13px] font-medium rounded-xl border transition-all duration-200 active:scale-[0.97] whitespace-nowrap flex-shrink-0 overflow-hidden
+                relative px-3 sm:px-4 h-9 flex items-center text-xs sm:text-sm font-medium rounded-xl border transition-all duration-200 active:scale-[0.97] whitespace-nowrap flex-shrink-0 overflow-hidden
                 ${isSelected
                   ? 'text-white border-transparent scale-[1.02]'
                   : 'border-stone-300/90 dark:border-stone-600/60 text-stone-500 dark:text-stone-400 hover:border-stone-400 dark:hover:border-stone-500 hover:text-stone-600 dark:hover:text-stone-300'

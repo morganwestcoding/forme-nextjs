@@ -87,7 +87,7 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
           {/* Page title */}
           <div className="mb-8">
             <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">My Listings</h1>
-            <p className="text-[14px] text-stone-400 dark:text-stone-500 mt-1">{listings.length} {listings.length === 1 ? 'listing' : 'listings'}</p>
+            <p className="text-sm text-stone-400 dark:text-stone-500 mt-1">{listings.length} {listings.length === 1 ? 'listing' : 'listings'}</p>
           </div>
 
           {listings.length > 0 ? (
@@ -149,8 +149,8 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
                   <path d="M12 5v14M5 12h14" />
                 </svg>
               </div>
-              <p className="text-[15px] font-medium text-stone-700 dark:text-stone-200 mb-1">No listings yet</p>
-              <p className="text-[13px] text-stone-400 dark:text-stone-500 max-w-xs">Create your first listing to start showcasing your services.</p>
+              <p className="text-sm font-medium text-stone-700 dark:text-stone-200 mb-1">No listings yet</p>
+              <p className="text-sm text-stone-400 dark:text-stone-500 max-w-xs">Create your first listing to start showcasing your services.</p>
               <div className="mt-5">
                 <Button onClick={() => router.push('/listing/new')}>
                   Create Listing

@@ -32,7 +32,7 @@ export default async function AdminAcademyDetailPage({ params, searchParams }: P
         <div className="mb-2">
           <Link
             href="/admin/academies"
-            className="text-[12px] text-stone-400 hover:text-stone-600 transition-colors"
+            className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
           >
             ← All academies
           </Link>
@@ -42,7 +42,7 @@ export default async function AdminAcademyDetailPage({ params, searchParams }: P
             {academy.name}
           </h1>
           {academy.description && (
-            <p className="text-[14px] text-stone-400 mt-1">{academy.description}</p>
+            <p className="text-sm text-stone-400 mt-1">{academy.description}</p>
           )}
         </div>
 

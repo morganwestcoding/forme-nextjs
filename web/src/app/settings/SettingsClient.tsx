@@ -224,7 +224,7 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
       <div className="mt-8 pb-16">
         <div className="mb-8">
           <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Settings</h1>
-          <p className="text-[14px] text-stone-400 dark:text-stone-500 mt-1">Manage your preferences</p>
+          <p className="text-sm text-stone-400 dark:text-stone-500 mt-1">Manage your preferences</p>
         </div>
 
         {/* Tabs */}
@@ -233,7 +233,7 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-4 py-2 rounded-full text-[13px] font-medium transition-all whitespace-nowrap ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.key
                   ? 'bg-gradient-to-br from-stone-800 to-black text-white shadow-pill-active dark:from-stone-100 dark:to-white dark:text-stone-900 dark:shadow-pill-active-dark'
                   : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 shadow-inset-outline'
@@ -258,8 +258,8 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                     <Sun03Icon size={18} className="text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
                   )}
                   <div>
-                    <h3 className="text-[14px] font-semibold text-stone-900 dark:text-stone-100">Dark Mode</h3>
-                    <p className="text-[12px] text-stone-400 dark:text-stone-500 mt-0.5">Switch between light and dark themes</p>
+                    <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Dark Mode</h3>
+                    <p className="text-xs text-stone-400 dark:text-stone-500 mt-0.5">Switch between light and dark themes</p>
                   </div>
                 </div>
                 <button
@@ -278,8 +278,8 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                 <div className="flex items-center gap-3">
                   <BulbIcon size={18} className="text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
                   <div>
-                    <h3 className="text-[14px] font-semibold text-stone-900 dark:text-stone-100">Welcome Guide</h3>
-                    <p className="text-[12px] text-stone-400 dark:text-stone-500 mt-0.5">Show the welcome modal on each visit</p>
+                    <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Welcome Guide</h3>
+                    <p className="text-xs text-stone-400 dark:text-stone-500 mt-0.5">Show the welcome modal on each visit</p>
                   </div>
                 </div>
                 <button
@@ -305,14 +305,14 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                 <div className="flex items-center gap-3">
                   <Delete02Icon size={18} className="text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
                   <div>
-                    <h3 className="text-[14px] font-semibold text-stone-900 dark:text-stone-100">Delete Account</h3>
-                    <p className="text-[12px] text-stone-400 dark:text-stone-500 mt-0.5">Permanently delete your account and all data</p>
+                    <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Delete Account</h3>
+                    <p className="text-xs text-stone-400 dark:text-stone-500 mt-0.5">Permanently delete your account and all data</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
                   disabled={deleting}
-                  className="px-4 py-2 rounded-xl text-[12px] font-medium bg-red-50 text-red-600 hover:bg-red-100 border border-red-200/60 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 dark:border-red-500/20 transition-all whitespace-nowrap"
+                  className="px-4 py-2 rounded-xl text-xs font-medium bg-red-50 text-red-600 hover:bg-red-100 border border-red-200/60 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 dark:border-red-500/20 transition-all whitespace-nowrap"
                 >
                   Delete Account
                 </button>
@@ -331,23 +331,23 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                 </div>
                 <h3 className="text-lg font-semibold text-stone-900 dark:text-stone-100">Delete Account?</h3>
               </div>
-              <p className="text-[13px] text-stone-500 dark:text-stone-500 mb-2">
+              <p className="text-sm text-stone-500 dark:text-stone-500 mb-2">
                 This will permanently delete your account, profile, and all associated data.
               </p>
-              <p className="text-[13px] text-stone-500 dark:text-stone-500 mb-6">
+              <p className="text-sm text-stone-500 dark:text-stone-500 mb-6">
                 This action cannot be undone. You&apos;ll be signed out immediately.
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-stone-50 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200/60 transition-all"
+                  className="flex-1 py-3 rounded-xl text-sm font-medium bg-stone-50 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200/60 transition-all"
                 >
                   Keep Account
                 </button>
                 <button
                   onClick={handleDeleteAccount}
                   disabled={deleting}
-                  className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-red-600 text-white hover:bg-red-700 transition-all"
+                  className="flex-1 py-3 rounded-xl text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-all"
                 >
                   {deleting ? 'Deleting...' : 'Delete Account'}
                 </button>
@@ -360,13 +360,13 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
         {activeTab === 'legal' && (
           <div className="space-y-6">
             <Card padding="md">
-              <h3 className="text-[14px] font-semibold text-stone-900 dark:text-stone-100 mb-4">Legal</h3>
+              <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100 mb-4">Legal</h3>
               <div className="space-y-3">
                 <a
                   href="/terms"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between py-2.5 px-1 border-b border-stone-100 dark:border-stone-800 text-[13px] text-stone-600  hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
+                  className="flex items-center justify-between py-2.5 px-1 border-b border-stone-100 dark:border-stone-800 text-sm text-stone-600  hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
                 >
                   Terms of Service
                   <ArrowRight01Icon size={14} className="text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
@@ -375,7 +375,7 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                   href="/privacy"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between py-2.5 px-1 text-[13px] text-stone-600  hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
+                  className="flex items-center justify-between py-2.5 px-1 text-sm text-stone-600  hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 transition-colors"
                 >
                   Privacy Policy
                   <ArrowRight01Icon size={14} className="text-stone-400 dark:text-stone-500" strokeWidth={1.5} />
@@ -397,8 +397,8 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                     <CreditCardIcon size={18} className="text-stone-500  dark:text-stone-500" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 mb-1">Set Up Payments</h3>
-                    <p className="text-[13px] text-stone-400 dark:text-stone-500 mb-4 leading-relaxed">
+                    <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100 mb-1">Set Up Payments</h3>
+                    <p className="text-sm text-stone-400 dark:text-stone-500 mb-4 leading-relaxed">
                       Connect your bank account to receive payments. ForMe takes a 10% platform fee on each transaction.
                       By connecting, you agree to the{' '}
                       <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-stone-600 dark:text-stone-300">Terms of Service</a>.
@@ -418,14 +418,14 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                     <AlertCircleIcon size={18} className="text-amber-500" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 mb-1">Complete Payment Setup</h3>
-                    <p className="text-[13px] text-stone-400 dark:text-stone-500 mb-4 leading-relaxed">
+                    <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100 mb-1">Complete Payment Setup</h3>
+                    <p className="text-sm text-stone-400 dark:text-stone-500 mb-4 leading-relaxed">
                       Your payment account needs additional information before you can receive payments.
                     </p>
                     <button
                       onClick={handleOnboard}
                       disabled={actionLoading}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white text-[13px] font-medium rounded-xl hover:bg-amber-600 transition-all disabled:opacity-50 active:scale-[0.98]"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white text-sm font-medium rounded-xl hover:bg-amber-600 transition-all disabled:opacity-50 active:scale-[0.98]"
                     >
                       {actionLoading ? 'Loading...' : 'Continue Setup'}
                       <ArrowRight01Icon size={14} strokeWidth={2.5} />
@@ -438,8 +438,8 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                     <CheckmarkCircle02Icon size={18} className="text-emerald-500 dark:text-emerald-400" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100 mb-1">Payments Active</h3>
-                    <p className="text-[13px] text-stone-400 dark:text-stone-500 mb-4 leading-relaxed">
+                    <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100 mb-1">Payments Active</h3>
+                    <p className="text-sm text-stone-400 dark:text-stone-500 mb-4 leading-relaxed">
                       You&apos;ll receive payments automatically when customers complete bookings.
                     </p>
                     <Button

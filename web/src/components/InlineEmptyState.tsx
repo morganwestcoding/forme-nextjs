@@ -36,11 +36,11 @@ const InlineEmptyState: React.FC<InlineEmptyStateProps> = ({
 
   const content = (
     <div className="text-center max-w-[360px]">
-      <h3 className="text-[15px] font-semibold text-stone-700 dark:text-stone-200 tracking-[-0.01em] leading-tight">
+      <h3 className="text-sm font-semibold text-stone-700 dark:text-stone-200 tracking-[-0.01em] leading-tight">
         {title}
       </h3>
       {subtitle && (
-        <p className="mt-1.5 text-[12.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
+        <p className="mt-1.5 text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
           {subtitle}
         </p>
       )}

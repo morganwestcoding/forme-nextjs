@@ -95,12 +95,12 @@ export default async function AdminPage() {
     <Container>
       <div className="mt-8 mb-12">
         <div className="mb-2">
-          <Link href="/" className="text-[12px] text-stone-400 hover:text-stone-600 dark:text-stone-300 transition-colors">
+          <Link href="/" className="text-xs text-stone-400 hover:text-stone-600 dark:text-stone-300 transition-colors">
             ← Back to ForMe
           </Link>
         </div>
         <div className="mb-8">
-          <p className="text-[12px] text-stone-400 dark:text-stone-500 mb-1">{isMaster ? "Master admin" : "Admin"}</p>
+          <p className="text-xs text-stone-400 dark:text-stone-500 mb-1">{isMaster ? "Master admin" : "Admin"}</p>
           <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">Dashboard</h1>
         </div>
 
@@ -128,7 +128,7 @@ export default async function AdminPage() {
                     <Icon className="w-4 h-4" strokeWidth={1.75} />
                   </div>
                 </div>
-                <p className="text-[11px] font-medium text-stone-400 dark:text-stone-500 mb-1">
+                <p className="text-xs font-medium text-stone-400 dark:text-stone-500 mb-1">
                   {kpi.label}
                 </p>
                 <p
@@ -165,16 +165,16 @@ export default async function AdminPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100">
+                      <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">
                         {item.label}
                       </h3>
                       {hasBadge && (
-                        <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-semibold text-white bg-amber-500 tabular-nums">
+                        <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold text-white bg-amber-500 tabular-nums">
                           {item.badge! > 99 ? "99+" : item.badge}
                         </span>
                       )}
                     </div>
-                    <p className="text-[13px] text-stone-500 dark:text-stone-400 mt-1">
+                    <p className="text-sm text-stone-500 dark:text-stone-400 mt-1">
                       {item.description}
                     </p>
                   </div>

@@ -667,10 +667,10 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                             className="w-full flex items-center justify-center py-16 px-6 rounded-2xl border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/40 hover:border-stone-900 dark:hover:border-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
                           >
                             <div className="text-center max-w-[340px]">
-                              <h3 className="text-[20px] font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
+                              <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
                                 No posts yet
                               </h3>
-                              <p className="mt-2 text-[13.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
+                              <p className="mt-2 text-sm text-stone-500 dark:text-stone-400 leading-relaxed">
                                 {currentUser ? 'Be the first to share a look, a moment, or a behind-the-scenes peek with the community.' : 'Sign in to share a look, a moment, or a behind-the-scenes peek with the community.'}
                               </p>
                             </div>
@@ -803,7 +803,7 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                           animation: 'fadeInUp 600ms ease-out 300ms both',
                         }}
                       >
-                        <h2 className="text-[22px] font-semibold text-stone-900 dark:text-stone-100 dark:text-white leading-tight">
+                        <h2 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 dark:text-white leading-tight">
                           {allContentItems.length} {allContentItems.length === 1 ? 'Result' : 'Results'}
                           {filterInfo.resultsHeaderText ? ` — ${filterInfo.resultsHeaderText}` : ''}
                         </h2>
@@ -857,10 +857,10 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                 {filterInfo.isFiltered ? (
                   <div className="flex items-center justify-center min-h-[60vh]">
                     <div className="text-center max-w-[360px]">
-                      <h3 className="text-[20px] font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
+                      <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
                         No matches found
                       </h3>
-                      <p className="mt-2 text-[13.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
+                      <p className="mt-2 text-sm text-stone-500 dark:text-stone-400 leading-relaxed">
                         Try adjusting your filters or clearing them to see everything we have.
                       </p>
                     </div>
@@ -872,10 +872,10 @@ const DiscoverClient: React.FC<DiscoverClientProps> = ({
                     className="w-full flex items-center justify-center min-h-[60vh] rounded-2xl border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/40 hover:border-stone-900 dark:hover:border-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
                   >
                     <div className="text-center max-w-[360px]">
-                      <h3 className="text-[20px] font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
+                      <h3 className="text-xl font-semibold text-stone-900 dark:text-stone-50 tracking-[-0.02em] leading-tight">
                         Nothing here yet
                       </h3>
-                      <p className="mt-2 text-[13.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
+                      <p className="mt-2 text-sm text-stone-500 dark:text-stone-400 leading-relaxed">
                         {currentUser ? 'Be the first to share a look, a moment, or a behind-the-scenes peek with the community.' : 'Sign in to share a look, a moment, or a behind-the-scenes peek with the community.'}
                       </p>
                     </div>

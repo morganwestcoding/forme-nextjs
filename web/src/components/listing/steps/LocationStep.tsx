@@ -378,7 +378,7 @@ export default function LocationStep({
                           }`}
                         >
                           <span className="text-left">{s.display}</span>
-                          {s.zip && <span className="text-[11px] text-stone-400 dark:text-stone-500 ml-2 flex-shrink-0">{s.zip}</span>}
+                          {s.zip && <span className="text-xs text-stone-400 dark:text-stone-500 ml-2 flex-shrink-0">{s.zip}</span>}
                         </button>
                       ))}
                     </div>
