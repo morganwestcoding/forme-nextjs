@@ -293,7 +293,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
   return (
     <div
       onClick={() => router.push(`/listings/${data.id}`)}
-      className="group cursor-pointer rounded-2xl p-3 -mx-3 flex flex-row gap-4 relative transition-colors duration-200 hover:bg-stone-50/80 dark:hover:bg-stone-900/40"
+      className="group cursor-pointer rounded-2xl p-3 -mx-3 flex flex-row gap-4 relative transition-colors duration-200 hover:bg-stone-50 dark:bg-stone-900/80 dark:hover:bg-stone-900/40"
     >
       {/* Image */}
       <div className="relative overflow-hidden rounded-xl flex-shrink-0 w-[120px] h-[120px] shadow">

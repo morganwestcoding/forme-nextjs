@@ -158,7 +158,7 @@ const Modal = forwardRef<ModalHandle, ModalProps>(({
               <button
                 aria-label="Close"
                 onClick={(e) => { e.stopPropagation(); handleClose(); }}
-                className="absolute right-5 top-5 md:top-5 p-2 rounded-xl hover:bg-stone-100/80 dark:hover:bg-stone-700/80 active:bg-stone-200/80 dark:active:bg-stone-600/80 transition-all duration-200 z-10 group"
+                className="absolute right-5 top-5 md:top-5 p-2 rounded-xl hover:bg-stone-100 dark:bg-stone-800/80 dark:hover:bg-stone-700/80 active:bg-stone-200/80 dark:active:bg-stone-600/80 transition-all duration-200 z-10 group"
               >
                 <X size={20} className="text-stone-400 dark:text-stone-500 group-hover:text-stone-600 dark:group-hover:text-stone-300 transition-colors duration-200" />
               </button>

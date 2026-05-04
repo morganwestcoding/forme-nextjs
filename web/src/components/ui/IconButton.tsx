@@ -13,8 +13,8 @@ interface IconButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElem
 }
 
 const VARIANT_CLASSES: Record<Variant, string> = {
-  ghost: 'text-stone-500 hover:text-stone-900 hover:bg-stone-100 dark:text-stone-400 dark:hover:text-stone-100 dark:hover:bg-stone-800',
-  outline: 'border border-stone-200 text-stone-700 hover:bg-stone-50 hover:border-stone-300 dark:border-stone-700 dark:text-stone-200 dark:hover:bg-stone-800',
+  ghost: 'text-stone-500 hover:text-stone-900 hover:bg-stone-100 dark:bg-stone-800 dark:text-stone-400 dark:hover:text-stone-100 dark:hover:bg-stone-800',
+  outline: 'border border-stone-200 text-stone-700 hover:bg-stone-50 dark:bg-stone-900 hover:border-stone-300 dark:border-stone-700 dark:text-stone-200 dark:hover:bg-stone-800',
   solid: 'bg-stone-900 text-white hover:bg-stone-800 dark:bg-white dark:text-stone-900 dark:hover:bg-stone-100',
 };
 

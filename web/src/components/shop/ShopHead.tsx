@@ -284,7 +284,7 @@ const ShopHead: React.FC<ShopHeadProps> = ({
         {/* ===== LEFT COLUMN - Shop Card ===== */}
         <div ref={leftColumnRef} className="w-[320px] flex-shrink-0 hidden md:flex flex-col gap-4 py-10">
           <div
-            className="rounded-2xl overflow-hidden border border-stone-200/40 shadow-elevation-1 transition-colors duration-700"
+            className="rounded-2xl overflow-hidden border border-stone-200 dark:border-stone-700/40 shadow-elevation-1 transition-colors duration-700"
             style={{
               background: dominantColor
                 ? `linear-gradient(180deg, rgba(${dominantColor}, 0.06) 0%, rgba(${dominantColor}, 0.02) 40%, white 100%)`
@@ -435,7 +435,7 @@ const ShopHead: React.FC<ShopHeadProps> = ({
                     onClick={handleToggleFollow}
                     className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                       listingId
-                        ? 'bg-stone-50   hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800   text-stone-700 dark:text-stone-200  border border-stone-200/60'
+                        ? 'bg-stone-50   hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800   text-stone-700 dark:text-stone-200  border border-stone-200 dark:border-stone-700/60'
                         : 'bg-stone-900 hover:bg-stone-800 text-white'
                     }`}
                     type="button"

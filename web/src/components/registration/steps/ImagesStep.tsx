@@ -77,7 +77,7 @@ export default function ImagesStep({ userType }: ImagesStepProps) {
           >
             {uploading ? (
               <div className="flex items-center justify-center h-full">
-                <div className="w-5 h-5 border-2 border-stone-200 border-t-stone-600 rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-stone-200 dark:border-stone-700 border-t-stone-600 rounded-full animate-spin" />
               </div>
             ) : image ? (
               <>

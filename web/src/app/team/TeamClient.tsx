@@ -742,7 +742,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                 {/* Member rows */}
                 {members.map((member) => (
                   <div key={member.id}>
-                    <div className="grid grid-cols-8 border-b border-stone-50 last:border-0 hover:bg-stone-50/50 transition-colors">
+                    <div className="grid grid-cols-8 border-b border-stone-50 last:border-0 hover:bg-stone-50 dark:bg-stone-900/50 transition-colors">
                       <div className="p-4 flex items-center gap-2.5">
                         <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 bg-stone-100 dark:bg-stone-800">
                           {(member.user.image || member.user.imageSrc) ? (

@@ -445,7 +445,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                 <div className="space-y-2">
                   {/* Progress bar */}
                   <div
-                    className="w-full h-1 bg-white/20 rounded-full cursor-pointer hover:h-1.5 transition-all"
+                    className="w-full h-1 bg-white dark:bg-stone-900/20 rounded-full cursor-pointer hover:h-1.5 transition-all"
                     onClick={(e) => handleProgressClick(item.data.id, e)}
                   >
                     <div
@@ -459,7 +459,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handlePlayPause(item.data.id)}
-                        className="w-7 h-7 flex items-center justify-center hover:bg-white/20 rounded-full transition-all"
+                        className="w-7 h-7 flex items-center justify-center hover:bg-white dark:bg-stone-900/20 rounded-full transition-all"
                       >
                         {videoState.isPlaying ? (
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
@@ -480,7 +480,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
 
                     <button
                       onClick={() => handleMuteToggle(item.data.id)}
-                      className="w-7 h-7 flex items-center justify-center hover:bg-white/20 rounded-full transition-all"
+                      className="w-7 h-7 flex items-center justify-center hover:bg-white dark:bg-stone-900/20 rounded-full transition-all"
                     >
                       {videoState.isMuted ? (
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -536,7 +536,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                           <div className="space-y-2">
                             {/* Progress bar */}
                             <div
-                              className="w-full h-1 bg-white/20 rounded-full cursor-pointer hover:h-1.5 transition-all"
+                              className="w-full h-1 bg-white dark:bg-stone-900/20 rounded-full cursor-pointer hover:h-1.5 transition-all"
                               onClick={(e) => handleProgressClick(item.data.id, e)}
                             >
                               <div
@@ -550,7 +550,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                               <div className="flex items-center gap-2">
                                 <button
                                   onClick={() => handlePlayPause(item.data.id)}
-                                  className="w-7 h-7 flex items-center justify-center hover:bg-white/20 rounded-full transition-all"
+                                  className="w-7 h-7 flex items-center justify-center hover:bg-white dark:bg-stone-900/20 rounded-full transition-all"
                                 >
                                   {videoState.isPlaying ? (
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
@@ -571,7 +571,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
 
                               <button
                                 onClick={() => handleMuteToggle(item.data.id)}
-                                className="w-7 h-7 flex items-center justify-center hover:bg-white/20 rounded-full transition-all"
+                                className="w-7 h-7 flex items-center justify-center hover:bg-white dark:bg-stone-900/20 rounded-full transition-all"
                               >
                                 {videoState.isMuted ? (
                                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -624,7 +624,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                           {item.data.content && item.data.content.length > 80 && (
                             <button
                               onClick={() => setShowFullCaption(!showFullCaption)}
-                              className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
+                              className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white dark:bg-stone-900/10"
                             >
                               {showFullCaption ? 'less' : 'more'}
                             </button>
@@ -666,7 +666,7 @@ const TikTokView: React.FC<TikTokViewProps> = ({ items, currentUser, onClose }) 
                         {item.data.content && item.data.content.length > 80 && (
                           <button
                             onClick={() => setShowFullCaption(!showFullCaption)}
-                            className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white/10"
+                            className="text-white/70 text-xs font-semibold hover:text-white transition-colors flex-shrink-0 drop-shadow-lg px-2 py-1 rounded-full hover:bg-white dark:bg-stone-900/10"
                           >
                             {showFullCaption ? 'less' : 'more'}
                           </button>

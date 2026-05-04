@@ -34,7 +34,7 @@ const VARIANT_CLASSES: Record<Variant, string> = {
   outline:
     'bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 hover:border-stone-300 dark:bg-stone-900 dark:text-stone-200 dark:border-stone-700 dark:hover:bg-stone-800',
   ghost:
-    'bg-transparent text-stone-700 hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-800',
+    'bg-transparent text-stone-700 hover:bg-stone-100 dark:bg-stone-800 dark:text-stone-200 dark:hover:bg-stone-800',
   destructive:
     'bg-danger text-danger-foreground hover:opacity-90 shadow-glow-danger',
   success:

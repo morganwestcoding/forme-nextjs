@@ -81,7 +81,7 @@ const ForgotPasswordModal = () => {
   const footerContent = submittedEmail ? undefined : (
     <div className="flex flex-col gap-4 mt-3">
       <hr />
-      <div className="text-black text-center mt-4 font-light">
+      <div className="text-black dark:text-white text-center mt-4 font-light">
         <p>
           Remembered it?
           <span onClick={backToLogin} className="text-stone-500  dark:text-stone-500 cursor-pointer hover:underline"> Back to login</span>

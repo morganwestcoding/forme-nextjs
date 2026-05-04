@@ -113,7 +113,7 @@ const MediaStep: React.FC<MediaStepProps> = ({
         >
           {isUploading ? (
             <div className="h-full flex items-center justify-center">
-              <div className="w-6 h-6 border-2 border-stone-200 border-t-stone-600 rounded-full animate-spin" />
+              <div className="w-6 h-6 border-2 border-stone-200 dark:border-stone-700 border-t-stone-600 rounded-full animate-spin" />
             </div>
           ) : imageSrc ? (
             <>

@@ -40,7 +40,7 @@ const CreateChatButton: React.FC<CreateChatButtonProps> = ({
     return (
       <button
         onClick={onCreateChat}
-        className="p-1.5 sm:p-2 rounded-xl sm:rounded-xl hover:bg-stone-200 text-stone-600 hover:text-stone-900 transition-all duration-200"
+        className="p-1.5 sm:p-2 rounded-xl sm:rounded-xl hover:bg-stone-200 text-stone-600 hover:text-stone-900 dark:text-stone-100 transition-all duration-200"
         type="button"
         aria-label="Send Message"
         title="Message"
@@ -57,7 +57,7 @@ const CreateChatButton: React.FC<CreateChatButtonProps> = ({
     return (
       <button
         onClick={onCreateChat}
-        className="inline-flex items-center gap-2 px-5 py-2.5 border border-stone-300 hover:border-stone-400 bg-white hover:bg-stone-50 text-stone-700 text-sm font-medium rounded-full transition-colors"
+        className="inline-flex items-center gap-2 px-5 py-2.5 border border-stone-300 hover:border-stone-400 bg-white dark:bg-stone-900 hover:bg-stone-50 text-stone-700 text-sm font-medium rounded-full transition-colors"
         type="button"
         aria-label="Send Message"
       >
@@ -73,7 +73,7 @@ const CreateChatButton: React.FC<CreateChatButtonProps> = ({
   return (
     <button
       onClick={onCreateChat}
-      className="bg-white/15 backdrop-blur-sm hover:bg-stone-400/10 border border-white/40 hover:border-stone-400/60 text-white hover:text-stone-900 py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center hover:shadow-elevation-1"
+      className="bg-white dark:bg-stone-900/15 backdrop-blur-sm hover:bg-stone-400/10 border border-white/40 hover:border-stone-400/60 text-white hover:text-stone-900 dark:text-stone-100 py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center hover:shadow-elevation-1"
       type="button"
       aria-label="Send Message"
     >

@@ -137,7 +137,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
         {/* ===== LEFT COLUMN - Product Card ===== */}
         <div ref={leftColumnRef} className="w-[320px] flex-shrink-0 hidden md:flex flex-col gap-4 py-10">
           <div
-            className="rounded-2xl overflow-hidden border border-stone-200/40 shadow-elevation-1 transition-colors duration-700"
+            className="rounded-2xl overflow-hidden border border-stone-200 dark:border-stone-700/40 shadow-elevation-1 transition-colors duration-700"
             style={{
               background: dominantColor
                 ? `linear-gradient(180deg, rgba(${dominantColor}, 0.06) 0%, rgba(${dominantColor}, 0.02) 40%, white 100%)`
@@ -273,7 +273,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
                 <button
                   onClick={handleAddToCart}
                   disabled={!inStock}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-stone-50  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 disabled:bg-stone-50  disabled:text-stone-300 text-stone-700 dark:text-stone-200 rounded-xl text-sm font-medium transition-all border border-stone-200/60"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-stone-50  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 disabled:bg-stone-50  disabled:text-stone-300 text-stone-700 dark:text-stone-200 rounded-xl text-sm font-medium transition-all border border-stone-200 dark:border-stone-700/60"
                   type="button"
                 >
                   Add to Cart

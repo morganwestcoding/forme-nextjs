@@ -158,7 +158,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${
               activeTab === 'upload'
                 ? 'bg-stone-900 text-white border-stone-900'
-                : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border-stone-200/60'
+                : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border-stone-200 dark:border-stone-700/60'
             }`}
           >
             I Have a License
@@ -168,7 +168,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${
               activeTab === 'training'
                 ? 'bg-stone-900 text-white border-stone-900'
-                : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border-stone-200/60'
+                : 'bg-stone-50  text-stone-500  dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border-stone-200 dark:border-stone-700/60'
             }`}
           >
             Need Training
@@ -179,14 +179,14 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
         {activeTab === 'upload' && (
           <div>
             {/* Hero upload card — full width, two halves */}
-            <div className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 overflow-hidden mb-6">
+            <div className="rounded-2xl border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-900 overflow-hidden mb-6">
               <div className="flex flex-col md:flex-row">
                 {/* Left half — upload zone */}
                 <div className="md:w-[240px] flex-shrink-0 border-b md:border-b-0 md:border-r border-stone-100 dark:border-stone-800">
                   <div className="h-[200px] p-5">
                     {licensingImage ? (
                       <div className="w-full h-full rounded-xl bg-stone-900 flex flex-col items-center justify-center text-center group cursor-pointer transition-all hover:bg-stone-800" onClick={() => setLicensingImage('')}>
-                        <div className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center mb-2">
+                        <div className="w-11 h-11 rounded-full bg-white dark:bg-stone-900/10 flex items-center justify-center mb-2">
                           <Certificate01Icon size={22} color="#fff" strokeWidth={1.5} />
                         </div>
                         <p className="text-sm font-medium text-white">Ready</p>
@@ -244,7 +244,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
             </div>
 
             {/* How it works — preserved */}
-            <div className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 p-6 mb-6">
+            <div className="rounded-2xl border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-900 p-6 mb-6">
               <h3 className="text-xs text-stone-400 dark:text-stone-500 mb-4">How it works</h3>
               <div className="flex items-start">
                 {[

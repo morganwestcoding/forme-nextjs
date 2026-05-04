@@ -112,15 +112,15 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
     option: (state: any) => `
       !py-4 !px-4 !cursor-pointer
       ${state.isFocused ? '!bg-stone-100 dark:bg-stone-800' : '!bg-white dark:bg-stone-900'}
-      ${state.isSelected ? '!bg-stone-200 dark:bg-stone-700 !text-black' : ''}
-      !text-black hover:!text-stone-500
+      ${state.isSelected ? '!bg-stone-200 dark:bg-stone-700 !text-black dark:text-white' : ''}
+      !text-black dark:text-white hover:!text-stone-500
       !font-normal!  
     `,
     dropdownIndicator: () => `
       !flex !items-center !pb-3 !px-4
     `,
     indicatorSeparator: () => `!hidden`,
-    singleValue: () => '!text-black',
+    singleValue: () => '!text-black dark:text-white',
     input: () => '!text-stone-500 dark:text-stone-400 dark:text-stone-500 !font-normal!',
     placeholder: () => '!text-stone-500 dark:text-stone-400 dark:text-stone-500 !text-sm !font-normal', 
     menu: () => '!bg-stone-50 dark:bg-stone-900 !rounded-xl !shadow-elevation-3 !mt-1 !z-[9999]',

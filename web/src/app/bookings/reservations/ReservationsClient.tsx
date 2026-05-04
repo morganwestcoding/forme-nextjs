@@ -501,7 +501,7 @@ function NextTripHero({
       <div className="absolute inset-0 bg-gradient-to-tr from-stone-950 via-stone-900/85 to-stone-900/30" />
       <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-transparent to-transparent" />
       <div aria-hidden className="absolute -top-24 -right-20 w-72 h-72 rounded-full bg-warning/90/15 blur-3xl" />
-      <div aria-hidden className="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white/5 blur-3xl" />
+      <div aria-hidden className="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white dark:bg-stone-900/5 blur-3xl" />
 
       <div className="relative px-6 sm:px-10 pt-7 sm:pt-9 pb-7 sm:pb-8">
         <div className="hidden sm:grid grid-cols-4 gap-3">
@@ -555,7 +555,7 @@ function NextTripHero({
 
               <div className="flex-1 flex items-center">
                 <div className="flex items-center gap-3.5">
-                  <div className="relative shrink-0 w-14 h-14 rounded-full overflow-hidden bg-white/10 ring-1 ring-white/15">
+                  <div className="relative shrink-0 w-14 h-14 rounded-full overflow-hidden bg-white dark:bg-stone-900/10 ring-1 ring-white/15">
                     {(isIncoming ? customerAvatar : employeeAvatar) ? (
                       <Image
                         src={(isIncoming ? customerAvatar : employeeAvatar)!}
@@ -641,7 +641,7 @@ function NextTripHero({
                 <button
                   onClick={onDecline}
                   disabled={disabled}
-                  className="inline-flex flex-col items-center justify-center gap-1.5 rounded-xl text-sm font-semibold text-white/85 bg-white/5 border border-white/15 hover:bg-danger/20 hover:text-red-100 hover:border-danger/40 transition-all disabled:opacity-50"
+                  className="inline-flex flex-col items-center justify-center gap-1.5 rounded-xl text-sm font-semibold text-white/85 bg-white dark:bg-stone-900/5 border border-white/15 hover:bg-danger/20 hover:text-red-100 hover:border-danger/40 transition-all disabled:opacity-50"
                 >
                   <Cancel01Icon size={22} strokeWidth={2} />
                   Decline
@@ -723,7 +723,7 @@ function NextTripHero({
                   <button
                     onClick={onDecline}
                     disabled={disabled}
-                    className="inline-flex items-center gap-1.5 px-4 h-9 rounded-full text-xs font-semibold text-white/85 bg-white/5 border border-white/15 disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-4 h-9 rounded-full text-xs font-semibold text-white/85 bg-white dark:bg-stone-900/5 border border-white/15 disabled:opacity-50"
                   >
                     <X className="w-3.5 h-3.5" strokeWidth={2.8} />
                     Decline
@@ -792,7 +792,7 @@ function BigAction({
   const cls = `inline-flex flex-col items-center justify-center gap-1.5 rounded-xl text-sm font-semibold transition-all border ${
     primary
       ? 'bg-white  text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
-      : 'bg-white/[0.04] text-white border-white/10 hover:bg-white/10 hover:border-white/20'
+      : 'bg-white dark:bg-stone-900/[0.04] text-white border-white/10 hover:bg-white dark:bg-stone-900/10 hover:border-white/20'
   } disabled:opacity-50`;
   if (href) {
     return (
@@ -981,8 +981,8 @@ function StackedAction({
     primary
       ? 'bg-white  text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
       : danger
-      ? 'bg-white/0 text-white/75 border-white/15 hover:bg-danger/15 hover:text-danger-soft-foreground hover:border-danger/40'
-      : 'bg-white/5 text-white border-white/15 hover:bg-white/15'
+      ? 'bg-white dark:bg-stone-900/0 text-white/75 border-white/15 hover:bg-danger/15 hover:text-danger-soft-foreground hover:border-danger/40'
+      : 'bg-white dark:bg-stone-900/5 text-white border-white/15 hover:bg-white dark:bg-stone-900/15'
   } disabled:opacity-50`;
 
   if (href) {
@@ -1023,7 +1023,7 @@ function NoUpcomingHero({
       className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 text-white px-6 sm:px-10 py-10 sm:py-14"
     >
       <div aria-hidden className="absolute -top-24 -right-20 w-72 h-72 rounded-full bg-warning/90/15 blur-3xl" />
-      <div aria-hidden className="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white/5 blur-3xl" />
+      <div aria-hidden className="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white dark:bg-stone-900/5 blur-3xl" />
       <div className="relative max-w-xl">
         <p className="text-sm font-semibold text-white/50">
           {isIncoming ? 'Incoming' : 'My bookings'}
@@ -1067,7 +1067,7 @@ function StatCard({
   return (
     <div
       className={`relative overflow-hidden rounded-2xl border bg-white dark:bg-stone-900 p-4 sm:p-5 transition-all hover:border-stone-300 dark:border-stone-700 ${
-        accent === 'amber' ? 'border-warning-soft/80' : 'border-stone-200/70'
+        accent === 'amber' ? 'border-warning-soft/80' : 'border-stone-200 dark:border-stone-700/70'
       }`}
     >
       {accent === 'amber' && (
@@ -1319,8 +1319,8 @@ function ActionChip({
     primary
       ? 'bg-white  text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
       : danger
-      ? 'bg-white/0 text-white/80 border-white/15 hover:bg-danger/15 hover:text-danger-soft-foreground hover:border-danger/40'
-      : 'bg-white/10 text-white border-white/15 hover:bg-white/20'
+      ? 'bg-white dark:bg-stone-900/0 text-white/80 border-white/15 hover:bg-danger/15 hover:text-danger-soft-foreground hover:border-danger/40'
+      : 'bg-white dark:bg-stone-900/10 text-white border-white/15 hover:bg-white dark:bg-stone-900/20'
   } disabled:opacity-50`;
 
   if (href) {

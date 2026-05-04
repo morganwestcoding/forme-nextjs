@@ -276,7 +276,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
             className={`flex-1 pl-1.5 text-sm bg-transparent border-none outline-none ${
               isDarkMode
                 ? 'text-white placeholder-stone-400'
-                : 'text-stone-900 placeholder-stone-500'
+                : 'text-stone-900 dark:text-stone-100 placeholder-stone-500'
             }`}
           />
 
@@ -351,7 +351,7 @@ const ContextualSearch: React.FC<ContextualSearchProps> = ({
                                 className={`mx-1.5 px-3 py-2.5 cursor-pointer flex items-center gap-3 rounded-xl transition-colors duration-150 ${
                                   active
                                     ? "bg-stone-50 dark:bg-stone-700"
-                                    : "hover:bg-stone-50 dark:hover:bg-stone-700"
+                                    : "hover:bg-stone-50 dark:bg-stone-900 dark:hover:bg-stone-700"
                                 }`}
                                 onMouseEnter={() => setActiveIdx(idx)}
                                 onClick={(e) => {

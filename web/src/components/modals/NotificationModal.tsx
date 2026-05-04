@@ -168,8 +168,8 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onMar
       type="button"
       onClick={() => isUnread && onMarkAsRead(notification.id)}
       className="group relative w-full text-left flex items-start gap-4 py-3.5 px-4 rounded-xl
-                 hover:bg-stone-100/70 dark:hover:bg-stone-800/60
-                 active:bg-stone-100 dark:active:bg-stone-800/80
+                 hover:bg-stone-100 dark:bg-stone-800/70 dark:hover:bg-stone-800/60
+                 active:bg-stone-100 dark:bg-stone-800 dark:active:bg-stone-800/80
                  transition-colors duration-150"
     >
       {/* Avatar / Listing image / Icon */}

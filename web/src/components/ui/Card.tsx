@@ -23,7 +23,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={`
-          rounded-2xl border border-stone-200/60 bg-white
+          rounded-2xl border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-900
           dark:bg-stone-900 dark:border-stone-800
           ${PADDING_CLASSES[padding]}
           ${interactive

@@ -188,7 +188,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               {isOwner ? (
                 /* Owner sees upload CTA */
                 <div className="text-center px-6">
-                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/90 backdrop-blur-sm shadow-elevation-2 flex items-center justify-center border-2 border-stone-200 dark:border-stone-800">
+                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white dark:bg-stone-900/90 backdrop-blur-sm shadow-elevation-2 flex items-center justify-center border-2 border-stone-200 dark:border-stone-800">
                     <svg
                       className="w-9 h-9 text-stone-400 dark:text-stone-500"
                       fill="none"
@@ -207,7 +207,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 </div>
               ) : (
                 /* Non-owners see minimal placeholder */
-                <div className="w-20 h-20 rounded-full bg-white/90 backdrop-blur-sm shadow-elevation-2 flex items-center justify-center border-2 border-stone-200 dark:border-stone-800">
+                <div className="w-20 h-20 rounded-full bg-white dark:bg-stone-900/90 backdrop-blur-sm shadow-elevation-2 flex items-center justify-center border-2 border-stone-200 dark:border-stone-800">
                   <svg
                     className="w-9 h-9 text-stone-400 dark:text-stone-500"
                     fill="none"
@@ -309,12 +309,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               {(service.popular || service.isNew) && (
                 <div className="absolute left-3 top-3 flex items-center gap-1.5 z-20">
                   {service.popular && (
-                    <span className="px-2 py-0.5 text-xs font-medium rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30">
+                    <span className="px-2 py-0.5 text-xs font-medium rounded-full backdrop-blur-md bg-white dark:bg-stone-900/15 text-white border border-white/30">
                       Popular
                     </span>
                   )}
                   {service.isNew && (
-                    <span className="px-2 py-0.5 text-xs font-medium rounded-full backdrop-blur-md bg-white/15 text-white border border-white/30">
+                    <span className="px-2 py-0.5 text-xs font-medium rounded-full backdrop-blur-md bg-white dark:bg-stone-900/15 text-white border border-white/30">
                       New
                     </span>
                   )}

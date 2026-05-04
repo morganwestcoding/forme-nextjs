@@ -19,7 +19,7 @@ export default function TermsPage() {
         <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100 tracking-tight mb-2">Terms of Service</h1>
         <p className="text-sm text-stone-400 dark:text-stone-500 mb-12">Effective Date: January 1, 2026</p>
 
-        <div className="prose prose-stone prose-sm max-w-none [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-stone-900 dark:[&_h2]:text-stone-100 [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-stone-800 dark:[&_h3]:text-stone-200 [&_h3]:mt-6 [&_h3]:mb-3 [&_p]:text-stone-600 dark:[&_p]:text-stone-400 [&_p]:leading-relaxed [&_ul]:text-stone-600 dark:[&_ul]:text-stone-400 [&_li]:text-stone-600 dark:[&_li]:text-stone-400 [&_a]:text-stone-600 dark:[&_a]:text-stone-400 [&_a]:underline hover:[&_a]:text-stone-800 dark:hover:[&_a]:text-stone-200">
+        <div className="prose prose-stone prose-sm max-w-none [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-stone-900 dark:text-stone-100 dark:[&_h2]:text-stone-100 [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-stone-800 dark:[&_h3]:text-stone-200 [&_h3]:mt-6 [&_h3]:mb-3 [&_p]:text-stone-600 dark:[&_p]:text-stone-400 [&_p]:leading-relaxed [&_ul]:text-stone-600 dark:[&_ul]:text-stone-400 [&_li]:text-stone-600 dark:[&_li]:text-stone-400 [&_a]:text-stone-600 dark:[&_a]:text-stone-400 [&_a]:underline hover:[&_a]:text-stone-800 dark:hover:[&_a]:text-stone-200">
 
           <p>
             If you are a licensed professional, student, apprentice, or business owner using the ForMe

@@ -16,10 +16,10 @@ const UpgradePrompt: React.FC<UpgradePromptProps> = ({
 
   return (
     <div className="h-[60vh] flex flex-col gap-4 justify-center items-center text-center px-4">
-      <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center">
+      <div className="w-16 h-16 rounded-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center">
         <Lock className="w-8 h-8 text-stone-400" />
       </div>
-      <h2 className="text-2xl font-bold text-stone-900">
+      <h2 className="text-2xl font-bold text-stone-900 dark:text-stone-100">
         Upgrade to Unlock {feature}
       </h2>
       <p className="text-stone-500 max-w-md">
