@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { apiError, apiErrorCode } from "@/app/utils/api";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { requireAdmin } from "@/app/utils/adminAuth";
 import prisma from "@/app/libs/prismadb";
 
 
@@ -9,13 +8,9 @@ export async function POST(
   request: Request,
   { params }: { params: { userId: string } }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) return apiErrorCode("UNAUTHORIZED");
-
-  const admin = await prisma.user.findUnique({
-    where: { email: session.user.email as string },
-  });
-  if (!admin || (admin.role !== "master" && admin.role !== "admin")) return apiErrorCode("FORBIDDEN");
+  const auth = await requireAdmin(request);
+  if ('error' in auth) return auth.error;
+  const admin = auth.user;
 
   const { action } = (await request.json()) as { action: "suspend" | "unsuspend" };
 

@@ -7,6 +7,13 @@ struct SettingsView: View {
     @AppStorage("accentColorHex") private var accentColorHex = "60A5FA"
     @State private var showLogoutConfirm = false
     @State private var showStripeConnect = false
+    @State private var showAcademiesAdmin = false
+    @State private var showAdminDashboard = false
+
+    private var isAdmin: Bool {
+        let role = authViewModel.currentUser?.role ?? ""
+        return role == "master" || role == "admin"
+    }
 
     private let presetColors: [(String, String)] = [
         ("60A5FA", "Blue"),
@@ -106,6 +113,24 @@ struct SettingsView: View {
                     }
                     .padding(.horizontal, ForMe.space6)
 
+                    if isAdmin {
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("Admin")
+                                .font(ForMe.font(.semibold, size: 12))
+                                .foregroundColor(ForMe.stone400)
+                                .padding(.horizontal, ForMe.space4)
+                                .padding(.bottom, 8)
+
+                            accountRow(icon: "shield.lefthalf.filled", label: "Admin dashboard") {
+                                showAdminDashboard = true
+                            }
+                            accountRow(icon: "graduationcap", label: "Manage academies") {
+                                showAcademiesAdmin = true
+                            }
+                        }
+                        .padding(.horizontal, ForMe.space6)
+                    }
+
                     // Sign out
                     Button {
                         showLogoutConfirm = true
@@ -149,6 +174,28 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showStripeConnect) {
                 StripeConnectView()
+            }
+            .sheet(isPresented: $showAcademiesAdmin) {
+                NavigationStack {
+                    AcademiesAdminListView()
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                Button("Done") { showAcademiesAdmin = false }
+                                    .foregroundColor(ForMe.textPrimary)
+                            }
+                        }
+                }
+            }
+            .sheet(isPresented: $showAdminDashboard) {
+                NavigationStack {
+                    AdminDashboardView()
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                Button("Done") { showAdminDashboard = false }
+                                    .foregroundColor(ForMe.textPrimary)
+                            }
+                        }
+                }
             }
         }
     }

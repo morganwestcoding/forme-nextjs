@@ -250,6 +250,58 @@ class APIService {
         return try await perform(request)
     }
 
+    // MARK: - Admin (master/admin only)
+    //
+    // Mirrors /api/admin/{stats,verifications,disputes,users} GETs and the two
+    // mutation routes (verification approve/reject, user suspend/unsuspend).
+    // All endpoints role-gate server-side via `requireAdmin`.
+
+    func getAdminStats() async throws -> AdminStats {
+        let request = try buildRequest(endpoint: "/admin/stats")
+        return try await perform(request)
+    }
+
+    func getAdminVerifications() async throws -> [AdminVerification] {
+        let request = try buildRequest(endpoint: "/admin/verifications")
+        let response: AdminVerificationsResponse = try await perform(request)
+        return response.users
+    }
+
+    func decideVerification(userId: String, action: String, reason: String? = nil) async throws -> VerificationDecisionResponse {
+        var payload: [String: Any] = ["action": action]
+        if let reason, !reason.isEmpty { payload["reason"] = reason }
+        let body = try JSONSerialization.data(withJSONObject: payload)
+        let request = try buildRequest(endpoint: "/admin/verifications/\(userId)", method: "POST", body: body)
+        return try await perform(request)
+    }
+
+    func getAdminDisputes() async throws -> [AdminDispute] {
+        let request = try buildRequest(endpoint: "/admin/disputes")
+        let response: AdminDisputesResponse = try await perform(request)
+        return response.disputes
+    }
+
+    func getAdminUsers(query: String = "", page: Int = 1, pageSize: Int = 50) async throws -> AdminUsersResponse {
+        var queryItems: [URLQueryItem] = [
+            URLQueryItem(name: "page", value: "\(page)"),
+            URLQueryItem(name: "pageSize", value: "\(pageSize)"),
+        ]
+        let trimmed = query.trimmingCharacters(in: .whitespaces)
+        if !trimmed.isEmpty {
+            queryItems.append(URLQueryItem(name: "q", value: trimmed))
+        }
+        let request = try buildRequest(endpoint: "/admin/users", queryItems: queryItems)
+        return try await perform(request)
+    }
+
+    /// Suspend or unsuspend a user. `action` must be "suspend" or "unsuspend".
+    /// Server rejects suspending yourself or a master admin.
+    func suspendUser(userId: String, action: String) async throws -> UserSuspendResponse {
+        let body = try encoder.encode(["action": action])
+        let request = try buildRequest(endpoint: "/admin/users/\(userId)/suspend", method: "POST", body: body)
+        return try await perform(request)
+    }
+
     func getCurrentUser() async throws -> User {
         let request = try buildRequest(endpoint: "/profile")
         return try await perform(request)
