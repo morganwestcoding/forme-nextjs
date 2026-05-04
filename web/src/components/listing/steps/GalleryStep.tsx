@@ -104,7 +104,7 @@ export default function GalleryStep({
           style={{ width: '175px', height: '175px' }}
         >
           {uploading ? (
-            <div className="w-6 h-6 border-2 border-stone-200 border-t-stone-600 rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-stone-200 dark:border-stone-700 border-t-stone-600 rounded-full animate-spin" />
           ) : (
             <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-center shadow-elevation-1">
               <Plus className="w-5 h-5 text-stone-400 dark:text-stone-500" />

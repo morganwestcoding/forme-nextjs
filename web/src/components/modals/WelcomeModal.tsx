@@ -510,7 +510,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
         className={`flex items-center gap-2 px-3 h-11 rounded-xl border text-left transition-all ${
           selected
             ? 'border-stone-900 dark:border-stone-100 bg-stone-50 dark:bg-stone-800/60'
-            : 'border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600 hover:bg-stone-50 dark:hover:bg-stone-800/40'
+            : 'border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600 hover:bg-stone-50 dark:bg-stone-900 dark:hover:bg-stone-800/40'
         }`}
       >
         <div className="flex-1 min-w-0 flex items-baseline gap-1.5">
@@ -550,7 +550,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
           <button
             type="button"
             onClick={() => setLocation('')}
-            className="text-[12px] font-medium text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
+            className="text-[12px] font-medium text-stone-500 hover:text-stone-900 dark:text-stone-100 dark:hover:text-stone-100 transition-colors"
           >
             Change
           </button>
@@ -574,7 +574,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
           <button
             type="button"
             onClick={() => setSearch('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-800 transition-colors"
             aria-label="Clear search"
           >
             <Cancel01Icon className="w-3.5 h-3.5" strokeWidth={2} />
@@ -592,7 +592,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ currentUser, isFirstTimeUse
             type="button"
             onClick={handleUseCurrentLocation}
             disabled={geoStatus === 'locating'}
-            className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full text-[11px] font-medium text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors disabled:opacity-60"
+            className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full text-[11px] font-medium text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-800 transition-colors disabled:opacity-60"
           >
             {geoStatus === 'locating' ? (
               <div className="w-3 h-3 border-2 border-stone-200 dark:border-stone-700 border-t-stone-600 dark:border-t-stone-200 rounded-full animate-spin" />

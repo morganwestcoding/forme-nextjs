@@ -143,7 +143,7 @@ const ConversationCard: React.FC<{
     <div
       className={`group cursor-pointer rounded-xl transition-all duration-200
                  hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900 active:scale-[0.99]
-                 ${hasUnread ? 'bg-stone-50/50' : ''}`}
+                 ${hasUnread ? 'bg-stone-50 dark:bg-stone-900/50' : ''}`}
       onClick={onClick}
     >
       <div className="flex items-center gap-3 p-3">
@@ -482,7 +482,7 @@ const InboxModal = () => {
             <div
               ref={listRef}
               className="absolute z-50 mt-2 w-full max-h-72 overflow-auto rounded-2xl
-                         border border-stone-200 dark:border-stone-800 bg-white/95 backdrop-blur-xl shadow-elevation-3 custom-scrollbar"
+                         border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900/95 backdrop-blur-xl shadow-elevation-3 custom-scrollbar"
             >
               {loading && (
                 <div className="px-4 py-6 flex flex-col items-center justify-center gap-3">
@@ -572,7 +572,7 @@ const InboxModal = () => {
             }}
             className="block w-full py-2.5 rounded-xl text-center text-[13px] font-medium
                        text-stone-600 dark:text-stone-300 bg-stone-100 dark:bg-stone-800
-                       hover:bg-stone-200 dark:hover:bg-stone-700 hover:text-stone-900 dark:hover:text-white
+                       hover:bg-stone-200 dark:hover:bg-stone-700 hover:text-stone-900 dark:text-stone-100 dark:hover:text-white
                        transition-all duration-200"
           >
             See all messages

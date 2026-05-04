@@ -81,10 +81,10 @@ export default function AdminUserList({ users, total, page, pageSize, query }: P
       </form>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-2xl border border-stone-200/60">
+      <div className="overflow-x-auto rounded-2xl border border-stone-200 dark:border-stone-700/60">
         <table className="w-full text-[13px]">
           <thead>
-            <tr className="border-b border-stone-200/60 bg-stone-50/50">
+            <tr className="border-b border-stone-200 dark:border-stone-700/60 bg-stone-50 dark:bg-stone-900/50">
               <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">User</th>
               <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Role</th>
               <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Tier</th>
@@ -95,7 +95,7 @@ export default function AdminUserList({ users, total, page, pageSize, query }: P
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr key={user.id} className="border-b border-stone-100 dark:border-stone-800 hover:bg-stone-50/50 transition-colors">
+              <tr key={user.id} className="border-b border-stone-100 dark:border-stone-800 hover:bg-stone-50 dark:bg-stone-900/50 transition-colors">
                 <td className="py-3 px-4">
                   <div>
                     <p className="font-medium text-stone-900 dark:text-stone-100">{user.name || 'No Name'}</p>
@@ -144,7 +144,7 @@ export default function AdminUserList({ users, total, page, pageSize, query }: P
           {page > 1 && (
             <button
               onClick={() => router.push(`/admin/users?page=${page - 1}${query ? `&q=${query}` : ''}`)}
-              className="px-3 py-1.5 rounded-lg text-[12px] font-medium bg-stone-50  text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200/60"
+              className="px-3 py-1.5 rounded-lg text-[12px] font-medium bg-stone-50  text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200 dark:border-stone-700/60"
             >
               Previous
             </button>
@@ -155,7 +155,7 @@ export default function AdminUserList({ users, total, page, pageSize, query }: P
           {page < totalPages && (
             <button
               onClick={() => router.push(`/admin/users?page=${page + 1}${query ? `&q=${query}` : ''}`)}
-              className="px-3 py-1.5 rounded-lg text-[12px] font-medium bg-stone-50  text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200/60"
+              className="px-3 py-1.5 rounded-lg text-[12px] font-medium bg-stone-50  text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200 dark:border-stone-700/60"
             >
               Next
             </button>

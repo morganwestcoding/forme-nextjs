@@ -42,7 +42,7 @@ const SmartBadgePrice: React.FC<SmartBadgePriceProps> = ({
 
   const textClasses = variant === 'dark'
     ? "text-white/90 hover:text-white"
-    : "text-stone-700 hover:text-stone-900";
+    : "text-stone-700 hover:text-stone-900 dark:text-stone-100";
 
   const iconColorClasses = variant === 'dark'
     ? "text-success/80"
@@ -77,7 +77,7 @@ const SmartBadgePrice: React.FC<SmartBadgePriceProps> = ({
       </button>
 
       {/* Divider */}
-      <span className={variant === 'dark' ? 'w-px h-4 bg-white/30' : 'w-px h-4 bg-stone-300'} />
+      <span className={variant === 'dark' ? 'w-px h-4 bg-white dark:bg-stone-900/30' : 'w-px h-4 bg-stone-300'} />
 
       <button
         onClick={handleBookNowClick}

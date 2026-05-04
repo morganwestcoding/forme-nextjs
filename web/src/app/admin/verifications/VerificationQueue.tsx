@@ -43,7 +43,7 @@ export default function VerificationQueue({ users }: { users: PendingUser[] }) {
   return (
     <div className="grid gap-4">
       {users.map((user) => (
-        <div key={user.id} className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 p-5">
+        <div key={user.id} className="rounded-2xl border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-900 p-5">
           <div className="flex items-start gap-4">
             {/* User info */}
             <div className="flex-1 min-w-0">
@@ -107,7 +107,7 @@ export default function VerificationQueue({ users }: { users: PendingUser[] }) {
               <div className="flex gap-2 mt-3">
                 <button
                   onClick={() => setShowReject(null)}
-                  className="text-[12px] font-medium px-4 py-2 rounded-xl text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200/60 hover:bg-stone-50 dark:hover:bg-stone-800  transition-all"
+                  className="text-[12px] font-medium px-4 py-2 rounded-xl text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700/60 hover:bg-stone-50 dark:hover:bg-stone-800  transition-all"
                 >
                   Cancel
                 </button>

@@ -868,7 +868,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
                         onBlur={() => setRatingHover(null)}
                         aria-label={`Minimum ${n} star${n === 1 ? '' : 's'}`}
                         aria-pressed={filterMinRating === n}
-                        className="p-1.5 rounded-lg transition-all duration-150 active:scale-[0.92] hover:bg-stone-100 dark:hover:bg-stone-800/60"
+                        className="p-1.5 rounded-lg transition-all duration-150 active:scale-[0.92] hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-800/60"
                       >
                         <svg width="20" height="20" viewBox="0 0 24 24" className="block">
                           <defs>
@@ -1148,7 +1148,7 @@ const MapsClient: React.FC<MapsClientProps> = ({ currentUser }) => {
                         : `/listings/${selected.id}`;
                       router.push(href);
                     }}
-                    className="flex-1 py-2 rounded-xl bg-white text-stone-900 hover:bg-stone-100 text-[13px] font-medium transition-colors"
+                    className="flex-1 py-2 rounded-xl bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 hover:bg-stone-100 text-[13px] font-medium transition-colors"
                     aria-label={`View details for ${selected.title}`}
                   >
                     View details

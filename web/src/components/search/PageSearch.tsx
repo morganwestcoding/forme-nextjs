@@ -188,7 +188,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
 
   const activeFilterCount = getActiveFilterCount();
 
-  const iconButtonClasses = "p-2 rounded-xl text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors";
+  const iconButtonClasses = "p-2 rounded-xl text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-white hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-800 transition-colors";
 
   const defaultActionButtons = showDefaultActions ? (
     <>
@@ -286,7 +286,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
               <button
                 key={item.label}
                 onClick={() => handleActionClick(item.action)}
-                className="w-full px-3 py-2.5 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors duration-150 text-left text-[13px] font-medium text-stone-700 dark:text-stone-200"
+                className="w-full px-3 py-2.5 rounded-xl hover:bg-stone-50 dark:bg-stone-900 dark:hover:bg-stone-700 transition-colors duration-150 text-left text-[13px] font-medium text-stone-700 dark:text-stone-200"
                 type="button"
               >
                 {item.label}

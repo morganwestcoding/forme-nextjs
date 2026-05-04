@@ -31,7 +31,7 @@ const InlineEmptyState: React.FC<InlineEmptyStateProps> = ({
   const sizeClass = SIZE_CLASSES[size];
   const baseClass = `w-full flex items-center justify-center ${sizeClass} rounded-2xl border-2 border-dashed border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/40 transition-colors`;
   const interactiveClass = onClick
-    ? 'hover:border-stone-900 dark:hover:border-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer'
+    ? 'hover:border-stone-900 dark:hover:border-stone-300 hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-800 cursor-pointer'
     : '';
 
   const content = (

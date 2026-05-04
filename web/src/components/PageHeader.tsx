@@ -76,7 +76,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                   <button
                     type="button"
                     onClick={() => locationModal.onOpen()}
-                    className="flex items-center gap-2 px-6 py-1.5 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors text-[13px] whitespace-nowrap"
+                    className="flex items-center gap-2 px-6 py-1.5 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-800 transition-colors text-[13px] whitespace-nowrap"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" color="currentColor" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                       <path d="M10.0808 2C5.47023 2.9359 2 7.01218 2 11.899C2 17.4776 6.52238 22 12.101 22C16.9878 22 21.0641 18.5298 22 13.9192" />
@@ -96,7 +96,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                     id="wt-create"
                     onClick={() => createModal.onOpen()}
                     aria-label="Create new"
-                    className="shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+                    className="shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-800 transition-colors"
                   >
                     <PlusSignIcon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
                   </button>
@@ -104,7 +104,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                     id="wt-notifications"
                     onClick={() => notificationsModal.onOpen()}
                     aria-label={unreadNotifications > 0 ? `Notifications (${unreadNotifications} unread)` : 'Notifications'}
-                    className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+                    className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-800 transition-colors"
                   >
                     <Notification03Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
                     {unreadNotifications > 0 && (
@@ -123,7 +123,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ currentUser, embedded = false, 
                     id="wt-messages"
                     onClick={() => inboxModal.onOpen(currentUser)}
                     aria-label={unreadMessages > 0 ? `Messages (${unreadMessages} unread)` : 'Messages'}
-                    className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+                    className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-white hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-800 transition-colors"
                   >
                     <MessageMultiple01Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
                     {unreadMessages > 0 && (

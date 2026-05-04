@@ -247,7 +247,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           peer w-full p-3 pt-6 bg-white dark:bg-stone-900 border rounded-xl outline-none transition-all duration-200
           disabled:opacity-50 disabled:cursor-not-allowed hover:border-stone-300
           pl-4 pr-4 h-[60px]
-          ${errors[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'border-stone-200/60 focus:border-stone-900 focus:ring-2 focus:ring-stone-900/10'}
+          ${errors[id] ? 'border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/10' : 'border-stone-200 dark:border-stone-700/60 focus:border-stone-900 focus:ring-2 focus:ring-stone-900/10'}
         `}
         aria-autocomplete="list"
         aria-controls={`${id}-listbox`}
@@ -271,7 +271,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           id={`${id}-listbox`}
           role="listbox"
           ref={listRef}
-          className="absolute w-full bg-white dark:bg-stone-900 shadow-elevation-3 rounded-xl mt-2 z-[9999] max-h-[220px] overflow-y-auto border border-stone-200/60 p-1.5"
+          className="absolute w-full bg-white dark:bg-stone-900 shadow-elevation-3 rounded-xl mt-2 z-[9999] max-h-[220px] overflow-y-auto border border-stone-200 dark:border-stone-700/60 p-1.5"
         >
           {suggestions.map((sugg, index) => (
             <div

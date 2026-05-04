@@ -47,7 +47,7 @@ const DropdownMenuSubContent = React.forwardRef<
     ref={ref}
     className={cn(
       "z-50 min-w-[8rem] overflow-hidden rounded-xl p-1.5",
-      "bg-white border border-stone-100 text-stone-900 shadow-elevation-3",
+      "bg-white dark:bg-stone-900 border border-stone-100 text-stone-900 dark:text-stone-100 shadow-elevation-3",
       "dark:bg-stone-800 dark:border-stone-700/50 dark:text-stone-100 dark:shadow-elevation-3",
       className
     )}
@@ -71,7 +71,7 @@ const DropdownMenuContent = React.forwardRef<
         "z-50 min-w-[8rem] overflow-hidden rounded-xl p-1.5",
         variant === "dark"
           ? "bg-stone-800 border border-stone-700/50 text-stone-100 shadow-elevation-3"
-          : "bg-white border border-stone-100 text-stone-900 shadow-elevation-3",
+          : "bg-white dark:bg-stone-900 border border-stone-100 text-stone-900 dark:text-stone-100 shadow-elevation-3",
         className
       )}
       {...props}
@@ -90,8 +90,8 @@ const DropdownMenuItem = React.forwardRef<
     ref={ref}
     className={cn(
       "relative flex cursor-pointer select-none items-center rounded-xl px-3 py-2.5 text-[13px] font-medium outline-none transition-colors duration-150",
-      "focus:bg-stone-50 focus:text-stone-900 dark:focus:bg-stone-700 dark:focus:text-white",
-      "hover:bg-stone-50 dark:hover:bg-stone-700",
+      "focus:bg-stone-50 dark:bg-stone-900 focus:text-stone-900 dark:text-stone-100 dark:focus:bg-stone-700 dark:focus:text-white",
+      "hover:bg-stone-50 dark:bg-stone-900 dark:hover:bg-stone-700",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       inset && "pl-8",
       className

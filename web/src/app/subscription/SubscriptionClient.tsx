@@ -296,7 +296,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
 
         {/* Active subscription management card */}
         {isActiveSubscriber && !isOnboarding && (
-          <div className="mb-8 rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 p-6">
+          <div className="mb-8 rounded-2xl border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-900 p-6">
             <div className="flex items-start justify-between flex-wrap gap-4">
               <div>
                 <p className="text-[11px] font-medium text-stone-400 dark:text-stone-500 uppercase tracking-wide mb-1">Current Plan</p>
@@ -467,7 +467,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowCancelConfirm(false)}
-                className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-stone-50  text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200/60 transition-all"
+                className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-stone-50  text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200 dark:border-stone-700/60 transition-all"
               >
                 Keep Plan
               </button>
@@ -499,7 +499,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowChangeConfirm(null)}
-                className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-stone-50  text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200/60 transition-all"
+                className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-stone-50  text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200 dark:border-stone-700/60 transition-all"
               >
                 Never Mind
               </button>

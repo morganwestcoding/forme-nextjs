@@ -314,7 +314,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                     <button
                       onClick={handleEmailSubmit}
                       disabled={emailLoading || emailSubmitted}
-                      className="bg-white text-black font-medium px-5 py-3 rounded-xl hover:bg-stone-200 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px] text-sm"
+                      className="bg-white dark:bg-stone-900 text-black dark:text-white font-medium px-5 py-3 rounded-xl hover:bg-stone-200 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px] text-sm"
                     >
                       {emailLoading ? (
                         <div className="w-4 h-4 border border-stone-400 border-t-stone-700 rounded-full animate-spin" />
@@ -392,7 +392,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                     <button
                       onClick={handleDemoSubmit}
                       disabled={demoLoading || demoSubmitted}
-                      className="bg-white text-black font-medium px-5 py-3 rounded-xl hover:bg-stone-200 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px] text-sm"
+                      className="bg-white dark:bg-stone-900 text-black dark:text-white font-medium px-5 py-3 rounded-xl hover:bg-stone-200 transition-colors disabled:opacity-50 flex items-center justify-center min-w-[100px] text-sm"
                     >
                       {demoLoading ? (
                         <div className="w-4 h-4 border border-stone-400 border-t-stone-700 rounded-full animate-spin" />
@@ -510,7 +510,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                   />
                   <button
                     onClick={handlePasswordSubmit}
-                    className="bg-white text-black font-medium px-4 py-2.5 rounded-xl hover:bg-stone-100 transition-colors"
+                    className="bg-white dark:bg-stone-900 text-black dark:text-white font-medium px-4 py-2.5 rounded-xl hover:bg-stone-100 transition-colors"
                   >
                     <ArrowRight className="w-4 h-4" />
                   </button>

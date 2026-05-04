@@ -316,7 +316,7 @@ const LocationModal: React.FC = () => {
             ? 'border-stone-900 dark:border-stone-200 bg-stone-50 dark:bg-stone-800/60'
             : active
             ? 'border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-stone-800/40'
-            : 'border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600 hover:bg-stone-50 dark:hover:bg-stone-800/40'
+            : 'border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600 hover:bg-stone-50 dark:bg-stone-900 dark:hover:bg-stone-800/40'
         }`}
       >
         <Icon
@@ -392,7 +392,7 @@ const LocationModal: React.FC = () => {
           <button
             type="button"
             onClick={() => setSearch('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-800 transition-colors"
             aria-label="Clear search"
           >
             <Cancel01Icon className="w-3.5 h-3.5" strokeWidth={2} />
@@ -414,7 +414,7 @@ const LocationModal: React.FC = () => {
             type="button"
             onClick={handleUseCurrentLocation}
             disabled={geoStatus === 'locating'}
-            className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full text-[11px] font-medium text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors disabled:opacity-60"
+            className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full text-[11px] font-medium text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-800 transition-colors disabled:opacity-60"
           >
             {geoStatus === 'locating' ? (
               <div className="w-3 h-3 border-2 border-stone-200 dark:border-stone-700 border-t-stone-600 dark:border-t-stone-200 rounded-full animate-spin" />

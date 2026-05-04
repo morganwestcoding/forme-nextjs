@@ -340,7 +340,7 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-stone-50 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200/60 transition-all"
+                  className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-stone-50 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 border border-stone-200 dark:border-stone-700/60 transition-all"
                 >
                   Keep Account
                 </button>

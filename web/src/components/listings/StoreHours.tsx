@@ -20,7 +20,7 @@ const StoreHours: React.FC<StoreHoursProps> = ({ storeHours = [] }) => {
 
   return (
     <div className="w-full">
-      <div className="bg-white rounded-2xl shadow-elevation-1 overflow-hidden relative px-6 py-4 mt-4">
+      <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-elevation-1 overflow-hidden relative px-6 py-4 mt-4">
         <h2 className="text-xl mb-4">Cafe Hours</h2>
         <div className="flex flex-col space-y-2">
           {sortedHours.map((day) => (

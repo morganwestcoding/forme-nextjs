@@ -217,7 +217,7 @@ export default function ImageCropModal({
                     onChange={(e) => setZoom(Number(e.target.value))}
                     className="flex-1 h-1.5 bg-stone-200 dark:bg-stone-700 rounded-full appearance-none cursor-pointer
                       [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4
-                      [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-stone-900 dark:[&::-webkit-slider-thumb]:bg-white
+                      [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-stone-900 dark:[&::-webkit-slider-thumb]:bg-white dark:bg-stone-900
                       [&::-webkit-slider-thumb]:shadow-elevation-1 [&::-webkit-slider-thumb]:cursor-pointer"
                   />
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-stone-400 flex-shrink-0">

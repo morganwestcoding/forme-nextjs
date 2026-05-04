@@ -60,10 +60,10 @@ export default async function AdminDisputesPage() {
             No disputes found.
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-2xl border border-stone-200/60">
+          <div className="overflow-x-auto rounded-2xl border border-stone-200 dark:border-stone-700/60">
             <table className="w-full text-[13px]">
               <thead>
-                <tr className="border-b border-stone-200/60 bg-stone-50/50">
+                <tr className="border-b border-stone-200 dark:border-stone-700/60 bg-stone-50 dark:bg-stone-900/50">
                   <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Status</th>
                   <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Amount</th>
                   <th className="text-left py-3 px-4 font-medium text-stone-500  dark:text-stone-500">Reason</th>
@@ -80,7 +80,7 @@ export default async function AdminDisputesPage() {
                     : null;
 
                   return (
-                    <tr key={dispute.id} className="border-b border-stone-100 dark:border-stone-800 hover:bg-stone-50/50 transition-colors">
+                    <tr key={dispute.id} className="border-b border-stone-100 dark:border-stone-800 hover:bg-stone-50 dark:bg-stone-900/50 transition-colors">
                       <td className="py-3 px-4">
                         <span className={`inline-flex text-[10px] font-medium px-2 py-0.5 rounded-full ring-1 ${statusStyles[dispute.status] || statusStyles.needs_response}`}>
                           {dispute.status.replace('_', ' ')}

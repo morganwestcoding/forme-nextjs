@@ -4,7 +4,7 @@ interface BouncingDotsProps {
 }
 
 export default function BouncingDots({ className = '', tone = 'dark' }: BouncingDotsProps) {
-  const color = tone === 'dark' ? 'bg-black' : 'bg-white';
+  const color = tone === 'dark' ? 'bg-black' : 'bg-white dark:bg-stone-900';
   return (
     <div className={`flex items-center gap-1 ${className}`}>
       <div className={`w-1.5 h-1.5 rounded-full ${color} animate-[bounce_1s_ease-in-out_infinite]`} />

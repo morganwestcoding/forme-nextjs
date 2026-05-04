@@ -570,7 +570,7 @@ const ProfileHead: React.FC<ProfileHeadProps> = ({
                   </Button>
                   <button
                     onClick={handleFollow}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-stone-50  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 text-stone-700 dark:text-stone-200 rounded-xl text-[13px] font-medium transition-all border border-stone-200/60"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-stone-50  hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800 text-stone-700 dark:text-stone-200 rounded-xl text-[13px] font-medium transition-all border border-stone-200 dark:border-stone-700/60"
                     type="button"
                   >
                     {isFollowing ? 'Following' : 'Follow'}

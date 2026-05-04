@@ -140,7 +140,7 @@ const WalkthroughTooltip: React.FC<WalkthroughTooltipProps> = ({
           {!isFirst && (
             <button
               onClick={onPrev}
-              className="flex-1 py-2.5 px-4 rounded-xl text-[13px] font-medium bg-transparent border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800 transition-all duration-200 active:scale-[0.98]"
+              className="flex-1 py-2.5 px-4 rounded-xl text-[13px] font-medium bg-transparent border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:bg-stone-900 dark:hover:bg-stone-800 transition-all duration-200 active:scale-[0.98]"
             >
               Back
             </button>

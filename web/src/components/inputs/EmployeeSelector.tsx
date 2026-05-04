@@ -111,7 +111,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
     <div id={id} className="flex flex-col gap-4">
       {/* Header with Add Button */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-medium text-black">Employees</h3>
+        <h3 className="text-lg font-medium text-black dark:text-white">Employees</h3>
         <button
           type="button"
           onClick={() => setShowSearch(!showSearch)}
@@ -132,7 +132,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
               placeholder="Search users by name or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl outline-none transition focus:border-black text-black"
+              className="w-full pl-10 pr-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl outline-none transition focus:border-black text-black dark:text-white"
             />
           </div>
 
@@ -161,7 +161,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
                       )}
                     </div>
                     <div>
-                      <div className="font-medium text-black">{user.name || 'Unnamed User'}</div>
+                      <div className="font-medium text-black dark:text-white">{user.name || 'Unnamed User'}</div>
                       <div className="text-sm text-stone-500  dark:text-stone-500">{user.email}</div>
                     </div>
                   </button>
@@ -192,7 +192,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
                   )}
                 </div>
                 <div>
-                  <div className="font-medium text-black">{employee.user?.name || 'Unnamed User'}</div>
+                  <div className="font-medium text-black dark:text-white">{employee.user?.name || 'Unnamed User'}</div>
                   <div className="text-sm text-stone-500  dark:text-stone-500">{employee.user?.email}</div>
                 </div>
               </div>
@@ -214,7 +214,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
                   value={employee.jobTitle || ''}
                   onChange={(e) => updateEmployee(employee.userId, { jobTitle: e.target.value })}
                   placeholder=" "
-                  className="peer w-full p-3 pt-6 bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl outline-none transition text-black focus:border-black"
+                  className="peer w-full p-3 pt-6 bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl outline-none transition text-black dark:text-white focus:border-black"
                 />
                 <label
                   htmlFor={`employee-job-title-${index}`}
@@ -228,7 +228,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
             {/* Services */}
             {services.length > 0 && (
               <div>
-                <label className="block text-sm font-medium text-black mb-2">
+                <label className="block text-sm font-medium text-black dark:text-white mb-2">
                   Services this employee can provide:
                 </label>
                 <div className="flex flex-wrap gap-2">

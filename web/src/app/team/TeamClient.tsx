@@ -636,7 +636,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
             <div>
               <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 tracking-tight mb-4">Team</h2>
               {members.length === 0 ? (
-                <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
+                <div className="rounded-2xl border border-stone-200 dark:border-stone-700/60 p-8 bg-white dark:bg-stone-900 text-center">
                   <p className="text-stone-400 dark:text-stone-500 text-[14px]">No team members yet. Add employees to your listing to get started.</p>
                 </div>
               ) : (
@@ -684,7 +684,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                 </h2>
                 <div className="space-y-3">
                   {pendingTimeOffRequests.map((req) => (
-                    <div key={req.id} className="flex items-center justify-between p-4 rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900">
+                    <div key={req.id} className="flex items-center justify-between p-4 rounded-2xl border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-900">
                       <div>
                         <p className="text-[14px] font-medium text-stone-900 dark:text-stone-100">{req.employeeName}</p>
                         <p className="text-[12px] text-stone-400 dark:text-stone-500">
@@ -722,11 +722,11 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
             </div>
 
             {members.length === 0 ? (
-              <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
+              <div className="rounded-2xl border border-stone-200 dark:border-stone-700/60 p-8 bg-white dark:bg-stone-900 text-center">
                 <p className="text-stone-400 dark:text-stone-500 text-[14px]">No team members to schedule.</p>
               </div>
             ) : (
-              <div className="rounded-2xl border border-stone-200/60 overflow-hidden bg-white dark:bg-stone-900">
+              <div className="rounded-2xl border border-stone-200 dark:border-stone-700/60 overflow-hidden bg-white dark:bg-stone-900">
                 {/* Header row */}
                 <div className="grid grid-cols-8 border-b border-stone-100 dark:border-stone-800">
                   <div className="p-4 text-[12px] text-stone-400 dark:text-stone-500">Team</div>
@@ -738,7 +738,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                 {/* Member rows */}
                 {members.map((member) => (
                   <div key={member.id}>
-                    <div className="grid grid-cols-8 border-b border-stone-50 last:border-0 hover:bg-stone-50/50 transition-colors">
+                    <div className="grid grid-cols-8 border-b border-stone-50 last:border-0 hover:bg-stone-50 dark:bg-stone-900/50 transition-colors">
                       <div className="p-4 flex items-center gap-2.5">
                         <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 bg-stone-100 dark:bg-stone-800">
                           {(member.user.image || member.user.imageSrc) ? (
@@ -778,7 +778,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
 
                     {/* Edit row */}
                     {editingSchedule === member.id && (
-                      <div className="border-b border-stone-100 dark:border-stone-800 bg-stone-50/50 p-4">
+                      <div className="border-b border-stone-100 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/50 p-4">
                         <div className="grid grid-cols-7 gap-3 mb-4">
                           {DAYS.map((day) => (
                             <div key={day} className="space-y-2">
@@ -845,7 +845,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                 <div className="space-y-3">
                   {members.flatMap((m) =>
                     m.timeOffRequests.map((req) => (
-                      <div key={req.id} className="flex items-center justify-between p-4 rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900">
+                      <div key={req.id} className="flex items-center justify-between p-4 rounded-2xl border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-900">
                         <div>
                           <p className="text-[14px] font-medium text-stone-900 dark:text-stone-100">{m.fullName}</p>
                           <p className="text-[12px] text-stone-400 dark:text-stone-500">
@@ -890,7 +890,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                 <span className="ml-2 text-[14px] font-normal text-stone-400 dark:text-stone-500">{todayBookings.length} booking{todayBookings.length !== 1 ? 's' : ''}</span>
               </h2>
               {todayBookings.length === 0 ? (
-                <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
+                <div className="rounded-2xl border border-stone-200 dark:border-stone-700/60 p-8 bg-white dark:bg-stone-900 text-center">
                   <p className="text-stone-400 dark:text-stone-500 text-[14px]">No bookings today</p>
                 </div>
               ) : (
@@ -911,7 +911,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                 <span className="ml-2 text-[14px] font-normal text-stone-400 dark:text-stone-500">{upcomingBookings.length} booking{upcomingBookings.length !== 1 ? 's' : ''}</span>
               </h2>
               {upcomingBookings.length === 0 ? (
-                <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
+                <div className="rounded-2xl border border-stone-200 dark:border-stone-700/60 p-8 bg-white dark:bg-stone-900 text-center">
                   <p className="text-stone-400 dark:text-stone-500 text-[14px]">No upcoming bookings this week</p>
                 </div>
               ) : (
@@ -961,11 +961,11 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
             </div>
 
             {loadingClients ? (
-              <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
+              <div className="rounded-2xl border border-stone-200 dark:border-stone-700/60 p-8 bg-white dark:bg-stone-900 text-center">
                 <p className="text-stone-400 dark:text-stone-500 text-[14px]">Loading clients...</p>
               </div>
             ) : clients.length === 0 ? (
-              <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
+              <div className="rounded-2xl border border-stone-200 dark:border-stone-700/60 p-8 bg-white dark:bg-stone-900 text-center">
                 <p className="text-stone-400 dark:text-stone-500 text-[14px]">
                   {clientsLoaded ? 'No clients found' : 'Loading...'}
                 </p>
@@ -1048,7 +1048,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
 
             {/* Balance card */}
             {balances[myEmployee.id] ? (
-              <div className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 p-6">
+              <div className="rounded-2xl border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-900 p-6">
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                   {[
                     { label: 'Total Revenue', value: `$${balances[myEmployee.id].totalRevenue?.toLocaleString() || '0'}` },
@@ -1123,14 +1123,14 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                 )}
               </div>
             ) : (
-              <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
+              <div className="rounded-2xl border border-stone-200 dark:border-stone-700/60 p-8 bg-white dark:bg-stone-900 text-center">
                 <p className="text-stone-400 dark:text-stone-500 text-[14px]">Loading pay data...</p>
               </div>
             )}
 
             {/* Fee periods */}
             {(payPeriods[myEmployee.id] || []).length > 0 && (
-              <div className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 p-5">
+              <div className="rounded-2xl border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-900 p-5">
                 <h4 className="text-[13px] font-semibold text-stone-900 dark:text-stone-100 mb-3">Fee History</h4>
                 <div className="space-y-2">
                   {(payPeriods[myEmployee.id] || []).map((period: any) => (
@@ -1154,7 +1154,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
               const showAll = showAllPayouts[myEmployee.id];
               const displayed = showAll ? allPayouts : allPayouts.slice(0, 5);
               return (
-                <div className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 p-5">
+                <div className="rounded-2xl border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-900 p-5">
                   <h4 className="text-[13px] font-semibold text-stone-900 dark:text-stone-100 mb-3">Payout History</h4>
                   <div className="space-y-2">
                     {displayed.map((payout: any) => (
@@ -1188,7 +1188,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
         {activeTab === 'pay' && isOwnerOfSelected && (
           <div className="space-y-8">
             {members.length === 0 ? (
-              <div className="rounded-2xl border border-stone-200/60 p-8 bg-white dark:bg-stone-900 text-center">
+              <div className="rounded-2xl border border-stone-200 dark:border-stone-700/60 p-8 bg-white dark:bg-stone-900 text-center">
                 <p className="text-stone-400 dark:text-stone-500 text-[14px]">No team members to manage pay for.</p>
               </div>
             ) : (() => {
@@ -1206,7 +1206,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                         ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     });
                   }}
-                  className="w-full rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors p-5 flex items-center justify-between text-left"
+                  className="w-full rounded-2xl border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors p-5 flex items-center justify-between text-left"
                 >
                   <div>
                     <p className="text-[14px] font-semibold text-stone-900 dark:text-stone-100">
@@ -1233,7 +1233,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                   <div
                     key={member.id}
                     id={`pay-member-${member.id}`}
-                    className="rounded-2xl border border-stone-200/60 bg-white dark:bg-stone-900 overflow-hidden"
+                    className="rounded-2xl border border-stone-200 dark:border-stone-700/60 bg-white dark:bg-stone-900 overflow-hidden"
                     style={{ opacity: 0, animation: 'fadeInUp 520ms ease-out both', animationDelay: `${60 + idx * 40}ms` }}
                   >
                     {/* Member header */}
@@ -1281,7 +1281,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
 
                     {/* Agreement editor */}
                     {isEditing && (
-                      <div className="p-5 border-b border-stone-100 dark:border-stone-800 bg-stone-50/50 space-y-4">
+                      <div className="p-5 border-b border-stone-100 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/50 space-y-4">
                         <div className="flex gap-3">
                           {['chair_rental', 'commission'].map((type) => (
                             <button

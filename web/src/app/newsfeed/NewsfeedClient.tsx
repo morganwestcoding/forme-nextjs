@@ -412,7 +412,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
     { label: 'Settings', href: '/settings', icon: 'Se' },
   ];
 
-  const sidebarBtnClass = 'w-10 h-10 rounded-full flex items-center justify-center text-stone-400    hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-all duration-200';
+  const sidebarBtnClass = 'w-10 h-10 rounded-full flex items-center justify-center text-stone-400    hover:text-stone-700 dark:hover:text-stone-300 dark:text-stone-200 dark:hover:text-white hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-800 transition-all duration-200';
 
   return (
     <ClientProviders>
@@ -461,7 +461,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                 <button
                   key={item.label}
                   onClick={() => handleNavAway(item.href)}
-                  className="h-9 px-4 rounded-xl flex items-center justify-center text-[14px] text-stone-500     hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-all duration-200"
+                  className="h-9 px-4 rounded-xl flex items-center justify-center text-[14px] text-stone-500     hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 dark:hover:text-white hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-800 transition-all duration-200"
                   style={{
                     opacity: (isSettled && !isLeaving) ? 1 : 0,
                     transition: 'opacity 0.4s ease-out',

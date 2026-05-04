@@ -38,7 +38,7 @@ export default async function AdminAcademyDetailPage({ params, searchParams }: P
           </Link>
         </div>
         <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">
+          <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100 tracking-tight">
             {academy.name}
           </h1>
           {academy.description && (

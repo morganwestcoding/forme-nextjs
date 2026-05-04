@@ -43,7 +43,7 @@ function BrandTooltip({
       className={`rounded-xl border px-3 py-2 text-[12px] shadow-elevation-2 ${
         isDarkMode
           ? 'border-stone-700 bg-stone-900 text-stone-100'
-          : 'border-stone-200 bg-white text-stone-900'
+          : 'border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100'
       }`}
     >
       <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
@@ -541,7 +541,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                 </thead>
                 <tbody>
                   {listings.map((listing) => (
-                    <tr key={listing.id} className="border-b border-stone-100 dark:border-stone-800 last:border-0 hover:bg-white/50 transition-colors">
+                    <tr key={listing.id} className="border-b border-stone-100 dark:border-stone-800 last:border-0 hover:bg-white dark:bg-stone-900/50 transition-colors">
                       <td className="px-8 py-4">
                         <div className="font-medium text-sm text-stone-900 dark:text-stone-100">{listing.title}</div>
                       </td>

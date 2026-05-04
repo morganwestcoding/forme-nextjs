@@ -228,12 +228,12 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
   }, []);
 
   const inputClasses = isHeroMode
-    ? "w-full h-12 pl-12 pr-4 text-sm backdrop-blur-md bg-white/10 border border-white/30 rounded-xl outline-none focus:ring-2 focus:ring-white/40 focus:border-white/50 focus:bg-white/15 text-white placeholder-white/60 transition-all duration-300"
-    : "w-full h-12 pl-12 pr-4 text-sm bg-transparent border border-stone-200 rounded-xl outline-none focus:border-stone-300 focus:bg-stone-50/50 text-stone-700 placeholder-stone-400 transition-all duration-200";
+    ? "w-full h-12 pl-12 pr-4 text-sm backdrop-blur-md bg-white dark:bg-stone-900/10 border border-white/30 rounded-xl outline-none focus:ring-2 focus:ring-white/40 focus:border-white/50 focus:bg-white dark:bg-stone-900/15 text-white placeholder-white/60 transition-all duration-300"
+    : "w-full h-12 pl-12 pr-4 text-sm bg-transparent border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:border-stone-300 focus:bg-stone-50 dark:bg-stone-900/50 text-stone-700 placeholder-stone-400 transition-all duration-200";
 
   const iconClasses = isHeroMode
     ? "w-5 h-5 text-white/80 group-hover:text-white transition-colors duration-300"
-    : "w-5 h-5 text-stone-400 group-hover:text-stone-500 group-focus-within:text-stone-900 transition-colors duration-300";
+    : "w-5 h-5 text-stone-400 group-hover:text-stone-500 group-focus-within:text-stone-900 dark:text-stone-100 transition-colors duration-300";
 
   return (
     <div className={`relative group w-full ${className || ""}`} ref={containerRef}>
@@ -255,8 +255,8 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
         <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
           <kbd className={`hidden sm:inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-xl border transition-all duration-200 ${
             isHeroMode
-              ? "bg-white/10 border-white/20 text-white/60"
-              : "bg-transparent border-stone-300 text-stone-400 group-focus-within:border-stone-900 group-focus-within:text-stone-900"
+              ? "bg-white dark:bg-stone-900/10 border-white/20 text-white/60"
+              : "bg-transparent border-stone-300 text-stone-400 group-focus-within:border-stone-900 group-focus-within:text-stone-900 dark:text-stone-100"
           }`}>
             {isMac ? "⌘" : "Ctrl"}K
           </kbd>
@@ -268,7 +268,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
         createPortal(
           <div
             ref={listRef}
-            className="fixed z-[50] max-h-96 overflow-auto rounded-xl bg-white border border-stone-300 animate-in fade-in slide-in-from-top-2 duration-200"
+            className="fixed z-[50] max-h-96 overflow-auto rounded-xl bg-white dark:bg-stone-900 border border-stone-300 animate-in fade-in slide-in-from-top-2 duration-200"
             style={{
               top: `${dropdownPosition.top}px`,
               left: `${dropdownPosition.left}px`,
@@ -325,7 +325,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
                               className={`mx-2 px-3 py-2.5 cursor-pointer flex items-center gap-3 rounded-xl transition-all duration-200 ${
                                 active
                                   ? "bg-stone-900/10"
-                                  : "hover:bg-stone-50"
+                                  : "hover:bg-stone-50 dark:bg-stone-900"
                               }`}
                               onMouseEnter={() => setActiveIdx(idx)}
                               onClick={(e) => {
@@ -336,7 +336,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
                             >
                               {/* Thumbnail */}
                               <div className={`w-9 h-9 rounded-xl overflow-hidden shrink-0 transition-all duration-200 ${
-                                active ? "ring-2 ring-stone-900/40" : "bg-stone-100"
+                                active ? "ring-2 ring-stone-900/40" : "bg-stone-100 dark:bg-stone-800"
                               }`}>
                                 {item.image ? (
                                   // eslint-disable-next-line @next/next/no-img-element
@@ -354,7 +354,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
                               {/* Text */}
                               <div className="min-w-0 flex-1">
                                 <div className={`text-sm font-medium truncate transition-colors duration-200 ${
-                                  active ? "text-stone-900" : "text-stone-700"
+                                  active ? "text-stone-900 dark:text-stone-100" : "text-stone-700"
                                 }`}>
                                   {item.title}
                                 </div>
@@ -365,7 +365,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
                                 )}
                               </div>
                               <div className={`text-[10px] uppercase tracking-wider font-medium px-2 py-0.5 rounded-xl transition-all duration-200 ${
-                                active ? "text-stone-900 bg-stone-900/10" : "text-stone-400 bg-stone-50"
+                                active ? "text-stone-900 dark:text-stone-100 bg-stone-900/10" : "text-stone-400 bg-stone-50 dark:bg-stone-900"
                               }`}>
                                 {typeKey}
                               </div>
