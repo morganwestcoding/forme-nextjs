@@ -516,18 +516,20 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
         <span className="text-[13px] font-bold text-stone-900 dark:text-stone-100 tabular-nums">${booking.totalPrice}</span>
         {showActions && booking.status === 'pending' ? (
           <div className="flex gap-1.5 ml-2">
-            <button
+            <Button
+              variant="success-soft"
+              size="sm"
               onClick={() => handleBookingAction(booking.id, 'accept')}
-              className="px-3 py-1.5 rounded-xl bg-success-soft text-success-soft-foreground text-[11px] font-medium hover:bg-success-soft transition-colors"
             >
               Accept
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="danger-soft"
+              size="sm"
               onClick={() => handleBookingAction(booking.id, 'decline')}
-              className="px-3 py-1.5 rounded-xl bg-danger-soft text-danger-soft-foreground text-[11px] font-medium hover:bg-danger-soft transition-colors"
             >
               Decline
-            </button>
+            </Button>
           </div>
         ) : (
           <StatusBadge status={booking.status} />
@@ -693,18 +695,20 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                         </p>
                       </div>
                       <div className="flex gap-1.5">
-                        <button
+                        <Button
+                          variant="success-soft"
+                          size="sm"
                           onClick={() => handleTimeOffAction(req.id, 'approved')}
-                          className="px-3 py-1.5 rounded-xl bg-success-soft text-success-soft-foreground text-[11px] font-medium hover:bg-success-soft transition-colors"
                         >
                           Approve
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          variant="danger-soft"
+                          size="sm"
                           onClick={() => handleTimeOffAction(req.id, 'denied')}
-                          className="px-3 py-1.5 rounded-xl bg-danger-soft text-danger-soft-foreground text-[11px] font-medium hover:bg-danger-soft transition-colors"
                         >
                           Deny
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -855,18 +859,20 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                         </div>
                         {req.status === 'pending' ? (
                           <div className="flex gap-1.5">
-                            <button
+                            <Button
+                              variant="success-soft"
+                              size="sm"
                               onClick={() => handleTimeOffAction(req.id, 'approved')}
-                              className="px-3 py-1.5 rounded-xl bg-success-soft text-success-soft-foreground text-[11px] font-medium hover:bg-success-soft transition-colors"
                             >
                               Approve
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                              variant="danger-soft"
+                              size="sm"
                               onClick={() => handleTimeOffAction(req.id, 'denied')}
-                              className="px-3 py-1.5 rounded-xl bg-danger-soft text-danger-soft-foreground text-[11px] font-medium hover:bg-danger-soft transition-colors"
                             >
                               Deny
-                            </button>
+                            </Button>
                           </div>
                         ) : (
                           <StatusBadge status={req.status} />
@@ -1450,12 +1456,13 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                                 </div>
                                 {payout.status === 'pending' ? (
                                   <div className="flex gap-1.5">
-                                    <button
+                                    <Button
+                                      variant="success-soft"
+                                      size="sm"
                                       onClick={() => handlePayoutAction(payout.id, 'approve')}
-                                      className="px-3 py-1.5 rounded-xl bg-success-soft text-success-soft-foreground text-[11px] font-medium hover:bg-success-soft transition-colors"
                                     >
                                       Approve
-                                    </button>
+                                    </Button>
                                     {denyingPayoutId === payout.id ? (
                                       <div className="flex items-center gap-1.5">
                                         <input
@@ -1470,12 +1477,13 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                                         <button onClick={() => { setDenyingPayoutId(null); setDenyNote(''); }} className="text-[11px] text-stone-400 dark:text-stone-500">✕</button>
                                       </div>
                                     ) : (
-                                      <button
+                                      <Button
+                                        variant="danger-soft"
+                                        size="sm"
                                         onClick={() => setDenyingPayoutId(payout.id)}
-                                        className="px-3 py-1.5 rounded-xl bg-danger-soft text-danger-soft-foreground text-[11px] font-medium hover:bg-danger-soft transition-colors"
                                       >
                                         Deny
-                                      </button>
+                                      </Button>
                                     )}
                                   </div>
                                 ) : (
