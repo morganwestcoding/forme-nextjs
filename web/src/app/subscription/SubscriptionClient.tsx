@@ -322,13 +322,8 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
                 >
                   Billing &amp; Invoices
                 </button>
-                <button
-                  onClick={() => setShowCancelConfirm(true)}
-                  disabled={saving}
-                  className="px-4 py-2 rounded-xl text-[12px] font-medium bg-danger-soft text-danger-soft-foreground hover:bg-danger-soft border border-danger-soft/60 dark:bg-danger/10 dark:text-danger/80 dark:hover:bg-danger/20 dark:border-danger/20 transition-all"
-                >
-                  Cancel Plan
-                </button>
+                <Button variant="danger-soft" size="sm" onClick={() => setShowCancelConfirm(true)}>Cancel Plan
+                </Button>
               </div>
             </div>
           </div>

@@ -309,13 +309,8 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                     <p className="text-[12px] text-stone-400 dark:text-stone-500 mt-0.5">Permanently delete your account and all data</p>
                   </div>
                 </div>
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  disabled={deleting}
-                  className="px-4 py-2 rounded-xl text-[12px] font-medium bg-danger-soft text-danger-soft-foreground hover:bg-danger-soft border border-danger-soft/60 dark:bg-danger/10 dark:text-danger/80 dark:hover:bg-danger/20 dark:border-danger/20 transition-all whitespace-nowrap"
-                >
-                  Delete Account
-                </button>
+                <Button variant="danger-soft" size="sm" onClick={() => setShowDeleteConfirm(true)}>Delete Account
+                </Button>
               </div>
             </Card>
           </div>
