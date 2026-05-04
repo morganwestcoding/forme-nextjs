@@ -59,8 +59,8 @@ const ForgotPasswordModal = () => {
 
   const successContent = (
     <div className="flex flex-col items-center text-center gap-3 py-2">
-      <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/60 dark:border-emerald-500/20 flex items-center justify-center">
-        <FiCheck size={22} className="text-emerald-600 dark:text-emerald-400" />
+      <div className="w-12 h-12 rounded-full bg-success-soft dark:bg-success/10 border border-success-soft/60 dark:border-success/20 flex items-center justify-center">
+        <FiCheck size={22} className="text-success-soft-foreground dark:text-success/80" />
       </div>
       <h3 className="text-[16px] font-semibold text-stone-900 dark:text-stone-100">Check your inbox</h3>
       <p className="text-[13px] text-stone-500 dark:text-stone-400 max-w-sm">

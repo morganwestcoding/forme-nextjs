@@ -206,7 +206,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
                 </div>
 
                 {!inStock && (
-                  <p className="text-[12px] text-red-500 font-medium mt-1">Sold out</p>
+                  <p className="text-[12px] text-danger font-medium mt-1">Sold out</p>
                 )}
               </div>
             </div>
@@ -452,7 +452,7 @@ const ProductClient: React.FC<ProductClientProps> = ({
                 )}
                 <div>
                   <p className="text-[11px] text-stone-400 dark:text-stone-500 uppercase tracking-wider">Availability</p>
-                  <p className={`text-[13px] font-medium mt-0.5 ${inStock ? 'text-green-600' : 'text-red-500'}`}>
+                  <p className={`text-[13px] font-medium mt-0.5 ${inStock ? 'text-success-soft-foreground' : 'text-danger'}`}>
                     {inStock ? 'In Stock' : 'Sold Out'}
                   </p>
                 </div>

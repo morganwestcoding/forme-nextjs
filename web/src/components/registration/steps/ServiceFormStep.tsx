@@ -168,7 +168,7 @@ export default function ServiceFormStep({ services, setServices, editingIndex, o
           <button
             type="button"
             onClick={handleDelete}
-            className="flex items-center gap-2 text-red-500 hover:text-red-600 transition-colors"
+            className="flex items-center gap-2 text-danger hover:text-danger-soft-foreground transition-colors"
           >
             <Trash2 className="w-4 h-4" />
             <span className="text-sm">Delete</span>

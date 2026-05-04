@@ -35,14 +35,14 @@ const getAvatarColor = (name?: string | null) => {
   
   const colors = [
     'bg-stone-500',
-    'bg-green-500', 
+    'bg-success', 
     'bg-yellow-500',
     'bg-purple-500',
     'bg-pink-500',
     'bg-stone-500',
     'bg-teal-500',
     'bg-orange-500',
-    'bg-red-500',
+    'bg-danger',
     'bg-stone-500'
   ];
   

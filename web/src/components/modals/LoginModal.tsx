@@ -111,7 +111,7 @@ const LoginModal = () => {
             placeholder="you@example.com"
           />
           {errors.email && (
-            <p className="mt-2 text-sm text-red-500">{errors.email.message as string}</p>
+            <p className="mt-2 text-sm text-danger">{errors.email.message as string}</p>
           )}
         </div>
 
@@ -139,7 +139,7 @@ const LoginModal = () => {
             </button>
           </div>
           {errors.password && (
-            <p className="mt-2 text-sm text-red-500">{errors.password.message as string}</p>
+            <p className="mt-2 text-sm text-danger">{errors.password.message as string}</p>
           )}
         </div>
 

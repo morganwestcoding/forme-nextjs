@@ -325,7 +325,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
                 <button
                   onClick={() => setShowCancelConfirm(true)}
                   disabled={saving}
-                  className="px-4 py-2 rounded-xl text-[12px] font-medium bg-red-50 text-red-600 hover:bg-red-100 border border-red-200/60 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 dark:border-red-500/20 transition-all"
+                  className="px-4 py-2 rounded-xl text-[12px] font-medium bg-danger-soft text-danger-soft-foreground hover:bg-danger-soft border border-danger-soft/60 dark:bg-danger/10 dark:text-danger/80 dark:hover:bg-danger/20 dark:border-danger/20 transition-all"
                 >
                   Cancel Plan
                 </button>
@@ -372,7 +372,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
                   : "bg-white dark:bg-stone-900 hover:-translate-y-0.5 hover:shadow-elevation-2"
               } ${
                 isCurrent
-                  ? "border-emerald-500 dark:border-emerald-400"
+                  ? "border-success dark:border-success"
                   : isPremium
                   ? "border-stone-800 dark:border-white"
                   : isGold
@@ -401,7 +401,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
                     {price > 0 && <span className="text-[13px] ml-1.5 text-stone-400 dark:text-stone-500">/{billing === "yearly" ? "yr" : "mo"}</span>}
                   </div>
                   {billing === "yearly" && price > 0 && (
-                    <p className={`text-[11px] font-medium ${isPremium ? 'text-emerald-400 dark:text-emerald-600' : 'text-emerald-600'}`}>Save ${(plan.price.monthly * 12) - plan.price.yearly}/yr</p>
+                    <p className={`text-[11px] font-medium ${isPremium ? 'text-success/80 dark:text-success-soft-foreground' : 'text-success-soft-foreground'}`}>Save ${(plan.price.monthly * 12) - plan.price.yearly}/yr</p>
                   )}
                   <p className={`text-[11px] mt-2 ${isPremium ? 'text-stone-400 dark:text-stone-500' : 'text-stone-500 dark:text-stone-400'}`}>
                     {plan.fees}
@@ -450,8 +450,8 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
         <div className="fixed inset-0 z-[9999] backdrop-blur-sm bg-stone-900/60 flex items-center justify-center p-4" onClick={() => setShowCancelConfirm(false)}>
           <div className="bg-white dark:bg-stone-900 rounded-2xl p-8 max-w-md w-full shadow-elevation-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
-                <Cancel01Icon className="w-5 h-5 text-red-500" />
+              <div className="w-10 h-10 rounded-full bg-danger-soft flex items-center justify-center">
+                <Cancel01Icon className="w-5 h-5 text-danger" />
               </div>
               <h3 className="text-lg font-semibold text-stone-900 dark:text-stone-100">Cancel Subscription?</h3>
             </div>
@@ -474,7 +474,7 @@ const SubscriptionClient: React.FC<Props> = ({ currentUser }) => {
               <button
                 onClick={handleCancel}
                 disabled={saving}
-                className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-red-600 text-white hover:bg-red-700 transition-all"
+                className="flex-1 py-3 rounded-xl text-[13px] font-medium bg-danger text-white hover:bg-danger/90 transition-all"
               >
                 {saving ? "Cancelling..." : "Cancel Subscription"}
               </button>

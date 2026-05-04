@@ -275,7 +275,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
                 {priceRange && (
                   <>
                     <span className="text-white/40">/</span>
-                    <span className="text-emerald-400 font-medium drop-shadow-sm">{priceRange}</span>
+                    <span className="text-success/80 font-medium drop-shadow-sm">{priceRange}</span>
                   </>
                 )}
               </div>
@@ -313,7 +313,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ data, currentUser, compact = 
         {data.category && (
           <p className="text-[11px] text-stone-400   dark:text-stone-400  leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
             {data.category}
-            {isSample && <span className="text-amber-600 dark:text-amber-500"> · sample</span>}
+            {isSample && <span className="text-warning-soft-foreground dark:text-warning"> · sample</span>}
           </p>
         )}
 

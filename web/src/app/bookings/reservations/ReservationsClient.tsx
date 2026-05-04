@@ -312,7 +312,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
                   {tab.count > 0 && (
                     <span
                       className={`text-[11px] tabular-nums ${
-                        active ? 'text-white/60' : tab.attention ? 'text-amber-600' : 'text-stone-400 dark:text-stone-500'
+                        active ? 'text-white/60' : tab.attention ? 'text-warning-soft-foreground' : 'text-stone-400 dark:text-stone-500'
                       }`}
                     >
                       {tab.count}
@@ -500,7 +500,7 @@ function NextTripHero({
       />
       <div className="absolute inset-0 bg-gradient-to-tr from-stone-950 via-stone-900/85 to-stone-900/30" />
       <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-transparent to-transparent" />
-      <div aria-hidden className="absolute -top-24 -right-20 w-72 h-72 rounded-full bg-amber-400/15 blur-3xl" />
+      <div aria-hidden className="absolute -top-24 -right-20 w-72 h-72 rounded-full bg-warning/90/15 blur-3xl" />
       <div aria-hidden className="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white/5 blur-3xl" />
 
       <div className="relative px-6 sm:px-10 pt-7 sm:pt-9 pb-7 sm:pb-8">
@@ -516,7 +516,7 @@ function NextTripHero({
               </button>
               <div className="flex items-baseline justify-between gap-2">
                 <div className="flex items-baseline gap-2">
-                  <div className="text-[11px] font-medium text-amber-300/90">
+                  <div className="text-[11px] font-medium text-warning/70/90">
                     {format(date, 'EEE, MMM')}
                   </div>
                   <div className="text-[18px] font-bold tabular-nums tracking-tight">
@@ -633,7 +633,7 @@ function NextTripHero({
                 <button
                   onClick={onAccept}
                   disabled={disabled}
-                  className="inline-flex flex-col items-center justify-center gap-1.5 rounded-xl text-[13px] font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-400/60 shadow-[0_4px_14px_-2px_rgba(16,185,129,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] hover:from-emerald-400 hover:to-emerald-500 transition-all disabled:opacity-50"
+                  className="inline-flex flex-col items-center justify-center gap-1.5 rounded-xl text-[13px] font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-success/60 shadow-[0_4px_14px_-2px_rgba(16,185,129,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] hover:from-emerald-400 hover:to-emerald-500 transition-all disabled:opacity-50"
                 >
                   <Tick02Icon size={22} strokeWidth={2.2} />
                   Accept
@@ -641,7 +641,7 @@ function NextTripHero({
                 <button
                   onClick={onDecline}
                   disabled={disabled}
-                  className="inline-flex flex-col items-center justify-center gap-1.5 rounded-xl text-[13px] font-semibold text-white/85 bg-white/5 border border-white/15 hover:bg-red-500/20 hover:text-red-100 hover:border-red-400/40 transition-all disabled:opacity-50"
+                  className="inline-flex flex-col items-center justify-center gap-1.5 rounded-xl text-[13px] font-semibold text-white/85 bg-white/5 border border-white/15 hover:bg-danger/20 hover:text-red-100 hover:border-danger/40 transition-all disabled:opacity-50"
                 >
                   <Cancel01Icon size={22} strokeWidth={2} />
                   Decline
@@ -692,9 +692,9 @@ function NextTripHero({
               <span
                 className={`text-[18px] font-semibold tabular-nums ${
                   status === 'pending'
-                    ? 'text-amber-200/85'
+                    ? 'text-warning/60/85'
                     : status === 'accepted'
-                    ? 'text-emerald-200/85'
+                    ? 'text-success/60/85'
                     : 'text-white'
                 }`}
               >
@@ -715,7 +715,7 @@ function NextTripHero({
                   <button
                     onClick={onAccept}
                     disabled={disabled}
-                    className="inline-flex items-center gap-1.5 px-4 h-9 rounded-full text-[12px] font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-400/60 disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-4 h-9 rounded-full text-[12px] font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-success/60 disabled:opacity-50"
                   >
                     <Check className="w-3.5 h-3.5" strokeWidth={2.8} />
                     Accept
@@ -827,14 +827,14 @@ function StatusInline({
     pending: {
       label: isIncoming ? 'Action needed' : 'Awaiting confirmation',
       sub: isIncoming ? 'Respond to keep the spot' : 'Usually within a few hours',
-      dot: 'bg-amber-400',
-      text: 'text-amber-200',
+      dot: 'bg-warning/90',
+      text: 'text-warning/60',
     },
     accepted: {
       label: 'Confirmed',
       sub: "You're good to go",
-      dot: 'bg-emerald-400',
-      text: 'text-emerald-200',
+      dot: 'bg-success/90',
+      text: 'text-success/60',
     },
     declined: {
       label: 'Declined',
@@ -897,20 +897,20 @@ function LifecycleLine({
   isIncoming: boolean;
 }) {
   const rescheduleBy = new Date(date.getTime() - 24 * 60 * 60 * 1000);
-  let dotColor = 'bg-amber-400';
+  let dotColor = 'bg-warning/90';
   let label: React.ReactNode = '';
   let sub: React.ReactNode = null;
 
   switch (status) {
     case 'pending':
-      dotColor = 'bg-amber-400';
+      dotColor = 'bg-warning/90';
       label = isIncoming
         ? 'Awaiting your response'
         : `Awaiting confirmation from ${listingTitle}`;
       sub = `Coming up in ${countdownHeadline.toLowerCase()}`;
       break;
     case 'accepted':
-      dotColor = 'bg-emerald-400';
+      dotColor = 'bg-success/90';
       label = "You're all set";
       sub = `Free to reschedule until ${format(rescheduleBy, 'MMM d, h:mm a')}`;
       break;
@@ -981,7 +981,7 @@ function StackedAction({
     primary
       ? 'bg-white  text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
       : danger
-      ? 'bg-white/0 text-white/75 border-white/15 hover:bg-red-500/15 hover:text-red-200 hover:border-red-400/40'
+      ? 'bg-white/0 text-white/75 border-white/15 hover:bg-danger/15 hover:text-danger-soft-foreground hover:border-danger/40'
       : 'bg-white/5 text-white border-white/15 hover:bg-white/15'
   } disabled:opacity-50`;
 
@@ -1022,7 +1022,7 @@ function NoUpcomingHero({
       style={{ animation: 'fadeInUp 600ms ease-out both' }}
       className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 text-white px-6 sm:px-10 py-10 sm:py-14"
     >
-      <div aria-hidden className="absolute -top-24 -right-20 w-72 h-72 rounded-full bg-amber-400/15 blur-3xl" />
+      <div aria-hidden className="absolute -top-24 -right-20 w-72 h-72 rounded-full bg-warning/90/15 blur-3xl" />
       <div aria-hidden className="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white/5 blur-3xl" />
       <div className="relative max-w-xl">
         <p className="text-[15px] font-semibold text-white/50">
@@ -1067,7 +1067,7 @@ function StatCard({
   return (
     <div
       className={`relative overflow-hidden rounded-2xl border bg-white dark:bg-stone-900 p-4 sm:p-5 transition-all hover:border-stone-300 dark:border-stone-700 ${
-        accent === 'amber' ? 'border-amber-200/80' : 'border-stone-200/70'
+        accent === 'amber' ? 'border-warning-soft/80' : 'border-stone-200/70'
       }`}
     >
       {accent === 'amber' && (
@@ -1220,7 +1220,7 @@ function TripRow({
               <div className="min-w-0">
                 <p className={`text-[11px] leading-none ${ROW_TEXT_COLORS[status]}`} style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
                   {STATUS_LABELS[status]}
-                  {today && !past && <span className="text-amber-600 ml-2">· Today</span>}
+                  {today && !past && <span className="text-warning-soft-foreground ml-2">· Today</span>}
                 </p>
                 <h3 className="mt-1.5 text-[18px] font-semibold text-stone-900 dark:text-stone-100 tracking-[-0.015em] leading-tight truncate">
                   {reservationServiceLabel}
@@ -1274,7 +1274,7 @@ function TripRow({
             <button
               onClick={(e) => { e.stopPropagation(); onDecline(); }}
               disabled={disabled}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 h-8 rounded-full text-[12px] font-semibold text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-all disabled:opacity-50"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 h-8 rounded-full text-[12px] font-semibold text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:text-danger-soft-foreground hover:border-danger-soft hover:bg-danger-soft transition-all disabled:opacity-50"
             >
               <X className="w-3.5 h-3.5" strokeWidth={2.6} />
               Decline
@@ -1282,7 +1282,7 @@ function TripRow({
             <button
               onClick={(e) => { e.stopPropagation(); onAccept(); }}
               disabled={disabled}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 h-8 rounded-full text-[12px] font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-400/60 shadow-[0_2px_8px_-1px_rgba(16,185,129,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] hover:from-emerald-400 hover:to-emerald-500 transition-all disabled:opacity-50"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 h-8 rounded-full text-[12px] font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-success/60 shadow-[0_2px_8px_-1px_rgba(16,185,129,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] hover:from-emerald-400 hover:to-emerald-500 transition-all disabled:opacity-50"
             >
               <Check className="w-3.5 h-3.5" strokeWidth={2.8} />
               Accept
@@ -1319,7 +1319,7 @@ function ActionChip({
     primary
       ? 'bg-white  text-stone-900 dark:text-stone-100 border-white hover:bg-stone-100 dark:hover:bg-stone-800 dark:bg-stone-800'
       : danger
-      ? 'bg-white/0 text-white/80 border-white/15 hover:bg-red-500/15 hover:text-red-200 hover:border-red-400/40'
+      ? 'bg-white/0 text-white/80 border-white/15 hover:bg-danger/15 hover:text-danger-soft-foreground hover:border-danger/40'
       : 'bg-white/10 text-white border-white/15 hover:bg-white/20'
   } disabled:opacity-50`;
 
@@ -1368,7 +1368,7 @@ function RowAction({
     accent
       ? 'border-stone-900 bg-stone-900 text-white hover:bg-stone-800'
       : danger
-      ? 'border-stone-200 dark:border-stone-800 text-stone-400 dark:text-stone-500 hover:text-red-600 hover:border-red-200 hover:bg-red-50'
+      ? 'border-stone-200 dark:border-stone-800 text-stone-400 dark:text-stone-500 hover:text-danger-soft-foreground hover:border-danger-soft hover:bg-danger-soft'
       : 'border-stone-200  text-stone-500   hover:text-stone-900 dark:hover:text-stone-100 dark:text-stone-100 hover:border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 dark:bg-stone-900'
   } disabled:opacity-50`;
   if (href) {
@@ -1471,15 +1471,15 @@ const STATUS_LABELS: Record<UiStatus, string> = {
 };
 
 const ROW_TEXT_COLORS: Record<UiStatus, string> = {
-  accepted: 'text-emerald-700',
-  pending: 'text-amber-700',
+  accepted: 'text-success-soft-foreground',
+  pending: 'text-warning-soft-foreground',
   declined: 'text-stone-500  dark:text-stone-500',
   cancelled: 'text-stone-400 dark:text-stone-500',
 };
 
 const HERO_TEXT_COLORS: Record<UiStatus, string> = {
-  accepted: 'text-emerald-200/90',
-  pending: 'text-amber-200/90',
+  accepted: 'text-success/60/90',
+  pending: 'text-warning/60/90',
   declined: 'text-white/60',
   cancelled: 'text-white/55',
 };

@@ -199,7 +199,7 @@ const EmployeeSelector: React.FC<EmployeeSelectorProps> = ({
               <button
                 type="button"
                 onClick={() => removeEmployee(employee.userId)}
-                className="text-red-500 hover:text-red-700 transition-colors"
+                className="text-danger hover:text-danger-soft-foreground transition-colors"
               >
                 <X size={16} />
               </button>

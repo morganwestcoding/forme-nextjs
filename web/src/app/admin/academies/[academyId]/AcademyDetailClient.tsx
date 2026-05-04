@@ -159,7 +159,7 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
   return (
     <>
       {stripeReturnedSuccess && (
-        <div className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-[13px] text-emerald-800">
+        <div className="mb-6 rounded-xl border border-success-soft bg-success-soft p-4 text-[13px] text-success-soft-foreground">
           Returned from Stripe. Click &quot;Refresh status&quot; below to sync the latest onboarding state.
         </div>
       )}
@@ -174,12 +174,12 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
             </p>
           </div>
           {connected && (
-            <span className="inline-flex items-center text-[11px] font-medium text-emerald-700 bg-emerald-50 ring-1 ring-emerald-200 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center text-[11px] font-medium text-success-soft-foreground bg-success-soft ring-1 ring-success-soft px-2.5 py-1 rounded-full">
               Ready
             </span>
           )}
           {pending && (
-            <span className="inline-flex items-center text-[11px] font-medium text-amber-700 bg-amber-50 ring-1 ring-amber-200 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center text-[11px] font-medium text-warning-soft-foreground bg-warning-soft ring-1 ring-warning-soft px-2.5 py-1 rounded-full">
               Onboarding incomplete
             </span>
           )}
@@ -222,11 +222,11 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
         {connected && (
           <div className="mt-4 grid grid-cols-2 gap-3 text-[12px]">
             <div className="flex items-center gap-2">
-              <span className={`w-1.5 h-1.5 rounded-full ${academy.stripeConnectChargesEnabled ? "bg-emerald-500" : "bg-stone-300"}`} />
+              <span className={`w-1.5 h-1.5 rounded-full ${academy.stripeConnectChargesEnabled ? "bg-success" : "bg-stone-300"}`} />
               <span className="text-stone-500  dark:text-stone-500">Charges enabled</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className={`w-1.5 h-1.5 rounded-full ${academy.stripeConnectPayoutsEnabled ? "bg-emerald-500" : "bg-stone-300"}`} />
+              <span className={`w-1.5 h-1.5 rounded-full ${academy.stripeConnectPayoutsEnabled ? "bg-success" : "bg-stone-300"}`} />
               <span className="text-stone-500  dark:text-stone-500">Payouts enabled</span>
             </div>
           </div>
@@ -355,7 +355,7 @@ export default function AcademyDetailClient({ academy, stripeReturnedSuccess }: 
                   <button
                     type="button"
                     onClick={() => deleteService(svc)}
-                    className="text-[12px] text-red-500 hover:text-red-700 px-2 py-1 transition-colors"
+                    className="text-[12px] text-danger hover:text-danger-soft-foreground px-2 py-1 transition-colors"
                   >
                     Delete
                   </button>

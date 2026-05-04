@@ -526,7 +526,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                     <DropdownMenuItem onClick={() => router.push('/favorites')}>Favorites</DropdownMenuItem>
                     <DropdownMenuItem onClick={() => router.push('/subscription')}>Subscription</DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => { if (confirm('Clear early access?')) clearEarlyAccess(); }} className="text-red-500">Clear Data</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => { if (confirm('Clear early access?')) clearEarlyAccess(); }} className="text-danger">Clear Data</DropdownMenuItem>
                     <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/' })}>Sign Out</DropdownMenuItem>
                   </>
                 ) : (
@@ -877,7 +877,7 @@ const NewsfeedClient: React.FC<NewsfeedClientProps> = ({
                               {currentUser && (post.user.id === currentUser.id || isMasterUser(currentUser)) && (
                                 <>
                                   <DropdownMenuSeparator />
-                                  <DropdownMenuItem onClick={handleDeletePost} className="gap-4 text-red-600 focus:text-red-600">
+                                  <DropdownMenuItem onClick={handleDeletePost} className="gap-4 text-danger-soft-foreground focus:text-danger-soft-foreground">
                                     <Delete02Icon className="w-4 h-4" strokeWidth={1.5} />
                                     Delete Post
                                   </DropdownMenuItem>

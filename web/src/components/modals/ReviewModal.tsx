@@ -110,7 +110,7 @@ const ReviewModal: React.FC = () => {
                 viewBox="0 0 24 24"
                 className={`w-10 h-10 transition-colors duration-150 ${
                   star <= (hoveredRating || rating)
-                    ? 'text-amber-400'
+                    ? 'text-warning/80'
                     : 'text-stone-200'
                 }`}
                 fill="currentColor"
@@ -123,8 +123,8 @@ const ReviewModal: React.FC = () => {
         <span className={`text-sm font-medium transition-opacity ${
           (hoveredRating || rating) > 0 ? 'opacity-100' : 'opacity-0'
         } ${
-          (hoveredRating || rating) >= 4 ? 'text-emerald-600' :
-          (hoveredRating || rating) >= 3 ? 'text-amber-600' : 'text-orange-600'
+          (hoveredRating || rating) >= 4 ? 'text-success-soft-foreground' :
+          (hoveredRating || rating) >= 3 ? 'text-warning-soft-foreground' : 'text-orange-600'
         }`}>
           {ratingLabels[hoveredRating || rating]}
         </span>

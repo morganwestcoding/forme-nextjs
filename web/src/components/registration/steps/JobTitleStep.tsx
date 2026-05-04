@@ -155,7 +155,7 @@ export default function JobTitleStep({ userType, isOwnerManager, ownerPerformsSe
                   placeholder={isTeam ? "e.g., Senior Stylist, Barber" : "e.g., Hair Stylist, Makeup Artist"}
                 />
                 {errors.jobTitle && (
-                  <p className="mt-2 text-sm text-red-500">{errors.jobTitle.message as string}</p>
+                  <p className="mt-2 text-sm text-danger">{errors.jobTitle.message as string}</p>
                 )}
               </div>
             </motion.div>

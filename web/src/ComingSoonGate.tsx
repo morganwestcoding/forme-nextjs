@@ -274,7 +274,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
           <div className="px-6 pt-28 pb-20 max-w-3xl mx-auto">
             {/* Badge */}
             <div className="inline-flex items-center gap-2.5 mb-10 px-3 py-1.5 rounded-full border border-stone-800 bg-stone-900/50">
-              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+              <span className="w-1.5 h-1.5 bg-success/90 rounded-full animate-pulse" />
               <span className="text-[11px] text-stone-300 uppercase tracking-wider font-medium">Launching Early 2026</span>
             </div>
 
@@ -307,7 +307,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                       disabled={emailLoading || emailSubmitted}
                       className={`flex-1 bg-transparent border rounded-xl px-4 py-3 text-sm text-white placeholder-stone-600 focus:outline-none transition-colors disabled:opacity-50 ${
                         emailError
-                          ? 'border-red-500/50 focus:border-red-500/70'
+                          ? 'border-danger/50 focus:border-danger/70'
                           : 'border-stone-800 focus:border-stone-600 hover:border-stone-700'
                       }`}
                     />
@@ -329,14 +329,14 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                   </div>
 
                   {emailError && (
-                    <p className="text-red-400 text-xs flex items-center gap-1.5">
+                    <p className="text-danger/80 text-xs flex items-center gap-1.5">
                       <AlertCircle className="w-3 h-3" />
                       {emailError}
                     </p>
                   )}
 
                   {emailSubmitted && (
-                    <p className="text-emerald-400 text-xs flex items-center gap-1.5">
+                    <p className="text-success/80 text-xs flex items-center gap-1.5">
                       <Check className="w-3 h-3" />
                       You&apos;re on the list.
                     </p>
@@ -368,7 +368,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                     disabled={demoLoading || demoSubmitted}
                     className={`w-full bg-transparent border rounded-xl px-4 py-3 text-sm text-white placeholder-stone-600 focus:outline-none transition-colors disabled:opacity-50 ${
                       demoError
-                        ? 'border-red-500/50 focus:border-red-500/70'
+                        ? 'border-danger/50 focus:border-danger/70'
                         : 'border-stone-800 focus:border-stone-600 hover:border-stone-700'
                     }`}
                   />
@@ -385,7 +385,7 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                       disabled={demoLoading || demoSubmitted}
                       className={`flex-1 bg-transparent border rounded-xl px-4 py-3 text-sm text-white placeholder-stone-600 focus:outline-none transition-colors disabled:opacity-50 ${
                         demoError
-                          ? 'border-red-500/50 focus:border-red-500/70'
+                          ? 'border-danger/50 focus:border-danger/70'
                           : 'border-stone-800 focus:border-stone-600 hover:border-stone-700'
                       }`}
                     />
@@ -405,14 +405,14 @@ export default function ComingSoonGate({ children }: { children: React.ReactNode
                   </div>
 
                   {demoError && (
-                    <p className="text-red-400 text-xs flex items-center gap-1.5">
+                    <p className="text-danger/80 text-xs flex items-center gap-1.5">
                       <AlertCircle className="w-3 h-3" />
                       {demoError}
                     </p>
                   )}
 
                   {demoSubmitted && (
-                    <p className="text-emerald-400 text-xs flex items-center gap-1.5">
+                    <p className="text-success/80 text-xs flex items-center gap-1.5">
                       <Check className="w-3 h-3" />
                       We&apos;ll be in touch.
                     </p>

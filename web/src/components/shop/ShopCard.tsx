@@ -44,7 +44,7 @@ const ShopCard: React.FC<ShopCardProps> = ({ data }) => {
           {(data.category || isSample) && (
             <p className="text-[11px] text-stone-400 dark:text-stone-400 leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
               {data.category}
-              {isSample && <span className="text-amber-600 dark:text-amber-500">{data.category ? ' · sample' : 'sample'}</span>}
+              {isSample && <span className="text-warning-soft-foreground dark:text-warning">{data.category ? ' · sample' : 'sample'}</span>}
             </p>
           )}
           <h2 className="text-[15px] font-semibold text-stone-900 dark:text-stone-100   tracking-[-0.01em] leading-tight truncate mt-1.5">

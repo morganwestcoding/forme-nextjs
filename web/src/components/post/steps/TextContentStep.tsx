@@ -47,7 +47,7 @@ const TextContentStep: React.FC<TextContentStepProps> = ({ content, onContentCha
               &ldquo;
             </div>
           </div>
-          <span className={`text-xs font-medium ${content.length > 250 ? 'text-amber-500' : 'text-stone-500 dark:text-stone-500'}`}>
+          <span className={`text-xs font-medium ${content.length > 250 ? 'text-warning' : 'text-stone-500 dark:text-stone-500'}`}>
             {content.length}/280
           </span>
         </div>

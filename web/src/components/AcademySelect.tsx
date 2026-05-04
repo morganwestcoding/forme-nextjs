@@ -20,7 +20,7 @@ const AcademySelect = ({ value, onChange }: AcademySelectProps) => {
 
   if (error) {
     return (
-      <div className="text-[13px] text-red-500 py-4">
+      <div className="text-[13px] text-danger py-4">
         Could not load academies. {error}
       </div>
     );

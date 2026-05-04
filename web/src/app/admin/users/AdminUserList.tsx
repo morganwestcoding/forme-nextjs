@@ -57,7 +57,7 @@ export default function AdminUserList({ users, total, page, pageSize, query }: P
     const styles: Record<string, string> = {
       master: 'text-purple-700 bg-purple-50 ring-purple-200',
       admin: 'text-stone-700 dark:text-stone-200 bg-stone-50 dark:bg-stone-900 ring-stone-200',
-      suspended: 'text-red-700 bg-red-50 ring-red-200',
+      suspended: 'text-danger-soft-foreground bg-danger-soft ring-danger-soft',
       user: 'text-stone-600 dark:text-stone-300 bg-stone-50 dark:bg-stone-900 ring-stone-200',
     };
     return (
@@ -106,9 +106,9 @@ export default function AdminUserList({ users, total, page, pageSize, query }: P
                 <td className="py-3 px-4 text-stone-600 dark:text-stone-300">{user.subscriptionTier || 'Bronze'}</td>
                 <td className="py-3 px-4">
                   <span className={`text-[11px] font-medium ${
-                    user.verificationStatus === 'verified' ? 'text-emerald-600' :
-                    user.verificationStatus === 'pending' ? 'text-amber-600' :
-                    user.verificationStatus === 'rejected' ? 'text-red-600' :
+                    user.verificationStatus === 'verified' ? 'text-success-soft-foreground' :
+                    user.verificationStatus === 'pending' ? 'text-warning-soft-foreground' :
+                    user.verificationStatus === 'rejected' ? 'text-danger-soft-foreground' :
                     'text-stone-400 dark:text-stone-500'
                   }`}>
                     {user.verificationStatus || 'none'}
@@ -124,8 +124,8 @@ export default function AdminUserList({ users, total, page, pageSize, query }: P
                       disabled={acting === user.id}
                       className={`text-[12px] font-medium px-3 py-1.5 rounded-lg transition-all ${
                         user.role === 'suspended'
-                          ? 'text-emerald-700 bg-emerald-50 hover:bg-emerald-100'
-                          : 'text-red-700 bg-red-50 hover:bg-red-100'
+                          ? 'text-success-soft-foreground bg-success-soft hover:bg-success-soft'
+                          : 'text-danger-soft-foreground bg-danger-soft hover:bg-danger-soft'
                       }`}
                     >
                       {acting === user.id ? '...' : user.role === 'suspended' ? 'Unsuspend' : 'Suspend'}
