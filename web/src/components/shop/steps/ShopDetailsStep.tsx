@@ -120,7 +120,7 @@ export default function ShopDetailsStep({ logo, onLogoChange }: ShopDetailsStepP
               placeholder="e.g., John's Hair Products"
             />
             {errors.name && (
-              <p className="mt-2 text-sm text-red-500">{errors.name.message as string}</p>
+              <p className="mt-2 text-sm text-danger">{errors.name.message as string}</p>
             )}
           </div>
 
@@ -140,7 +140,7 @@ export default function ShopDetailsStep({ logo, onLogoChange }: ShopDetailsStepP
               {(description?.length || 0)}/350
             </p>
             {errors.description && (
-              <p className="mt-2 text-sm text-red-500">{errors.description.message as string}</p>
+              <p className="mt-2 text-sm text-danger">{errors.description.message as string}</p>
             )}
           </div>
         </div>

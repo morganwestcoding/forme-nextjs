@@ -63,13 +63,13 @@ export default function VerificationQueue({ users }: { users: PendingUser[] }) {
                 <button
                   onClick={() => handleAction(user.id, 'approve')}
                   disabled={acting === user.id}
-                  className="text-xs font-medium px-4 py-2 rounded-xl text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-all"
+                  className="text-xs font-medium px-4 py-2 rounded-xl text-success-soft-foreground bg-success-soft hover:bg-success-soft transition-all"
                 >
                   {acting === user.id ? '...' : 'Approve'}
                 </button>
                 <button
                   onClick={() => setShowReject(user.id)}
-                  className="text-xs font-medium px-4 py-2 rounded-xl text-red-700 bg-red-50 hover:bg-red-100 transition-all"
+                  className="text-xs font-medium px-4 py-2 rounded-xl text-danger-soft-foreground bg-danger-soft hover:bg-danger-soft transition-all"
                 >
                   Reject
                 </button>
@@ -95,13 +95,13 @@ export default function VerificationQueue({ users }: { users: PendingUser[] }) {
 
           {/* Reject reason input */}
           {showReject === user.id && (
-            <div className="mt-4 p-4 rounded-xl bg-red-50/50 border border-red-100">
-              <p className="text-xs font-medium text-red-700 mb-2">Rejection reason (optional)</p>
+            <div className="mt-4 p-4 rounded-xl bg-danger-soft/50 border border-red-100">
+              <p className="text-xs font-medium text-danger-soft-foreground mb-2">Rejection reason (optional)</p>
               <textarea
                 value={rejectReason[user.id] || ''}
                 onChange={(e) => setRejectReason({ ...rejectReason, [user.id]: e.target.value })}
                 placeholder="e.g., Document is expired, image is unclear..."
-                className="w-full px-3 py-2 rounded-lg border border-red-200 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-red-200 resize-none"
+                className="w-full px-3 py-2 rounded-lg border border-danger-soft text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-danger-soft resize-none"
                 rows={2}
               />
               <div className="flex gap-2 mt-3">
@@ -114,7 +114,7 @@ export default function VerificationQueue({ users }: { users: PendingUser[] }) {
                 <button
                   onClick={() => handleAction(user.id, 'reject')}
                   disabled={acting === user.id}
-                  className="text-xs font-medium px-4 py-2 rounded-xl text-white bg-red-600 hover:bg-red-700 transition-all"
+                  className="text-xs font-medium px-4 py-2 rounded-xl text-white bg-danger hover:bg-danger/90 transition-all"
                 >
                   {acting === user.id ? '...' : 'Confirm Reject'}
                 </button>

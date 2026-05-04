@@ -25,13 +25,13 @@ const DAY_SHORT: Record<string, string> = {
 
 const StatusBadge = ({ status }: { status: string }) => {
   const styles: Record<string, string> = {
-    pending: 'bg-amber-50 text-amber-600',
-    accepted: 'bg-emerald-50 text-emerald-600',
-    declined: 'bg-red-50 text-red-600',
+    pending: 'bg-warning-soft text-warning-soft-foreground',
+    accepted: 'bg-success-soft text-success-soft-foreground',
+    declined: 'bg-danger-soft text-danger-soft-foreground',
     rescheduled: 'bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-300',
-    approved: 'bg-emerald-50 text-emerald-600',
-    completed: 'bg-emerald-50 text-emerald-600',
-    denied: 'bg-red-50 text-red-600',
+    approved: 'bg-success-soft text-success-soft-foreground',
+    completed: 'bg-success-soft text-success-soft-foreground',
+    denied: 'bg-danger-soft text-danger-soft-foreground',
     charged: 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300',
     waived: 'bg-purple-50 text-purple-600',
     processing: 'bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-300',
@@ -518,13 +518,13 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
           <div className="flex gap-1.5 ml-2">
             <button
               onClick={() => handleBookingAction(booking.id, 'accept')}
-              className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-xs font-medium hover:bg-emerald-100 transition-colors"
+              className="px-3 py-1.5 rounded-xl bg-success-soft text-success-soft-foreground text-xs font-medium hover:bg-success-soft transition-colors"
             >
               Accept
             </button>
             <button
               onClick={() => handleBookingAction(booking.id, 'decline')}
-              className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-xs font-medium hover:bg-red-100 transition-colors"
+              className="px-3 py-1.5 rounded-xl bg-danger-soft text-danger-soft-foreground text-xs font-medium hover:bg-danger-soft transition-colors"
             >
               Decline
             </button>
@@ -680,7 +680,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
               <div>
                 <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 tracking-tight mb-4">
                   Time Off Requests
-                  <span className="ml-2 text-xs font-normal text-amber-500">{pendingTimeOffRequests.length} pending</span>
+                  <span className="ml-2 text-xs font-normal text-warning">{pendingTimeOffRequests.length} pending</span>
                 </h2>
                 <div className="space-y-3">
                   {pendingTimeOffRequests.map((req) => (
@@ -695,13 +695,13 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                       <div className="flex gap-1.5">
                         <button
                           onClick={() => handleTimeOffAction(req.id, 'approved')}
-                          className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-xs font-medium hover:bg-emerald-100 transition-colors"
+                          className="px-3 py-1.5 rounded-xl bg-success-soft text-success-soft-foreground text-xs font-medium hover:bg-success-soft transition-colors"
                         >
                           Approve
                         </button>
                         <button
                           onClick={() => handleTimeOffAction(req.id, 'denied')}
-                          className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-xs font-medium hover:bg-red-100 transition-colors"
+                          className="px-3 py-1.5 rounded-xl bg-danger-soft text-danger-soft-foreground text-xs font-medium hover:bg-danger-soft transition-colors"
                         >
                           Deny
                         </button>
@@ -857,13 +857,13 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                           <div className="flex gap-1.5">
                             <button
                               onClick={() => handleTimeOffAction(req.id, 'approved')}
-                              className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-xs font-medium hover:bg-emerald-100 transition-colors"
+                              className="px-3 py-1.5 rounded-xl bg-success-soft text-success-soft-foreground text-xs font-medium hover:bg-success-soft transition-colors"
                             >
                               Approve
                             </button>
                             <button
                               onClick={() => handleTimeOffAction(req.id, 'denied')}
-                              className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-xs font-medium hover:bg-red-100 transition-colors"
+                              className="px-3 py-1.5 rounded-xl bg-danger-soft text-danger-soft-foreground text-xs font-medium hover:bg-danger-soft transition-colors"
                             >
                               Deny
                             </button>
@@ -1058,7 +1058,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                   ].map((stat, i) => (
                     <div key={i} className="text-center">
                       <p className="text-xs text-stone-400 dark:text-stone-500">{stat.label}</p>
-                      <p className={`text-2xl font-bold tabular-nums mt-1 ${stat.highlight ? 'text-red-500' : 'text-stone-900 dark:text-stone-100'}`}>{stat.value}</p>
+                      <p className={`text-2xl font-bold tabular-nums mt-1 ${stat.highlight ? 'text-danger' : 'text-stone-900 dark:text-stone-100'}`}>{stat.value}</p>
                     </div>
                   ))}
                 </div>
@@ -1363,7 +1363,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                           ].map((stat, i) => (
                             <div key={i} className="text-center">
                               <p className="text-xs text-stone-400 dark:text-stone-500">{stat.label}</p>
-                              <p className={`text-lg font-bold tabular-nums mt-0.5 ${stat.highlight ? 'text-red-500' : 'text-stone-900 dark:text-stone-100'}`}>{stat.value}</p>
+                              <p className={`text-lg font-bold tabular-nums mt-0.5 ${stat.highlight ? 'text-danger' : 'text-stone-900 dark:text-stone-100'}`}>{stat.value}</p>
                             </div>
                           ))}
                         </div>
@@ -1405,7 +1405,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                                           className="w-28 text-xs px-2 py-1 rounded-lg border border-stone-200 dark:border-stone-800"
                                           autoFocus
                                         />
-                                        <button onClick={() => waivePeriod(period.id, member.id, waiveReason)} className="text-xs text-emerald-600 font-medium">OK</button>
+                                        <button onClick={() => waivePeriod(period.id, member.id, waiveReason)} className="text-xs text-success-soft-foreground font-medium">OK</button>
                                         <button onClick={() => { setWaivingPeriodId(null); setWaiveReason(''); }} className="text-xs text-stone-400 dark:text-stone-500">✕</button>
                                       </div>
                                     ) : (
@@ -1452,7 +1452,7 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                                   <div className="flex gap-1.5">
                                     <button
                                       onClick={() => handlePayoutAction(payout.id, 'approve')}
-                                      className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-xs font-medium hover:bg-emerald-100 transition-colors"
+                                      className="px-3 py-1.5 rounded-xl bg-success-soft text-success-soft-foreground text-xs font-medium hover:bg-success-soft transition-colors"
                                     >
                                       Approve
                                     </button>
@@ -1466,13 +1466,13 @@ const TeamClient: React.FC<TeamClientProps> = ({ currentUser }) => {
                                           className="w-28 text-xs px-2 py-1 rounded-lg border border-stone-200 dark:border-stone-800"
                                           autoFocus
                                         />
-                                        <button onClick={() => handlePayoutAction(payout.id, 'deny', denyNote)} className="text-xs text-red-600 font-medium">Deny</button>
+                                        <button onClick={() => handlePayoutAction(payout.id, 'deny', denyNote)} className="text-xs text-danger-soft-foreground font-medium">Deny</button>
                                         <button onClick={() => { setDenyingPayoutId(null); setDenyNote(''); }} className="text-xs text-stone-400 dark:text-stone-500">✕</button>
                                       </div>
                                     ) : (
                                       <button
                                         onClick={() => setDenyingPayoutId(payout.id)}
-                                        className="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 text-xs font-medium hover:bg-red-100 transition-colors"
+                                        className="px-3 py-1.5 rounded-xl bg-danger-soft text-danger-soft-foreground text-xs font-medium hover:bg-danger-soft transition-colors"
                                       >
                                         Deny
                                       </button>

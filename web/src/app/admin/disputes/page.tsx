@@ -35,9 +35,9 @@ export default async function AdminDisputesPage() {
   const reservationMap = new Map(reservations.map((r) => [r.id, r]));
 
   const statusStyles: Record<string, string> = {
-    needs_response: 'text-red-700 bg-red-50 ring-red-200',
-    under_review: 'text-amber-700 bg-amber-50 ring-amber-200',
-    won: 'text-emerald-700 bg-emerald-50 ring-emerald-200',
+    needs_response: 'text-danger-soft-foreground bg-danger-soft ring-danger-soft',
+    under_review: 'text-warning-soft-foreground bg-warning-soft ring-warning-soft',
+    won: 'text-success-soft-foreground bg-success-soft ring-success-soft',
     lost: 'text-stone-700 dark:text-stone-200 bg-stone-50 dark:bg-stone-900 ring-stone-200',
   };
 

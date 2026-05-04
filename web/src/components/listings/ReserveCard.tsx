@@ -112,9 +112,9 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
   const hasPayment = !!reservation.paymentIntentId;
 
   const statusConfig = {
-    accepted: { label: 'Confirmed', bg: 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-glow-success' },
+    accepted: { label: 'Confirmed', bg: 'bg-success/90 text-white border-success/50 shadow-glow-success' },
     declined: { label: 'Declined', bg: 'bg-black/60 text-white/90 border-white/20' },
-    pending: { label: 'Pending', bg: 'bg-amber-500/90 text-white border-amber-400/50 shadow-glow-warning' },
+    pending: { label: 'Pending', bg: 'bg-warning/90 text-white border-amber-400/50 shadow-glow-warning' },
     cancelled: { label: 'Cancelled', bg: 'bg-stone-500/90 text-white border-stone-400/50' },
   };
 
@@ -239,20 +239,20 @@ const ReserveCard: React.FC<ReserveCardProps> = ({
               ${reservation.totalPrice}
             </span>
             {isRefunded && (
-              <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">Refunded</span>
+              <span className="text-xs font-medium text-success-soft-foreground bg-success-soft px-1.5 py-0.5 rounded-full">Refunded</span>
             )}
             {isRefundRequested && (
-              <span className="text-xs font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full">Refund Requested</span>
+              <span className="text-xs font-medium text-warning-soft-foreground bg-warning-soft px-1.5 py-0.5 rounded-full">Refund Requested</span>
             )}
             {isDisputed && (
-              <span className="text-xs font-medium text-red-600 bg-red-50 px-1.5 py-0.5 rounded-full">Disputed</span>
+              <span className="text-xs font-medium text-danger-soft-foreground bg-danger-soft px-1.5 py-0.5 rounded-full">Disputed</span>
             )}
           </div>
           {canRefund && (
             <button
               onClick={(e) => { e.stopPropagation(); onRefund(); }}
               disabled={disabled}
-              className="mt-1 text-xs font-medium text-stone-500  dark:text-stone-500 hover:text-red-600 transition-colors"
+              className="mt-1 text-xs font-medium text-stone-500  dark:text-stone-500 hover:text-danger-soft-foreground transition-colors"
             >
               Request refund
             </button>

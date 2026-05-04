@@ -305,7 +305,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
           return (
             <p className="text-xs text-stone-400 dark:text-stone-500 leading-none" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", fontStyle: 'italic' }}>
               {label}
-              {isSample && <span className="text-amber-600 dark:text-amber-500"> · sample</span>}
+              {isSample && <span className="text-warning-soft-foreground dark:text-warning"> · sample</span>}
             </p>
           );
         })()}

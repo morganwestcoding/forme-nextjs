@@ -31,8 +31,8 @@ const STATUS_LABELS: Record<UiStatus, string> = {
 };
 
 const STATUS_TEXT_COLORS: Record<UiStatus, string> = {
-  accepted: 'text-emerald-700 dark:text-emerald-300',
-  pending: 'text-amber-700 dark:text-amber-300',
+  accepted: 'text-success-soft-foreground dark:text-success/70',
+  pending: 'text-warning-soft-foreground dark:text-warning/70',
   declined: 'text-stone-500 dark:text-stone-400',
   cancelled: 'text-stone-400 dark:text-stone-500',
 };
@@ -307,7 +307,7 @@ const ReservationModal: React.FC = () => {
                 ${reservation.totalPrice}
               </span>
               {paymentStatus === 'paid' && !isRefunded && (
-                <span className="text-xs font-medium px-1.5 h-5 rounded-md inline-flex items-center bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
+                <span className="text-xs font-medium px-1.5 h-5 rounded-md inline-flex items-center bg-success-soft text-success-soft-foreground dark:bg-success/10 dark:text-success/70">
                   Paid
                 </span>
               )}
@@ -391,7 +391,7 @@ const ReservationModal: React.FC = () => {
           <button
             onClick={() => handleAction(onDecline)}
             disabled={busy}
-            className="inline-flex items-center justify-center gap-1.5 h-11 rounded-xl text-sm font-semibold text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 hover:text-red-600 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-500/10 dark:hover:text-red-300 dark:hover:border-red-500/30 transition-all disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-1.5 h-11 rounded-xl text-sm font-semibold text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 hover:text-danger-soft-foreground hover:border-danger-soft hover:bg-danger-soft dark:hover:bg-danger/10 dark:hover:text-danger-soft-foreground dark:hover:border-danger/30 transition-all disabled:opacity-50"
           >
             <Cancel01Icon size={16} strokeWidth={2} />
             Decline
@@ -399,7 +399,7 @@ const ReservationModal: React.FC = () => {
           <button
             onClick={() => handleAction(onAccept)}
             disabled={busy}
-            className="inline-flex items-center justify-center gap-1.5 h-11 rounded-xl text-sm font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-400/60 shadow-[0_2px_8px_-1px_rgba(16,185,129,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] hover:from-emerald-400 hover:to-emerald-500 transition-all disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-1.5 h-11 rounded-xl text-sm font-semibold text-white bg-gradient-to-b from-emerald-500 to-emerald-600 border border-success/60 shadow-[0_2px_8px_-1px_rgba(16,185,129,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] hover:from-emerald-400 hover:to-emerald-500 transition-all disabled:opacity-50"
           >
             <Tick02Icon size={16} strokeWidth={2.4} />
             Accept
@@ -407,11 +407,11 @@ const ReservationModal: React.FC = () => {
         </div>
       ) : canCancel ? (
         confirmCancel ? (
-          <div className="rounded-2xl border border-red-200/70 dark:border-red-500/30 bg-red-50/60 dark:bg-red-500/10 px-4 py-3.5">
-            <p className="text-sm font-semibold text-red-700 dark:text-red-300">
+          <div className="rounded-2xl border border-danger-soft/70 dark:border-danger/30 bg-danger-soft/60 dark:bg-danger/10 px-4 py-3.5">
+            <p className="text-sm font-semibold text-danger-soft-foreground dark:text-danger/70">
               {isIncoming ? 'Decline this booking?' : 'Cancel this booking?'}
             </p>
-            <p className="text-xs text-red-700/80 dark:text-red-300/80 mt-1">
+            <p className="text-xs text-danger-soft-foreground/80 dark:text-danger/70/80 mt-1">
               {isIncoming
                 ? 'The customer will be notified and refunded if applicable.'
                 : 'You will be refunded if eligible. This cannot be undone.'}
@@ -427,7 +427,7 @@ const ReservationModal: React.FC = () => {
               <button
                 onClick={() => handleAction(isIncoming ? onDecline : onCancel)}
                 disabled={busy}
-                className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-xl text-sm font-semibold text-white bg-gradient-to-b from-red-500 to-red-600 border border-red-400/60 hover:from-red-400 hover:to-red-500 transition-all disabled:opacity-50"
+                className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-xl text-sm font-semibold text-white bg-gradient-to-b from-red-500 to-red-600 border border-danger/60 hover:from-red-400 hover:to-red-500 transition-all disabled:opacity-50"
               >
                 {busy ? 'Working…' : isIncoming ? 'Decline' : 'Cancel booking'}
               </button>
@@ -438,7 +438,7 @@ const ReservationModal: React.FC = () => {
             <button
               onClick={() => setConfirmCancel(true)}
               disabled={busy}
-              className="inline-flex items-center justify-center gap-1.5 h-11 rounded-xl text-sm font-semibold text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 hover:text-red-600 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-500/10 dark:hover:text-red-300 dark:hover:border-red-500/30 transition-all disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-1.5 h-11 rounded-xl text-sm font-semibold text-stone-600 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 hover:text-danger-soft-foreground hover:border-danger-soft hover:bg-danger-soft dark:hover:bg-danger/10 dark:hover:text-danger-soft-foreground dark:hover:border-danger/30 transition-all disabled:opacity-50"
             >
               <Cancel01Icon size={16} strokeWidth={2} />
               {isIncoming ? 'Decline booking' : 'Cancel booking'}

@@ -115,7 +115,7 @@ export default function ListingInfoStep() {
               placeholder="e.g., John's Hair Studio"
             />
             {errors.listingTitle && (
-              <p className="mt-2 text-sm text-red-500">{errors.listingTitle.message as string}</p>
+              <p className="mt-2 text-sm text-danger">{errors.listingTitle.message as string}</p>
             )}
           </div>
 
@@ -135,7 +135,7 @@ export default function ListingInfoStep() {
               {(listingDescription?.length || 0)}/350
             </p>
             {errors.listingDescription && (
-              <p className="mt-2 text-sm text-red-500">{errors.listingDescription.message as string}</p>
+              <p className="mt-2 text-sm text-danger">{errors.listingDescription.message as string}</p>
             )}
           </div>
         </div>

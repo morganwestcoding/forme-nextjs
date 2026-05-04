@@ -33,7 +33,7 @@ const CaptionStep: React.FC<CaptionStepProps> = ({
           <span className="text-stone-400 dark:text-stone-500">
             Optional
           </span>
-          <span className={`${remaining < 50 ? 'text-amber-500' : 'text-stone-400 dark:text-stone-500'}`}>
+          <span className={`${remaining < 50 ? 'text-warning' : 'text-stone-400 dark:text-stone-500'}`}>
             {remaining} characters left
           </span>
         </div>

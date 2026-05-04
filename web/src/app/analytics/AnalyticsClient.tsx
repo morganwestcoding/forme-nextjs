@@ -262,7 +262,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
           <p className="text-xs text-stone-400 dark:text-stone-500">{title}</p>
           {growth !== undefined && (
             <div className={`flex items-center gap-1 text-xs font-medium ${
-              growth >= 0 ? 'text-emerald-600' : 'text-red-500'
+              growth >= 0 ? 'text-success-soft-foreground' : 'text-danger'
             }`}>
               {growth >= 0 ? <TrendingUp size={12} strokeWidth={2} /> : <TrendingDown size={12} strokeWidth={2} />}
               {Math.abs(growth).toFixed(1)}%
@@ -485,9 +485,9 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                       <div className="text-right">
                         <p className="text-sm font-semibold text-stone-900 dark:text-stone-100">{formatCurrency(reservation.totalPrice)}</p>
                         <span className={`text-xs font-medium mt-0.5 inline-block ${
-                          reservation.status === 'accepted' ? 'text-green-600' :
+                          reservation.status === 'accepted' ? 'text-success-soft-foreground' :
                           reservation.status === 'pending' ? 'text-yellow-600' :
-                          'text-red-600'
+                          'text-danger-soft-foreground'
                         }`}>
                           {reservation.status}
                         </span>
@@ -845,7 +845,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                             key={target}
                             className={`p-4 rounded-xl border transition-all ${
                               isAchieved
-                                ? 'bg-green-50 border-green-200'
+                                ? 'bg-success-soft border-green-200'
                                 : 'bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800'
                             }`}
                           >
@@ -856,7 +856,7 @@ const AnalyticsClient: React.FC<AnalyticsClientProps> = ({
                                 <span className="text-sm text-stone-500  dark:text-stone-500">rating goal</span>
                               </div>
                               {isAchieved ? (
-                                <span className="text-sm font-medium text-green-600 flex items-center gap-1">
+                                <span className="text-sm font-medium text-success-soft-foreground flex items-center gap-1">
                                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                   </svg>

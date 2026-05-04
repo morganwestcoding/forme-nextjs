@@ -312,7 +312,7 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
                   disabled={deleting}
-                  className="px-4 py-2 rounded-xl text-xs font-medium bg-red-50 text-red-600 hover:bg-red-100 border border-red-200/60 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 dark:border-red-500/20 transition-all whitespace-nowrap"
+                  className="px-4 py-2 rounded-xl text-xs font-medium bg-danger-soft text-danger-soft-foreground hover:bg-danger-soft border border-danger-soft/60 dark:bg-danger/10 dark:text-danger/80 dark:hover:bg-danger/20 dark:border-danger/20 transition-all whitespace-nowrap"
                 >
                   Delete Account
                 </button>
@@ -326,8 +326,8 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
           <div className="fixed inset-0 z-[9999] backdrop-blur-sm bg-stone-900/60 flex items-center justify-center p-4" onClick={() => setShowDeleteConfirm(false)}>
             <div className="bg-white dark:bg-stone-900 rounded-2xl p-8 max-w-md w-full shadow-elevation-4" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
-                  <Delete02Icon className="w-5 h-5 text-red-500" />
+                <div className="w-10 h-10 rounded-full bg-danger-soft flex items-center justify-center">
+                  <Delete02Icon className="w-5 h-5 text-danger" />
                 </div>
                 <h3 className="text-lg font-semibold text-stone-900 dark:text-stone-100">Delete Account?</h3>
               </div>
@@ -347,7 +347,7 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                 <button
                   onClick={handleDeleteAccount}
                   disabled={deleting}
-                  className="flex-1 py-3 rounded-xl text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-all"
+                  className="flex-1 py-3 rounded-xl text-sm font-medium bg-danger text-white hover:bg-danger/90 transition-all"
                 >
                   {deleting ? 'Deleting...' : 'Delete Account'}
                 </button>
@@ -414,8 +414,8 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                 </div>
               ) : !connectStatus.onboardingComplete || !connectStatus.chargesEnabled ? (
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0">
-                    <AlertCircleIcon size={18} className="text-amber-500" strokeWidth={1.5} />
+                  <div className="w-10 h-10 rounded-full bg-warning-soft flex items-center justify-center flex-shrink-0">
+                    <AlertCircleIcon size={18} className="text-warning" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100 mb-1">Complete Payment Setup</h3>
@@ -425,7 +425,7 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                     <button
                       onClick={handleOnboard}
                       disabled={actionLoading}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white text-sm font-medium rounded-xl hover:bg-amber-600 transition-all disabled:opacity-50 active:scale-[0.98]"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-warning text-white text-sm font-medium rounded-xl hover:bg-warning transition-all disabled:opacity-50 active:scale-[0.98]"
                     >
                       {actionLoading ? 'Loading...' : 'Continue Setup'}
                       <ArrowRight01Icon size={14} strokeWidth={2.5} />
@@ -434,8 +434,8 @@ const SettingsClient = ({ currentUser }: SettingsClientProps) => {
                 </div>
               ) : (
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-emerald-50 border border-emerald-200/60 dark:bg-emerald-500/10 dark:border-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                    <CheckmarkCircle02Icon size={18} className="text-emerald-500 dark:text-emerald-400" strokeWidth={1.5} />
+                  <div className="w-10 h-10 rounded-full bg-success-soft border border-success-soft/60 dark:bg-success/10 dark:border-success/20 flex items-center justify-center flex-shrink-0">
+                    <CheckmarkCircle02Icon size={18} className="text-success dark:text-success/80" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100 mb-1">Payments Active</h3>

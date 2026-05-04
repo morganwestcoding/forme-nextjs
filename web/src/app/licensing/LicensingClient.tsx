@@ -132,17 +132,17 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
             {verificationStatus !== 'none' && (
               <div className="flex-shrink-0">
                 {verificationStatus === 'verified' && (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 border border-emerald-200/60 dark:bg-emerald-500/10 dark:border-emerald-500/20 px-3 py-1.5 rounded-full">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-success-soft-foreground dark:text-success/80 bg-success-soft border border-success-soft/60 dark:bg-success/10 dark:border-success/20 px-3 py-1.5 rounded-full">
                     <CheckmarkCircle02Icon size={14} strokeWidth={1.5} /> Verified
                   </span>
                 )}
                 {verificationStatus === 'pending' && (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-400 bg-amber-50 border border-amber-200/60 dark:bg-amber-500/10 dark:border-amber-500/20 px-3 py-1.5 rounded-full">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-warning-soft-foreground dark:text-warning/80 bg-warning-soft border border-warning-soft/60 dark:bg-warning/10 dark:border-warning/20 px-3 py-1.5 rounded-full">
                     <Clock01Icon size={14} strokeWidth={1.5} /> Pending
                   </span>
                 )}
                 {verificationStatus === 'rejected' && (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 border border-red-200/60 dark:bg-red-500/10 dark:border-red-500/20 px-3 py-1.5 rounded-full">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-danger-soft-foreground dark:text-danger/80 bg-danger-soft border border-danger-soft/60 dark:bg-danger/10 dark:border-danger/20 px-3 py-1.5 rounded-full">
                     <CheckmarkCircle02Icon size={14} strokeWidth={1.5} /> Failed
                   </span>
                 )}
@@ -287,7 +287,7 @@ const LicensingClient = ({ currentUser }: LicensingClientProps) => {
             {academiesLoading ? (
               <div className="text-sm text-stone-400 dark:text-stone-500 py-8">Loading academies…</div>
             ) : academiesError ? (
-              <div className="text-sm text-red-500 py-8">Could not load academies. {academiesError}</div>
+              <div className="text-sm text-danger py-8">Could not load academies. {academiesError}</div>
             ) : partnerAcademies.length === 0 ? (
               <div className="text-sm text-stone-400 dark:text-stone-500 py-8">No partner academies available yet.</div>
             ) : (

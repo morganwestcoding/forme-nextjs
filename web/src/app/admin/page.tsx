@@ -113,7 +113,7 @@ export default async function AdminPage() {
                 key={kpi.label}
                 className={`rounded-2xl border p-5 ${
                   kpi.alert
-                    ? "border-amber-200 bg-amber-50/60 dark:border-amber-900/40 dark:bg-amber-950/20"
+                    ? "border-warning-soft bg-warning-soft/60 dark:border-amber-900/40 dark:bg-amber-950/20"
                     : "border-stone-200/60 dark:border-stone-800 bg-white dark:bg-stone-900"
                 }`}
               >
@@ -121,7 +121,7 @@ export default async function AdminPage() {
                   <div
                     className={`w-8 h-8 rounded-xl flex items-center justify-center ${
                       kpi.alert
-                        ? "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                        ? "bg-warning-soft text-warning-soft-foreground dark:bg-amber-900/40 dark:text-warning/70"
                         : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300"
                     }`}
                   >
@@ -134,7 +134,7 @@ export default async function AdminPage() {
                 <p
                   className={`text-2xl font-semibold tracking-tight tabular-nums ${
                     kpi.alert
-                      ? "text-amber-700 dark:text-amber-300"
+                      ? "text-warning-soft-foreground dark:text-warning/70"
                       : "text-stone-900 dark:text-stone-100"
                   }`}
                 >
@@ -169,7 +169,7 @@ export default async function AdminPage() {
                         {item.label}
                       </h3>
                       {hasBadge && (
-                        <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold text-white bg-amber-500 tabular-nums">
+                        <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold text-white bg-warning tabular-nums">
                           {item.badge! > 99 ? "99+" : item.badge}
                         </span>
                       )}

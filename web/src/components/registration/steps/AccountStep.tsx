@@ -96,7 +96,7 @@ export default function AccountStep() {
             placeholder="you@example.com"
           />
           {errors.email && (
-            <p className="mt-2 text-sm text-red-500">{errors.email.message as string}</p>
+            <p className="mt-2 text-sm text-danger">{errors.email.message as string}</p>
           )}
         </div>
 
@@ -112,11 +112,11 @@ export default function AccountStep() {
               autoComplete="given-name"
               {...firstNameReg}
               onBlur={handleNameBlur('firstName', firstNameReg)}
-              className={`w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-[box-shadow,border-color] duration-150 ${errors.firstName ? 'border-red-400 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
+              className={`w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-[box-shadow,border-color] duration-150 ${errors.firstName ? 'border-danger focus:ring-danger' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
               placeholder="John"
             />
             {errors.firstName && (
-              <p className="mt-2 text-sm text-red-500">{errors.firstName.message as string}</p>
+              <p className="mt-2 text-sm text-danger">{errors.firstName.message as string}</p>
             )}
           </div>
 
@@ -130,11 +130,11 @@ export default function AccountStep() {
               autoComplete="family-name"
               {...lastNameReg}
               onBlur={handleNameBlur('lastName', lastNameReg)}
-              className={`w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-[box-shadow,border-color] duration-150 ${errors.lastName ? 'border-red-400 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
+              className={`w-full px-4 py-3.5 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-[box-shadow,border-color] duration-150 ${errors.lastName ? 'border-danger focus:ring-danger' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
               placeholder="Doe"
             />
             {errors.lastName && (
-              <p className="mt-2 text-sm text-red-500">{errors.lastName.message as string}</p>
+              <p className="mt-2 text-sm text-danger">{errors.lastName.message as string}</p>
             )}
           </div>
         </div>
@@ -199,7 +199,7 @@ export default function AccountStep() {
                 required: 'Please confirm your password',
                 validate: (value) => value === password || 'Passwords do not match',
               })}
-              className={`w-full px-4 py-3.5 pr-12 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-[box-shadow,border-color] duration-150 ${errors.confirmPassword ? 'border-red-400 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
+              className={`w-full px-4 py-3.5 pr-12 bg-stone-50 dark:bg-stone-900 border rounded-xl text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:border-transparent transition-[box-shadow,border-color] duration-150 ${errors.confirmPassword ? 'border-danger focus:ring-danger' : 'border-stone-200 dark:border-stone-800 focus:ring-stone-900'}`}
               placeholder="Re-enter your password"
             />
             <button
@@ -211,10 +211,10 @@ export default function AccountStep() {
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="mt-2 text-sm text-red-500">{errors.confirmPassword.message as string}</p>
+            <p className="mt-2 text-sm text-danger">{errors.confirmPassword.message as string}</p>
           )}
           {!errors.confirmPassword && confirmPassword.length > 0 && confirmPassword === password && (
-            <p className="mt-2 flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400">
+            <p className="mt-2 flex items-center gap-1.5 text-sm text-success-soft-foreground dark:text-success/80">
               <FiCheck size={14} />
               Passwords match
             </p>
@@ -227,8 +227,8 @@ export default function AccountStep() {
 
 function RequirementItem({ met, text }: { met: boolean; text: string }) {
   return (
-    <div className={`flex items-center gap-2 text-sm transition-colors ${met ? 'text-emerald-600 dark:text-emerald-400' : 'text-stone-400 dark:text-stone-500'}`}>
-      <div className={`w-4 h-4 rounded-full flex items-center justify-center border ${met ? 'bg-emerald-50 border-emerald-200/60 dark:bg-emerald-500/10 dark:border-emerald-500/20' : 'bg-stone-100 border-stone-200/60 dark:bg-stone-800 dark:border-stone-700'}`}>
+    <div className={`flex items-center gap-2 text-sm transition-colors ${met ? 'text-success-soft-foreground dark:text-success/80' : 'text-stone-400 dark:text-stone-500'}`}>
+      <div className={`w-4 h-4 rounded-full flex items-center justify-center border ${met ? 'bg-success-soft border-success-soft/60 dark:bg-success/10 dark:border-success/20' : 'bg-stone-100 border-stone-200/60 dark:bg-stone-800 dark:border-stone-700'}`}>
         {met && <FiCheck size={10} />}
       </div>
       {text}

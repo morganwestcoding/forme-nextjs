@@ -88,8 +88,8 @@ export default function SuccessPage() {
     return (
       <div className="min-h-screen bg-stone-50 dark:bg-stone-900 flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white dark:bg-stone-900 rounded-3xl border border-stone-200/70 p-8 text-center">
-          <div className="w-12 h-12 rounded-full bg-red-50 mx-auto flex items-center justify-center mb-5">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 text-red-500">
+          <div className="w-12 h-12 rounded-full bg-danger-soft mx-auto flex items-center justify-center mb-5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 text-danger">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>

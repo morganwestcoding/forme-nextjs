@@ -124,7 +124,7 @@ export default function DetailsStep({
               placeholder="e.g., John's Hair Studio"
             />
             {errors.title && (
-              <p className="mt-2 text-sm text-red-500">{errors.title.message as string}</p>
+              <p className="mt-2 text-sm text-danger">{errors.title.message as string}</p>
             )}
           </div>
 
@@ -140,7 +140,7 @@ export default function DetailsStep({
               placeholder="Briefly describe your services"
             />
             {errors.description && (
-              <p className="mt-2 text-sm text-red-500">{errors.description.message as string}</p>
+              <p className="mt-2 text-sm text-danger">{errors.description.message as string}</p>
             )}
           </div>
         </div>

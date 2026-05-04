@@ -320,7 +320,7 @@ export default function LocationStep({
           </div>
         </div>
         {errors.location && (
-          <p className="-mt-3 text-sm text-red-500">{errors.location.message as string}</p>
+          <p className="-mt-3 text-sm text-danger">{errors.location.message as string}</p>
         )}
 
         {/* Street Address & ZIP row */}
@@ -387,7 +387,7 @@ export default function LocationStep({
               </AnimatePresence>
 
               {errors.address && (
-                <p className="mt-2 text-sm text-red-500">{errors.address.message as string}</p>
+                <p className="mt-2 text-sm text-danger">{errors.address.message as string}</p>
               )}
             </div>
             <div className="flex-1">
@@ -404,7 +404,7 @@ export default function LocationStep({
                 maxLength={10}
               />
               {errors.zipCode && (
-                <p className="mt-2 text-sm text-red-500">{errors.zipCode.message as string}</p>
+                <p className="mt-2 text-sm text-danger">{errors.zipCode.message as string}</p>
               )}
             </div>
           </motion.div>

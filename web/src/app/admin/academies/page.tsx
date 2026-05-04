@@ -79,12 +79,12 @@ export default async function AdminAcademiesPage() {
                     </div>
                     <div className="flex-shrink-0">
                       {connected && (
-                        <span className="inline-flex items-center text-xs font-medium text-emerald-700 bg-emerald-50 ring-1 ring-emerald-200 px-2.5 py-1 rounded-full">
+                        <span className="inline-flex items-center text-xs font-medium text-success-soft-foreground bg-success-soft ring-1 ring-success-soft px-2.5 py-1 rounded-full">
                           Stripe ready
                         </span>
                       )}
                       {pending && (
-                        <span className="inline-flex items-center text-xs font-medium text-amber-700 bg-amber-50 ring-1 ring-amber-200 px-2.5 py-1 rounded-full">
+                        <span className="inline-flex items-center text-xs font-medium text-warning-soft-foreground bg-warning-soft ring-1 ring-warning-soft px-2.5 py-1 rounded-full">
                           Onboarding incomplete
                         </span>
                       )}

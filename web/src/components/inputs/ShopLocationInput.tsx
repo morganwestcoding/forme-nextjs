@@ -139,7 +139,7 @@ const ShopLocationInput: React.FC<ShopLocationInputProps> = ({
             id="online-shop"
             checked={isOnline}
             onChange={handleOnlineToggle}
-            className="w-5 h-5 text-green-600 rounded border-stone-300 dark:border-stone-700 focus:ring-green-500"
+            className="w-5 h-5 text-success-soft-foreground rounded border-stone-300 dark:border-stone-700 focus:ring-green-500"
           />
           <label htmlFor="online-shop" className="ml-2 text-stone-800 dark:text-stone-200 font-medium">
             This is an online-only shop

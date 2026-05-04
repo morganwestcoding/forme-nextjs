@@ -423,7 +423,7 @@ const ListingHead: React.FC<ListingHeadProps> = ({
                 )}
                 {operatingStatus && (
                   <p className="text-sm mt-1">
-                    <span className={operatingStatus.isOpen ? 'text-green-600 font-medium' : 'text-red-500 font-medium'}>
+                    <span className={operatingStatus.isOpen ? 'text-success-soft-foreground font-medium' : 'text-danger font-medium'}>
                       {operatingStatus.isOpen ? 'Open' : 'Closed'}
                     </span>
                     <span className="text-stone-400 dark:text-stone-500">

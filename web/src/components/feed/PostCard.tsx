@@ -211,7 +211,7 @@ const PostCard: React.FC<PostCardProps> = ({ post: initialPost, currentUser, isH
       {isOwner && (
         <>
           <hr className="my-1 border-stone-200 dark:border-stone-800" />
-          <button onClick={handleDelete} className={`${btnClass} text-red-600 hover:bg-red-50`} type="button">
+          <button onClick={handleDelete} className={`${btnClass} text-danger-soft-foreground hover:bg-danger-soft`} type="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="3 6 5 6 21 6" />
               <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
@@ -478,7 +478,7 @@ export const PostCardPreview: React.FC = () => {
                 </div>
                 <p className="text-stone-500  dark:text-stone-500   text-xs">Barber at Fresh Cuts</p>
               </div>
-              <div className="flex items-center gap-1 text-amber-500">
+              <div className="flex items-center gap-1 text-warning">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
@@ -501,7 +501,7 @@ export const PostCardPreview: React.FC = () => {
 
             {/* Engagement - secondary */}
             <div className="flex items-center gap-6 mt-4 pt-4 border-t border-stone-100 dark:border-stone-800 ">
-              <button className="flex items-center gap-1.5 text-stone-500  dark:text-stone-500 hover:text-red-500 transition-colors">
+              <button className="flex items-center gap-1.5 text-stone-500  dark:text-stone-500 hover:text-danger transition-colors">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                 </svg>
@@ -513,7 +513,7 @@ export const PostCardPreview: React.FC = () => {
                 </svg>
                 <span className="text-xs">3</span>
               </button>
-              <button className="flex items-center gap-1.5 text-stone-500  dark:text-stone-500 hover:text-amber-500 transition-colors">
+              <button className="flex items-center gap-1.5 text-stone-500  dark:text-stone-500 hover:text-warning transition-colors">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
                 </svg>
