@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Privacy Policy | ForMe',
+  title: 'Privacy Policy',
   description: 'ForMe Technologies Privacy Policy',
 };
 

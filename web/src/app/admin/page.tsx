@@ -17,6 +17,11 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import getAdminStats from "@/app/actions/getAdminStats";
 import Container from "@/components/Container";
 
+export const metadata = {
+  title: 'Admin',
+  description: 'Internal administrative dashboard',
+  robots: { index: false, follow: false },
+};
 
 const PILL_STYLE = {
   background: "linear-gradient(135deg, #2a2a2a 0%, #000 100%)",

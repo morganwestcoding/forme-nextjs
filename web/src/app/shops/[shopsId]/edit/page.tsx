@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getShopById from '@/app/actions/getShopById';
@@ -7,6 +8,14 @@ interface IParams {
   shopsId: string;
 }
 
+export async function generateMetadata({ params }: { params: IParams }): Promise<Metadata> {
+  const shop = await getShopById({ shopId: params.shopsId }).catch(() => null);
+  return {
+    title: shop ? `Edit ${shop.name}` : 'Edit Shop',
+    description: 'Update your shop details',
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function EditShopPage({ params }: { params: IParams }) {
   const currentUser = await getCurrentUser();

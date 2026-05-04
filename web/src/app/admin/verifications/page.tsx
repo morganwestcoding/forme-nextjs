@@ -5,6 +5,11 @@ import prisma from "@/app/libs/prismadb";
 import Container from "@/components/Container";
 import VerificationQueue from "./VerificationQueue";
 
+export const metadata = {
+  title: 'Verifications — Admin',
+  description: 'Review pending verification requests',
+  robots: { index: false, follow: false },
+};
 
 export default async function AdminVerificationsPage() {
   const currentUser = await getCurrentUser();

@@ -4,6 +4,11 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import getAcademies from "@/app/actions/getAcademies";
 import Container from "@/components/Container";
 
+export const metadata = {
+  title: 'Academies — Admin',
+  description: 'Manage partner academies',
+  robots: { index: false, follow: false },
+};
 
 export default async function AdminAcademiesPage() {
   const currentUser = await getCurrentUser();

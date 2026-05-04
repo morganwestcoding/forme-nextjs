@@ -8,6 +8,11 @@ interface IParams {
   userId: string;
 }
 
+export const metadata = {
+  title: 'Edit Profile',
+  description: 'Update your professional profile',
+  robots: { index: false, follow: false },
+};
 
 export default async function EditProfilePage({ params }: { params: IParams }) {
   const currentUser = await getCurrentUser();

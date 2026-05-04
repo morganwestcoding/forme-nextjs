@@ -3,6 +3,11 @@ import getCurrentUser from '@/app/actions/getCurrentUser';
 import getPosts from '@/app/actions/getPost';
 import NewsfeedClient from './NewsfeedClient';
 
+export const metadata = {
+  title: 'Feed',
+  description: 'Discover posts from people and businesses you follow',
+};
+
 export const dynamic = 'force-dynamic';
 
 const NewsfeedPage = async ({ searchParams }: { searchParams: { postId?: string } }) => {

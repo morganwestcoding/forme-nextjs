@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import getListingById from '@/app/actions/getListingById';
@@ -7,6 +8,14 @@ interface IParams {
   listingId: string;
 }
 
+export async function generateMetadata({ params }: { params: IParams }): Promise<Metadata> {
+  const listing = await getListingById(params).catch(() => null);
+  return {
+    title: listing ? `Edit ${listing.title}` : 'Edit Listing',
+    description: 'Update your listing details',
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function EditListingPage({ params }: { params: IParams }) {
   const currentUser = await getCurrentUser();

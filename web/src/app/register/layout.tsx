@@ -1,3 +1,8 @@
+export const metadata = {
+  title: 'Register',
+  description: 'Create your ForMe account',
+};
+
 export default function RegisterLayout({
   children,
 }: {
