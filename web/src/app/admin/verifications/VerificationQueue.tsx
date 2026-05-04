@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import Button from '@/components/ui/Button';
 
 interface PendingUser {
   id: string;
@@ -60,19 +61,8 @@ export default function VerificationQueue({ users }: { users: PendingUser[] }) {
             {/* Actions */}
             {showReject !== user.id && (
               <div className="flex gap-2 flex-shrink-0">
-                <button
-                  onClick={() => handleAction(user.id, 'approve')}
-                  disabled={acting === user.id}
-                  className="text-xs font-medium px-4 py-2 rounded-xl text-success-soft-foreground bg-success-soft hover:bg-success-soft transition-all"
-                >
-                  {acting === user.id ? '...' : 'Approve'}
-                </button>
-                <button
-                  onClick={() => setShowReject(user.id)}
-                  className="text-xs font-medium px-4 py-2 rounded-xl text-danger-soft-foreground bg-danger-soft hover:bg-danger-soft transition-all"
-                >
-                  Reject
-                </button>
+                <Button variant="success-soft" size="sm" onClick={() => handleAction(user.id, 'approve')}>{acting === user.id ? '...' : 'Approve'}</Button>
+                <Button variant="danger-soft" size="sm" onClick={() => setShowReject(user.id)}>Reject</Button>
               </div>
             )}
           </div>
