@@ -44,13 +44,29 @@ struct DynamicAvatar: View {
     }
 
     var body: some View {
-        if let url = imageUrl, !url.isEmpty, let imageURL = URL(string: url) {
-            AsyncImage(url: imageURL) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } placeholder: {
-                initialsView
+        if let url = imageUrl, !url.isEmpty, let imageURL = AssetURL.resolve(url) {
+            // Phase-based AsyncImage so we can distinguish empty/loading/failure
+            // and log the URL when a load fails. The 2-closure form silently
+            // falls back to placeholder on error, which made it impossible to
+            // tell whether avatars were missing data or failing network.
+            AsyncImage(url: imageURL) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                case .failure(let error):
+                    initialsView
+                        .onAppear {
+                            #if DEBUG
+                            print("[DynamicAvatar] FAIL url=\(url) name=\(name) error=\(error.localizedDescription)")
+                            #endif
+                        }
+                case .empty:
+                    initialsView
+                @unknown default:
+                    initialsView
+                }
             }
             .frame(width: size.dimension, height: size.dimension)
             .clipShape(Circle())
@@ -72,6 +88,14 @@ struct DynamicAvatar: View {
                         }
                     }
                 )
+                .onAppear {
+                    #if DEBUG
+                    if let raw = imageUrl, !raw.isEmpty {
+                        // Non-empty URL string that failed to parse into a URL.
+                        print("[DynamicAvatar] BAD_URL value=\(raw) name=\(name)")
+                    }
+                    #endif
+                }
         }
     }
 

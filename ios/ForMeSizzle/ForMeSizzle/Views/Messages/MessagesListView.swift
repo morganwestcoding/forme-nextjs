@@ -252,7 +252,7 @@ struct ConversationRow: View {
         HStack(spacing: 14) {
             DynamicAvatar(
                 name: conversation.otherUser?.name ?? "User",
-                imageUrl: conversation.otherUser?.image,
+                imageUrl: conversation.otherUser?.avatarURL,
                 size: .medium
             )
 

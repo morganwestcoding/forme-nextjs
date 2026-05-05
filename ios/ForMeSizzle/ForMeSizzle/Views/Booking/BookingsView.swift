@@ -390,7 +390,7 @@ struct BookingCard: View {
     }
 
     private var avatar: some View {
-        AsyncImage(url: URL(string: reservation.listing?.imageSrc ?? "")) { phase in
+        AsyncImage(url: AssetURL.resolve(reservation.listing?.imageSrc)) { phase in
             switch phase {
             case .success(let image):
                 image.resizable().aspectRatio(contentMode: .fill)

@@ -22,3 +22,7 @@ struct Employee: Codable, Identifiable, Hashable {
     var user: CompactUser?
     var createdAt: String?
 }
+
+struct IndependentWorkersResponse: Codable {
+    let workers: [Employee]
+}

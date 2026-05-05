@@ -91,6 +91,7 @@ struct CompactUser: Codable, Identifiable, Hashable {
 
 extension CompactUser {
     var isStudent: Bool { userType == "student" }
+    var avatarURL: String? { image ?? imageSrc }
 }
 
 // MARK: - Verification Status

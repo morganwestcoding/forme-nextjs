@@ -50,7 +50,7 @@ struct TeamView: View {
                     }
                 } else if let listing = viewModel.selectedListing {
                     HStack(spacing: 10) {
-                        AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
+                        AsyncImage(url: AssetURL.resolve(listing.imageSrc)) { phase in
                             switch phase {
                             case .success(let image):
                                 image.resizable().aspectRatio(contentMode: .fill)

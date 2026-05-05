@@ -732,6 +732,15 @@ class APIService {
         return try await perform(request)
     }
 
+    // Independent providers don't appear in /listings (their shell listings are
+    // filtered out — see web getListings.ts). Fetch them separately so Discover
+    // can merge them into Trending Professionals.
+    func getIndependentWorkers() async throws -> [Employee] {
+        let request = try buildRequest(endpoint: "/independent-workers")
+        let response: IndependentWorkersResponse = try await perform(request)
+        return response.workers
+    }
+
     // Mirrors the web's /profile/[userId] data fetch — returns the full
     // bundle the page renders (user, posts, listings, services they perform
     // as an employee/owner, reviews, and aggregate review stats) in one round

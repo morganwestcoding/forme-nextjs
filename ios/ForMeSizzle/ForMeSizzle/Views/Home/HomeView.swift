@@ -151,7 +151,7 @@ private extension HomeView {
                 } label: {
                     DynamicAvatar(
                         name: authViewModel.currentUser?.name ?? "User",
-                        imageUrl: authViewModel.currentUser?.image,
+                        imageUrl: authViewModel.currentUser?.avatarURL,
                         size: .smallMedium
                     )
                 }
@@ -495,7 +495,12 @@ private extension HomeView {
 
     var filteredEmployees: [Professional] {
         guard let cat = viewModel.selectedCategory else { return viewModel.employees }
-        return viewModel.employees.filter { $0.listing.category.lowercased() == cat.lowercased() }
+        // Independents have no listing → no category to match against, so they
+        // drop out of category-filtered views (consistent with how web treats
+        // shell listings — never surface them client-side).
+        return viewModel.employees.filter {
+            $0.listing?.category.lowercased() == cat.lowercased()
+        }
     }
 
     var totalResultsCount: Int {
@@ -555,7 +560,11 @@ private extension HomeView {
                             // profile, not to their listing — matches the web's
                             // /profile/[id] behavior on Discover.
                             NavigationLink(value: ProfileRoute(userId: professional.user.id)) {
-                                ProviderRow(user: professional.user, listing: professional.listing)
+                                ProviderRow(
+                                    user: professional.user,
+                                    listing: professional.listing,
+                                    jobTitle: professional.jobTitle
+                                )
                             }
                             .buttonStyle(.plain)
                             .staggeredFadeIn(index: index)
@@ -657,8 +666,12 @@ private extension HomeView {
         // e.g. when shops is empty and would otherwise leave two 2×2 grids adjacent.
         var lastWasPosts = false
 
+        // Each emit guards on the cursor so we only ever emit a block when
+        // there's still un-shown data of that type — no duplicates across the
+        // whole feed. The outer loop runs up to endlessCycles but breaks early
+        // when every type is exhausted.
         func emitPosts() {
-            guard hasPosts, !lastWasPosts else { return }
+            guard hasPosts, !lastWasPosts, postCursor < viewModel.posts.count else { return }
             blocks.append(.posts(blockId: id, start: postCursor, typeIndex: postsTypeIndex))
             postCursor += Self.postsPerBlock
             postsTypeIndex += 1
@@ -666,7 +679,7 @@ private extension HomeView {
             lastWasPosts = true
         }
         func emitEmployees() {
-            guard hasEmployees else { return }
+            guard hasEmployees, employeeCursor < viewModel.employees.count else { return }
             blocks.append(.employees(blockId: id, start: employeeCursor, typeIndex: employeesTypeIndex))
             employeeCursor += Self.peoplePerBlock
             employeesTypeIndex += 1
@@ -674,7 +687,7 @@ private extension HomeView {
             lastWasPosts = false
         }
         func emitShops() {
-            guard hasShops else { return }
+            guard hasShops, shopCursor < viewModel.shops.count else { return }
             blocks.append(.shops(blockId: id, start: shopCursor, typeIndex: shopsTypeIndex))
             shopCursor += Self.peoplePerBlock
             shopsTypeIndex += 1
@@ -682,7 +695,7 @@ private extension HomeView {
             lastWasPosts = false
         }
         func emitListings() {
-            guard hasListings else { return }
+            guard hasListings, listingCursor < viewModel.listings.count else { return }
             blocks.append(.listings(blockId: id, start: listingCursor, typeIndex: listingsTypeIndex))
             listingCursor += Self.peoplePerBlock
             listingsTypeIndex += 1
@@ -691,13 +704,27 @@ private extension HomeView {
         }
 
         for _ in 0..<Self.endlessCycles {
+            let before = blocks.count
             emitPosts()
             emitEmployees()
             emitPosts()
             emitShops()
             emitPosts()
             emitListings()
+            if blocks.count == before { break }
         }
+
+        // Drain any remaining posts that the lastWasPosts gate held back once
+        // the variety sources (employees/shops/listings) ran out. Without this
+        // pass the tail of viewModel.posts could be silently dropped instead
+        // of just appearing in consecutive blocks.
+        while hasPosts && postCursor < viewModel.posts.count {
+            blocks.append(.posts(blockId: id, start: postCursor, typeIndex: postsTypeIndex))
+            postCursor += Self.postsPerBlock
+            postsTypeIndex += 1
+            id += 1
+        }
+
         return blocks
     }
 
@@ -723,12 +750,16 @@ private extension HomeView {
         }
     }
 
-    private func cycled<T>(_ array: [T], start: Int, count: Int) -> [(realIndex: Int, item: T)] {
-        guard !array.isEmpty else { return [] }
-        return (0..<count).map { offset in
-            let real = (start + offset) % array.count
-            return (real, array[real])
-        }
+    // Slice without wrapping. Earlier this used `% array.count` to always
+    // return `count` items, but that surfaced the same person/listing twice
+    // in one block when the dataset was small (e.g. 3 seeded employees in a
+    // 5-slot Trending Professionals section). Now we just return whatever's
+    // available in the [start, start+count) window — emit logic upstream
+    // stops requesting blocks once the cursor passes the array length.
+    private func sliced<T>(_ array: [T], start: Int, count: Int) -> [(realIndex: Int, item: T)] {
+        guard start < array.count else { return [] }
+        let end = min(start + count, array.count)
+        return (start..<end).map { ($0, array[$0]) }
     }
 
     func sectionHeadline(_ text: String) -> some View {
@@ -741,7 +772,7 @@ private extension HomeView {
     }
 
     func endlessPostsBlock(start: Int, headline: String) -> some View {
-        let items = cycled(viewModel.posts, start: start, count: Self.postsPerBlock)
+        let items = sliced(viewModel.posts, start: start, count: Self.postsPerBlock)
         return VStack(spacing: 14) {
             sectionHeadline(headline)
             LazyVGrid(
@@ -762,13 +793,17 @@ private extension HomeView {
     }
 
     func endlessEmployeesBlock(start: Int, headline: String) -> some View {
-        let items = cycled(viewModel.employees, start: start, count: Self.peoplePerBlock)
+        let items = sliced(viewModel.employees, start: start, count: Self.peoplePerBlock)
         return VStack(spacing: 14) {
             sectionHeadline(headline)
             LazyVStack(spacing: 4) {
                 ForEach(Array(items.enumerated()), id: \.offset) { _, pair in
                     NavigationLink(value: ProfileRoute(userId: pair.item.user.id)) {
-                        ProviderRow(user: pair.item.user, listing: pair.item.listing)
+                        ProviderRow(
+                            user: pair.item.user,
+                            listing: pair.item.listing,
+                            jobTitle: pair.item.jobTitle
+                        )
                     }
                     .buttonStyle(.plain)
                 }
@@ -778,7 +813,7 @@ private extension HomeView {
     }
 
     func endlessShopsBlock(start: Int, headline: String) -> some View {
-        let items = cycled(viewModel.shops, start: start, count: Self.peoplePerBlock)
+        let items = sliced(viewModel.shops, start: start, count: Self.peoplePerBlock)
         return VStack(spacing: 14) {
             sectionHeadline(headline)
             LazyVStack(spacing: 4) {
@@ -791,7 +826,7 @@ private extension HomeView {
     }
 
     func endlessListingsBlock(start: Int, headline: String) -> some View {
-        let items = cycled(viewModel.listings, start: start, count: Self.peoplePerBlock)
+        let items = sliced(viewModel.listings, start: start, count: Self.peoplePerBlock)
         return VStack(spacing: 14) {
             sectionHeadline(headline)
             LazyVStack(spacing: 4) {
@@ -814,7 +849,7 @@ struct ShopRow: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            AsyncImage(url: URL(string: shop.coverImage ?? shop.logo ?? "")) { phase in
+            AsyncImage(url: AssetURL.resolve(shop.coverImage ?? shop.logo)) { phase in
                 switch phase {
                 case .success(let image):
                     image.resizable().aspectRatio(contentMode: .fill)
@@ -897,7 +932,7 @@ struct ListingRow: View {
     var body: some View {
         HStack(spacing: 14) {
             // Image
-            AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
+            AsyncImage(url: AssetURL.resolve(listing.imageSrc)) { phase in
                 switch phase {
                 case .success(let image):
                     image.resizable().aspectRatio(contentMode: .fill)
@@ -1028,7 +1063,7 @@ struct ListingFullWidthCard: View {
         VStack(alignment: .leading, spacing: 0) {
             // Image with icons overlay
             ZStack(alignment: .topTrailing) {
-                AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
+                AsyncImage(url: AssetURL.resolve(listing.imageSrc)) { phase in
                     switch phase {
                     case .success(let image):
                         image.resizable().aspectRatio(contentMode: .fill)
@@ -1149,7 +1184,7 @@ struct ListingGridCard: View {
     var body: some View {
         VStack(spacing: 10) {
             // Listing image
-            AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
+            AsyncImage(url: AssetURL.resolve(listing.imageSrc)) { phase in
                 switch phase {
                 case .success(let image):
                     image.resizable().aspectRatio(contentMode: .fill)
@@ -1201,34 +1236,25 @@ struct ListingGridCard: View {
 struct ProviderRow: View {
     let name: String
     let image: String?
-    let listing: Listing
+    // nil for independents — their shell listing is internal-only and must
+    // never surface here. Quick-book + secondary lines fall back to user data.
+    let listing: Listing?
+    let subtitle: String?
     @State private var bookingService: Service?
 
-    init(user: CompactUser, listing: Listing) {
+    init(user: CompactUser, listing: Listing?, jobTitle: String? = nil) {
         self.name = user.name ?? "Provider"
-        self.image = user.image
+        self.image = user.avatarURL
         self.listing = listing
+        self.subtitle = listing?.location ?? jobTitle
     }
 
     var body: some View {
         HStack(spacing: 14) {
-            // Avatar thumbnail (circle, aligns with ListingRow image bounds)
-            AsyncImage(url: URL(string: image ?? "")) { phase in
-                switch phase {
-                case .success(let img):
-                    img
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 96, height: 96, alignment: .center)
-                        .clipped()
-                case .failure, .empty:
-                    placeholder
-                @unknown default:
-                    placeholder
-                }
-            }
-            .frame(width: 96, height: 96)
-            .clipShape(Circle())
+            // Avatar thumbnail — use DynamicAvatar so we get the same colored
+            // gradient initials fallback the rest of the app uses, plus the
+            // shared URL resolver that handles relative seed-data paths.
+            DynamicAvatar(name: name, imageUrl: image, size: .large, showBorder: false)
 
             // Content
             VStack(alignment: .leading, spacing: 6) {
@@ -1237,24 +1263,27 @@ struct ProviderRow: View {
                     .foregroundColor(ForMe.textPrimary)
                     .lineLimit(2)
 
-                if let location = listing.location {
-                    Text(location)
+                if let subtitle {
+                    Text(subtitle)
                         .font(ForMe.font(.medium, size: 12))
                         .foregroundColor(ForMe.textTertiary)
                         .lineLimit(1)
                 }
 
-                // ★ Rating | Price (matches ListingRow)
+                // ★ Rating | Price — always render the rating so independent
+                // providers get the same row treatment as listing-attached
+                // workers. Price is omitted for independents since there's no
+                // storefront / service set to derive a range from.
                 HStack(spacing: 0) {
                     GoldStar(size: 11)
                         .padding(.trailing, 4)
 
-                    Text(ratingText)
+                    Text(ratingText(for: listing))
                         .font(ForMe.font(size: 11))
                         .foregroundColor(ForMe.stone500)
                         .monospacedDigit()
 
-                    if let price = listing.priceRange {
+                    if let price = listing?.priceRange {
                         Text("|")
                             .font(ForMe.font(size: 11))
                             .foregroundColor(ForMe.stone300)
@@ -1276,6 +1305,7 @@ struct ProviderRow: View {
                 } label: {
                     Label("Quick Book", systemImage: "calendar.badge.plus")
                 }
+                .disabled(listing == nil)
                 Button {
                     shareProfile()
                 } label: {
@@ -1292,34 +1322,19 @@ struct ProviderRow: View {
         }
         .padding(ForMe.space3)
         .sheet(item: $bookingService) { service in
-            BookingView(listing: listing, service: service)
+            if let listing {
+                BookingView(listing: listing, service: service)
+            }
         }
     }
 
-    private var placeholder: some View {
-        Circle()
-            .fill(LinearGradient(colors: [ForMe.stone100, ForMe.stone200], startPoint: .topLeading, endPoint: .bottomTrailing))
-            .overlay(
-                Text(initials)
-                    .font(.system(size: 28, weight: .semibold, design: .rounded))
-                    .foregroundColor(ForMe.stone400)
-            )
-    }
-
-    private var initials: String {
-        let parts = name.split(separator: " ")
-        if parts.count >= 2 {
-            return String(parts[0].prefix(1) + parts[1].prefix(1)).uppercased()
-        }
-        return String(name.prefix(2)).uppercased()
-    }
-
-    private var ratingText: String {
-        let r = listing.rating ?? 0
+    private func ratingText(for listing: Listing?) -> String {
+        let r = listing?.rating ?? 0
         return r == 0 ? "5.0" : String(format: "%.1f", r)
     }
 
     private func quickBook() {
+        guard let listing else { return }
         Haptics.tap()
         Task {
             if let cached = listing.services?.first {
@@ -1430,7 +1445,7 @@ struct SearchResultRow: View {
             HStack(spacing: 12) {
                 // Thumbnail
                 if let imageUrl = item.image, !imageUrl.isEmpty {
-                    AsyncImage(url: URL(string: imageUrl)) { img in
+                    AsyncImage(url: AssetURL.resolve(imageUrl)) { img in
                         img.resizable().aspectRatio(contentMode: .fill)
                     } placeholder: {
                         RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)

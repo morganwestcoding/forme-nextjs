@@ -42,11 +42,14 @@ struct FeedView: View {
                                 Spacer()
                                 VStack(spacing: 22) {
                                     Button { dismiss() } label: {
-                                        Image(systemName: "xmark")
-                                            .font(.system(size: 22, weight: .semibold))
-                                            .foregroundColor(.white)
-                                            .frame(width: 26, height: 40)
-                                            .shadow(color: .black.opacity(0.4), radius: 3, x: 0, y: 1)
+                                        HugeIcon(
+                                            paths: HugeIcon.cancelPaths,
+                                            size: 24,
+                                            color: .white,
+                                            lineWidth: 1.75
+                                        )
+                                        .frame(width: 26, height: 40)
+                                        .shadow(color: .black.opacity(0.4), radius: 3, x: 0, y: 1)
                                     }
                                     ActionButton(
                                         icon: .heart,
@@ -358,32 +361,38 @@ private struct FeedTabs: View {
     private let tabs = ["For You", "Recommended"]
 
     var body: some View {
-        HStack(spacing: 20) {
+        // Lighter typographic treatment than TikTok's bold/medium pair so it
+        // sits closer to the rest of the app: Inter semibold/regular, +0.2
+        // tracking, and a slim 2pt capsule underline animated with spring +
+        // matchedGeometryEffect to match other selection transitions in the
+        // codebase.
+        HStack(spacing: 28) {
             ForEach(Array(tabs.enumerated()), id: \.offset) { index, title in
                 Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
+                    withAnimation(.spring(response: 0.32, dampingFraction: 0.85)) {
                         selectedTab = index
                     }
                 } label: {
                     VStack(spacing: 6) {
                         Text(title)
-                            .font(ForMe.font(selectedTab == index ? .bold : .medium, size: 15))
-                            .foregroundColor(selectedTab == index ? .white : .white.opacity(0.5))
-                            .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+                            .font(ForMe.font(selectedTab == index ? .semibold : .regular, size: 15))
+                            .tracking(0.2)
+                            .foregroundColor(selectedTab == index ? .white : .white.opacity(0.6))
+                            .shadow(color: .black.opacity(0.4), radius: 2, x: 0, y: 1)
 
-                        // Underline indicator
                         if selectedTab == index {
                             Capsule()
                                 .fill(.white)
-                                .frame(width: 24, height: 2.5)
+                                .frame(width: 18, height: 2)
                                 .matchedGeometryEffect(id: "feedTab", in: ns)
                         } else {
                             Capsule()
                                 .fill(.clear)
-                                .frame(width: 24, height: 2.5)
+                                .frame(width: 18, height: 2)
                         }
                     }
                 }
+                .buttonStyle(.plain)
             }
         }
     }
@@ -447,15 +456,22 @@ private struct ActionButton: View {
         case heart, comment, bookmark, share
     }
 
+    // Sized for the TikTok-style overlay: outlines render at 30pt with a
+    // 1.75 stroke (slightly heavier than the app's chrome 1.5 so they hold
+    // up against busy photos, but lighter than HugeIcon's 2.0 default that
+    // didn't match the rest of the app).
+    private let iconSize: CGFloat = 30
+    private let iconStroke: CGFloat = 1.75
+
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 4) {
+            VStack(spacing: 6) {
                 iconView
-                    .frame(width: 26, height: 26)
+                    .frame(width: 32, height: 32)
                     .shadow(color: .black.opacity(0.4), radius: 3, x: 0, y: 1)
 
                 Text(label)
-                    .font(ForMe.font(.regular, size: 11))
+                    .font(ForMe.font(.regular, size: 12))
                     .foregroundColor(.white)
                     .shadow(color: .black.opacity(0.4), radius: 2, x: 0, y: 1)
             }
@@ -468,29 +484,45 @@ private struct ActionButton: View {
         case .heart:
             if isActive {
                 Image(systemName: "heart.fill")
-                    .font(.system(size: 24))
+                    .font(.system(size: iconSize))
                     .foregroundColor(.red)
             } else {
-                HugeIcon(paths: ["M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z"])
+                HugeIcon(
+                    paths: ["M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z"],
+                    size: iconSize,
+                    lineWidth: iconStroke
+                )
             }
         case .comment:
-            HugeIcon(paths: [
-                "M8 13.5H16M8 8.5H12",
-                "M6.5 17.5C6.29454 18.5019 5.37769 20.6665 6.31569 21.3651C6.806 21.7218 7.58729 21.3408 9.14987 20.5789C10.2465 20.0441 11.3562 19.4309 12.5546 19.155C12.9931 19.0551 13.4395 19.0125 14 19C17.7712 19 19.6569 19 20.8284 17.8284C22 16.6569 22 14.7712 22 11V10.5C22 6.72876 22 4.84315 20.8284 3.67157C19.6569 2.5 17.7712 2.5 14 2.5H10C6.22876 2.5 4.34315 2.5 3.17157 3.67157C2 4.84315 2 6.72876 2 10.5V11C2 14.7712 2 16.6569 3.17157 17.8284C3.82475 18.4816 4.7987 18.8721 6.09881 19"
-            ])
+            HugeIcon(
+                paths: [
+                    "M8 13.5H16M8 8.5H12",
+                    "M6.5 17.5C6.29454 18.5019 5.37769 20.6665 6.31569 21.3651C6.806 21.7218 7.58729 21.3408 9.14987 20.5789C10.2465 20.0441 11.3562 19.4309 12.5546 19.155C12.9931 19.0551 13.4395 19.0125 14 19C17.7712 19 19.6569 19 20.8284 17.8284C22 16.6569 22 14.7712 22 11V10.5C22 6.72876 22 4.84315 20.8284 3.67157C19.6569 2.5 17.7712 2.5 14 2.5H10C6.22876 2.5 4.34315 2.5 3.17157 3.67157C2 4.84315 2 6.72876 2 10.5V11C2 14.7712 2 16.6569 3.17157 17.8284C3.82475 18.4816 4.7987 18.8721 6.09881 19"
+                ],
+                size: iconSize,
+                lineWidth: iconStroke
+            )
         case .bookmark:
             if isActive {
                 Image(systemName: "bookmark.fill")
-                    .font(.system(size: 22))
+                    .font(.system(size: iconSize - 2))
                     .foregroundColor(.white)
             } else {
-                HugeIcon(paths: ["M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"])
+                HugeIcon(
+                    paths: ["M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"],
+                    size: iconSize,
+                    lineWidth: iconStroke
+                )
             }
         case .share:
-            HugeIcon(paths: [
-                "M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963",
-                "M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13"
-            ])
+            HugeIcon(
+                paths: [
+                    "M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963",
+                    "M14 3H18C19.4142 3 20.1213 3 20.5607 3.43934C21 3.87868 21 4.58579 21 6V10M20 4L11 13"
+                ],
+                size: iconSize,
+                lineWidth: iconStroke
+            )
         }
     }
 }
@@ -684,7 +716,7 @@ struct FeedCard: View {
                 FeedVideoPlayer(url: url, isActive: isActive)
             }
         } else if let imageUrl = post.imageSrc ?? post.mediaUrl ?? post.thumbnailUrl {
-            AsyncImage(url: URL(string: imageUrl)) { phase in
+            AsyncImage(url: AssetURL.resolve(imageUrl)) { phase in
                 switch phase {
                 case .success(let image): image.resizable().aspectRatio(contentMode: .fill)
                 default: Rectangle().fill(Color(hex: "1a1a1a")).overlay(ProgressView().tint(.white.opacity(0.5)))

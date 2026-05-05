@@ -115,7 +115,7 @@ struct PostCard: View {
     private var bottomInfo: some View {
         HStack(alignment: .bottom, spacing: 10) {
             if let user = post.user {
-                AsyncImage(url: URL(string: user.image ?? "")) { img in
+                AsyncImage(url: AssetURL.resolve(user.avatarURL)) { img in
                     img.resizable().aspectRatio(contentMode: .fill)
                 } placeholder: {
                     Circle().fill(ForMe.stone400)
@@ -183,7 +183,7 @@ struct PostCard: View {
             // Extract first-frame thumbnail for videos on the discover feed
             VideoThumbnail(url: url)
         } else if let imageUrl = post.imageSrc ?? post.thumbnailUrl ?? post.mediaUrl {
-            AsyncImage(url: URL(string: imageUrl)) { phase in
+            AsyncImage(url: AssetURL.resolve(imageUrl)) { phase in
                 switch phase {
                 case .success(let image):
                     image.resizable().aspectRatio(contentMode: .fill)

@@ -90,7 +90,7 @@ struct ChatView: View {
                 HStack(spacing: 10) {
                     DynamicAvatar(
                         name: conversation.otherUser?.name ?? "User",
-                        imageUrl: conversation.otherUser?.image,
+                        imageUrl: conversation.otherUser?.avatarURL,
                         size: .small
                     )
                     Text(conversation.otherUser?.name ?? "Chat")
@@ -190,7 +190,7 @@ struct TypingBubble: View {
         HStack(alignment: .bottom, spacing: 8) {
             DynamicAvatar(
                 name: otherUser?.name ?? name,
-                imageUrl: otherUser?.image,
+                imageUrl: otherUser?.avatarURL,
                 size: .tiny
             )
             .padding(.bottom, 2)
@@ -244,7 +244,7 @@ struct MessageBubble: View {
             if !isCurrentUser {
                 DynamicAvatar(
                     name: otherUser?.name ?? "User",
-                    imageUrl: otherUser?.image,
+                    imageUrl: otherUser?.avatarURL,
                     size: .tiny
                 )
                 .padding(.bottom, 2)

@@ -53,7 +53,7 @@ struct SearchView: View {
                         } label: {
                             DynamicAvatar(
                                 name: authViewModel.currentUser?.name ?? "User",
-                                imageUrl: authViewModel.currentUser?.image,
+                                imageUrl: authViewModel.currentUser?.avatarURL,
                                 size: .smallMedium
                             )
                         }
@@ -304,7 +304,7 @@ struct WorkerRow: View {
 
     init(user: User, listing: Listing?) {
         self.name = user.name ?? "Provider"
-        self.image = user.image
+        self.image = user.avatarURL
         self.listing = listing
     }
 

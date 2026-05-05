@@ -28,7 +28,7 @@ class FavoritesViewModel: ObservableObject {
                     name: employee.fullName,
                     image: employeeUser.image ?? employeeUser.imageSrc
                 )
-                return Professional(id: employeeUser.id, user: compact, listing: listing)
+                return Professional(id: employeeUser.id, user: compact, listing: listing, jobTitle: employee.jobTitle)
             }
         } catch {
             // silent

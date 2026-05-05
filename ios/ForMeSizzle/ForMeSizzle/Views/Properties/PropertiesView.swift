@@ -162,7 +162,7 @@ struct PropertyCard: View {
         VStack(alignment: .leading, spacing: 0) {
             // Image with action overlay
             ZStack(alignment: .topTrailing) {
-                AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
+                AsyncImage(url: AssetURL.resolve(listing.imageSrc)) { phase in
                     switch phase {
                     case .success(let image):
                         image.resizable().aspectRatio(contentMode: .fill)

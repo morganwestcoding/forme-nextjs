@@ -153,7 +153,7 @@ private extension ListingDetailView {
     var businessCard: some View {
         VStack(spacing: 0) {
             // Avatar overlapping hero
-            AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
+            AsyncImage(url: AssetURL.resolve(listing.imageSrc)) { phase in
                 switch phase {
                 case .success(let image):
                     image.resizable().aspectRatio(contentMode: .fill)
@@ -458,7 +458,7 @@ private extension ListingDetailView {
             LazyVStack(spacing: 4) {
                 ForEach(employees) { employee in
                     if let user = employee.user {
-                        ProviderRow(user: user, listing: listing)
+                        ProviderRow(user: user, listing: listing, jobTitle: employee.jobTitle)
                     }
                 }
             }
@@ -506,7 +506,7 @@ private extension ListingDetailView {
             // horizontal inset as the other section titles.
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 1), count: 3), spacing: 1) {
                 ForEach(images, id: \.self) { imageUrl in
-                    AsyncImage(url: URL(string: imageUrl)) { phase in
+                    AsyncImage(url: AssetURL.resolve(imageUrl)) { phase in
                         switch phase {
                         case .success(let image):
                             image.resizable().aspectRatio(contentMode: .fill)

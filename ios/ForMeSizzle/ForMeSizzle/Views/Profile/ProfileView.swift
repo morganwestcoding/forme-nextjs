@@ -170,7 +170,7 @@ private extension ProfileView {
             // Bottom padding gives the name/title below room to breathe.
             DynamicAvatar(
                 name: user?.name ?? "User",
-                imageUrl: user?.image ?? user?.imageSrc,
+                imageUrl: user?.avatarURL,
                 size: .large,
                 showBorder: false
             )
@@ -475,7 +475,7 @@ private extension ProfileView {
 
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 1), count: 3), spacing: 1) {
                 ForEach(images, id: \.self) { url in
-                    AsyncImage(url: URL(string: url)) { phase in
+                    AsyncImage(url: AssetURL.resolve(url)) { phase in
                         switch phase {
                         case .success(let image):
                             image.resizable().aspectRatio(contentMode: .fill)
@@ -509,7 +509,7 @@ struct ReviewRow: View {
             HStack(spacing: 10) {
                 DynamicAvatar(
                     name: review.user?.name ?? "User",
-                    imageUrl: review.user?.image,
+                    imageUrl: review.user?.avatarURL,
                     size: .small
                 )
                 VStack(alignment: .leading, spacing: 2) {

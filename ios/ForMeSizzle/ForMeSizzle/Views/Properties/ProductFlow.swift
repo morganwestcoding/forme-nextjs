@@ -192,7 +192,7 @@ struct ProductFlow: View {
             selectedShop = shop
         } label: {
             HStack(spacing: 14) {
-                AsyncImage(url: URL(string: shop.logo ?? shop.coverImage ?? "")) { phase in
+                AsyncImage(url: AssetURL.resolve(shop.logo ?? shop.coverImage)) { phase in
                     switch phase {
                     case .success(let img):
                         img.resizable().aspectRatio(contentMode: .fill)

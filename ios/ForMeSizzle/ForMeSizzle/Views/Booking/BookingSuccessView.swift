@@ -127,7 +127,7 @@ private extension BookingSuccessView {
         VStack(spacing: 0) {
             // Listing + service header
             HStack(spacing: 14) {
-                AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
+                AsyncImage(url: AssetURL.resolve(listing.imageSrc)) { phase in
                     switch phase {
                     case .success(let image):
                         image.resizable().aspectRatio(contentMode: .fill)

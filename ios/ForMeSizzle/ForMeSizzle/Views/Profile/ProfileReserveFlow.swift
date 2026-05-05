@@ -103,7 +103,7 @@ private extension ProfileReserveFlow {
 
     func listingRow(_ listing: Listing) -> some View {
         HStack(spacing: 14) {
-            AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
+            AsyncImage(url: AssetURL.resolve(listing.imageSrc)) { phase in
                 switch phase {
                 case .success(let image): image.resizable().aspectRatio(contentMode: .fill)
                 default: RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous).fill(ForMe.stone100)

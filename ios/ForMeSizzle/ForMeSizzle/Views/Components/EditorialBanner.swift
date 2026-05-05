@@ -10,24 +10,16 @@ struct EditorialBanner: View {
     @State private var activeIndex = 0
     @State private var timer: Timer?
 
+    // Mirrors web/src/components/DiscoverClient.tsx BANNERS so iOS and web
+    // show the same hero. Image path is resolved against the web origin via
+    // AssetURL — keeps the asset in one place (web/public) instead of also
+    // shipping it in Assets.xcassets.
     private let banners: [BannerSlide] = [
         BannerSlide(
-            image: "Banner5",
-            tag: "Local",
-            title: "Near You",
-            subtitle: "Top-rated in your area"
-        ),
-        BannerSlide(
-            image: "Banner6",
-            tag: "Curated",
-            title: "New on ForMe",
-            subtitle: "Fresh brands joining our community"
-        ),
-        BannerSlide(
-            image: "Banner7",
-            tag: "Trending",
-            title: "Most Popular",
-            subtitle: "What everyone is booking"
+            image: "/assets/people/v-drip.png",
+            tag: "Featured",
+            title: "Look Like Your Next Level.",
+            subtitle: "Premium cuts, styles, and treatments from top-tier professionals"
         ),
     ]
 
@@ -40,11 +32,16 @@ struct EditorialBanner: View {
                     .overlay(
                         ZStack {
                             ForEach(Array(banners.enumerated()), id: \.offset) { index, banner in
-                                Image(banner.image)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .opacity(index == activeIndex ? 1 : 0)
-                                    .animation(.easeInOut(duration: 0.7), value: activeIndex)
+                                AsyncImage(url: AssetURL.resolve(banner.image)) { phase in
+                                    switch phase {
+                                    case .success(let image):
+                                        image.resizable().scaledToFill()
+                                    default:
+                                        Color.clear
+                                    }
+                                }
+                                .opacity(index == activeIndex ? 1 : 0)
+                                .animation(.easeInOut(duration: 0.7), value: activeIndex)
                             }
                         }
                     )
@@ -83,7 +80,7 @@ struct EditorialBanner: View {
                                 .tracking(0.5)
 
                             Text(banners[activeIndex].title)
-                                .font(ForMe.font(.bold, size: 24))
+                                .font(ForMe.font(.bold, size: 20))
                                 .foregroundColor(.white)
 
                             Text(banners[activeIndex].subtitle)
@@ -115,35 +112,37 @@ struct EditorialBanner: View {
                 value: isCollapsed
             )
 
-            // Dot indicators — fade opacity in place FIRST (before any slide),
-            // then height collapses while invisible (with the image)
-            HStack(spacing: 6) {
-                ForEach(0..<banners.count, id: \.self) { i in
-                    Capsule()
-                        .fill(i == activeIndex ? ForMe.textPrimary : ForMe.stone300)
-                        .frame(width: i == activeIndex ? 16 : 6, height: 6)
-                        .animation(.easeInOut(duration: 0.3), value: activeIndex)
-                        .onTapGesture {
-                            activeIndex = i
-                            restartTimer()
-                        }
+            // Dot indicators — match web: only render when there's more than
+            // one banner, otherwise a lonely dot looks broken.
+            if banners.count > 1 {
+                HStack(spacing: 6) {
+                    ForEach(0..<banners.count, id: \.self) { i in
+                        Capsule()
+                            .fill(i == activeIndex ? ForMe.textPrimary : ForMe.stone300)
+                            .frame(width: i == activeIndex ? 16 : 6, height: 6)
+                            .animation(.easeInOut(duration: 0.3), value: activeIndex)
+                            .onTapGesture {
+                                activeIndex = i
+                                restartTimer()
+                            }
+                    }
                 }
+                .frame(height: isCollapsed ? 0 : 6)
+                .clipped()
+                .animation(
+                    isCollapsed
+                        ? .easeInOut(duration: 0.45).delay(0.3)
+                        : .easeInOut(duration: 0.45),
+                    value: isCollapsed
+                )
+                .opacity(isCollapsed ? 0 : 1)
+                .animation(
+                    isCollapsed
+                        ? .easeInOut(duration: 0.3)
+                        : .easeInOut(duration: 0.25).delay(0.45),
+                    value: isCollapsed
+                )
             }
-            .frame(height: isCollapsed ? 0 : 6)
-            .clipped()
-            .animation(
-                isCollapsed
-                    ? .easeInOut(duration: 0.45).delay(0.3)
-                    : .easeInOut(duration: 0.45),
-                value: isCollapsed
-            )
-            .opacity(isCollapsed ? 0 : 1)
-            .animation(
-                isCollapsed
-                    ? .easeInOut(duration: 0.3)
-                    : .easeInOut(duration: 0.25).delay(0.45),
-                value: isCollapsed
-            )
         }
         .onAppear {
             startTimer()
@@ -155,6 +154,7 @@ struct EditorialBanner: View {
 
     private func startTimer() {
         timer?.invalidate()
+        guard banners.count > 1 else { return }
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { _ in
             withAnimation {
                 activeIndex = (activeIndex + 1) % banners.count

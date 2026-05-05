@@ -189,7 +189,7 @@ struct WorkerFlow: View {
             selectedListing = listing
         } label: {
             HStack(spacing: 14) {
-                AsyncImage(url: URL(string: listing.imageSrc ?? "")) { phase in
+                AsyncImage(url: AssetURL.resolve(listing.imageSrc)) { phase in
                     switch phase {
                     case .success(let img):
                         img.resizable().aspectRatio(contentMode: .fill)

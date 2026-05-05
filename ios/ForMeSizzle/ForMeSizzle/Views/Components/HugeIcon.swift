@@ -37,6 +37,13 @@ extension HugeIcon {
         "M5 12L12 19"
     ]
 
+    /// Cancel01 — close / dismiss X. Two diagonal strokes that match the
+    /// feed action icons' weight when rendered with the same lineWidth.
+    static let cancelPaths: [String] = [
+        "M19.0005 4.99988L5.00049 18.9999",
+        "M5.00049 4.99988L19.0005 18.9999"
+    ]
+
     /// Share08Icon — used for share buttons on Discover, Feed, Bookings
     static let sharePaths: [String] = [
         "M10.0017 3C7.05534 3.03208 5.41096 3.21929 4.31838 4.31188C2.99988 5.63037 2.99988 7.75248 2.99988 11.9966C2.99988 16.2409 2.99988 18.363 4.31838 19.6815C5.63688 21 7.75899 21 12.0032 21C16.2474 21 18.3695 21 19.688 19.6815C20.7808 18.5887 20.9678 16.9438 20.9999 13.9963",
