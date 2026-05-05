@@ -11,7 +11,7 @@ struct SearchView: View {
     // so the empty state triggers when *their* filters return nothing — not
     // just when /listings came back empty.
     private var hasResults: Bool {
-        !viewModel.displayListings.isEmpty || !viewModel.workers.isEmpty
+        !viewModel.displayListings.isEmpty || !viewModel.displayWorkers.isEmpty
     }
 
     var body: some View {
@@ -134,52 +134,36 @@ struct SearchView: View {
                 } else if !hasResults {
                     emptyState
                 } else {
-                    VStack(spacing: 24) {
-                        // Workers section
-                        if !viewModel.workers.isEmpty {
-                            VStack(alignment: .leading, spacing: 12) {
-                                Text("Workers")
-                                    .font(.headline)
-                                    .foregroundColor(ForMe.textPrimary)
-                                    .padding(.horizontal)
+                    // Single results block — workers + listings all live under
+                    // one "X results" header instead of separate sections, so
+                    // the page reads as one ranked feed rather than two stacks.
+                    VStack(alignment: .leading, spacing: 12) {
+                        resultsSummary
+                            .padding(.horizontal)
 
-                                LazyVStack(spacing: 4) {
-                                    ForEach(Array(viewModel.workers.enumerated()), id: \.element.id) { index, worker in
-                                        let workerListing = viewModel.listings.first { $0.userId == worker.id || $0.user?.id == worker.id }
-                                        if let listing = workerListing {
-                                            NavigationLink(value: listing) {
-                                                WorkerRow(user: worker, listing: listing)
-                                            }
-                                            .buttonStyle(.plain)
-                                            .staggeredFadeIn(index: index)
-                                        } else {
-                                            WorkerRow(user: worker, listing: nil)
-                                                .staggeredFadeIn(index: index)
-                                        }
-                                    }
+                        LazyVStack(spacing: 4) {
+                            ForEach(Array(viewModel.displayWorkers.enumerated()), id: \.element.id) { index, professional in
+                                NavigationLink(value: ProfileRoute(userId: professional.user.id)) {
+                                    ProviderRow(
+                                        user: professional.user,
+                                        listing: professional.listing,
+                                        jobTitle: professional.jobTitle,
+                                        priceRange: professional.priceRange
+                                    )
                                 }
-                                .padding(.horizontal)
+                                .buttonStyle(.plain)
+                                .staggeredFadeIn(index: index)
+                            }
+
+                            ForEach(Array(viewModel.displayListings.enumerated()), id: \.element.id) { index, listing in
+                                NavigationLink(value: listing) {
+                                    ListingRow(listing: listing)
+                                }
+                                .buttonStyle(.plain)
+                                .staggeredFadeIn(index: viewModel.displayWorkers.count + index)
                             }
                         }
-
-                        // Listings section — uses displayListings so sort + query + category all apply.
-                        if !viewModel.displayListings.isEmpty {
-                            VStack(alignment: .leading, spacing: 12) {
-                                resultsSummary
-                                    .padding(.horizontal)
-
-                                LazyVStack(spacing: 4) {
-                                    ForEach(Array(viewModel.displayListings.enumerated()), id: \.element.id) { index, listing in
-                                        NavigationLink(value: listing) {
-                                            ListingRow(listing: listing)
-                                        }
-                                        .buttonStyle(.plain)
-                                        .staggeredFadeIn(index: index)
-                                    }
-                                }
-                                .padding(.horizontal)
-                            }
-                        }
+                        .padding(.horizontal)
                     }
                 }
             }
@@ -189,6 +173,9 @@ struct SearchView: View {
         .navigationBarHidden(true)
         .navigationDestination(for: Listing.self) { listing in
             ListingDetailView(listing: listing)
+        }
+        .navigationDestination(for: ProfileRoute.self) { route in
+            ProfileView(userId: route.userId)
         }
         .task {
             await viewModel.search()
@@ -206,7 +193,7 @@ struct SearchView: View {
     // user understands *why* the ordering shifted. Discover never shows this
     // because its ordering is editorial, not user-chosen.
     private var resultsSummary: some View {
-        let count = viewModel.displayListings.count
+        let count = viewModel.displayWorkers.count + viewModel.displayListings.count
         return HStack(spacing: 4) {
             Text("\(count) \(count == 1 ? "result" : "results")")
                 .font(ForMe.font(.semibold, size: 13))
@@ -292,38 +279,6 @@ struct FilterChip: View {
                 )
                 .cornerRadius(8)
         }
-    }
-}
-
-// MARK: - Worker Row (temporary, will be rebuilt in Phase 2)
-
-struct WorkerRow: View {
-    let name: String
-    let image: String?
-    let listing: Listing?
-
-    init(user: User, listing: Listing?) {
-        self.name = user.name ?? "Provider"
-        self.image = user.avatarURL
-        self.listing = listing
-    }
-
-    var body: some View {
-        HStack(spacing: 14) {
-            DynamicAvatar(name: name, imageUrl: image, size: .medium)
-            VStack(alignment: .leading, spacing: 4) {
-                Text(name)
-                    .font(ForMe.font(.semibold, size: 15))
-                    .foregroundColor(ForMe.textPrimary)
-                if let location = listing?.location {
-                    Text(location)
-                        .font(ForMe.font(.regular, size: 12))
-                        .foregroundColor(ForMe.textTertiary)
-                }
-            }
-            Spacer()
-        }
-        .padding(ForMe.space3)
     }
 }
 

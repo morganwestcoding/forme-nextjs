@@ -26,7 +26,9 @@ enum SearchSortOption: String, CaseIterable, Identifiable {
 @MainActor
 class SearchViewModel: ObservableObject {
     @Published var listings: [Listing] = []
-    @Published var workers: [User] = []
+    // Aggregated professionals: listing owners + listing employees + independent
+    // providers. Same shape Discover uses so we can render with ProviderRow.
+    @Published var workers: [Professional] = []
     @Published var query = ""
     @Published var sortOption: SearchSortOption = .relevance
     @Published var isLoading = false
@@ -80,14 +82,56 @@ class SearchViewModel: ObservableObject {
         listing.services?.map(\.price).filter { $0 > 0 }.min()
     }
 
+    // Workers filtered by free-text query, then ranked using the same sort
+    // option that orders the listings — so the unified results list reads as
+    // one cohesive ranking instead of two independently-ordered groups.
+    var displayWorkers: [Professional] {
+        var filtered = workers
+
+        let q = query.trimmingCharacters(in: .whitespaces).lowercased()
+        if !q.isEmpty {
+            filtered = filtered.filter { p in
+                if let name = p.user.name?.lowercased(), name.contains(q) { return true }
+                if let job = p.jobTitle?.lowercased(), job.contains(q) { return true }
+                if let listing = p.listing,
+                   listing.title.lowercased().contains(q) || listing.category.lowercased().contains(q) {
+                    return true
+                }
+                return false
+            }
+        }
+
+        switch sortOption {
+        case .relevance:
+            return filtered
+        case .highestRated:
+            return filtered.sorted { lhs, rhs in
+                if lhs.sortRating != rhs.sortRating { return lhs.sortRating > rhs.sortRating }
+                return lhs.sortReviewCount > rhs.sortReviewCount
+            }
+        case .mostReviewed:
+            return filtered.sorted { $0.sortReviewCount > $1.sortReviewCount }
+        case .priceLowToHigh:
+            return filtered.sorted { lhs, rhs in
+                let lp = lhs.sortMinPrice ?? .greatestFiniteMagnitude
+                let rp = rhs.sortMinPrice ?? .greatestFiniteMagnitude
+                return lp < rp
+            }
+        }
+    }
+
     func search() async {
         isLoading = true
         error = nil
 
+        async let listingsTask = api.getListings(limit: 100)
+        async let independentsTask = fetchIndependents()
+
         do {
-            let response = try await api.getListings(limit: 100)
+            let response = try await listingsTask
+            let independents = await independentsTask
             listings = response.listings
-            workers = []
+            workers = aggregateProfessionals(listings: response.listings, independents: independents)
         } catch {
             self.error = error.localizedDescription
             listings = []
@@ -95,5 +139,50 @@ class SearchViewModel: ObservableObject {
         }
 
         isLoading = false
+    }
+
+    private func fetchIndependents() async -> [Employee] {
+        (try? await api.getIndependentWorkers()) ?? []
+    }
+
+    // Same composition Discover uses (HomeViewModel.loadEmployees) — listing
+    // owners first, then each listing's employees, then independents — with a
+    // single seen-set so a person who's both an owner and an employee on the
+    // same shop only appears once.
+    private func aggregateProfessionals(listings: [Listing], independents: [Employee]) -> [Professional] {
+        var seen = Set<String>()
+        var out: [Professional] = []
+
+        for listing in listings {
+            if let owner = listing.user, seen.insert(owner.id).inserted {
+                out.append(Professional(
+                    id: owner.id, user: owner, listing: listing,
+                    jobTitle: nil, priceRange: listing.priceRange
+                ))
+            }
+            for employee in (listing.employees ?? []) {
+                guard let employeeUser = employee.user,
+                      seen.insert(employeeUser.id).inserted else { continue }
+                let user = CompactUser(
+                    id: employeeUser.id,
+                    name: employee.fullName,
+                    image: employeeUser.image ?? employeeUser.imageSrc
+                )
+                out.append(Professional(
+                    id: employeeUser.id, user: user, listing: listing,
+                    jobTitle: employee.jobTitle, priceRange: listing.priceRange
+                ))
+            }
+        }
+
+        for w in independents {
+            guard let user = w.user, seen.insert(user.id).inserted else { continue }
+            out.append(Professional(
+                id: user.id, user: user, listing: nil,
+                jobTitle: w.jobTitle, priceRange: w.priceRange
+            ))
+        }
+
+        return out
     }
 }

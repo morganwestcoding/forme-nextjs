@@ -6,11 +6,23 @@ struct ProfileView: View {
     @EnvironmentObject var appState: AppState
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = ProfileViewModel()
+    @ObservedObject private var followStore = FollowStore.shared
     @State private var showEditProfile = false
     @State private var showSettings = false
     @State private var showReserveFlow = false
     @State private var pendingConversation: Conversation?
     @State private var startConversationError: String?
+    // Direct-book context when a service is tapped from this profile's grid.
+    // Carries listing + service + the profile owner as fixedEmployee so the
+    // BookingView skips the provider picker — we already know who you want.
+    @State private var directBooking: DirectBookingContext?
+    // TikTok-style feed launched from a tapped post on this profile. The
+    // feed shows this profile's posts first, then keeps scrolling into the
+    // global feed once they run out — `feedExtraPosts` is loaded lazily in
+    // the background so the transition feels seamless.
+    @State private var showFeed = false
+    @State private var feedStartIndex = 0
+    @State private var feedExtraPosts: [Post] = []
 
     private var user: User? {
         viewModel.user ?? (userId == nil ? authViewModel.currentUser : nil)
@@ -18,6 +30,28 @@ struct ProfileView: View {
 
     private var isCurrentUser: Bool {
         userId == nil || userId == authViewModel.currentUser?.id
+    }
+
+    // Follow state + counter both come from FollowStore so any toggle —
+    // here, on a listing detail, or in a future row — instantly flips the
+    // button and shifts the count without a refetch.
+    private var isFollowing: Bool {
+        guard let id = user?.id else { return false }
+        return followStore.isFollowing(id: id, target: .user)
+    }
+
+    private var followerCount: Int {
+        let base = user?.followers?.count ?? 0
+        guard let id = user?.id else { return base }
+        return followStore.count(base: base, for: id)
+    }
+
+    // Profile's posts come first; once they're exhausted the feed continues
+    // into globally-loaded posts. We dedupe so a post that's both on the
+    // profile and in the global feed doesn't appear twice.
+    private var feedPosts: [Post] {
+        let profileIds = Set(viewModel.posts.map(\.id))
+        return viewModel.posts + feedExtraPosts.filter { !profileIds.contains($0.id) }
     }
 
     var body: some View {
@@ -50,6 +84,12 @@ struct ProfileView: View {
         .sheet(isPresented: $showSettings) {
             SettingsView()
         }
+        .sheet(item: $directBooking) { ctx in
+            BookingView(listing: ctx.listing, initialService: ctx.service, fixedEmployee: ctx.employee)
+        }
+        .fullScreenCover(isPresented: $showFeed) {
+            FeedView(posts: feedPosts, startIndex: feedStartIndex)
+        }
         .sheet(isPresented: $showReserveFlow) {
             if let user = user {
                 ProfileReserveFlow(
@@ -74,14 +114,22 @@ struct ProfileView: View {
         }
         .task {
             if let id = userId {
-                await viewModel.loadProfile(userId: id)
+                await viewModel.loadProfile(userId: id, currentUser: authViewModel.currentUser)
             } else if let id = authViewModel.currentUser?.id {
-                await viewModel.loadProfile(userId: id)
+                await viewModel.loadProfile(userId: id, currentUser: authViewModel.currentUser)
+            }
+            // Pre-load global feed posts in the background so the TikTok-style
+            // feed can keep scrolling after the profile's own posts. Failure is
+            // non-critical — the feed just stops at the end of profile posts.
+            if feedExtraPosts.isEmpty {
+                if let extra = try? await APIService.shared.getFeed() {
+                    feedExtraPosts = extra
+                }
             }
         }
         .refreshable {
             let id = userId ?? authViewModel.currentUser?.id
-            if let id { await viewModel.loadProfile(userId: id) }
+            if let id { await viewModel.loadProfile(userId: id, currentUser: authViewModel.currentUser) }
         }
     }
 
@@ -110,9 +158,11 @@ struct ProfileView: View {
                     }
                 } else {
                     Button {
-                        Task { await viewModel.toggleFollow() }
+                        if let id = user?.id {
+                            Task { await followStore.toggle(id: id, target: .user) }
+                        }
                     } label: {
-                        Label(viewModel.isFollowing ? "Following" : "Follow",
+                        Label(isFollowing ? "Following" : "Follow",
                               systemImage: "person.badge.plus")
                     }
                     Button {
@@ -158,6 +208,15 @@ struct ProfileView: View {
             root.present(activityVC, animated: true)
         }
     }
+}
+
+// Identifiable so .sheet(item:) treats a fresh tap as a fresh presentation —
+// rebuilds BookingView with the right listing/service/employee each time.
+private struct DirectBookingContext: Identifiable {
+    let listing: Listing
+    let service: Service
+    let employee: Employee
+    var id: String { "\(listing.id)|\(service.id)|\(employee.id)" }
 }
 
 // MARK: - Profile Card (matches listing detail business card)
@@ -298,7 +357,7 @@ private extension ProfileView {
         HStack(spacing: 0) {
             statItem(value: "\(viewModel.services.count)", label: "services")
             Divider().frame(height: 32)
-            statItem(value: "\(user?.followers?.count ?? 0)", label: "followers")
+            statItem(value: "\(followerCount)", label: "followers")
             Divider().frame(height: 32)
             statItem(value: "\(viewModel.reviewStats?.totalCount ?? user?.following?.count ?? 0)",
                      label: "reviews")
@@ -347,9 +406,12 @@ private extension ProfileView {
                 }
 
                 Button {
-                    Task { await viewModel.toggleFollow() }
+                    if let id = user?.id {
+                        Haptics.confirm()
+                        Task { await followStore.toggle(id: id, target: .user) }
+                    }
                 } label: {
-                    Text(viewModel.isFollowing ? "Following" : "Follow")
+                    Text(isFollowing ? "Following" : "Follow")
                         .font(ForMe.font(.semibold, size: 13))
                         .foregroundColor(ForMe.stone700)
                         .frame(maxWidth: .infinity)
@@ -406,24 +468,35 @@ private extension ProfileView {
         VStack(alignment: .leading, spacing: ForMe.space3) {
             sectionTitle("Book A Service")
 
-            // Tapping a service routes to its parent listing — the booking
-            // sheet lives there and already supports preselecting employee +
-            // service. We push via appState.navigationPath instead of
-            // wrapping in NavigationLink because ServiceRow itself is a
-            // Button, and nesting Buttons inside NavigationLink eats the tap.
+            // Tapping a service from a profile means "book THIS person for
+            // THAT service" — open BookingView directly with fixedEmployee
+            // set to the profile owner so the provider picker is skipped.
+            // Falls back to navigating to the listing if we don't yet have
+            // enough loaded data to do the direct hand-off.
             LazyVGrid(columns: [
                 GridItem(.flexible(), spacing: 10),
                 GridItem(.flexible(), spacing: 10)
             ], spacing: 10) {
                 ForEach(Array(viewModel.services.enumerated()), id: \.element.id) { index, service in
                     ServiceRow(service: service) {
-                        if let listingId = service.listingId {
-                            appState.navigationPath.append(ListingIdRoute(id: listingId))
-                        }
+                        bookService(service)
                     }
                     .staggeredFadeIn(index: index)
                 }
             }
+        }
+    }
+
+    private func bookService(_ service: Service) {
+        guard let listingId = service.listingId else { return }
+        let listing = viewModel.listings.first { $0.id == listingId }
+        let employee = listing?.employees?.first { $0.userId == user?.id }
+        if let listing, let employee {
+            directBooking = DirectBookingContext(listing: listing, service: service, employee: employee)
+        } else {
+            // No listing/employee in scope yet — fall back to the listing page
+            // so the user can still complete the booking from there.
+            appState.navigationPath.append(ListingIdRoute(id: listingId))
         }
     }
 
@@ -433,8 +506,17 @@ private extension ProfileView {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    ForEach(viewModel.posts.prefix(10)) { post in
+                    // Tap → open the TikTok-style feed positioned on the
+                    // tapped post. Index is computed against the combined
+                    // feedPosts so once the user scrolls past the profile's
+                    // own posts, the global feed continues seamlessly.
+                    ForEach(Array(viewModel.posts.prefix(10).enumerated()), id: \.element.id) { index, post in
                         PostCard(post: post)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                feedStartIndex = index
+                                showFeed = true
+                            }
                     }
                 }
             }
@@ -445,9 +527,16 @@ private extension ProfileView {
         VStack(alignment: .leading, spacing: ForMe.space3) {
             sectionTitle("Listings")
 
+            // Tap a listing row → push the listing detail. Explicit Button +
+            // path append (instead of NavigationLink) so the row itself
+            // navigates cleanly without colliding with ListingRow's internal
+            // 3-dot menu. This is NOT the reserve flow — that lives behind
+            // the "Reserve" button at the top of the profile card.
             VStack(spacing: 4) {
                 ForEach(viewModel.listings.prefix(5)) { listing in
-                    NavigationLink(value: listing) {
+                    Button {
+                        appState.navigationPath.append(listing)
+                    } label: {
                         ListingRow(listing: listing)
                     }
                     .buttonStyle(.plain)

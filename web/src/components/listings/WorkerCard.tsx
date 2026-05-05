@@ -122,9 +122,13 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
   const shouldShowImage = profileImage && !imageError;
   const rating = employee.rating ?? 5.0;
 
-  // Price range comes from the parent listing's services. For independents the
-  // shell listing is intentionally NOT passed in, so prices stay hidden here —
-  // they're sourced elsewhere (worker profile / intake), not from the shell.
+  // Price range:
+  //   - Storefront workers derive it from the parent listing's services here
+  //     in the component (cards on Discover/Listing pages have the listing
+  //     in scope, so no extra round-trip is needed).
+  //   - Independents can't read their shell listing's services (per the
+  //     internal-only-shell rule), so the server pre-computes the range and
+  //     ships it on `employee.priceRange` via getIndependentWorkers.
   const prices = !employee.isIndependent
     ? listing?.services?.map(s => s.price).filter(p => p > 0) || []
     : [];
@@ -134,7 +138,7 @@ const WorkerCard: React.FC<WorkerCardProps> = ({
     ? minPrice === maxPrice
       ? `$${minPrice}`
       : `$${minPrice} - $${maxPrice}`
-    : null;
+    : employee.priceRange ?? null;
 
   // Solid background editorial layout (matches ServiceCard style on listing page)
   if (solidBackground) {

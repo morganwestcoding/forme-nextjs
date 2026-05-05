@@ -1,9 +1,12 @@
 import SwiftUI
 
 // Reserve entry point launched from another user's profile.
+//
 // If the profile owner works at multiple listings, ask which one first;
-// then pick a service; then hand off to BookingView with the employee
-// fixed to the profile owner (so the provider-picker step is skipped).
+// otherwise hand off straight to BookingView with the employee fixed to the
+// profile owner. BookingView itself always shows a multi-select services step,
+// so we no longer pick a single service here — that lives one screen later
+// where the user can pick more than one.
 struct ProfileReserveFlow: View {
     let profileUser: User
     let listings: [Listing]
@@ -11,7 +14,6 @@ struct ProfileReserveFlow: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var selectedListing: Listing?
-    @State private var selectedService: Service?
 
     private var bookableListings: [Listing] {
         listings.filter { listing in
@@ -29,40 +31,44 @@ struct ProfileReserveFlow: View {
         return services.filter { $0.listingId == listing.id }
     }
 
+    // Re-attach the scoped services to the listing so BookingView's services
+    // step has them on hand without an extra fetch round trip. Only needed
+    // when the embedded `listing.services` is empty (e.g. profile bundle).
+    private func listingWithServices(_ listing: Listing) -> Listing {
+        var out = listing
+        if (out.services?.isEmpty ?? true) {
+            out.services = servicesForSelectedListing
+        }
+        return out
+    }
+
     var body: some View {
         if let listing = selectedListing,
-           let service = selectedService,
            let employee = employeeForSelectedListing {
-            BookingView(listing: listing, service: service, fixedEmployee: employee)
+            BookingView(
+                listing: listingWithServices(listing),
+                fixedEmployee: employee
+            )
         } else {
             NavigationStack {
-                Group {
-                    if selectedListing == nil {
-                        listingStep
-                    } else {
-                        serviceStep
-                    }
-                }
-                .navigationTitle(selectedListing == nil ? "Select Shop" : "Select Service")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button {
-                            if selectedListing != nil && bookableListings.count > 1 {
-                                selectedListing = nil
-                            } else {
+                listingStep
+                    .navigationTitle("Select Shop")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button {
                                 dismiss()
+                            } label: {
+                                Image(systemName: "xmark")
+                                    .font(.system(size: 15, weight: .medium))
+                                    .foregroundColor(ForMe.textPrimary)
                             }
-                        } label: {
-                            Image(systemName: (selectedListing != nil && bookableListings.count > 1) ? "chevron.left" : "xmark")
-                                .font(.system(size: 15, weight: .medium))
-                                .foregroundColor(ForMe.textPrimary)
                         }
                     }
-                }
-                .background(ForMe.background)
+                    .background(ForMe.background)
             }
             .onAppear {
+                // Fast-path: a single bookable listing skips this picker entirely.
                 if selectedListing == nil, bookableListings.count == 1 {
                     selectedListing = bookableListings.first
                 }
@@ -127,64 +133,6 @@ private extension ProfileReserveFlow {
                 .font(.system(size: 12, weight: .medium))
                 .foregroundColor(ForMe.stone300)
         }
-        .padding(ForMe.space4)
-        .background(ForMe.surface)
-        .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
-                .stroke(ForMe.borderLight, lineWidth: 1)
-        )
-    }
-
-    var serviceStep: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: ForMe.space5) {
-                TypeformHeading(
-                    question: "What are you booking?",
-                    subtitle: "Select a service"
-                )
-                .padding(.horizontal)
-
-                LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
-                    ForEach(servicesForSelectedListing) { service in
-                        Button {
-                            selectedService = service
-                        } label: {
-                            serviceCard(service)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(.horizontal)
-            }
-            .padding(.vertical, ForMe.space4)
-        }
-    }
-
-    func serviceCard(_ service: Service) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(service.serviceName)
-                .font(ForMe.font(.semibold, size: 14))
-                .foregroundColor(ForMe.textPrimary)
-                .lineLimit(2)
-                .multilineTextAlignment(.leading)
-
-            HStack(spacing: 6) {
-                Text(service.formattedPrice)
-                    .font(ForMe.font(.semibold, size: 13))
-                    .foregroundColor(ForMe.textPrimary)
-
-                if !service.formattedDuration.isEmpty {
-                    Text("·")
-                        .font(ForMe.font(.regular, size: 12))
-                        .foregroundColor(ForMe.textTertiary)
-                    Text(service.formattedDuration)
-                        .font(ForMe.font(.regular, size: 12))
-                        .foregroundColor(ForMe.textTertiary)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(ForMe.space4)
         .background(ForMe.surface)
         .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))

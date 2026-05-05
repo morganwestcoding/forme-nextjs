@@ -3,6 +3,13 @@ import Combine
 
 @MainActor
 class BookingViewModel: ObservableObject {
+    // Multi-service selection — mirrors web ReservationFlow's selectedServices.
+    // The user can toggle as many as they like before continuing; an
+    // initialService passed by the caller is treated as a pre-checked seed.
+    @Published var selectedServices: [Service] = []
+    @Published var availableServices: [Service] = []
+    @Published var isLoadingServices = false
+
     @Published var selectedDate = Date()
     @Published var selectedTime: String?
     @Published var selectedEmployee: Employee?
@@ -13,6 +20,52 @@ class BookingViewModel: ObservableObject {
     @Published var bookingComplete = false
 
     private let api = APIService.shared
+
+    var subtotal: Double {
+        selectedServices.map(\.price).reduce(0, +)
+    }
+
+    var serviceCount: Int { selectedServices.count }
+
+    /// Stripe / receipt label — "X services" when more than one was chosen so the
+    /// hosted checkout page reflects what's being booked. Single-service paths
+    /// still show the service name as before.
+    func leadServiceLabel(fallback: String? = nil) -> String {
+        if selectedServices.count > 1 { return "\(selectedServices.count) services" }
+        return selectedServices.first?.serviceName ?? fallback ?? "Service booking"
+    }
+
+    func toggleService(_ service: Service) {
+        if let idx = selectedServices.firstIndex(where: { $0.id == service.id }) {
+            selectedServices.remove(at: idx)
+        } else {
+            selectedServices.append(service)
+        }
+    }
+
+    func isSelected(_ service: Service) -> Bool {
+        selectedServices.contains(where: { $0.id == service.id })
+    }
+
+    /// Hydrate the SERVICES step's grid. Use the listing's embedded services
+    /// when present; otherwise fall back to /listings/<id>/services.
+    func loadServicesIfNeeded(for listing: Listing) async {
+        guard availableServices.isEmpty else { return }
+
+        if let svcs = listing.services, !svcs.isEmpty {
+            availableServices = svcs
+            return
+        }
+
+        isLoadingServices = true
+        defer { isLoadingServices = false }
+        do {
+            availableServices = try await api.getListingServices(listingId: listing.id)
+        } catch {
+            // Non-fatal — the step renders an empty state and the user can
+            // back out without a hard error.
+        }
+    }
 
     var availableTimeSlots: [String] {
         var slots: [String] = []
@@ -39,12 +92,17 @@ class BookingViewModel: ObservableObject {
     }
 
     var canBook: Bool {
-        selectedTime != nil && selectedEmployee != nil
+        !selectedServices.isEmpty && selectedTime != nil && selectedEmployee != nil
     }
 
-    /// Create reservation then initiate Stripe checkout
-    func createBooking(listingId: String, serviceId: String, serviceName: String, price: Double, businessName: String?) async -> Bool {
-        guard let time = selectedTime, let employee = selectedEmployee else { return false }
+    /// Create reservation then initiate Stripe checkout. Sends the canonical
+    /// `serviceIds` array plus a "lead" `serviceId` so older code paths and
+    /// the web's existing checkout endpoint both stay happy.
+    func createBooking(listing: Listing) async -> Bool {
+        guard !selectedServices.isEmpty,
+              let time = selectedTime,
+              let employee = selectedEmployee
+        else { return false }
 
         isLoading = true
         error = nil
@@ -53,35 +111,34 @@ class BookingViewModel: ObservableObject {
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let dateStr = dateFormatter.string(from: selectedDate)
 
+        let lead = selectedServices[0]
+        let label = leadServiceLabel(fallback: lead.serviceName)
+
         do {
-            // Create Stripe checkout session. The reservation row itself is
-            // created server-side by the Stripe webhook (and the verify
-            // fallback) after payment succeeds — see
-            // web/src/app/libs/createReservationFromCheckout.ts. Creating a
-            // pending reservation up-front here would trip /api/checkout's
-            // own overlap check ("This time slot is no longer available")
-            // because it would look like an existing conflict.
+            // Reservation rows are still created server-side by the Stripe
+            // webhook (see web/src/app/libs/createReservationFromCheckout.ts);
+            // creating one up-front would trip /api/checkout's overlap check.
             let checkout = try await api.createCheckoutSession(CheckoutRequest(
-                totalPrice: price,
+                totalPrice: subtotal,
                 date: dateStr,
                 time: time,
-                listingId: listingId,
-                serviceId: serviceId,
-                serviceName: serviceName,
+                listingId: listing.id,
+                serviceId: lead.id,
+                serviceIds: selectedServices.map(\.id),
+                serviceName: label,
                 employeeId: employee.id,
                 employeeName: employee.fullName,
                 note: note.isEmpty ? nil : note,
-                businessName: businessName,
+                businessName: listing.title,
                 platform: "ios"
             ))
 
-            // 3. Open Stripe checkout URL
             if let urlString = checkout.url, let url = URL(string: urlString) {
                 checkoutURL = url
                 isLoading = false
                 return true
             } else {
-                // No URL means Stripe Connect isn't set up — booking still created
+                // No URL means Stripe Connect isn't set up — booking still created.
                 bookingComplete = true
                 isLoading = false
                 return true

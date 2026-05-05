@@ -3,16 +3,28 @@ import Combine
 
 @MainActor
 class BookingsListViewModel: ObservableObject {
-    @Published var reservations: [Reservation] = []
+    // Two buckets, mirroring web /api/reservations: outgoing = bookings you
+    // made as a customer; incoming = bookings other customers made for you
+    // (either at your listing or for you as an assigned employee).
+    @Published var outgoing: [Reservation] = []
+    @Published var incoming: [Reservation] = []
     @Published var isLoading = false
     @Published var error: String?
 
     private let api = APIService.shared
 
+    /// Total pending requests in the incoming queue (any date) — surfaced as
+    /// the attention badge on the Incoming tab.
+    var pendingIncomingCount: Int {
+        incoming.filter { $0.status == .pending }.count
+    }
+
     func loadReservations() async {
         isLoading = true
         do {
-            reservations = try await api.getReservations()
+            let buckets = try await api.getReservations()
+            outgoing = buckets.outgoing
+            incoming = buckets.incoming
         } catch {
             self.error = error.localizedDescription
         }
@@ -32,7 +44,8 @@ class BookingsListViewModel: ObservableObject {
     func cancelReservation(id: String) async {
         do {
             try await api.cancelReservation(id: id)
-            reservations.removeAll { $0.id == id }
+            outgoing.removeAll { $0.id == id }
+            incoming.removeAll { $0.id == id }
         } catch {
             self.error = error.localizedDescription
         }
@@ -41,8 +54,8 @@ class BookingsListViewModel: ObservableObject {
     func updateReservationStatus(id: String, status: String) async {
         do {
             try await api.updateReservationStatus(id: id, status: status)
-            if let index = reservations.firstIndex(where: { $0.id == id }) {
-                reservations[index].status = ReservationStatus(rawValue: status) ?? .pending
+            applyToBoth(id: id) { r in
+                r.status = ReservationStatus(rawValue: status) ?? .pending
             }
         } catch {
             self.error = error.localizedDescription
@@ -54,17 +67,28 @@ class BookingsListViewModel: ObservableObject {
     func refundReservation(id: String, reason: String? = nil) async -> RefundResponse? {
         do {
             let response = try await api.refundReservation(id: id, reason: reason)
-            if let index = reservations.firstIndex(where: { $0.id == id }) {
-                reservations[index].refundStatus = response.status
+            applyToBoth(id: id) { r in
+                r.refundStatus = response.status
                 if response.status == "completed" {
-                    reservations[index].paymentStatus = "refunded"
-                    reservations[index].status = .cancelled
+                    r.paymentStatus = "refunded"
+                    r.status = .cancelled
                 }
             }
             return response
         } catch {
             self.error = error.localizedDescription
             return nil
+        }
+    }
+
+    /// A reservation can live in both arrays (e.g. self-booking at your own
+    /// business), so mutations need to walk both rather than picking one.
+    private func applyToBoth(id: String, mutation: (inout Reservation) -> Void) {
+        if let i = outgoing.firstIndex(where: { $0.id == id }) {
+            mutation(&outgoing[i])
+        }
+        if let i = incoming.firstIndex(where: { $0.id == id }) {
+            mutation(&incoming[i])
         }
     }
 }

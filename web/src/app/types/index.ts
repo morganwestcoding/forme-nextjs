@@ -256,6 +256,11 @@ export type SafeEmployee = {
   listingTitle: string;
   listingCategory: string;
   rating?: number | null;
+  // Server-computed display string (e.g. "$45 - $180"). Populated for
+  // independents by getIndependentWorkers since their shell listing isn't
+  // exposed; non-independent rows leave it null and the UI derives the
+  // range from listing.services instead.
+  priceRange?: string | null;
   user: {
     id: string;
     name: string | null;

@@ -343,6 +343,21 @@ class APIService {
         return try await perform(request)
     }
 
+    // Slim feed for the /maps page — returns listings (storefronts) + workers
+    // (independents) with geocoded coordinates only. Mirrors web's
+    // /api/listings/map: filters with no lat/lng are excluded server-side.
+    func getMapItems(bbox: String? = nil) async throws -> MapItemsResponse {
+        var queryItems: [URLQueryItem] = []
+        if let bbox = bbox {
+            queryItems.append(URLQueryItem(name: "bbox", value: bbox))
+        }
+        let request = try buildRequest(
+            endpoint: "/listings/map",
+            queryItems: queryItems.isEmpty ? nil : queryItems
+        )
+        return try await perform(request)
+    }
+
     func getListingServices(listingId: String) async throws -> [Service] {
         let request = try buildRequest(endpoint: "/listings/\(listingId)/services")
         return try await perform(request)
@@ -471,23 +486,23 @@ class APIService {
 
     // MARK: - Reservations
 
-    func getReservations() async throws -> [Reservation] {
+    func getReservations() async throws -> ReservationBuckets {
         // Server returns { outgoing, incoming } — a reservation you made
-        // (outgoing) can also be on a listing you own (incoming), so
-        // dedupe by id when flattening for the bookings list.
+        // (outgoing) can also land in incoming when it's at your own business,
+        // and *incoming* covers two routes server-side: listing-owner and
+        // assigned-employee. The iOS UI uses the same split so the
+        // Upcoming/Past tabs only show your own bookings and the Incoming
+        // tab only shows requests from your customers.
         struct ReservationsResponse: Codable {
             let outgoing: [Reservation]
             let incoming: [Reservation]
         }
         let request = try buildRequest(endpoint: "/reservations")
         let response: ReservationsResponse = try await perform(request)
-        var seen = Set<String>()
-        var combined: [Reservation] = []
-        for r in response.outgoing + response.incoming where !seen.contains(r.id) {
-            seen.insert(r.id)
-            combined.append(r)
-        }
-        return combined
+        return ReservationBuckets(
+            outgoing: response.outgoing,
+            incoming: response.incoming
+        )
     }
 
     func createReservation(_ reservation: CreateReservationRequest) async throws -> Reservation {
@@ -750,8 +765,12 @@ class APIService {
         return try await perform(request)
     }
 
-    func toggleFollow(userId: String) async throws {
-        let request = try buildRequest(endpoint: "/follow/\(userId)", method: "POST")
+    // Web POST /api/follow/[id] accepts a `?type=user|listing|shop` query
+    // param (defaults to "user"). Pass nil for user follows; "listing"/"shop"
+    // for the corresponding entity types.
+    func toggleFollow(id: String, type: String? = nil) async throws {
+        let queryItems = type.map { [URLQueryItem(name: "type", value: $0)] }
+        let request = try buildRequest(endpoint: "/follow/\(id)", method: "POST", queryItems: queryItems)
         let _: EmptyResponse = try await perform(request)
     }
 
@@ -1151,7 +1170,11 @@ struct CheckoutRequest: Codable {
     let date: String
     let time: String
     let listingId: String
+    // `serviceId` stays for legacy compatibility / "lead" service display.
+    // `serviceIds` is the canonical multi-service list when the user picks more
+    // than one service in the same reservation — web handles both shapes.
     let serviceId: String
+    let serviceIds: [String]?
     let serviceName: String
     let employeeId: String
     let employeeName: String?

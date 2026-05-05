@@ -3,6 +3,7 @@ import SwiftUI
 struct ListingDetailView: View {
     let listing: Listing
     @StateObject private var viewModel = ListingDetailViewModel()
+    @ObservedObject private var followStore = FollowStore.shared
     @EnvironmentObject var authViewModel: AuthViewModel
     @State private var showBooking = false
     @State private var showQR = false
@@ -19,6 +20,17 @@ struct ListingDetailView: View {
 
     private var storeHours: [StoreHours] {
         listing.storeHours ?? []
+    }
+
+    // FollowStore-backed state — follow targets the LISTING (not its owner)
+    // so the same button updates listing.followers everywhere it appears.
+    private var isFollowing: Bool {
+        followStore.isFollowing(id: listing.id, target: .listing)
+    }
+
+    private var followerCount: Int {
+        let base = listing.followers?.count ?? 0
+        return followStore.count(base: base, for: listing.id)
     }
 
     var body: some View {
@@ -42,9 +54,10 @@ struct ListingDetailView: View {
             topBar
         }
         .sheet(isPresented: $showBooking) {
-            if let service = viewModel.selectedService {
-                BookingView(listing: listing, service: service)
-            }
+            // initialService is just a seed — the user can still pick more
+            // services on the first step. nil is also valid (opens straight to
+            // service-select with nothing pre-checked).
+            BookingView(listing: listing, initialService: viewModel.selectedService)
         }
         .sheet(isPresented: $showQR) {
             ListingQRSheet(listing: listing)
@@ -60,6 +73,10 @@ struct ListingDetailView: View {
         .task {
             await viewModel.loadServices(for: listing.id)
             await viewModel.loadReviews(for: listing.id)
+            // Seed the store so the button reflects the persisted state on
+            // first appearance instead of always starting at "Follow".
+            FollowStore.shared.register(listing: listing, currentUserId: authViewModel.currentUser?.id)
+            FollowStore.shared.hydrateFromCurrentUser(authViewModel.currentUser)
         }
     }
 
@@ -84,14 +101,14 @@ struct ListingDetailView: View {
                 } label: {
                     Label("View QR Code", systemImage: "qrcode")
                 }
-                if let ownerId = listing.userId {
+                if listing.userId != nil {
                     Button {
                         Haptics.confirm()
-                        Task { await viewModel.toggleFollow(userId: ownerId) }
+                        Task { await followStore.toggle(id: listing.id, target: .listing) }
                     } label: {
                         Label(
-                            viewModel.isFollowing ? "Following" : "Follow",
-                            systemImage: viewModel.isFollowing ? "person.badge.minus" : "person.badge.plus"
+                            isFollowing ? "Following" : "Follow",
+                            systemImage: isFollowing ? "person.badge.minus" : "person.badge.plus"
                         )
                     }
                 }
@@ -276,7 +293,7 @@ private extension ListingDetailView {
         HStack(spacing: 0) {
             statItem(value: "\(services.count)", label: "services")
             Divider().frame(height: 32)
-            statItem(value: "\(listing.followers?.count ?? 0)", label: "followers")
+            statItem(value: "\(followerCount)", label: "followers")
             Divider().frame(height: 32)
             statItem(value: "\(listing.ratingCount ?? 0)", label: "reviews")
         }
@@ -312,25 +329,24 @@ private extension ListingDetailView {
                     .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
             }
 
+            // Same muted treatment ProfileView uses — text-only state change
+            // so the button looks consistent everywhere a follow lives.
             Button {
-                if let ownerId = listing.userId {
-                    Haptics.confirm()
-                    Task { await viewModel.toggleFollow(userId: ownerId) }
-                }
+                Haptics.confirm()
+                Task { await followStore.toggle(id: listing.id, target: .listing) }
             } label: {
-                Text(viewModel.isFollowing ? "Following" : "Follow")
+                Text(isFollowing ? "Following" : "Follow")
                     .font(ForMe.font(.semibold, size: 13))
-                    .foregroundColor(viewModel.isFollowing ? .white : ForMe.stone700)
+                    .foregroundColor(ForMe.stone700)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(viewModel.isFollowing ? ForMe.stone700 : ForMe.stone50)
+                    .background(ForMe.stone50)
                     .clipShape(RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
-                            .stroke(viewModel.isFollowing ? Color.clear : ForMe.stone200, lineWidth: 1)
+                            .stroke(ForMe.stone200, lineWidth: 1)
                     )
             }
-            .disabled(listing.userId == nil)
         }
     }
 }

@@ -2,12 +2,26 @@ import SwiftUI
 
 struct BookingSuccessView: View {
     let listing: Listing
-    let service: Service
+    // Multi-service support — what the customer actually booked. Single-service
+    // success screens still read identically; multi-service shows a count and
+    // sums the prices for the "Total paid" row.
+    let services: [Service]
     let date: Date
     let time: String
     let employee: Employee?
     let onDismiss: () -> Void
     let onViewBookings: () -> Void
+
+    private var serviceLine: String {
+        if services.count == 1 { return services[0].serviceName }
+        if services.isEmpty { return "" }
+        return "\(services.count) services"
+    }
+
+    private var totalPaid: String {
+        let sum = services.map(\.price).reduce(0, +)
+        return sum == sum.rounded() ? "$\(Int(sum))" : String(format: "$%.2f", sum)
+    }
 
     @State private var checkmarkScale: CGFloat = 0
     @State private var ringScale: CGFloat = 0.4
@@ -149,7 +163,7 @@ private extension BookingSuccessView {
                         .font(ForMe.font(.semibold, size: 16))
                         .foregroundColor(ForMe.textPrimary)
                         .lineLimit(1)
-                    Text(service.serviceName)
+                    Text(serviceLine)
                         .font(ForMe.font(.regular, size: 13))
                         .foregroundColor(ForMe.stone500)
                         .lineLimit(1)
@@ -187,7 +201,7 @@ private extension BookingSuccessView {
                     .font(ForMe.font(.regular, size: 13))
                     .foregroundColor(ForMe.stone500)
                 Spacer()
-                Text(service.formattedPrice)
+                Text(totalPaid)
                     .font(.system(size: 20, weight: .bold, design: .rounded))
                     .foregroundColor(ForMe.textPrimary)
             }
@@ -315,7 +329,7 @@ private extension BookingSuccessView {
             location: "Pasadena, CA",
             userId: "1"
         ),
-        service: Service(id: "1", serviceName: "Manicure", price: 45, duration: 60, listingId: "1"),
+        services: [Service(id: "1", serviceName: "Manicure", price: 45, duration: 60, listingId: "1")],
         date: Date(),
         time: "2:00 PM",
         employee: Employee(id: "e1", fullName: "Amanda Knocke", jobTitle: "Nail Tech"),

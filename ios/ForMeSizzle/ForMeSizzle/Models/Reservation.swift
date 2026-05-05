@@ -30,6 +30,16 @@ struct RefundResponse: Codable {
     let amount: Int?
 }
 
+// Server-side split of /api/reservations into outgoing (you booked it) and
+// incoming (a customer booked you — either as listing owner or as an
+// employee assigned to a listing). The same reservation can land in both
+// arrays if you booked yourself at your own business; tabs filter by which
+// list it came from rather than re-deriving the role client-side.
+struct ReservationBuckets {
+    var outgoing: [Reservation]
+    var incoming: [Reservation]
+}
+
 // MARK: - Status Enums
 
 enum ReservationStatus: String, Codable {

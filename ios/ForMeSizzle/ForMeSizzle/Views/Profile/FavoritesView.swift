@@ -97,7 +97,12 @@ struct FavoritesView: View {
             LazyVStack(spacing: 4) {
                 ForEach(Array(viewModel.workers.enumerated()), id: \.element.id) { index, professional in
                     NavigationLink(value: ProfileRoute(userId: professional.user.id)) {
-                        ProviderRow(user: professional.user, listing: professional.listing, jobTitle: professional.jobTitle)
+                        ProviderRow(
+                            user: professional.user,
+                            listing: professional.listing,
+                            jobTitle: professional.jobTitle,
+                            priceRange: professional.priceRange
+                        )
                     }
                     .buttonStyle(.plain)
                     .staggeredFadeIn(index: index)

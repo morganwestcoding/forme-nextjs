@@ -1,30 +1,33 @@
 import SwiftUI
 
 // MARK: - Multi-step Booking Flow (matches web ReservationFlow)
+//
+// Always opens on the SERVICES step so the customer can pick one or more
+// services in the same reservation — even when the caller already knows the
+// listing/worker/independent. An `initialService` pre-checks one option but
+// the step still appears so they can add more.
 
 struct BookingView: View {
     let listing: Listing
-    let service: Service
+    let initialService: Service?
     let fixedEmployee: Employee?
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var appState: AppState
     @StateObject private var viewModel = BookingViewModel()
-    @State private var step: BookingStep
+    @State private var step: BookingStep = .service
 
-    init(listing: Listing, service: Service, fixedEmployee: Employee? = nil) {
+    init(listing: Listing, initialService: Service? = nil, fixedEmployee: Employee? = nil) {
         self.listing = listing
-        self.service = service
+        self.initialService = initialService
         self.fixedEmployee = fixedEmployee
-        // When the employee is already known (e.g. booking from that
-        // employee's profile), skip the provider picker and start on date.
-        _step = State(initialValue: fixedEmployee != nil ? .date : .provider)
     }
 
     enum BookingStep: Int, CaseIterable {
-        case provider = 0, date, time, summary
+        case service = 0, provider, date, time, summary
 
         var title: String {
             switch self {
+            case .service: return "Select Services"
             case .provider: return "Select Provider"
             case .date: return "Select Date"
             case .time: return "Select Time"
@@ -33,16 +36,44 @@ struct BookingView: View {
         }
     }
 
+    // The actual ordered list of steps the user walks through. We omit
+    // `.provider` when the booking already targets a specific employee
+    // (e.g. tapping reserve on someone's profile) — picking again would be
+    // redundant. Everything else (service, date, time, summary) is always shown.
+    private var visibleSteps: [BookingStep] {
+        fixedEmployee != nil
+            ? [.service, .date, .time, .summary]
+            : [.service, .provider, .date, .time, .summary]
+    }
+
+    private var currentIndex: Int {
+        visibleSteps.firstIndex(of: step) ?? 0
+    }
+
     private var progress: CGFloat {
-        if fixedEmployee != nil {
-            // Three visible steps: date, time, summary (raw values 1..3)
-            return CGFloat(step.rawValue) / 3.0
-        }
-        return CGFloat(step.rawValue + 1) / CGFloat(BookingStep.allCases.count)
+        CGFloat(currentIndex + 1) / CGFloat(visibleSteps.count)
     }
 
     private var isFirstStep: Bool {
-        fixedEmployee != nil ? step == .date : step == .provider
+        step == visibleSteps.first
+    }
+
+    private var isLastStep: Bool {
+        step == .summary
+    }
+
+    private func goNext() {
+        guard currentIndex < visibleSteps.count - 1 else { return }
+        withAnimation(.easeInOut(duration: 0.25)) {
+            step = visibleSteps[currentIndex + 1]
+        }
+    }
+
+    private func goBack() {
+        guard currentIndex > 0 else { return }
+        withAnimation(.easeInOut(duration: 0.25)) {
+            step = visibleSteps[currentIndex - 1]
+        }
     }
 
     var body: some View {
@@ -53,6 +84,7 @@ struct BookingView: View {
                 // Step content
                 Group {
                     switch step {
+                    case .service: serviceStep
                     case .provider: providerStep
                     case .date: dateStep
                     case .time: timeStep
@@ -72,9 +104,7 @@ struct BookingView: View {
                         if isFirstStep {
                             dismiss()
                         } else {
-                            withAnimation(.easeInOut(duration: 0.25)) {
-                                step = BookingStep(rawValue: step.rawValue - 1) ?? step
-                            }
+                            goBack()
                         }
                     } label: {
                         Image(systemName: isFirstStep ? "xmark" : "chevron.left")
@@ -83,9 +113,19 @@ struct BookingView: View {
                     }
                 }
             }
-            .onAppear {
+            .task {
                 if let emp = fixedEmployee, viewModel.selectedEmployee == nil {
                     viewModel.selectedEmployee = emp
+                }
+                await viewModel.loadServicesIfNeeded(for: listing)
+
+                // Pre-check the seed service the caller passed in — but only
+                // on the first time through so the user's later toggles aren't
+                // overwritten when this task re-runs.
+                if let initial = initialService,
+                   viewModel.selectedServices.isEmpty,
+                   viewModel.availableServices.contains(where: { $0.id == initial.id }) {
+                    viewModel.selectedServices = [initial]
                 }
             }
             .alert("Error", isPresented: .constant(viewModel.error != nil)) {
@@ -107,7 +147,7 @@ struct BookingView: View {
             .fullScreenCover(isPresented: $viewModel.bookingComplete) {
                 BookingSuccessView(
                     listing: listing,
-                    service: service,
+                    services: viewModel.selectedServices,
                     date: viewModel.selectedDate,
                     time: viewModel.selectedTime ?? "",
                     employee: viewModel.selectedEmployee,
@@ -119,6 +159,64 @@ struct BookingView: View {
                     }
                 )
             }
+        }
+    }
+}
+
+// MARK: - Service Step (multi-select)
+
+private extension BookingView {
+    var serviceStep: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: ForMe.space5) {
+                TypeformHeading(
+                    question: "What are you booking?",
+                    subtitle: viewModel.serviceCount > 0
+                        ? "Add more services or continue"
+                        : "Select one or more to continue"
+                )
+                .padding(.horizontal)
+
+                if viewModel.isLoadingServices && viewModel.availableServices.isEmpty {
+                    HStack {
+                        Spacer()
+                        ForMeLoader(size: .medium)
+                        Spacer()
+                    }
+                    .padding(.vertical, ForMe.space6)
+                } else if viewModel.availableServices.isEmpty {
+                    Text("This business hasn't listed any services yet.")
+                        .font(ForMe.font(.regular, size: 14))
+                        .foregroundColor(ForMe.textTertiary)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.vertical, ForMe.space6)
+                } else {
+                    LazyVGrid(
+                        columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)],
+                        spacing: 10
+                    ) {
+                        ForEach(viewModel.availableServices) { service in
+                            ServiceMultiSelectCard(
+                                service: service,
+                                isSelected: viewModel.isSelected(service)
+                            ) {
+                                Haptics.tap()
+                                viewModel.toggleService(service)
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+
+                if viewModel.serviceCount > 0 {
+                    Text("\(viewModel.serviceCount) service\(viewModel.serviceCount == 1 ? "" : "s") selected — \(formatPrice(viewModel.subtotal)) total")
+                        .font(ForMe.font(.medium, size: 13))
+                        .foregroundColor(ForMe.textSecondary)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.top, 4)
+                }
+            }
+            .padding(.vertical, ForMe.space4)
         }
     }
 }
@@ -246,8 +344,23 @@ private extension BookingView {
 
                 // Booking details
                 VStack(spacing: 0) {
-                    summaryRow(label: "Service", value: service.serviceName)
-                    Divider().padding(.horizontal)
+                    // Multi-service: emit a row per service so the user sees
+                    // exactly what they're paying for. Single-service just
+                    // shows one row labelled "Service" — same as before.
+                    if viewModel.selectedServices.count == 1, let only = viewModel.selectedServices.first {
+                        summaryRow(label: "Service", value: only.serviceName)
+                    } else {
+                        ForEach(Array(viewModel.selectedServices.enumerated()), id: \.element.id) { _, svc in
+                            summaryRow(
+                                label: "Service",
+                                value: "\(svc.serviceName) — \(svc.formattedPrice)"
+                            )
+                            Divider().padding(.horizontal)
+                        }
+                    }
+                    if viewModel.selectedServices.count == 1 {
+                        Divider().padding(.horizontal)
+                    }
                     summaryRow(label: "Date", value: formatDate(viewModel.selectedDate))
                     Divider().padding(.horizontal)
                     summaryRow(label: "Time", value: viewModel.selectedTime ?? "—")
@@ -256,7 +369,7 @@ private extension BookingView {
                         summaryRow(label: "Provider", value: employee.fullName)
                     }
                     Divider().padding(.horizontal)
-                    summaryRow(label: "Price", value: service.formattedPrice, isBold: true)
+                    summaryRow(label: "Total", value: formatPrice(viewModel.subtotal), isBold: true)
                 }
                 .background(ForMe.surface)
                 .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
@@ -301,6 +414,14 @@ private extension BookingView {
     }
 }
 
+// MARK: - Helpers
+
+private extension BookingView {
+    func formatPrice(_ value: Double) -> String {
+        value == value.rounded() ? "$\(Int(value))" : String(format: "$%.2f", value)
+    }
+}
+
 // MARK: - Bottom Bar
 
 private extension BookingView {
@@ -318,10 +439,10 @@ private extension BookingView {
             }
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Total")
+                    Text(viewModel.serviceCount > 1 ? "Subtotal" : "Total")
                         .font(ForMe.font(.regular, size: 12))
                         .foregroundColor(ForMe.textTertiary)
-                    Text(service.formattedPrice)
+                    Text(formatPrice(viewModel.subtotal))
                         .font(ForMe.font(.bold, size: 20))
                         .foregroundColor(ForMe.textPrimary)
                 }
@@ -329,29 +450,21 @@ private extension BookingView {
                 Spacer()
 
                 Button {
-                    if step == .summary {
+                    if isLastStep {
                         Haptics.impact()
                         Task {
-                            _ = await viewModel.createBooking(
-                                listingId: listing.id,
-                                serviceId: service.id,
-                                serviceName: service.serviceName,
-                                price: service.price,
-                                businessName: listing.title
-                            )
+                            _ = await viewModel.createBooking(listing: listing)
                         }
                     } else {
                         Haptics.tap()
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            step = BookingStep(rawValue: step.rawValue + 1) ?? .summary
-                        }
+                        goNext()
                     }
                 } label: {
                     if viewModel.isLoading {
                         ForMeLoader(size: .small, color: .white)
                             .frame(width: 140)
                     } else {
-                        Text(step == .summary ? "Reserve & Pay" : "Continue")
+                        Text(isLastStep ? "Reserve & Pay" : "Continue")
                             .font(ForMe.font(.semibold, size: 15))
                             .frame(width: 140)
                     }
@@ -369,11 +482,77 @@ private extension BookingView {
 
     var canProceed: Bool {
         switch step {
+        case .service: return !viewModel.selectedServices.isEmpty
         case .provider: return viewModel.selectedEmployee != nil
         case .date: return true
         case .time: return viewModel.selectedTime != nil
         case .summary: return viewModel.canBook
         }
+    }
+}
+
+// MARK: - Service Multi-Select Card
+
+struct ServiceMultiSelectCard: View {
+    let service: Service
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .top, spacing: 6) {
+                    Text(service.serviceName)
+                        .font(ForMe.font(.semibold, size: 14))
+                        .foregroundColor(ForMe.textPrimary)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(2)
+
+                    Spacer(minLength: 0)
+
+                    // Checkbox-style indicator. Black when selected so the
+                    // multi-select affordance reads at a glance.
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            .stroke(isSelected ? ForMe.stone900 : ForMe.stone300, lineWidth: 1.5)
+                            .background(
+                                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                    .fill(isSelected ? ForMe.stone900 : Color.clear)
+                            )
+                            .frame(width: 18, height: 18)
+
+                        if isSelected {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundColor(.white)
+                        }
+                    }
+                }
+
+                HStack(spacing: 6) {
+                    Text(service.formattedPrice)
+                        .font(ForMe.font(.semibold, size: 13))
+                        .foregroundColor(ForMe.textPrimary)
+                    if !service.formattedDuration.isEmpty {
+                        Text("·")
+                            .font(ForMe.font(.regular, size: 12))
+                            .foregroundColor(ForMe.textTertiary)
+                        Text(service.formattedDuration)
+                            .font(ForMe.font(.regular, size: 12))
+                            .foregroundColor(ForMe.textTertiary)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(ForMe.space4)
+            .background(isSelected ? ForMe.stone50 : ForMe.surface)
+            .clipShape(RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: ForMe.radius2XL, style: .continuous)
+                    .stroke(isSelected ? ForMe.stone900 : ForMe.stone200, lineWidth: isSelected ? 2 : 1)
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -453,12 +632,16 @@ struct EmployeeChip: View {
             title: "John's Place",
             category: "Barber",
             location: "Bullhead City, AZ",
+            services: [
+                Service(id: "s1", serviceName: "Haircut", price: 35, duration: 45, listingId: "1"),
+                Service(id: "s2", serviceName: "Beard Trim", price: 20, duration: 20, listingId: "1"),
+                Service(id: "s3", serviceName: "Hot Towel Shave", price: 40, duration: 30, listingId: "1"),
+            ],
             employees: [
                 Employee(id: "e1", fullName: "Marcus J.", jobTitle: "Barber"),
                 Employee(id: "e2", fullName: "Tim D.", jobTitle: "Barber"),
             ],
             userId: "1"
-        ),
-        service: Service(id: "1", serviceName: "Haircut", price: 35, duration: 45, listingId: "1")
+        )
     )
 }

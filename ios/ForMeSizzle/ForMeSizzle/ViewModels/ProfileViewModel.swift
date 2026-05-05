@@ -9,7 +9,6 @@ class ProfileViewModel: ObservableObject {
     @Published var services: [Service] = []
     @Published var reviews: [Review] = []
     @Published var reviewStats: ReviewStats?
-    @Published var isFollowing = false
     @Published var isLoading = false
 
     private let api = APIService.shared
@@ -17,7 +16,13 @@ class ProfileViewModel: ObservableObject {
     // Single round-trip via /users/[userId]/profile so user, posts, listings,
     // services, and review aggregates all stay in sync — same source the web's
     // /profile/[userId] page uses.
-    func loadProfile(userId: String) async {
+    //
+    // Follow state is now owned by FollowStore so toggles propagate to every
+    // counter/button across the app instantly. We seed the store with both
+    // currentUser.following (for "am I following this person?") and the
+    // profile user's followers list (handled by the view, since the count is
+    // a delta-on-base computation).
+    func loadProfile(userId: String, currentUser: User?) async {
         isLoading = true
         defer { isLoading = false }
         do {
@@ -28,15 +33,11 @@ class ProfileViewModel: ObservableObject {
             services = resp.services ?? []
             reviews = resp.reviews ?? []
             reviewStats = resp.reviewStats
+            FollowStore.shared.hydrateFromCurrentUser(currentUser)
+            FollowStore.shared.registerUserProfile(id: userId)
         } catch {
             // Silent — view will fall back to authViewModel.currentUser when
             // viewing self, or render an empty state when viewing others.
         }
-    }
-
-    func toggleFollow() async {
-        guard let userId = user?.id else { return }
-        isFollowing.toggle()
-        try? await api.toggleFollow(userId: userId)
     }
 }

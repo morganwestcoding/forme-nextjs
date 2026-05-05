@@ -66,7 +66,8 @@
       "Bash(grep -rEnB 1 \"\\\\.font\\\\\\(\\\\.system\\\\\\(\" --include=\"*.swift\")",
       "Bash(grep -E \"^\\\\.padding\\\\\\([0-9]+\\\\\\)$|, [0-9]+\\\\\\)$\")",
       "Bash(grep -v \":0$\")",
-      "Bash(grep -rEnA 5 \"func staggeredFadeIn|struct.*StaggeredFadeIn\" --include=\"*.swift\" /Users/greg/Desktop/forme/ios/ForMeSizzle/ForMeSizzle)"
+      "Bash(grep -rEnA 5 \"func staggeredFadeIn|struct.*StaggeredFadeIn\" --include=\"*.swift\" /Users/greg/Desktop/forme/ios/ForMeSizzle/ForMeSizzle)",
+      "Bash(awk -v RS=, 'index\\($0, \"Moon02Icon\"\\)' /Users/greg/Desktop/forme/node_modules/hugeicons-react/dist/esm/hugeicons-react.js)"
     ],
     "additionalDirectories": [
       "/Users/greg/Desktop/forme/web/src/components/listings",

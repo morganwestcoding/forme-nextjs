@@ -563,7 +563,8 @@ private extension HomeView {
                                 ProviderRow(
                                     user: professional.user,
                                     listing: professional.listing,
-                                    jobTitle: professional.jobTitle
+                                    jobTitle: professional.jobTitle,
+                                    priceRange: professional.priceRange
                                 )
                             }
                             .buttonStyle(.plain)
@@ -802,7 +803,8 @@ private extension HomeView {
                         ProviderRow(
                             user: pair.item.user,
                             listing: pair.item.listing,
-                            jobTitle: pair.item.jobTitle
+                            jobTitle: pair.item.jobTitle,
+                            priceRange: pair.item.priceRange
                         )
                     }
                     .buttonStyle(.plain)
@@ -1009,7 +1011,7 @@ struct ListingRow: View {
         }
         .padding(ForMe.space3)
         .sheet(item: $bookingService) { service in
-            BookingView(listing: listing, service: service)
+            BookingView(listing: listing, initialService: service)
         }
     }
 
@@ -1240,13 +1242,17 @@ struct ProviderRow: View {
     // never surface here. Quick-book + secondary lines fall back to user data.
     let listing: Listing?
     let subtitle: String?
+    let priceRange: String?
     @State private var bookingService: Service?
 
-    init(user: CompactUser, listing: Listing?, jobTitle: String? = nil) {
+    init(user: CompactUser, listing: Listing?, jobTitle: String? = nil, priceRange: String? = nil) {
         self.name = user.name ?? "Provider"
         self.image = user.avatarURL
         self.listing = listing
         self.subtitle = listing?.location ?? jobTitle
+        // Storefront workers carry their range on the listing; independents
+        // get a server-computed string passed in directly.
+        self.priceRange = priceRange ?? listing?.priceRange
     }
 
     var body: some View {
@@ -1270,10 +1276,9 @@ struct ProviderRow: View {
                         .lineLimit(1)
                 }
 
-                // ★ Rating | Price — always render the rating so independent
-                // providers get the same row treatment as listing-attached
-                // workers. Price is omitted for independents since there's no
-                // storefront / service set to derive a range from.
+                // ★ Rating | Price — independents get the same row as
+                // listing-attached workers; the price segment uses whatever
+                // range was passed in (server-computed for independents).
                 HStack(spacing: 0) {
                     GoldStar(size: 11)
                         .padding(.trailing, 4)
@@ -1283,7 +1288,7 @@ struct ProviderRow: View {
                         .foregroundColor(ForMe.stone500)
                         .monospacedDigit()
 
-                    if let price = listing?.priceRange {
+                    if let price = priceRange {
                         Text("|")
                             .font(ForMe.font(size: 11))
                             .foregroundColor(ForMe.stone300)
@@ -1323,7 +1328,7 @@ struct ProviderRow: View {
         .padding(ForMe.space3)
         .sheet(item: $bookingService) { service in
             if let listing {
-                BookingView(listing: listing, service: service)
+                BookingView(listing: listing, initialService: service)
             }
         }
     }

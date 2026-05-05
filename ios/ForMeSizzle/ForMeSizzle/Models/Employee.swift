@@ -21,6 +21,11 @@ struct Employee: Codable, Identifiable, Hashable {
     var listing: Listing?
     var user: CompactUser?
     var createdAt: String?
+
+    // Server-computed for independents (see getIndependentWorkers.ts) so the UI
+    // can show a price range without fetching services per row. nil for
+    // listing-attached employees — those derive it from `listing.priceRange`.
+    var priceRange: String?
 }
 
 struct IndependentWorkersResponse: Codable {

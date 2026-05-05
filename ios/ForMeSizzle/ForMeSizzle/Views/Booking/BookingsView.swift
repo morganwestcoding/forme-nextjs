@@ -1,10 +1,26 @@
 import SwiftUI
 
+// Mirrors the web tabs in ReservationsClient.tsx — outgoing splits into
+// Upcoming/Past by date, while incoming is its own pile that also covers
+// past requests (matches web behavior: the Incoming tab doesn't split by
+// time, so completed/declined requests still appear under it).
+enum BookingTab: Int, CaseIterable {
+    case upcoming, past, incoming
+
+    var title: String {
+        switch self {
+        case .upcoming: return "Upcoming"
+        case .past: return "Past"
+        case .incoming: return "Incoming"
+        }
+    }
+}
+
 struct BookingsView: View {
     @StateObject private var viewModel = BookingsListViewModel()
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var authViewModel: AuthViewModel
-    @State private var selectedTab = 0
+    @State private var selectedTab: BookingTab = .upcoming
     @State private var showMessages = false
 
     var body: some View {
@@ -39,8 +55,11 @@ struct BookingsView: View {
                 .padding(.horizontal)
 
                 // Toggle
-                SlidingToggle(selectedTab: $selectedTab)
-                    .padding(.horizontal)
+                SlidingToggle(
+                    selectedTab: $selectedTab,
+                    pendingIncomingCount: viewModel.pendingIncomingCount
+                )
+                .padding(.horizontal)
 
                 if viewModel.isLoading {
                     ProgressView()
@@ -53,10 +72,10 @@ struct BookingsView: View {
                             .frame(width: 40, height: 40)
                             .foregroundColor(ForMe.textTertiary)
                             .padding(.bottom, 4)
-                        Text(selectedTab == 0 ? "Nothing scheduled yet" : "No past visits")
+                        Text(emptyTitle)
                             .font(.subheadline.weight(.medium))
                             .foregroundColor(ForMe.textSecondary)
-                        Text(selectedTab == 0 ? "Book a service and it'll show up here" : "Your completed bookings will appear here")
+                        Text(emptySubtitle)
                             .font(.caption)
                             .foregroundColor(ForMe.textTertiary)
                             .multilineTextAlignment(.center)
@@ -66,8 +85,12 @@ struct BookingsView: View {
                 } else {
                     LazyVStack(spacing: 12) {
                         ForEach(Array(currentBookings.enumerated()), id: \.element.id) { index, reservation in
-                            let isIncoming = reservation.listing?.userId == authViewModel.currentUser?.id
-                                && reservation.userId != authViewModel.currentUser?.id
+                            // Incoming bucket is the source of truth — the
+                            // server already knows whether the user is the
+                            // listing owner OR an assigned employee, so we
+                            // trust its split rather than re-deriving from
+                            // listing.userId (which misses the employee case).
+                            let isIncoming = selectedTab == .incoming
                             BookingCard(
                                 reservation: reservation,
                                 isIncoming: isIncoming,
@@ -120,16 +143,37 @@ struct BookingsView: View {
         // local calendar so a booking for "today" stays under Upcoming all
         // day instead of flipping to Past at local midnight UTC offsets.
         let todayStart = Calendar.current.startOfDay(for: Date())
-        if selectedTab == 0 {
-            return viewModel.reservations.filter { r in
+        switch selectedTab {
+        case .upcoming:
+            return viewModel.outgoing.filter { r in
                 guard let day = reservationDay(from: r.date) else { return true }
                 return day >= todayStart
             }
-        } else {
-            return viewModel.reservations.filter { r in
+        case .past:
+            return viewModel.outgoing.filter { r in
                 guard let day = reservationDay(from: r.date) else { return false }
                 return day < todayStart
             }
+        case .incoming:
+            // Web doesn't split incoming by time — pending requests for past
+            // dates still need to be visible (e.g. a no-show to refund).
+            return viewModel.incoming
+        }
+    }
+
+    private var emptyTitle: String {
+        switch selectedTab {
+        case .upcoming: return "Nothing scheduled yet"
+        case .past: return "No past visits"
+        case .incoming: return "No incoming requests"
+        }
+    }
+
+    private var emptySubtitle: String {
+        switch selectedTab {
+        case .upcoming: return "Book a service and it'll show up here"
+        case .past: return "Your completed bookings will appear here"
+        case .incoming: return "When customers book your services, you'll see them here"
         }
     }
 
@@ -607,31 +651,50 @@ struct StatusBadge: View {
 }
 
 private struct SlidingToggle: View {
-    @Binding var selectedTab: Int
+    @Binding var selectedTab: BookingTab
+    let pendingIncomingCount: Int
     @Namespace private var toggleNamespace
-
-    private let tabs = ["Upcoming", "Past"]
 
     var body: some View {
         HStack(spacing: 4) {
-            ForEach(Array(tabs.enumerated()), id: \.offset) { index, title in
+            ForEach(BookingTab.allCases, id: \.self) { tab in
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) {
-                        selectedTab = index
+                        selectedTab = tab
                     }
                 } label: {
-                    Text(title)
-                        .font(ForMe.font(selectedTab == index ? .semibold : .medium, size: 13))
-                        .foregroundColor(selectedTab == index ? .white : ForMe.textSecondary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 13)
-                        .background {
-                            if selectedTab == index {
-                                RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
-                                    .fill(ForMe.textPrimary)
-                                    .matchedGeometryEffect(id: "toggle", in: toggleNamespace)
-                            }
+                    HStack(spacing: 6) {
+                        Text(tab.title)
+                            .font(ForMe.font(selectedTab == tab ? .semibold : .medium, size: 13))
+                            .foregroundColor(selectedTab == tab ? .white : ForMe.textSecondary)
+
+                        // Pending-incoming badge on the Incoming tab — same
+                        // signal web uses (an "Action needed" cue that draws
+                        // the worker back into the queue).
+                        if tab == .incoming && pendingIncomingCount > 0 {
+                            Text("\(pendingIncomingCount)")
+                                .font(ForMe.font(.semibold, size: 11))
+                                .foregroundColor(selectedTab == tab ? .white : Color(hex: "B45309"))
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(
+                                    Capsule().fill(
+                                        selectedTab == tab
+                                            ? Color.white.opacity(0.22)
+                                            : Color(hex: "FEF3C7")
+                                    )
+                                )
                         }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 13)
+                    .background {
+                        if selectedTab == tab {
+                            RoundedRectangle(cornerRadius: ForMe.radiusXL, style: .continuous)
+                                .fill(ForMe.textPrimary)
+                                .matchedGeometryEffect(id: "toggle", in: toggleNamespace)
+                        }
+                    }
                 }
             }
         }

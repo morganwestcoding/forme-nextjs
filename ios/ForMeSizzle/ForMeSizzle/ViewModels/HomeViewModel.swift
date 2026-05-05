@@ -10,6 +10,31 @@ struct Professional: Identifiable, Hashable {
     let user: CompactUser
     let listing: Listing?
     let jobTitle: String?
+    // Resolved at construction time: listing.priceRange for storefront
+    // workers, or the server-computed string for independents.
+    let priceRange: String?
+
+    // Sort-friendly views into the same data so Search's filters
+    // (Top Rated / Most Reviewed / Price L→H) work for both storefront
+    // workers and independents without needing to widen the struct's
+    // stored fields. Independents have no listing, so rating-based sorts
+    // see them as 0; price-based sorts parse their server-provided range
+    // string (e.g. "$45 - $180" → 45).
+    var sortRating: Double { listing?.rating ?? 0 }
+    var sortReviewCount: Int { listing?.ratingCount ?? 0 }
+    var sortMinPrice: Double? {
+        if let services = listing?.services, !services.isEmpty {
+            return services.map(\.price).filter { $0 > 0 }.min()
+        }
+        return Self.parseMinPrice(from: priceRange)
+    }
+
+    private static func parseMinPrice(from raw: String?) -> Double? {
+        guard let raw,
+              let range = raw.range(of: #"\d+(\.\d+)?"#, options: .regularExpression)
+        else { return nil }
+        return Double(raw[range])
+    }
 }
 
 @MainActor
@@ -70,7 +95,8 @@ class HomeViewModel: ObservableObject {
                     id: owner.id,
                     user: owner,
                     listing: listing,
-                    jobTitle: nil
+                    jobTitle: nil,
+                    priceRange: listing.priceRange
                 ))
             }
             for employee in (listing.employees ?? []) {
@@ -88,7 +114,8 @@ class HomeViewModel: ObservableObject {
                     id: userId,
                     user: user,
                     listing: listing,
-                    jobTitle: employee.jobTitle
+                    jobTitle: employee.jobTitle,
+                    priceRange: listing.priceRange
                 ))
             }
         }
@@ -101,7 +128,8 @@ class HomeViewModel: ObservableObject {
                 id: user.id,
                 user: user,
                 listing: nil,
-                jobTitle: w.jobTitle
+                jobTitle: w.jobTitle,
+                priceRange: w.priceRange
             ))
         }
 
